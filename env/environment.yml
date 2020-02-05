@@ -1,4 +1,4 @@
-name: icn_mne
+name: icn
 channels:
 - defaults
 - conda-forge
@@ -42,7 +42,7 @@ dependencies:
 - pytest-faulthandler
 - pytest-sugar
 - pydocstyle
-- simplejson
+- fileinput
 - pip:
   - mne_bids
   - autoreject

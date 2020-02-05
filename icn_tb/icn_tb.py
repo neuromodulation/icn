@@ -2,7 +2,7 @@ import json
 import os
 import pathlib
 from glob import glob
-
+import fileinput
 import numpy as np
 import psutil
 from matplotlib import pyplot as plt
@@ -37,6 +37,12 @@ def ffind(folder='.', string='*.*'):
     for cdir, _, _ in os.walk(folder):
         files.extend(glob(os.path.join(cdir, string)))
     return files
+
+
+def replace_txt_in_file(filename,searchstring,replacestring=''):
+        with fileinput.FileInput(filename, inplace=True, backup='.bak') as file:
+            for line in file:
+                print(line.replace(searchstring,replacestring), end='')
 
 
 def json_write(filename, data):

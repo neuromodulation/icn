@@ -1,7 +1,7 @@
 import os
 import pathlib
 import shutil
-
+import fileinput
 import dateutil
 import mne
 import numpy as np
@@ -20,6 +20,25 @@ def read_file(filename):
 def patient_name(filename):
     data = read_file(filename)
     return data.PatientInformation['Final']['PatientLastName'], data.PatientInformation['Final']['PatientFirstName']
+
+
+def anonymize(filename):
+    [fdir,fname,ext] = tb.fileparts(filename)
+    copyname = pathlib.Path(fdir,'Sensitive_'+fname[7:]+ext)
+    shutil.copyfile(filename,copyname)
+    data = read_file(filename)
+    ainfo = []
+    ainfo.append(data.PatientInformation['Final']['PatientLastName'])
+    ainfo.append(data.PatientInformation['Final']['PatientFirstName'])
+    ainfo.append(data.PatientInformation['Final']['PatientId'])
+    ainfo.append(data.PatientInformation['Final']['PatientDateOfBirth'])
+    ainfo.append(data.PatientInformation['Final']['PatientGender'])
+    ainfo.append(data.DeviceInformation['Final']['NeurostimulatorSerialNumber'])
+
+    for a in ainfo:
+        tb.replace_txt_in_file(filename, a)
+    os.remove(str(filename)+'.bak')
+    return filename
 
 
 def reformat_LFPMontage_channelname(LFPMontage, target='LFP'):
