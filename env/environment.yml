@@ -42,8 +42,8 @@ dependencies:
 - pytest-faulthandler
 - pytest-sugar
 - pydocstyle
-- fileinput
 - pip:
   - mne_bids
   - autoreject
   - neo
+  - pybv
