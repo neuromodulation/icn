@@ -5,8 +5,9 @@ import pandas as pd
 
 
 #  global data acquisition params
+subject_path = '/Users/hi/Documents/workshop_ML/subjects/' #  path with DBS___ subject folders
 BIDS_path = '/Users/hi/Documents/workshop_ML/thesis_plots/BIDS_new/'
-out_path_folder = '/Users/hi/Documents/workshop_ML/thesis_plots/int_out/'
+out_path_folder = '/Users/hi/Documents/workshop_ML/thesis_plots/write_int/'
 sample_rate = 1000
 f_ranges = [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 z_score_running_interval = 10000  # used for "online" z-scoring to setup running interval in which data is z-scored
@@ -24,6 +25,19 @@ var_rolling_window = 500
 
 
 class Settings:
+
+    @staticmethod
+    def get_DBS_patients(subject_path):
+        """
+
+        :param subject_path:
+        :return: list with DBS folders in the given subject_path
+        """
+        list_DBS_folder = [i for i in os.listdir(subject_path) \
+                           if i.startswith('DBS') and \
+                           len([file for file in os.listdir(os.path.join(subject_path, i)) \
+                                if file.startswith('stream_')]) != 0]
+        return list_DBS_folder
 
     @staticmethod
     def read_all_vhdr_filenames():

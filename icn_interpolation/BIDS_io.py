@@ -234,9 +234,12 @@ def interpolate_stream(x_filtered_zscored, mov_label_zscored, matrix_arr_all, su
 
     for index in range(4):  # [ecog_grid_left, stn_grid_left, ecog_grid_right, stn_grid_right]
 
-        if ('RIGHT' in ch_names[0]) & (index == 0 or index == 1):
+        if ('RIGHT' in ch_names[0]) & (index == 0 or index == 1):  # check here if laterality is right or left
             continue
         if ('LEFT' in ch_names[0]) & (index == 2 or index == 3):
+            continue
+
+        if matrix_arr_all[index] is None:  # check is here if coordinates exist... interpolation can be done --> if STN data is there
             continue
 
         if index == 0 or index == 2:
@@ -349,6 +352,18 @@ def write_and_interpolate_vhdr(file_path):
     out_path_file = os.path.join(settings.out_path_folder, file_name_out) + '.p'
     pickle.dump(dict_, open(out_path_file, "wb"))
 
+def check_if_interpolated_run_exists(file_path):
+    """
+    check_if_interpolated_run_exists
+    :param file_path:
+    :return: True if file exists
+    """
+    subject_idx, file_name_out = get_name(file_path)
+    if os.path.exists(settings.out_path_folder + file_name_out + '.p') is True:
+        return True
+    else:
+        return False
+
 
 #debug:
 #f, t, Sxx = signal.spectrogram(x_filtered[7,0,:], sample_rate); plt.pcolormesh(t, f, Sxx); plt.ylim(0,200);
@@ -357,8 +372,10 @@ if __name__== "__main__":
 
     vhdr_filename_paths = Settings.read_all_vhdr_filenames()
 
-    #write_and_interpolate_vhdr(vhdr_filename_paths[31])
+    #write_and_interpolate_vhdr('/Users/hi/Documents/workshop_ML/thesis_plots/BIDS_new/sub-011/ses-left/eeg/sub-011_ses-left_task-force_run-2_eeg.vhdr')
     #write_and_interpolate_vhdr(vhdr_filename_paths[0])
+
     pool = multiprocessing.Pool()
     pool.map(write_and_interpolate_vhdr, vhdr_filename_paths)
 
+    #fail bei '/Users/hi/Documents/workshop_ML/thesis_plots/BIDS_new/sub-011/ses-left/eeg/sub-011_ses-left_task-force_run-2_eeg.vhdr'
