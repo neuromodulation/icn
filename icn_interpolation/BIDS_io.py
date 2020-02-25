@@ -15,7 +15,7 @@ import os
 import settings
 from settings import Settings
 
-coord_arr = Settings.read_BIDS_coordinates()
+coord_arr, coord_arr_names = Settings.read_BIDS_coordinates()
 ecog_grid_left, ecog_grid_right, stn_grid_left, stn_grid_right = Settings.define_grid()
 grid_ = [ecog_grid_left, stn_grid_left, ecog_grid_right, stn_grid_right]
 
@@ -152,6 +152,29 @@ def calc_running_var(x_filtered_zscored, mov_label_zscored):
     return x_filtered_zscored_var, mov_label_zscored[:, (x_filtered_zscored.shape[2] - time_series_length):]
 
 
+def get_same_ECOG_indices(ch_names, coord_arr_names, subject_idx, left=True):
+    """
+    This function checks given the bv_raw channel names array, and the names given from the coordinate file, which coordinates are used
+    This is neccessary, since in different runs, different number of strips can be active
+
+    :param ch_names: channels names read from brainvision
+    :param coord_arr_names: names given by the electrodes tsv file
+    :param subject_idx: BIDS patient index
+    :param left: boolean
+    :return: ECOG indices which should be used when indexing the distance matrix_arr
+    """
+
+    if left is True:
+        lat_ = 0
+    else:
+        lat_ = 1
+    ch_names_ecog = [i for i in ch_names if i.startswith('ECOG_')]
+    coord_names_ecog = [i for i in coord_arr_names[subject_idx][lat_] if i.startswith('ECOG_')]
+    ch_used_in_run = np.where(np.in1d(ch_names_ecog, coord_names_ecog))[0]
+
+    return ch_used_in_run
+
+
 def calc_projection_matrix(subject_idx, coord_arr, grid_):
     """
     calculate a distance array in shape (grid_point, channel)
@@ -178,7 +201,7 @@ def calc_projection_matrix(subject_idx, coord_arr, grid_):
         matrix_arr[grid_idx] = projection_matrix
     return matrix_arr
 
-def interpolate_stream(x_filtered_zscored, mov_label_zscored, matrix_arr, int_distance_ecog=settings.int_distance_ecog, int_distance_stn=settings.int_distance_stn):
+def interpolate_stream(x_filtered_zscored, mov_label_zscored, matrix_arr_all, subject_idx, ch_names, int_distance_ecog=settings.int_distance_ecog, int_distance_stn=settings.int_distance_stn):
     """
     Given a channel datastream, this function implements the interpolation to the Settings defined Grid.
     Here contra -and ipsilateral grid points are separated
@@ -186,7 +209,9 @@ def interpolate_stream(x_filtered_zscored, mov_label_zscored, matrix_arr, int_di
     The label vector is switched respectively
     :param x_filtered_zscored
     :param mov_label_zscored
-    :param matrix_arr: distance array (grid_point, channel)
+    :param matrix_arr_all: distance array (grid_point, channel)
+    :param subject_idx
+    :param ch_names: read out raw channel names from BIDS
     :param int_distance_ecog
     :param int_distance_stn
     :return: int_data: interpolated array (94) includes NaN if no interpolation was performed
@@ -198,7 +223,7 @@ def interpolate_stream(x_filtered_zscored, mov_label_zscored, matrix_arr, int_di
     act_grid_points = np.zeros(grid_[0].shape[1] * 2 + grid_[1].shape[1] * 2)
     label_mov = np.zeros(mov_label_zscored.shape)  # 0: contralateral, 1: ipsilateral
 
-    if matrix_arr[0] is None:
+    if 'RIGHT' in ch_names[0]:
         #  right: here firstly defined as grid points 0:39, later the label is changed respectively
         offset_ecog = 0
         offset_stn = 78
@@ -208,27 +233,38 @@ def interpolate_stream(x_filtered_zscored, mov_label_zscored, matrix_arr, int_di
         offset_stn = 86
 
     for index in range(4):  # [ecog_grid_left, stn_grid_left, ecog_grid_right, stn_grid_right]
-        if matrix_arr[index] is None:
+
+        if ('RIGHT' in ch_names[0]) & (index == 0 or index == 1):
             continue
+        if ('LEFT' in ch_names[0]) & (index == 2 or index == 3):
+            continue
+
         if index == 0 or index == 2:
             int_distance = int_distance_ecog
+            if index == 0:
+                ch_used_in_run = get_same_ECOG_indices(ch_names, coord_arr_names, subject_idx, left=True)
+            else:
+                ch_used_in_run = get_same_ECOG_indices(ch_names, coord_arr_names, subject_idx, left=False)
+            matrix_arr = matrix_arr_all[index][:,ch_used_in_run]
         elif index == 1 or index == 3:
             int_distance = int_distance_stn
+            matrix_arr = matrix_arr_all[index]
+
 
         for grid_point in range(grid_[index].shape[1]):
-            used_channels = np.where(matrix_arr[index][grid_point, :] < int_distance)[0]
+            used_channels = np.where(matrix_arr[grid_point, :] < int_distance)[0]
             if used_channels.shape[0] == 0:
                 continue
-            rec_distances = matrix_arr[index][grid_point, used_channels]
+            rec_distances = matrix_arr[grid_point, used_channels]
             sum_distances = np.sum(1 / rec_distances)
             first_ch = 0
             for ch_idx, used_channel in enumerate(used_channels):
                 if first_ch == 0:
                     first_ch = 1
-                    running_stream = (1 / matrix_arr[index][grid_point, used_channel]) * \
+                    running_stream = (1 / matrix_arr[grid_point, used_channel]) * \
                                      x_filtered_zscored[:, used_channel, :] / sum_distances
                 else:
-                    running_stream += (1 / matrix_arr[index][grid_point, used_channel]) * \
+                    running_stream += (1 / matrix_arr[grid_point, used_channel]) * \
                                       x_filtered_zscored[:, used_channel, :] / sum_distances
 
             if index == 0 or index == 2:
@@ -299,8 +335,10 @@ def write_and_interpolate_vhdr(file_path):
 
     matrix_arr = calc_projection_matrix(subject_idx, coord_arr, grid_)
 
-    int_data, label_mov, act_grid_points = interpolate_stream(x_filtered_zscored, mov_label_zscored, \
-                                                              matrix_arr, int_distance_ecog=settings.int_distance_ecog, int_distance_stn=settings.int_distance_stn)
+    int_data, label_mov, act_grid_points = interpolate_stream(x_filtered_zscored, mov_label_zscored,
+                                                              matrix_arr, subject_idx, ch_names,
+                                                              int_distance_ecog=settings.int_distance_ecog,
+                                                              int_distance_stn=settings.int_distance_stn)
 
     dict_ = {
         "int_data": int_data,
@@ -319,6 +357,7 @@ if __name__== "__main__":
 
     vhdr_filename_paths = Settings.read_all_vhdr_filenames()
 
+    #write_and_interpolate_vhdr(vhdr_filename_paths[31])
     #write_and_interpolate_vhdr(vhdr_filename_paths[0])
     pool = multiprocessing.Pool()
     pool.map(write_and_interpolate_vhdr, vhdr_filename_paths)

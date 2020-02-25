@@ -5,7 +5,7 @@ import pandas as pd
 
 
 #  global data acquisition params
-BIDS_path = '/Users/hi/Documents/workshop_ML/thesis_plots/BIDS_update/'
+BIDS_path = '/Users/hi/Documents/workshop_ML/thesis_plots/BIDS_new/'
 out_path_folder = '/Users/hi/Documents/workshop_ML/thesis_plots/int_out/'
 sample_rate = 1000
 f_ranges = [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
@@ -39,11 +39,13 @@ class Settings:
         """
         from BIDS_path np array coordinate arrays are read and returned in list respective to subjects
         :return: coord_arr: array with shape (len(subjects), 4), where indexes in the following order: left ecog, left stn, right ecog, right stn
+        :return: coord_arr_names: array with shape  (len(subjects), 4), where coord names are saved in order: left, right
         """
         layout = BIDSLayout(BIDS_path)
         subjects = layout.get_subjects()
         sessions = layout.get_sessions()
         coord_arr = np.empty((len(subjects), 4), dtype=object)  # left ecog, left stn, right ecog, right stn
+        coord_arr_names = np.empty((len(subjects), 2), dtype=object)
 
         for subject_idx, subject in enumerate(subjects):
             for sess in sessions:
@@ -62,6 +64,7 @@ class Settings:
                     if np.array(df['name'].str.contains("STN")).any():
                         coord_arr[subject_idx, 1] = np.ndarray.astype(np.array(df[df['name'].str.contains("STN")])[:, 1:4],
                                                                       float)
+                    coord_arr_names[subject_idx, 0] = list(df['name'])
                 elif sess == 'right':
                     if np.array(df['name'].str.contains("ECOG")).any():
                         coord_arr[subject_idx, 2] = np.ndarray.astype(np.array(df[df['name'].str.contains("ECOG")])[:, 1:4],
@@ -69,7 +72,9 @@ class Settings:
                     if np.array(df['name'].str.contains("STN")).any():
                         coord_arr[subject_idx, 3] = np.ndarray.astype(np.array(df[df['name'].str.contains("STN")])[:, 1:4],
                                                                       float)
-        return coord_arr
+                    coord_arr_names[subject_idx, 1] = list(df['name'])
+
+        return coord_arr, coord_arr_names
 
     @staticmethod
     def define_grid():
