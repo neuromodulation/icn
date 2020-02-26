@@ -7,7 +7,9 @@ import pandas as pd
 #  global data acquisition params
 subject_path = '/Users/hi/Documents/workshop_ML/subjects/' #  path with DBS___ subject folders
 BIDS_path = '/Users/hi/Documents/workshop_ML/thesis_plots/BIDS_new/'
-out_path_folder = '/Users/hi/Documents/workshop_ML/thesis_plots/write_int/'
+out_path_folder = '/Users/hi/Documents/workshop_ML/thesis_plots/int_out/'
+out_path_folder_downsampled = '/Users/hi/Documents/workshop_ML/thesis_plots/int_out_downsampled/'
+
 sample_rate = 1000
 f_ranges = [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 z_score_running_interval = 10000  # used for "online" z-scoring to setup running interval in which data is z-scored
