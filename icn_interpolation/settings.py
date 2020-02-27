@@ -6,7 +6,7 @@ import pandas as pd
 
 #  global data acquisition params
 subject_path = '/Users/hi/Documents/workshop_ML/subjects/' #  path with DBS___ subject folders
-BIDS_path = '/Users/hi/Documents/workshop_ML/thesis_plots/BIDS_new/'
+BIDS_path = '/Users/hi/Documents/workshop_ML/thesis_plots/BIDS/'
 out_path_folder = '/Users/hi/Documents/workshop_ML/thesis_plots/int_out/'
 out_path_folder_downsampled = '/Users/hi/Documents/workshop_ML/thesis_plots/int_out_downsampled/'
 
@@ -23,7 +23,7 @@ line_noise = [59, 61]
 ripple_db = 60.0
 
 #  rolling variance
-var_rolling_window = 500
+var_rolling_window = 5 # ms given the sample rate
 
 
 class Settings:

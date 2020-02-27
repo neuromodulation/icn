@@ -131,14 +131,15 @@ def z_score_offline_label(mov_label):
     return mov_label_zscored
 
 
-def calc_running_var(x_filtered_zscored, mov_label_zscored):
+def calc_running_var(x_filtered_zscored, mov_label_zscored, var_interval=settings.var_rolling_window):
     """
     Given the filtered and z-scored data, apply a rolling variance winow
     :param x_filtered_zscored
     :param mov_label_zscored
+    :param var_interval time window in which the variance is acquired
     :return: datastream and movement adapted arrays
     """
-    stream_roll = np.array(pd.Series(x_filtered_zscored[0, 0, :]).rolling(window=500).var())
+    stream_roll = np.array(pd.Series(x_filtered_zscored[0, 0, :]).rolling(window=var_interval).var())
     stream_roll = stream_roll[~np.isnan(stream_roll)]
     time_series_length = stream_roll.shape[0]
 
@@ -146,7 +147,7 @@ def calc_running_var(x_filtered_zscored, mov_label_zscored):
 
     for f in range(len(settings.f_ranges)):
         for ch in range(x_filtered_zscored.shape[1]):
-            stream_roll = np.array(pd.Series(x_filtered_zscored[0, 0, :]).rolling(window=settings.var_rolling_window).var())
+            stream_roll = np.array(pd.Series(x_filtered_zscored[0, 0, :]).rolling(window=var_interval).var())
             x_filtered_zscored_var[f, ch, :] = stream_roll[~np.isnan(stream_roll)]
     # change the label vector too
     return x_filtered_zscored_var, mov_label_zscored[:, (x_filtered_zscored.shape[2] - time_series_length):]
@@ -238,6 +239,12 @@ def interpolate_stream(x_filtered_zscored, mov_label_zscored, matrix_arr_all, su
             continue
         if ('LEFT' in ch_names[0]) & (index == 2 or index == 3):
             continue
+
+        if index == 1 or index == 3:
+            result = [i for i in ch_names if i.startswith('STN_')]
+            if len(result) == 0:
+                continue
+
 
         if matrix_arr_all[index] is None:  # check is here if coordinates exist... interpolation can be done --> if STN data is there
             continue
@@ -372,10 +379,11 @@ if __name__== "__main__":
 
     vhdr_filename_paths = Settings.read_all_vhdr_filenames()
 
-    #write_and_interpolate_vhdr('/Users/hi/Documents/workshop_ML/thesis_plots/BIDS_new/sub-011/ses-left/eeg/sub-011_ses-left_task-force_run-2_eeg.vhdr')
-    #write_and_interpolate_vhdr(vhdr_filename_paths[0])
+    #write_and_interpolate_vhdr('/Users/hi/Documents/workshop_ML/thesis_plots/BIDS_new/sub-001/ses-left/eeg/sub-001_ses-left_task-force_run-0_eeg.vhdr')
+
+    #for run in vhdr_filename_paths:
+    #    write_and_interpolate_vhdr(run)
 
     pool = multiprocessing.Pool()
     pool.map(write_and_interpolate_vhdr, vhdr_filename_paths)
 
-    #fail bei '/Users/hi/Documents/workshop_ML/thesis_plots/BIDS_new/sub-011/ses-left/eeg/sub-011_ses-left_task-force_run-2_eeg.vhdr'

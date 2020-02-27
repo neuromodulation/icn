@@ -81,7 +81,7 @@ def write_comb_patient(patient_idx):
 
 def downsample_data(downsample_rate = 10):
     """
-    function reads every run file, downsamples it by the given factor, and rewrites it to different folder
+    function reads every run file, downsamples it by the given factor, and rewrites it to settings.out_path_folder_downsampled folder
     :return:
     """
     for patient_idx in range(16):
@@ -110,13 +110,10 @@ def downsample_data(downsample_rate = 10):
                 "act_grid_points": act_grid_points
             }
 
-            out_path_file = os.path.join(settings.out_path_folder, runs_[idx]) + '.p'
+            out_path_file = os.path.join(settings.out_path_folder_downsampled, runs_[idx])
             pickle.dump(out, open(out_path_file, "wb"))
 
 
 if __name__== "__main__":
 
-
-
-    for patient_idx in range(16):
-        write_comb_patient(patient_idx)
+    downsample_data(downsample_rate = 10)
