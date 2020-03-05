@@ -14,6 +14,8 @@ import pickle
 import os
 import settings
 from settings import Settings
+from sklearn import linear_model
+from sklearn.model_selection import cross_val_score
 
 coord_arr, coord_arr_names = Settings.read_BIDS_coordinates()
 ecog_grid_left, ecog_grid_right, stn_grid_left, stn_grid_right = Settings.define_grid()
@@ -49,20 +51,39 @@ def t_f_transform(x, sample_rate, f_ranges):
 
         cutoff_hz = f_range  #BP Filter range
         f_range = np.arange(f_range[0], f_range[1] + 1, 1)
-        taps = signal.firwin(N, np.array(cutoff_hz) / nyq_rate, window = ('kaiser', beta), pass_zero=False)
+        taps = signal.firwin(N, np.array(cutoff_hz) / nyq_rate, window = ('kaiser', beta), pass_zero=False, fs=sample_rate)
 
 
         if np.intersect1d(noise_, f_range).shape[0] != 0:
             #do line noise filtering
-            taps_ = signal.firwin(N, np.array(settings.line_noise) / nyq_rate, window=('kaiser', beta))
+            taps_ = signal.firwin(N, np.array(settings.line_noise) / nyq_rate, window=('kaiser', beta),pass_zero=False, fs=sample_rate)
             x = signal.lfilter(taps_, 1.0, x)
 
         time_filtered = signal.lfilter(taps, 1.0, x)
         filtered_x.append(time_filtered)
     return np.array(filtered_x)
 
+def t_f_transform_mne(x, sample_rate, f_ranges):
+    """
+    calculate time frequency transform with mne filter function
+    """
+    filtered_x = []
 
-def transform_channels(bv_raw):
+    for f_range in f_ranges:
+        if settings.line_noise in np.arange(f_range[0], f_range[1], 1):
+            #do line noise filtering
+            x = mne.filter.notch_filter(x=x, Fs=sample_rate, 
+                freqs=np.arange(settings.line_noise, 4*settings.line_noise, settings.line_noise), 
+                fir_design='firwin', verbose=False, notch_widths=2)
+
+        h = mne.filter.create_filter(x, sample_rate, l_freq=f_range[0], h_freq=f_range[1], \
+                                     fir_design='firwin', verbose=False, l_trans_bandwidth=2, h_trans_bandwidth=2)
+        filtered_x.append(np.convolve(h, x, mode='same'))
+ 
+    return np.array(filtered_x)
+
+
+def transform_channels(bv_raw, use_mne=True):
     """
     calculate t-f-transform for every channel
     :param bv_raw: Raw (channel x time) datastream
@@ -70,7 +91,10 @@ def transform_channels(bv_raw):
     """
     x_filtered = np.zeros([len(settings.f_ranges), bv_raw.shape[0] - 2, bv_raw.shape[1]])
     for ch in range(bv_raw.shape[0] - 2):
-        x_filtered[:, ch, :] = t_f_transform(bv_raw[ch, :], settings.sample_rate, settings.f_ranges)
+        if use_mne is True:
+            x_filtered[:, ch, :] = t_f_transform_mne(bv_raw[ch, :], settings.sample_rate, settings.f_ranges)
+        else:
+            x_filtered[:, ch, :] = t_f_transform(bv_raw[ch, :], settings.sample_rate, settings.f_ranges)
     return x_filtered
 
 
@@ -147,7 +171,7 @@ def calc_running_var(x_filtered_zscored, mov_label_zscored, var_interval=setting
 
     for f in range(len(settings.f_ranges)):
         for ch in range(x_filtered_zscored.shape[1]):
-            stream_roll = np.array(pd.Series(x_filtered_zscored[0, 0, :]).rolling(window=var_interval).var())
+            stream_roll = np.array(pd.Series(x_filtered_zscored[f, ch, :]).rolling(window=var_interval).var())
             x_filtered_zscored_var[f, ch, :] = stream_roll[~np.isnan(stream_roll)]
     # change the label vector too
     return x_filtered_zscored_var, mov_label_zscored[:, (x_filtered_zscored.shape[2] - time_series_length):]
@@ -319,7 +343,7 @@ def get_name(str_):
     return int(subject[4:]), name
 
 
-def write_and_interpolate_vhdr(file_path):
+def write_and_interpolate_vhdr(file_path, test_LM=False):
     """
     Multiprocessing "Pool" function to interpolate raw file from file_path write to out_path
     :param file_path: raw .vhdr file
@@ -338,8 +362,13 @@ def write_and_interpolate_vhdr(file_path):
     # mov_label_zscored = running_zscore_label(mov_label, z_score_running_interval)  # does not yield desired results...
 
     # clipping for artifact rejection
+    
+    x_filtered_zscored, mov_label_zscored = calc_running_var(x_filtered_zscored, mov_label_zscored, var_interval=1000)
     x_filtered_zscored = np.clip(x_filtered_zscored, settings.clip_low, settings.clip_high)
-    x_filtered_zscored, mov_label_zscored = calc_running_var(x_filtered_zscored, mov_label_zscored)
+
+    if test_LM is True:
+        for ch in range(bv_raw.shape[0]-2):
+            print(np.mean(cross_val_score(linear_model.LinearRegression(), x_filtered_zscored[:,ch,:].T, mov_label_zscored[1,:], cv=5)))
 
     subject_idx, file_name_out = get_name(file_path)
 
@@ -358,6 +387,9 @@ def write_and_interpolate_vhdr(file_path):
 
     out_path_file = os.path.join(settings.out_path_folder, file_name_out) + '.p'
     pickle.dump(dict_, open(out_path_file, "wb"))
+
+def test_LM(X, y):
+    cross_val_score(LinearRegression(), X.T, y, cv=5)
 
 def check_if_interpolated_run_exists(file_path):
     """
@@ -382,7 +414,7 @@ if __name__== "__main__":
     #write_and_interpolate_vhdr('/Users/hi/Documents/workshop_ML/thesis_plots/BIDS_new/sub-001/ses-left/eeg/sub-001_ses-left_task-force_run-0_eeg.vhdr')
 
     #for run in vhdr_filename_paths:
-    #    write_and_interpolate_vhdr(run)
+    #write_and_interpolate_vhdr(vhdr_filename_paths[0], True)
 
     pool = multiprocessing.Pool()
     pool.map(write_and_interpolate_vhdr, vhdr_filename_paths)

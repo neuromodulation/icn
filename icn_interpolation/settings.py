@@ -13,13 +13,13 @@ out_path_folder_downsampled = '/Users/hi/Documents/workshop_ML/thesis_plots/int_
 sample_rate = 1000
 f_ranges = [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 z_score_running_interval = 10000  # used for "online" z-scoring to setup running interval in which data is z-scored
-clip_low = -2  # data is clipped after t-f transformation
-clip_high = 2
+clip_low = -3  # data is clipped after t-f transformation
+clip_high = 3
 int_distance_ecog = 20  # distance in which channels are interpolated to a given grid point
 int_distance_stn = 10
 
 #  Filter parameters
-line_noise = [59, 61]
+line_noise = 60
 ripple_db = 60.0
 
 #  rolling variance
