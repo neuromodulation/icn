@@ -5,7 +5,7 @@ import pandas as pd
 
 
 #  global data acquisition params
-subject_path = '/Users/hi/Documents/workshop_ML/subjects/' #  path with DBS___ subject folders
+subject_path = '/Users/hi/Documents/workshop_ML/subjects/' #  path with DBS___ subject folders, must be formatted for mac or windows here
 BIDS_path = '/Users/hi/Documents/workshop_ML/thesis_plots/BIDS/'
 out_path_folder = '/Users/hi/Documents/workshop_ML/thesis_plots/int_out/'
 out_path_folder_downsampled = '/Users/hi/Documents/workshop_ML/thesis_plots/int_out_downsampled/'
@@ -66,8 +66,10 @@ class Settings:
         for subject_idx, subject in enumerate(subjects):
             for sess in sessions:
 
-                coord_path = BIDS_path + 'sub-' + subject + '/ses-' + sess + \
-                             '/eeg/sub-' + subject + '_electrodes.tsv'
+                #coord_path = BIDS_path + 'sub-' + subject + '/ses-' + sess + \
+                #             '/eeg/sub-' + subject + '_electrodes.tsv'
+                coord_path = os.path.join(BIDS_path, 'sub-', subject, 'ses-', sess, 'eeg', 'sub-', subject, '_electrodes.tsv')
+                
                 print(coord_path)
                 if os.path.exists(coord_path) is False:
                     continue

@@ -35,7 +35,7 @@ def write_comb_patient(patient_idx):
     act_ = np.zeros([94, len(runs_)])
     out_ = []
     for idx in range(len(runs_)):
-        file = open(settings.out_path_folder + '/' + runs_[idx], 'rb')
+        file = open(os.path.join(settings.out_path_folder,runs_[idx]), 'rb')
         out = pickle.load(file)
         out_.append(out)
         act_[:, idx] = out['act_grid_points']
@@ -88,7 +88,7 @@ def downsample_data(downsample_rate = 10):
         print(patient_idx)
         runs_ = get_int_runs(patient_idx)
         for idx in range(len(runs_)):
-            file = open(settings.out_path_folder + '/' + runs_[idx], 'rb')
+            file = open(os.path.join(settings.out_path_folder, runs_[idx]), 'rb')
             out = pickle.load(file)
             int_data = np.empty(94, dtype=object)
             label_mov =  np.empty(2, dtype=object)
@@ -116,4 +116,4 @@ def downsample_data(downsample_rate = 10):
 
 if __name__== "__main__":
 
-    downsample_data(downsample_rate = 10)
+    downsample_data(downsample_rate = 100)

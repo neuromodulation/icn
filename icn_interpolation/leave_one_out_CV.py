@@ -36,7 +36,7 @@ def get_act_int_list(patient_idx):
     runs_ = get_int_runs(patient_idx)
     act_ = np.zeros([len(runs_), 94])
     for idx in range(len(runs_)):
-        file = open(settings.out_path_folder + '/' + runs_[idx], 'rb')
+        file = open(os.path.join(settings.out_path_folder, runs_[idx]), 'rb')
         out = pickle.load(file)
 
         act_[idx, :] = out['act_grid_points']
@@ -54,6 +54,24 @@ def save_all_act_grid_points():
         l_act.append(get_act_int_list(patient_idx))
     np.save('act_.npy', np.array(l_act))
 
+def check_leave_out_grid_points(act_, load=True):
+    """
+    :param act_: array of run files of each patient having interpolated grid points
+    :return: a list of grid points which are only occuring in none or one patient
+    """
+    if load is True:
+        return np.load('grid_points_none.npy', allow_pickle=True)
+    
+    grid_point_occurance = np.zeros(94)
+    for patient_idx in range(16):
+        grid_point_occurance[np.where(np.sum(act_[patient_idx], axis=0))[0]] += 1
+    grid_points_none = np.where((grid_point_occurance == 0) | (grid_point_occurance == 1))[0]
+    np.save('grid_points_none.npy', grid_points_none)
+    return grid_points_none
+    
+
+act_ = np.load('act_.npy', allow_pickle=True)
+grid_points_none = check_leave_out_grid_points(act_, False)
 
 def get_train_test_dat(patient_test, grid_point, act_, Train=True):
     """
@@ -77,7 +95,7 @@ def get_train_test_dat(patient_test, grid_point, act_, Train=True):
                 # does this run has the grid point?
                 if act_[patient_idx][run_idx, grid_point] != 0:
                     # load file
-                    file = open(settings.out_path_folder_downsampled + '/' + run, 'rb')
+                    file = open(os.path.join(settings.out_path_folder_downsampled, run), 'rb')
                     out = pickle.load(file)
 
                     # fill dat
@@ -105,7 +123,7 @@ def run_CV(patient_test, model_fun = RandomForestRegressor):
     :param model_fun: provided model function
     :return:
     """
-    act_ = np.load('act_.npy')  # load array with active grid points for all patients and runs
+    act_ = np.load('act_.npy', allow_pickle=True)  # load array with active grid points for all patients and runs
 
     #get all active grid_points for that patient
     arr_active_grid_points = np.zeros(94)
@@ -114,6 +132,9 @@ def run_CV(patient_test, model_fun = RandomForestRegressor):
     patient_CV_out = np.empty(94, dtype=object)
 
     for grid_point in np.nonzero(arr_active_grid_points)[0]:
+
+        if grid_point in grid_points_none:
+            continue
 
         dat, label = get_train_test_dat(patient_test, grid_point, act_, Train=True)
 
@@ -142,5 +163,7 @@ def run_CV(patient_test, model_fun = RandomForestRegressor):
 
 if __name__== "__main__":
 
+    #save_all_act_grid_points()
+
     pool = multiprocessing.Pool()
-    pool.map(run_CV, np.arange(16))
+    pool.map(run_CV, np.array([2, 6, 12]))
