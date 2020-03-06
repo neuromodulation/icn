@@ -7,7 +7,7 @@ import settings
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, roc_auc_score
 from sklearn.ensemble import RandomForestRegressor
 import multiprocessing
 
@@ -50,9 +50,11 @@ def save_all_act_grid_points():
     :return:
     """
     l_act = []
-    for patient_idx in range(16):
+    
+    for patient_idx in range(settings.num_patients):
         l_act.append(get_act_int_list(patient_idx))
     np.save('act_.npy', np.array(l_act))
+    return np.array(l_act)
 
 def check_leave_out_grid_points(act_, load=True):
     """
@@ -63,15 +65,25 @@ def check_leave_out_grid_points(act_, load=True):
         return np.load('grid_points_none.npy', allow_pickle=True)
     
     grid_point_occurance = np.zeros(94)
-    for patient_idx in range(16):
+    for patient_idx in range(settings.num_patients):
         grid_point_occurance[np.where(np.sum(act_[patient_idx], axis=0))[0]] += 1
     grid_points_none = np.where((grid_point_occurance == 0) | (grid_point_occurance == 1))[0]
     np.save('grid_points_none.npy', grid_points_none)
     return grid_points_none
     
 
-act_ = np.load('act_.npy', allow_pickle=True)
+act_ = save_all_act_grid_points()
 grid_points_none = check_leave_out_grid_points(act_, False)
+
+def append_time_dim(arr, y_, time_stamps):
+    """
+    apply added time dimension for the data array and label given time_stamps (with downsample_rate=100) in 100ms / need to check with 1375Hz
+    """
+    time_arr = np.zeros([arr.shape[0]-time_stamps, int(time_stamps*arr.shape[1])])
+    for time_idx, time_ in enumerate(np.arange(time_stamps, arr.shape[0])):
+        for time_point in range(time_stamps):
+            time_arr[time_idx, time_point*arr.shape[1]:(time_point+1)*arr.shape[1]] = arr[time_-time_point,:]
+    return time_arr, y_[time_stamps:]
 
 def get_train_test_dat(patient_test, grid_point, act_, Train=True):
     """
@@ -83,7 +95,7 @@ def get_train_test_dat(patient_test, grid_point, act_, Train=True):
     :return: concatenated dat, label
     """
     start = 0
-    for patient_idx in range(16):
+    for patient_idx in range(settings.num_patients):
         if Train is True and patient_idx == patient_test:
             continue
         if Train is False and patient_idx != patient_test:
@@ -115,7 +127,7 @@ def get_train_test_dat(patient_test, grid_point, act_, Train=True):
                             label = np.concatenate((label, out['label_mov'][1, :]), axis=0)
     return dat, label
 
-def run_CV(patient_test, model_fun = RandomForestRegressor):
+def run_CV(patient_test, model_fun = RandomForestRegressor, time_stamps=5):
     """
     given model is trained grid point wise for the provided patient
     saves output estimations and labels in a struct with r2 correlation coefficient
@@ -137,18 +149,24 @@ def run_CV(patient_test, model_fun = RandomForestRegressor):
             continue
 
         dat, label = get_train_test_dat(patient_test, grid_point, act_, Train=True)
+        dat,label = append_time_dim(dat.T, label,time_stamps)
 
         dat_test, label_test = get_train_test_dat(patient_test, grid_point, act_, Train=False)
+        dat_test,label_test = append_time_dim(dat_test.T, label_test, time_stamps)
 
         model = model_fun(n_estimators=32, max_depth=4)
-        model.fit(dat.T, label)
+        model.fit(dat, label)
 
-        y_pred = model.predict(dat_test.T)
+        y_test_pred = model.predict(dat_test)
+        y_train_pred = model.predict(dat)
 
         predict_ = {
-            "prediction": y_pred,
-            "out_cc": r2_score(label_test, y_pred),
-            "true_label": label_test
+            "y_pred_test": y_test_pred,
+            "y_test": label_test,
+            "y_pred_train": y_train_pred,
+            "y_train": label,
+            "auc_test": roc_auc_score(label_test>0, y_test_pred),
+            "auc_train": roc_auc_score(label>0, y_train_pred)
         }
 
         patient_CV_out[grid_point] = predict_
@@ -163,7 +181,9 @@ def run_CV(patient_test, model_fun = RandomForestRegressor):
 
 if __name__== "__main__":
 
+    run_CV(patient_test=16, model_fun = RandomForestRegressor, time_stamps=5)
+
     #save_all_act_grid_points()
 
-    pool = multiprocessing.Pool()
-    pool.map(run_CV, np.array([2, 6, 12]))
+    #pool = multiprocessing.Pool()
+    #pool.map(run_CV, np.array([2, 6, 12]))

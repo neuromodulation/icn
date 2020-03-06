@@ -25,6 +25,7 @@ ripple_db = 60.0
 #  rolling variance
 var_rolling_window = 5 # ms given the sample rate
 
+num_patients = len(BIDSLayout(BIDS_path).get_subjects())
 
 class Settings:
 
@@ -68,7 +69,7 @@ class Settings:
 
                 #coord_path = BIDS_path + 'sub-' + subject + '/ses-' + sess + \
                 #             '/eeg/sub-' + subject + '_electrodes.tsv'
-                coord_path = os.path.join(BIDS_path, 'sub-', subject, 'ses-', sess, 'eeg', 'sub-', subject, '_electrodes.tsv')
+                coord_path = os.path.join(BIDS_path, 'sub-'+ subject, 'ses-'+ sess, 'eeg', 'sub-'+ subject+ '_electrodes.tsv')
                 
                 print(coord_path)
                 if os.path.exists(coord_path) is False:

@@ -163,7 +163,7 @@ def calc_running_var(x_filtered_zscored, mov_label_zscored, var_interval=setting
     :param var_interval time window in which the variance is acquired
     :return: datastream and movement adapted arrays
     """
-    stream_roll = np.array(pd.Series(x_filtered_zscored[0, 0, :]).rolling(window=var_interval).var())
+    stream_roll = np.array(pd.Series(x_filtered_zscored[0, 1, :]).rolling(window=var_interval).var())
     stream_roll = stream_roll[~np.isnan(stream_roll)]
     time_series_length = stream_roll.shape[0]
 
@@ -172,7 +172,10 @@ def calc_running_var(x_filtered_zscored, mov_label_zscored, var_interval=setting
     for f in range(len(settings.f_ranges)):
         for ch in range(x_filtered_zscored.shape[1]):
             stream_roll = np.array(pd.Series(x_filtered_zscored[f, ch, :]).rolling(window=var_interval).var())
-            x_filtered_zscored_var[f, ch, :] = stream_roll[~np.isnan(stream_roll)]
+            if stream_roll[~np.isnan(stream_roll)].shape[0] == 0:
+                x_filtered_zscored_var[f, ch, :] = np.zeros(x_filtered_zscored_var[f, ch, :].shape[0])
+            else:
+                x_filtered_zscored_var[f, ch, :] = stream_roll[~np.isnan(stream_roll)]
     # change the label vector too
     return x_filtered_zscored_var, mov_label_zscored[:, (x_filtered_zscored.shape[2] - time_series_length):]
 
@@ -354,8 +357,9 @@ def write_and_interpolate_vhdr(file_path, test_LM=False):
     x_filtered = transform_channels(bv_raw)
 
     # proxy for offline data analysis
-    x_filtered_zscored = z_score_offline(x_filtered)
-    mov_label_zscored = z_score_offline_label(mov_label)
+    # it might be that there are NaN values due to no data stream...
+    x_filtered_zscored = np.nan_to_num(z_score_offline(x_filtered))
+    mov_label_zscored = np.nan_to_num(z_score_offline_label(mov_label))
 
     # online real time z-scoring
     # x_filtered_zscored = running_z_score(x_filtered, z_score_running_interval)
@@ -368,7 +372,7 @@ def write_and_interpolate_vhdr(file_path, test_LM=False):
 
     if test_LM is True:
         for ch in range(bv_raw.shape[0]-2):
-            print(np.mean(cross_val_score(linear_model.LinearRegression(), x_filtered_zscored[:,ch,:].T, mov_label_zscored[1,:], cv=5)))
+            print(np.mean(cross_val_score(linear_model.LinearRegression(), x_filtered_zscored[:,ch,:].T, mov_label_zscored[0,:], cv=5)))
 
     subject_idx, file_name_out = get_name(file_path)
 
@@ -410,12 +414,14 @@ def check_if_interpolated_run_exists(file_path):
 if __name__== "__main__":
 
     vhdr_filename_paths = Settings.read_all_vhdr_filenames()
-
+    write_and_interpolate_vhdr(vhdr_filename_paths[73], test_LM=True)
+    write_and_interpolate_vhdr(vhdr_filename_paths[74], test_LM=True)
+    write_and_interpolate_vhdr(vhdr_filename_paths[75], test_LM=True)
     #write_and_interpolate_vhdr('/Users/hi/Documents/workshop_ML/thesis_plots/BIDS_new/sub-001/ses-left/eeg/sub-001_ses-left_task-force_run-0_eeg.vhdr')
 
     #for run in vhdr_filename_paths:
     #write_and_interpolate_vhdr(vhdr_filename_paths[0], True)
 
-    pool = multiprocessing.Pool()
-    pool.map(write_and_interpolate_vhdr, vhdr_filename_paths)
+    #pool = multiprocessing.Pool()
+    #pool.map(write_and_interpolate_vhdr, vhdr_filename_paths)
 
