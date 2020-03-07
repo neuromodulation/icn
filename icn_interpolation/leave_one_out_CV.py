@@ -127,6 +127,33 @@ def get_train_test_dat(patient_test, grid_point, act_, Train=True):
                             label = np.concatenate((label, out['label_mov'][1, :]), axis=0)
     return dat, label
 
+
+def train_grid_point(time_stamps, act_, patient_test, grid_point, model_fun):
+    
+    print(grid_point)
+    dat, label = get_train_test_dat(patient_test, grid_point, act_, Train=True)
+    dat,label = append_time_dim(dat.T, label,time_stamps)
+
+    dat_test, label_test = get_train_test_dat(patient_test, grid_point, act_, Train=False)
+    dat_test,label_test = append_time_dim(dat_test.T, label_test, time_stamps)
+
+    model = model_fun(n_estimators=32, max_depth=4)
+    model.fit(dat, label)
+
+    y_test_pred = model.predict(dat_test)
+    y_train_pred = model.predict(dat)
+
+    predict_ = {
+        "y_pred_test": y_test_pred,
+        "y_test": label_test,
+        "y_pred_train": y_train_pred,
+        "y_train": label,
+        "r2_test": r2_score(label_test, y_test_pred),
+        "r2_train": r2_score(label, y_train_pred)
+    }
+
+    return predict_
+
 def run_CV(patient_test, model_fun = RandomForestRegressor, time_stamps=5):
     """
     given model is trained grid point wise for the provided patient
@@ -144,33 +171,10 @@ def run_CV(patient_test, model_fun = RandomForestRegressor, time_stamps=5):
     patient_CV_out = np.empty(94, dtype=object)
 
     for grid_point in np.nonzero(arr_active_grid_points)[0]:
-
         if grid_point in grid_points_none:
             continue
-
-        dat, label = get_train_test_dat(patient_test, grid_point, act_, Train=True)
-        dat,label = append_time_dim(dat.T, label,time_stamps)
-
-        dat_test, label_test = get_train_test_dat(patient_test, grid_point, act_, Train=False)
-        dat_test,label_test = append_time_dim(dat_test.T, label_test, time_stamps)
-
-        model = model_fun(n_estimators=32, max_depth=4)
-        model.fit(dat, label)
-
-        y_test_pred = model.predict(dat_test)
-        y_train_pred = model.predict(dat)
-
-        predict_ = {
-            "y_pred_test": y_test_pred,
-            "y_test": label_test,
-            "y_pred_train": y_train_pred,
-            "y_train": label,
-            "auc_test": roc_auc_score(label_test>0, y_test_pred),
-            "auc_train": roc_auc_score(label>0, y_train_pred)
-        }
-
-        patient_CV_out[grid_point] = predict_
-
+        patient_CV_out[grid_point] = train_grid_point(time_stamps, act_, patient_test, grid_point, model_fun)
+        
     if patient_test < 10:
         subject_id = str('00') + str(patient_test)
     else:
@@ -181,9 +185,9 @@ def run_CV(patient_test, model_fun = RandomForestRegressor, time_stamps=5):
 
 if __name__== "__main__":
 
-    run_CV(patient_test=16, model_fun = RandomForestRegressor, time_stamps=5)
+    #run_CV(patient_test=16, model_fun = RandomForestRegressor, time_stamps=5)
 
     #save_all_act_grid_points()
 
-    #pool = multiprocessing.Pool()
-    #pool.map(run_CV, np.array([2, 6, 12]))
+    pool = multiprocessing.Pool()
+    pool.map(run_CV, np.arange(0, 16, 1))
