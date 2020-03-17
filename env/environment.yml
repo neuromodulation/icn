@@ -9,6 +9,10 @@ dependencies:
 - numpy
 - scipy
 - matplotlib
+- os
+- multiprocessing
+- pickle
+- json
 - numba
 - pyqt>=5.9
 - pandas>=0.18
@@ -24,6 +28,7 @@ dependencies:
 - pytest-timeout
 - joblib
 - psutil
+- shutil
 - flake8
 - spyder
 - numexpr
@@ -47,3 +52,5 @@ dependencies:
   - autoreject
   - neo
   - pybv
+  - bids
+  - sklearn
