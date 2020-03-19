@@ -1,33 +1,24 @@
+import json
 from bids import BIDSLayout
 import numpy as np
 import os
 import pandas as pd
 
-
-#  global data acquisition params
-subject_path = '/Users/hi/Documents/lab_work/workshop_ML/subjects/' #  path with DBS___ subject folders, must be formatted for mac or windows here
-BIDS_path = '/Users/hi/Documents/lab_work/workshop_ML/thesis_plots/BIDS/'
-out_path_folder = '/Users/hi/Documents/lab_work/workshop_ML/thesis_plots/int_out/'
-out_path_folder_downsampled = '/Users/hi/lab_work/Documents/workshop_ML/thesis_plots/int_out_downsampled/'
-
-sample_rate = 1000
-f_ranges = [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
-z_score_running_interval = 10000  # used for "online" z-scoring to setup running interval in which data is z-scored
-clip_low = -3  # data is clipped after t-f transformation
-clip_high = 3
-int_distance_ecog = 20  # distance in which channels are interpolated to a given grid point
-int_distance_stn = 10
-
-#  Filter parameters
-line_noise = 60
-ripple_db = 60.0
-
-#  rolling variance
-var_rolling_window = 5 # ms given the sample rate
-
-num_patients = len(BIDSLayout(BIDS_path).get_subjects())
-
 class Settings:
+
+    @staticmethod
+    def load_JSON_settings(settings_name):
+        """load and return the given JSON file
+        
+        Args:
+            settings_name (string): absolute path of settings.json
+        
+        Returns:
+            dict: settings parameter
+        """
+        with open(settings_name, 'r') as fp:
+            setting_params = json.load(fp)
+        return setting_params
 
     @staticmethod
     def get_DBS_patients(subject_path):
@@ -43,26 +34,31 @@ class Settings:
         return list_DBS_folder
 
     @staticmethod
-    def read_all_vhdr_filenames():
-        """
-        :return: files: list of all vhdr file paths in BIDS_path
+    def read_all_vhdr_filenames(BIDS_path):
+        """list of all vhdr file paths in BIDS_path
+        
+        Args:
+            BIDS_path (string): absolute path of BIDS folder
+        
+        Returns:
+            list: all vhdr file in given BIDS path
         """
         layout = BIDSLayout(BIDS_path)
         files = layout.get(extension='vhdr', return_type='filename')
         return files
-    
-    def read_coord_file(vhdr_file):
-
-        coord_path = os.path.join(BIDS_path, 'sub-'+ subject, 'ses-'+ sess, 'eeg', 'sub-'+ subject+ '_electrodes.tsv')
-
 
     @staticmethod
-    def read_BIDS_coordinates():
+    def read_BIDS_coordinates(BIDS_path):
+        """from BIDS_path np array coordinate arrays are read and returned in list respective to subjects
+        
+        Args:
+            BIDS_path (string): absolute BIDS path
+        
+        Returns:
+            coord_arr (np array): array with shape (len(subjects), 4), where indexes in the following order: left ecog, left stn, right ecog, right stn,
+            coord_arr_names (np array): array with shape  (len(subjects), 2), where coord names are saved in order: left, right
         """
-        from BIDS_path np array coordinate arrays are read and returned in list respective to subjects
-        :return: coord_arr: array with shape (len(subjects), 4), where indexes in the following order: left ecog, left stn, right ecog, right stn
-        :return: coord_arr_names: array with shape  (len(subjects), 4), where coord names are saved in order: left, right
-        """
+        
         layout = BIDSLayout(BIDS_path)
         subjects = layout.get_subjects()
         sessions = layout.get_sessions()
@@ -72,8 +68,6 @@ class Settings:
         for subject_idx, subject in enumerate(subjects):
             for sess in sessions:
 
-                #coord_path = BIDS_path + 'sub-' + subject + '/ses-' + sess + \
-                #             '/eeg/sub-' + subject + '_electrodes.tsv'
                 coord_path = os.path.join(BIDS_path, 'sub-'+ subject, 'ses-'+ sess, 'eeg', 'sub-'+ subject+ '_electrodes.tsv')
                 
                 print(coord_path)
@@ -102,7 +96,11 @@ class Settings:
 
     @staticmethod
     def define_grid():
-
+        """plain hard coded definition of ECOG and STN grid, LEFT and RIGHT are here separated
+        
+        Returns:
+            grid_left, grid_right, stn_left, stn_right (np array): respective grid arrays in shape (3, n_electroed)
+        """
         grid_left = np.array([[-13.1000000000000, -35.5000000000000, -48.3000000000000, -60, -16.9000000000000,
                                -34.8000000000000, -67.5000000000000, -46.1000000000000, -59.8000000000000,
                                -14.2000000000000, -28.3000000000000, -42.3000000000000, -67.6000000000000,
@@ -138,3 +136,68 @@ class Settings:
         stn_right[0, :] = stn_right[0, :] * -1
 
         return grid_left, grid_right, stn_left, stn_right
+    
+    @staticmethod
+    def write_coord_arr_to_list(coord_arr):
+        """writes the given np coord_arr to a list a coordinates as a list of patients
+        
+        Args:
+            coord_arr (np arr): 
+        
+        Returns:
+            list: 
+        """
+        l_all = []
+        for patient_idx in range(coord_arr.shape[0]):
+            l_patient = []
+            for idx_ in range(4):
+                try:
+                    l_patient.append(coord_arr[patient_idx, idx_].tolist())
+                except:
+                    l_patient.append(np.NaN)
+            l_all.append(l_patient)
+        return l_all
+
+    @staticmethod
+    def write_settings_json(BIDS_path):
+        
+        
+        grid_left, grid_right, stn_left, stn_right = Settings.define_grid()
+
+        coord_arr, coord_arr_names = read_BIDS_coordinates(BIDS_path)
+
+        coord_arr_list = write_coord_arr_to_list(coord_arr)
+
+        dict_ = {
+            "subject_path" : '/Users/hi/Documents/lab_work/workshop_ML/subjects/', 
+            "BIDS_path" : '/Users/hi/Documents/lab_work/workshop_ML/thesis_plots/BIDS/', 
+            "out_path_folder" : '/Users/hi/Documents/lab_work/workshop_ML/thesis_plots/int_out/', 
+            "out_path_folder_downsampled" : '/Users/hi/Documents/lab_work/workshop_ML/thesis_plots/int_out_downsampled/', 
+            "sample_rate" : 1000, #read from BIDS
+            "f_ranges" : [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]], 
+            "clip_low" : 3, 
+            "clip_high" : 3, 
+            "int_distance_ecog" : 20, 
+            "int_distance_stn" : 10, 
+            "line_noise" : 60, 
+            "var_rolling_window" : 1, #ms
+            "num_patients" : len(BIDSLayout(BIDS_path).get_subjects()),
+            "list_DBS_folder" : [i for i in os.listdir(subject_path) \
+                                if i.startswith('DBS') and \
+                                len([file for file in os.listdir(os.path.join(subject_path, i)) \
+                                        if file.startswith('stream_')]) != 0], 
+            "vhdr_files" : layout.get(extension='vhdr', return_type='filename'),
+
+            "grid_left" : grid_left.tolist(),
+            "grid_right" : grid_right.tolist(),
+            "grid_left" : grid_left.tolist(),
+            "stn_right" : stn_right.tolist(),
+            "stn_left" : stn_left.tolist(),
+            "coord_arr" : coord_arr_list,  # left ecog, left stn, right ecog, right stn
+            "coord_arr_names" : coord_arr_names.tolist()                           
+    }
+
+
+if __name__ == "__main__":
+    setting_json_path = '/Users/hi/Documents/lab_work/icn/icn_m1/settings.json'
+    Settings.load_JSON_settings(setting_json_path)
