@@ -1,7 +1,7 @@
 import os
 import numpy as np 
 import pandas as pd
-from scipy import stats 
+from scipy import stats, signal
 import mne
 from bids import BIDSLayout
 import mne_bids
@@ -178,7 +178,35 @@ def calc_running_var(x_filtered_zscored, mov_label_zscored, var_interval=setting
     # change the label vector too
     return x_filtered_zscored_var, mov_label_zscored[:, (x_filtered_zscored.shape[2] - time_series_length):]
 
-def write_out_raw(vhdr_file, folder_out='/Users/hi/Documents/lab_work/data_preprocessed', test_LM=False):
+def resample(vhdr_file, ch_names, x_filtered_zscored, mov_label_zscored):
+    """Data and mov vector is resampled, assumption here: all channels have the same sampling sampling frequency
+    
+    Args:
+        vhdr_file (): [description]
+        ch_names ([type]): [description]
+        x_filtered_zscored ([type]): [description]
+        mov_label_zscored ([type]): [description]
+    """
+
+    #sub-002_ses-right_task-force_run-0_channels.tsv
+    #sub-002_ses-right_task-force_run-0_eeg.vhdr
+
+    fs_new = settings.resampling_rate 
+    ch_file = vhdr_file[:-8] + 'channels.tsv'  # the channel file name has the same path/structure as the vhdr file
+    df = pd.read_csv(coord_path, sep="\t")
+    
+    ch_name = ch_names[0]
+    ind_ch = np.where(df['name'] == ch_name)[0][0]  # read out the dataframes channel names frequency, here implementation: same fs for all channels in one run
+    fs = df['sampling_frequency'][ind_ch]
+
+    dat_points = x_filtered_zscored.shape[2]
+    new_num_data_points = int((dat_points/fs)*fs_new)
+    dat_resampled = signal.resample(dat, num=new_num_data_points, axis=2)
+    mov_resampled = signal.resample(mov, num=new_num_data_points, axis=1)
+
+    return dat_resampled, mov_resampled
+
+def write_out_raw(vhdr_file, folder_out='/Users/hi/Documents/lab_work/data_preprocessed', test_LM=False, resampling=True):
     """
     Multiprocessing "Pool" function to interpolate raw file from vhdr_file write to out_path
     :param vhdr_file: raw .vhdr file
@@ -216,11 +244,17 @@ def write_out_raw(vhdr_file, folder_out='/Users/hi/Documents/lab_work/data_prepr
         for ch in range(bv_raw[ind_dat, :].shape[0]):
             print(np.mean(cross_val_score(linear_model.LinearRegression(), x_filtered_zscored[:,ch,:].T, mov_label_zscored[0,:], cv=5)))
 
+    if resampling is True:
+        x_filtered_zscored, mov_label_zscored = resample(vhdr_file, ch_names, x_filtered_zscored, mov_label_zscored)
+
     dict_ = {
         "data": x_filtered_zscored.tolist(),
         "true_movements": mov_label_zscored.tolist(),
         "ch_names": ch_names, 
-        "coords": BIDS_coord.get_coord_from_vhdr(settings.BIDS_path, vhdr_file)
+        "coords": BIDS_coord.get_coord_from_vhdr(settings.BIDS_path, vhdr_file), 
+        "subject": subject, 
+        "run": run, 
+        "sess": sess
     }
 
 
