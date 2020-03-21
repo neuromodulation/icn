@@ -193,7 +193,7 @@ def resample(vhdr_file, ch_names, x_filtered_zscored, mov_label_zscored):
 
     fs_new = settings.resampling_rate 
     ch_file = vhdr_file[:-8] + 'channels.tsv'  # the channel file name has the same path/structure as the vhdr file
-    df = pd.read_csv(coord_path, sep="\t")
+    df = pd.read_csv(ch_file, sep="\t")
     
     ch_name = ch_names[0]
     ind_ch = np.where(df['name'] == ch_name)[0][0]  # read out the dataframes channel names frequency, here implementation: same fs for all channels in one run
@@ -201,12 +201,12 @@ def resample(vhdr_file, ch_names, x_filtered_zscored, mov_label_zscored):
 
     dat_points = x_filtered_zscored.shape[2]
     new_num_data_points = int((dat_points/fs)*fs_new)
-    dat_resampled = signal.resample(dat, num=new_num_data_points, axis=2)
-    mov_resampled = signal.resample(mov, num=new_num_data_points, axis=1)
+    dat_resampled = signal.resample(x_filtered_zscored, num=new_num_data_points, axis=2)
+    mov_resampled = signal.resample(mov_label_zscored, num=new_num_data_points, axis=1)
 
     return dat_resampled, mov_resampled
 
-def write_out_raw(vhdr_file, folder_out='/Users/hi/Documents/lab_work/data_preprocessed', test_LM=False, resampling=True):
+def write_out_raw(vhdr_file, folder_out=settings.out_path_folder, test_LM=False, resampling=True):
     """
     Multiprocessing "Pool" function to interpolate raw file from vhdr_file write to out_path
     :param vhdr_file: raw .vhdr file
@@ -270,7 +270,6 @@ def start_pool_all_runs():
 
 if __name__ == "__main__":
 
-    #vhdr_files = read_all_vhdr_filenames(settings.BIDS_path)
-    #folder_out = '/Users/hi/Documents/lab_work/data_preprocessed'
-    #write_out_raw(vhdr_files[0], folder_out, test_LM=True)
+    vhdr_files = read_all_vhdr_filenames(settings.BIDS_path)
+    write_out_raw(vhdr_files[0], test_LM=True)
     start_pool_all_runs()

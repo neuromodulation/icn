@@ -2,17 +2,17 @@ import os
 import numpy as np 
 import pandas as pd
 from scipy import stats, signal
-#import mne
-#from bids import BIDSLayout
-#import mne_bids
+import mne
+from bids import BIDSLayout
+import mne_bids
 import settings
 import json
-#from coordinates_io import BIDS_coord
+from coordinates_io import BIDS_coord
 from sklearn import linear_model
 import multiprocessing
 from sklearn.model_selection import cross_val_score
 
-def write_patient_concat_ch(subject_id, BIDS_path=settings.BIDS_path, path_out='/Users/hi/Documents/lab_work/data_preprocessed/ch_concat', preprocessed_path='/Users/hi/Documents/lab_work/data_preprocessed/'):
+def write_patient_concat_ch(subject_id, BIDS_path=settings.BIDS_path, path_out=settings.out_path_folder_downsampled, preprocessed_path=settings.out_path_folder):
 
     layout = BIDSLayout(BIDS_path)
     ses_ = []
@@ -58,16 +58,67 @@ def write_patient_concat_ch(subject_id, BIDS_path=settings.BIDS_path, path_out='
             }
     with open(os.path.join(path_out, 'sub_'+subject_id+'_patient_concat.json'), 'w') as fp:
         json.dump(dict_ch, fp)
-    
 
-if __name__ == "__main__":
-    
+def write_all_rawcombined():
+    """write for all given patients combined files for all coordinates
+    Setup pool for parallel processing 
+    """
     subject_id = []
-    for patient_idx in np.arange(17):
+    for patient_idx in np.arange(settings.num_patients):
         if patient_idx < 10:
             subject_id.append(str('00') + str(patient_idx))
         else:
             subject_id.append(str('0') + str(patient_idx))
         
+    pool = multiprocessing.Pool()
+    pool.map(write_patient_concat_ch, subject_id)
+
+def run_CV_est(subject_id, model_=linear_model.LinearRegression(),out_path = settings.out_path_folder_downsampled, LM_=True):
+    """run a CV baseed on the provided regressor and write out the results in the same dict
     
+    Arguments:
+        subject_id {[type]} -- [description]
     
+    Keyword Arguments:
+        model_ {[type]} -- [description] (default: {linear_model.LinearRegression()})
+        LM_ {bool} -- [if True, write out LM weights] (default: {True})
+    """
+    with open(out_path+'sub_'+subject_id+'_patient_concat.json', 'r') as fp:
+        dict_ = json.load(fp)
+        ch_ = list(dict_.keys())
+        for ch in ch_:
+            X = np.array(dict_[ch]['data'])
+            y = np.array(dict_[ch]['true_movements'])
+            for mov_idx, mov in enumerate(dict_[ch]['mov_ch']):
+                model = model_
+                res = np.mean(cross_val_score(model, X.T, y[mov_idx, :], scoring='r2', cv=5))
+                dict_[ch]["res"] = {mov:res}
+                if LM_ is True:
+                    model = linear_model.LinearRegression()
+                    clf = model.fit(X.T,y[0, :])
+                    dict_[ch]["res"]["weight_"+mov] = clf.coef_.tolist()
+        with open(out_path+'sub_'+subject_id+'_patient_concat.json', 'w') as fp:
+            json.dump(dict_, fp)
+
+
+
+if __name__ == "__main__":
+
+    #write_patient_concat_ch('013')
+    #write_patient_concat_ch('014')
+
+    subject_id = []
+    for patient_idx in np.arange(settings.num_patients):
+        if patient_idx < 10:
+            subject_id.append(str('00') + str(patient_idx))
+        else:
+            subject_id.append(str('0') + str(patient_idx))
+        print(subject_id)
+    for sub in subject_id: 
+        print(sub)
+        write_patient_concat_ch(sub)
+        run_CV_est(sub)
+    #run_CV_est('000')
+
+    #pool = multiprocessing.Pool()
+    #pool.map(run_CV_est, subject_id)

@@ -5,16 +5,17 @@ import pandas as pd
 
 
 #  global data acquisition params
+UNIX = True
 
-if UNIX is True:
+if UNIX is False:
     subject_path = '/Users/hi/Documents/lab_work/workshop_ML/subjects/' #  path with DBS___ subject folders, must be formatted for mac or windows here
     BIDS_path = '/Users/hi/Documents/lab_work/BIDS/'
     out_path_folder = '/Users/hi/Documents/lab_work/workshop_ML/thesis_plots/int_out/'
     out_path_folder_downsampled = '/Users/hi/lab_work/Documents/workshop_ML/thesis_plots/int_out_downsampled/'
 else:
-    BIDS_path = '~/Documents/BIDS/'
-    out_path_folder = '~/Documents/raw_out/'
-    out_path_folder_downsampled = '~/Documents/raw_out/downsampled'
+    BIDS_path = '/home/icn/Documents/BIDS/'
+    out_path_folder = '/home/icn/Documents/raw_out/raw/'
+    out_path_folder_downsampled = '/home/icn/Documents/raw_out/raw_combined/'
     
 
 sample_rate = 1000
