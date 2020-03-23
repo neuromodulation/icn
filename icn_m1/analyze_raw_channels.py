@@ -1,5 +1,7 @@
 import os
 import numpy as np 
+from functools import partial
+from itertools import repeat
 import pandas as pd
 from scipy import stats, signal
 import mne
@@ -8,8 +10,9 @@ import mne_bids
 import settings
 import json
 from coordinates_io import BIDS_coord
-from sklearn import linear_model
+from sklearn import linear_model, neural_network, ensemble
 import multiprocessing
+from multiprocessing.dummy import Pool as ThreadPool 
 from sklearn.model_selection import cross_val_score
 
 def write_patient_concat_ch(subject_id, BIDS_path=settings.BIDS_path, path_out=settings.out_path_folder_downsampled, preprocessed_path=settings.out_path_folder):
@@ -73,7 +76,17 @@ def write_all_rawcombined():
     pool = multiprocessing.Pool()
     pool.map(write_patient_concat_ch, subject_id)
 
-def run_CV_est(subject_id, model_=linear_model.LinearRegression(),out_path = settings.out_path_folder_downsampled, LM_=True):
+def append_time_dim(arr, y_, time_stamps):
+    """
+    apply added time dimension for the data array and label given time_stamps (with downsample_rate=100) in 100ms / need to check with 1375Hz
+    """
+    time_arr = np.zeros([arr.shape[0]-time_stamps, int(time_stamps*arr.shape[1])])
+    for time_idx, time_ in enumerate(np.arange(time_stamps, arr.shape[0])):
+        for time_point in range(time_stamps):
+            time_arr[time_idx, time_point*arr.shape[1]:(time_point+1)*arr.shape[1]] = arr[time_-time_point,:]
+    return time_arr, y_[time_stamps:]
+
+def run_CV_est(subject_id, model_=linear_model.LinearRegression(),out_path = settings.out_path_folder_downsampled, LM_=True, path_data=settings.out_path_folder_downsampled, time_stamps=5):
     """run a CV baseed on the provided regressor and write out the results in the same dict
     
     Arguments:
@@ -83,7 +96,7 @@ def run_CV_est(subject_id, model_=linear_model.LinearRegression(),out_path = set
         model_ {[type]} -- [description] (default: {linear_model.LinearRegression()})
         LM_ {bool} -- [if True, write out LM weights] (default: {True})
     """
-    with open(out_path+'sub_'+subject_id+'_patient_concat.json', 'r') as fp:
+    with open(path_data+'sub_'+subject_id+'_patient_concat.json', 'r') as fp:
         dict_ = json.load(fp)
         ch_ = list(dict_.keys())
         for ch in ch_:
@@ -91,12 +104,15 @@ def run_CV_est(subject_id, model_=linear_model.LinearRegression(),out_path = set
             y = np.array(dict_[ch]['true_movements'])
             for mov_idx, mov in enumerate(dict_[ch]['mov_ch']):
                 model = model_
-                res = np.mean(cross_val_score(model, X.T, y[mov_idx, :], scoring='r2', cv=5))
-                dict_[ch]["res"] = {mov:res}
+                
+                X,y = append_time_dim(X.T, y[mov_idx, :],time_stamps)
+
+                res = np.mean(cross_val_score(model, X, y, scoring='r2', cv=5))
+                dict_[ch]["res_"+mov] = {"R2":res}
                 if LM_ is True:
                     model = linear_model.LinearRegression()
                     clf = model.fit(X.T,y[0, :])
-                    dict_[ch]["res"]["weight_"+mov] = clf.coef_.tolist()
+                    dict_[ch]["res_"+mov]["weight_"+mov] = clf.coef_.tolist()
         with open(out_path+'sub_'+subject_id+'_patient_concat.json', 'w') as fp:
             json.dump(dict_, fp)
 
@@ -104,9 +120,9 @@ def run_CV_est(subject_id, model_=linear_model.LinearRegression(),out_path = set
 
 if __name__ == "__main__":
 
+    do_LM = True
     #write_patient_concat_ch('013')
-    #write_patient_concat_ch('014')
-
+    
     subject_id = []
     for patient_idx in np.arange(settings.num_patients):
         if patient_idx < 10:
@@ -114,11 +130,37 @@ if __name__ == "__main__":
         else:
             subject_id.append(str('0') + str(patient_idx))
         print(subject_id)
-    for sub in subject_id: 
-        print(sub)
-        write_patient_concat_ch(sub)
-        run_CV_est(sub)
-    #run_CV_est('000')
 
-    #pool = multiprocessing.Pool()
-    #pool.map(run_CV_est, subject_id)
+    if do_LM is True:
+        out_here_ = []
+        for t in np.arange(100, 1100, 100):
+            out_here_.append(out_here = '/home/icn/Documents/raw_out/'+'LM_'+str(t)+'ms')
+            if os.path.exists() is False:
+                os.mkdir(out_here)
+        t = np.arange(1,11,1)    
+        pool = multiprocessing.Pool(processes=62)
+        model = linear_model.LinearRegression()
+        pool.starmap(run_CV_est, zip(subject_id, repeat(model), out_here_, repeat(False), repeat(settings.out_path_folder_downsampled), t))
+        #pool.map(partial(run_CV_est, model_=model, out_path=out_here_, LM_=False, time_stamps=t), subject_id)
+    else:
+        # setup pool for writing json dicts with channel concatenated files
+        #pool = multiprocessing.Pool()
+        #pool.map(write_patient_concat_ch, subject_id)
+
+        #setup pool for model estimation and writing results back to the JSON dicts
+
+        model = neural_network.MLPRegressor(hidden_layer_sizes=(3,5), activation='relu', shuffle=True, early_stopping=True, max_iter=1000)
+
+        pool = multiprocessing.Pool(processes=62)
+        out_here = '/home/icn/Documents/raw_out/NN_3_layer/'
+        pool.map(partial(run_CV_est, model_=model, out_path=out_here, LM_=False), subject_id)
+
+
+        pool = multiprocessing.Pool(processes=62)
+        out_here = '/home/icn/Documents/raw_out/RF_/'
+        model = ensemble.RandomForestRegressor(n_estimators=200, max_depth=200)
+        pool.map(partial(run_CV_est, model_=model, out_path=out_here, LM_=False), subject_id)
+
+        
+
+
