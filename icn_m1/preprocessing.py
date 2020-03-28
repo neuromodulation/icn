@@ -265,6 +265,14 @@ def write_out_raw(vhdr_file, folder_out=settings.out_path_folder, test_LM=False,
 def start_pool_all_runs():
 
     vhdr_files = read_all_vhdr_filenames(settings.BIDS_path)
+
+
+    write_out_raw(vhdr_files[0], folder_out="/home/icn/Documents/raw_out/raw_runs_non_downsampeled/", test_LM=False, resampling=False)
+    write_out_raw(vhdr_files[1], folder_out="/home/icn/Documents/raw_out/raw_runs_non_downsampeled/", test_LM=False, resampling=False)
+    write_out_raw(vhdr_files[2], folder_out="/home/icn/Documents/raw_out/raw_runs_non_downsampeled/", test_LM=False, resampling=False)
+    write_out_raw(vhdr_files[3], folder_out="/home/icn/Documents/raw_out/raw_runs_non_downsampeled/", test_LM=False, resampling=False)
+
+    vhdr_files = read_all_vhdr_filenames(settings.BIDS_path)
     pool = multiprocessing.Pool()
     pool.map(write_out_raw, vhdr_files)
 

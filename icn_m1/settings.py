@@ -14,15 +14,15 @@ if UNIX is False:
     out_path_folder_downsampled = '/Users/hi/lab_work/Documents/workshop_ML/thesis_plots/int_out_downsampled/'
 else:
     BIDS_path = '/home/icn/Documents/BIDS/'
-    out_path_folder = '/home/icn/Documents/raw_out/raw/'
-    out_path_folder_downsampled = '/home/icn/Documents/raw_out/raw_combined/'
+    out_path_folder = '/home/icn/Documents/raw_out/raw_runs/'
+    out_path_folder_downsampled = '/home/icn/Documents/raw_out/raw_runs_combined/'
     
 
 sample_rate = 1000
 f_ranges = [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 z_score_running_interval = 10000  # used for "online" z-scoring to setup running interval in which data is z-scored
-clip_low = -3  # data is clipped after t-f transformation
-clip_high = 3
+clip_low = -2  # data is clipped after t-f transformation
+clip_high = 2
 int_distance_ecog = 20  # distance in which channels are interpolated to a given grid point
 int_distance_stn = 10
 

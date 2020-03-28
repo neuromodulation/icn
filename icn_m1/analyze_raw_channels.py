@@ -10,7 +10,7 @@ import mne_bids
 import settings
 import json
 from coordinates_io import BIDS_coord
-from sklearn import linear_model, neural_network, ensemble
+from sklearn import linear_model, neural_network, ensemble, neighbors
 import multiprocessing
 from multiprocessing.dummy import Pool as ThreadPool 
 from sklearn.model_selection import cross_val_score
@@ -57,7 +57,7 @@ def write_patient_concat_ch(subject_id, BIDS_path=settings.BIDS_path, path_out=s
                 "data": ch_dat.tolist(),
                 "true_movements": mov_dat.tolist(),  
                 "mov_ch": [ch_name for ch_name in data['ch_names'] if 'MOV' in ch_name],
-                "choords": np.ndarray.astype(np.array(df_elec[df_elec['name'].str.contains(ch)])[:, 1:4],float).tolist()
+                "choords": np.array(df_elec.loc[np.where(df_elec['name'] == ch)[0][0]][1:4], float).tolist()
             }
     with open(os.path.join(path_out, 'sub_'+subject_id+'_patient_concat.json'), 'w') as fp:
         json.dump(dict_ch, fp)
@@ -78,13 +78,44 @@ def write_all_rawcombined():
 
 def append_time_dim(arr, y_, time_stamps):
     """
-    apply added time dimension for the data array and label given time_stamps (with downsample_rate=100) in 100ms / need to check with 1375Hz
+    apply added time dimension for the data array and label given time_stamps
     """
     time_arr = np.zeros([arr.shape[0]-time_stamps, int(time_stamps*arr.shape[1])])
     for time_idx, time_ in enumerate(np.arange(time_stamps, arr.shape[0])):
         for time_point in range(time_stamps):
             time_arr[time_idx, time_point*arr.shape[1]:(time_point+1)*arr.shape[1]] = arr[time_-time_point,:]
     return time_arr, y_[time_stamps:]
+
+def get_movement_idx(ch, mov_channels, Con=True):
+    """returns index of mov_channels given boolean Con and ch
+    
+    Arguments:
+        ch {string} -- given channel string
+        mov_channels {list} -- string list of used movement channels including LEFT or RIGHT
+    
+    Keyword Arguments:
+        Con {bool} -- laterality (default: {True})
+    
+    Returns:
+        int -- index of mov_channel of the lateral channel
+    """
+    mov_idx = 0
+    if len(mov_channels) > 1:    
+        if Con is True:
+            if ("RIGHT" in ch and "LEFT" in mov_channels[0]) or \
+                ("LEFT" in ch and "RIGHT" in mov_channels[0]):
+                mov_idx = 0
+            if ("RIGHT" in ch and "LEFT" in mov_channels[1]) or \
+                ("LEFT" in ch and "RIGHT" in mov_channels[1]):
+                mov_idx = 1
+        else:
+            if ("RIGHT" in ch and "RIGHT" in mov_channels[0]) or \
+                ("LEFT" in ch and "LEFT" in mov_channels[0]):
+                mov_idx = 0
+            if ("RIGHT" in ch and "RIGHT" in mov_channels[1]) or \
+                ("LEFT" in ch and "LEFT" in mov_channels[1]):
+                mov_idx = 1
+    return mov_idx
 
 def run_CV_est(subject_id, model_=linear_model.LinearRegression(),out_path = settings.out_path_folder_downsampled, LM_=True, path_data=settings.out_path_folder_downsampled, time_stamps=5):
     """run a CV baseed on the provided regressor and write out the results in the same dict
@@ -105,23 +136,32 @@ def run_CV_est(subject_id, model_=linear_model.LinearRegression(),out_path = set
             for mov_idx, mov in enumerate(dict_[ch]['mov_ch']):
                 model = model_
                 
-                X,y = append_time_dim(X.T, y[mov_idx, :],time_stamps)
+                X_,y_ = append_time_dim(X.T, y[mov_idx, :],time_stamps)
+                res = np.mean(cross_val_score(model, X_, y_, scoring='r2', cv=5))
+                res_auc = np.mean(cross_val_score(model, X_, y_>0, scoring='roc_auc', cv=5))
+                dict_[ch]["res_"+mov] = {
+                    "R2":res, 
+                    "AUC": res_auc
+                }
 
-                res = np.mean(cross_val_score(model, X, y, scoring='r2', cv=5))
-                dict_[ch]["res_"+mov] = {"R2":res}
                 if LM_ is True:
                     model = linear_model.LinearRegression()
-                    clf = model.fit(X.T,y[0, :])
+                    clf = model.fit(X_,y_)
                     dict_[ch]["res_"+mov]["weight_"+mov] = clf.coef_.tolist()
         with open(out_path+'sub_'+subject_id+'_patient_concat.json', 'w') as fp:
             json.dump(dict_, fp)
 
+def multi_run_wrapper(args):
+    return run_CV_est(*args)
 
 
 if __name__ == "__main__":
 
-    do_LM = True
-    #write_patient_concat_ch('013')
+    eval_differemt_models =False
+    
+    out_here = '/home/icn/Documents/raw_out/'+'LM_100ms/'
+    time_idx = 1
+    #run_CV_est('000', model_=linear_model.LinearRegression(), out_path=out_here, LM_=True, path_data=settings.out_path_folder_downsampled, time_stamps=time_idx)
     
     subject_id = []
     for patient_idx in np.arange(settings.num_patients):
@@ -131,36 +171,78 @@ if __name__ == "__main__":
             subject_id.append(str('0') + str(patient_idx))
         print(subject_id)
 
-    if do_LM is True:
-        out_here_ = []
-        for t in np.arange(100, 1100, 100):
-            out_here_.append(out_here = '/home/icn/Documents/raw_out/'+'LM_'+str(t)+'ms')
-            if os.path.exists() is False:
+
+    #pool = multiprocessing.Pool(processes=62)
+    #pool.map(write_patient_concat_ch, subject_id)
+
+
+    pool = multiprocessing.Pool(processes=62)
+    model = ensemble.RandomForestRegressor(n_estimators=32, max_depth=4)
+    out_here = '/home/icn/Documents/raw_out/RF_32_4_with_AUC/'
+    if os.path.exists(out_here) is False:
+        os.mkdir(out_here)
+    pool.map(partial(run_CV_est, model_=model, out_path=out_here, LM_=False, time_stamps=5), ['001', '006', '009'])
+    
+    #t=1000
+    #out_here = '/home/icn/Documents/raw_out/'+'LM_class_'+str(t)+'ms/'
+    #time_idx = 1
+    #model = linear_model.LinearRegression()
+    #pool = multiprocessing.Pool(processes=62)
+    #subject_id_here = ['000', '007', '008', '009', '011', '013', '014', '016'] 
+    #pool.map(partial(run_CV_est, model_=model, out_path=out_here, LM_=True, path_data=settings.out_path_folder_downsampled, time_stamps=10), subject_id)
+
+
+    if eval_differemt_models is True:
+
+        use_LM = False
+        if use_LM is True:
+            time_idx = 0
+            for t in np.arange(100, 1100, 100):
+                out_here = '/home/icn/Documents/raw_out/'+'LM_'+str(t)+'ms/'
+                if os.path.exists(out_here) is False:
+                    os.mkdir(out_here)
+                pool = multiprocessing.Pool(processes=62)
+                model = linear_model.LinearRegression()
+                time_idx = time_idx + 1
+                pool.map(partial(run_CV_est, model_=model, out_path=out_here, LM_=True, path_data=settings.out_path_folder_downsampled, time_stamps=time_idx), subject_id)
+            
+            
+            pool = multiprocessing.Pool(processes=62)
+            model = neighbors.KNeighborsRegressor()
+            out_here = '/home/icn/Documents/raw_out/KNN_5_neighbors/'
+            if os.path.exists(out_here) is False:
                 os.mkdir(out_here)
-        t = np.arange(1,11,1)    
-        pool = multiprocessing.Pool(processes=62)
-        model = linear_model.LinearRegression()
-        pool.starmap(run_CV_est, zip(subject_id, repeat(model), out_here_, repeat(False), repeat(settings.out_path_folder_downsampled), t))
-        #pool.map(partial(run_CV_est, model_=model, out_path=out_here_, LM_=False, time_stamps=t), subject_id)
-    else:
-        # setup pool for writing json dicts with channel concatenated files
-        #pool = multiprocessing.Pool()
-        #pool.map(write_patient_concat_ch, subject_id)
+            pool.map(partial(run_CV_est, model_=model, out_path=out_here, LM_=False, time_stamps=5), subject_id)
 
-        #setup pool for model estimation and writing results back to the JSON dicts
-
-        model = neural_network.MLPRegressor(hidden_layer_sizes=(3,5), activation='relu', shuffle=True, early_stopping=True, max_iter=1000)
-
-        pool = multiprocessing.Pool(processes=62)
-        out_here = '/home/icn/Documents/raw_out/NN_3_layer/'
-        pool.map(partial(run_CV_est, model_=model, out_path=out_here, LM_=False), subject_id)
+            pool = multiprocessing.Pool(processes=62)
+            model = neural_network.MLPRegressor(hidden_layer_sizes=(4,), activation='relu', shuffle=True, early_stopping=True, max_iter=1000)
+            out_here = '/home/icn/Documents/raw_out/NN_1_4/'
+            if os.path.exists(out_here) is False:
+                os.mkdir(out_here)
+            pool.map(partial(run_CV_est, model_=model, out_path=out_here, LM_=False, time_stamps=5), subject_id)
 
 
-        pool = multiprocessing.Pool(processes=62)
-        out_here = '/home/icn/Documents/raw_out/RF_/'
-        model = ensemble.RandomForestRegressor(n_estimators=200, max_depth=200)
-        pool.map(partial(run_CV_est, model_=model, out_path=out_here, LM_=False), subject_id)
+            pool = multiprocessing.Pool(processes=62)
+            model = ensemble.RandomForestRegressor(n_estimators=32, max_depth=4)
+            out_here = '/home/icn/Documents/raw_out/RF_32_4/'
+            if os.path.exists(out_here) is False:
+                os.mkdir(out_here)
+            pool.map(partial(run_CV_est, model_=model, out_path=out_here, LM_=False, time_stamps=5), subject_id)
 
-        
 
+            pool = multiprocessing.Pool(processes=62)
+            model = neural_network.MLPRegressor(hidden_layer_sizes=(5,2), activation='relu', shuffle=True, early_stopping=True, max_iter=1000)
+            out_here = '/home/icn/Documents/raw_out/NN_2_5/'
+            if os.path.exists(out_here) is False:
+                os.mkdir(out_here)
+            subject_id_here = ['001', '003', '004', '005', '006', '010', '012', '015']
+            pool.map(partial(run_CV_est, model_=model, out_path=out_here, LM_=False, time_stamps=5), subject_id_here)
+
+
+            pool = multiprocessing.Pool(processes=62)
+            model = ensemble.RandomForestRegressor(n_estimators=100, max_depth=10)
+            out_here = '/home/icn/Documents/raw_out/RF_100_10/'
+            if os.path.exists(out_here) is False:
+                os.mkdir(out_here)
+            pool.map(partial(run_CV_est, model_=model, out_path=out_here, LM_=False, time_stamps=5), subject_id)
 
