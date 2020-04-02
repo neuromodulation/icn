@@ -279,5 +279,5 @@ def start_pool_all_runs():
 if __name__ == "__main__":
 
     vhdr_files = read_all_vhdr_filenames(settings.BIDS_path)
-    write_out_raw(vhdr_files[0], test_LM=True)
+    write_out_raw(vhdr_files[36], test_LM=True)
     start_pool_all_runs()
