@@ -5,7 +5,7 @@ import pandas as pd
 
 
 #  global data acquisition params
-UNIX = True
+UNIX = False
 
 if UNIX is False:
     subject_path = '/Users/hi/Documents/lab_work/workshop_ML/subjects/' #  path with DBS___ subject folders, must be formatted for mac or windows here
@@ -17,23 +17,17 @@ else:
     out_path_folder = '/home/icn/Documents/raw_out/raw_runs/'
     out_path_folder_downsampled = '/home/icn/Documents/raw_out/raw_runs_combined/'
     
-
-sample_rate = 1000
 f_ranges = [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
-z_score_running_interval = 10000  # used for "online" z-scoring to setup running interval in which data is z-scored
-clip_low = -2  # data is clipped after t-f transformation
-clip_high = 2
+
 int_distance_ecog = 20  # distance in which channels are interpolated to a given grid point
 int_distance_stn = 10
 
-#  Filter parameters
-line_noise = 60
-ripple_db = 60.0
+fs_new = 10 
 
-resampling_rate = 10
+normalization_time = 10
 
-#  rolling variance
-var_rolling_window = 5 # ms given the sample rate
+max_dist_ECOG = 20
+max_dist_STN = 10
 
 num_patients = len(BIDSLayout(BIDS_path).get_subjects())
 
@@ -60,11 +54,6 @@ class Settings:
         layout = BIDSLayout(BIDS_path)
         files = layout.get(extension='vhdr', return_type='filename')
         return files
-    
-    def read_coord_file(vhdr_file):
-
-        coord_path = os.path.join(BIDS_path, 'sub-'+ subject, 'ses-'+ sess, 'eeg', 'sub-'+ subject+ '_electrodes.tsv')
-
 
     @staticmethod
     def read_BIDS_coordinates():
