@@ -1,0 +1,8 @@
+{
+    "BIDS_path": "/Users/hi/Documents/lab_work/BIDS/",
+    "fs_new": 10,
+    "max_dist_ECOG": 20,
+    "max_dist_STN": 5,
+    "normalization_time": 10, 
+    "f_ranges": [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
+}
