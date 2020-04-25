@@ -53,7 +53,7 @@ def predict(pf_stream, grid_classifiers, arr_act_grid_points):
         X_test = X[:,grid_point,:]
         X_test_reshaped = np.reshape(X_test, (X_test.shape[0]*X_test.shape[1]))
         model = grid_classifiers[grid_point]
-        res_predict[grid_point] = model.predict(X_test_reshaped)
+        res_predict[grid_point] = model.predict(np.expand_dims(X_test_reshaped, axis=0))
     return res_predict
 
 def simulate_data_stream(bv_raw, ind_DAT, ind_time, fs):
@@ -64,16 +64,21 @@ def simulate_data_stream(bv_raw, ind_DAT, ind_time, fs):
 def real_time_simulation(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_noise, \
                       sess_right, dat_cortex, dat_subcortex, dat_label, ind_cortex, ind_subcortex, ind_label, ind_DAT, \
                       filter_fun, proj_matrix_run, arr_act_grid_points, grid_classifiers, normalization_samples, ch_names):
+    
+    label_con = dat_label[1,:][::100][10:]
+    label_ips = dat_label[0,:][::100][10:]
+    
     dat_buffer = np.zeros([ind_DAT.shape[0], 1000])
     rf_data_rt = np.zeros([ind_DAT.shape[0], 8])
     pf_data_rt = np.zeros([94, 8])
 
+
     fig = plt.figure(figsize=(10, 5))
-    ax = fig.add_subplot(111)
-    plt.ion()
-    plt.title('label predictions grid point 42')
-    fig.show()
-    fig.canvas.draw()
+    #ax = fig.add_subplot(111)
+    #plt.ion()
+    #plt.title('label predictions grid point 42')
+    #plt.show()
+    
 
     dat_buffer = np.zeros([ind_DAT.shape[0], 1000])
     dat_res = np.zeros([94, 100])
@@ -181,6 +186,24 @@ def real_time_simulation(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx
                 dat_label_ips[:-1] = dat_label_ips[1:]
                 dat_label_ips[-1] = label_ips[idx_stream-5]
                 
+                
+                plt.clf()
+                plt.plot(dat_res[46,:], label='prediction', c='green')
+                plt.plot(dat_label_con, label='contralateral force', c='red')
+                plt.plot(dat_label_ips, label='ipsilateral force', c='blue')
+                plt.legend(loc='upper left')
+                plt.ylabel('Force')
+                plt.xlabel('Time 0.1s')
+                plt.ylim(-1, 6)
+                if idx_stream == 5:
+                    plt.show()
+                else:
+                    #plt.draw()
+                    fig.canvas.draw()
+                #fig.canvas.flush_events()
+                
+                #usage for matplotlib
+                '''
                 ax.clear()
                 ax.plot(dat_res[46,:], label='prediction', c='green')
                 ax.plot(dat_label_con, label='contralateral force', c='red')
@@ -190,6 +213,7 @@ def real_time_simulation(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx
                 ax.set_xlabel('Time 0.1s')
                 ax.set_ylim(-1, 6)
                 fig.canvas.draw()
+                '''
             
         idx_stream += 1
         

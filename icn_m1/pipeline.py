@@ -1,11 +1,12 @@
 import filter
 import IO
 import projection
-import real_time
+import online_analysis
 import offline_analysis
 import numpy as np
 import json
 import os
+import pickle 
 
 if __name__ == "__main__":
 
@@ -66,6 +67,16 @@ if __name__ == "__main__":
 
     arr_act_grid_points = IO.get_active_grid_points(sess_right, ind_label, ch_names, proj_matrix_run, grid_)
 
+        #real time analysis
+    # for the real time prediction it is necessary to load a previously trained classifier
+    real_time_analysis = True 
+    if real_time_analysis is True:
+        grid_classifiers = np.load('grid_classifiers.npy', allow_pickle=True)    
+        estimates = online_analysis.real_time_simulation(fs, settings['fs_new'], seglengths, settings['f_ranges'], grid_, downsample_idx, bv_raw, line_noise, \
+                        sess_right, dat_cortex, dat_subcortex, dat_label, ind_cortex, ind_subcortex, ind_label, ind_dat, \
+                        filter_fun, proj_matrix_run, arr_act_grid_points, grid_classifiers, normalization_samples, ch_names)
+
+
     rf_data_median, pf_data_median, label_median = offline_analysis.preprocessing(fs, settings['fs_new'], seglengths, settings['f_ranges'], grid_, downsample_idx, bv_raw, line_noise, \
                       sess_right, dat_cortex, dat_subcortex, dat_label, ind_cortex, ind_subcortex, ind_label, ind_dat, \
                       filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples)
@@ -75,38 +86,45 @@ if __name__ == "__main__":
         "fs_new" : settings['fs_new'],
         "BIDS_path" : settings['BIDS_path'], 
         "projection_grid" : grid_, 
-        "bv_raw" : list(bv_raw), 
+        "bv_raw" : bv_raw, 
         "ch_names" : ch_names, 
         "subject" : subject, 
         "run" : run, 
         "sess" : sess, 
         "sess_right" :  sess_right, 
         "used_channels" : used_channels, 
-        "dat_cortex" : list(dat_cortex), 
-        "dat_subcortex" : list(dat_subcortex), 
-        "dat_label" : list(dat_label), 
-        "ind_cortex" : list(ind_cortex), 
-        "ind_subcortex" : list(ind_subcortex), 
-        "ind_label" : list(ind_label), 
-        "ind_label" : list(ind_dat), 
-        "coord_patient" : list(coord_patient), 
-        "proj_matrix_run" : list(proj_matrix_run), 
+        "dat_cortex" : dat_cortex, 
+        "dat_subcortex" : dat_subcortex, 
+        "dat_label" : dat_label, 
+        "ind_cortex" : ind_cortex, 
+        "ind_subcortex" : ind_subcortex, 
+        "ind_label" : ind_label, 
+        "ind_label" : ind_dat, 
+        "coord_patient" : coord_patient, 
+        "proj_matrix_run" : proj_matrix_run, 
         "fs" : fs, 
         "line_noise" : line_noise, 
         "resample_factor" : resample_factor, 
-        "seglengths" : list(seglengths), 
+        "seglengths" : seglengths, 
         "normalization_samples" : normalization_samples, 
         "new_num_data_points" : new_num_data_points, 
-        "downsample_idx" : list(downsample_idx), 
-        "filter_fun" : list(filter_fun), 
+        "downsample_idx" : downsample_idx, 
+        "filter_fun" : filter_fun, 
         "offset_start" : offset_start, 
-        "arr_act_grid_points" : list(arr_act_grid_points), 
-        "rf_data_median" : list(rf_data_median), 
-        "pf_data_median" : list(pf_data_median), 
-        "label_median" : list(label_median)
+        "arr_act_grid_points" : arr_act_grid_points, 
+        "rf_data_median" : rf_data_median, 
+        "pf_data_median" : pf_data_median, 
+        "label_median" : label_median
     }
 
-    json.dump(run_, open(os.path.join(settings['out_path'], vhdr_file, '.json', 'w' )))
+    out_path = os.path.join(settings['out_path'],'sub_' + subject + '_sess_' + sess + '_run_' + run + '.p')
+    
+    with open(out_path, 'wb') as handle:
+        pickle.dump(run_, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    # we can/should also save the file as json, since this can be also read from MATLAB,
+    # here it is necessary though to transform every single numpy array to a list, e.g. np.arr.tolist()
+    #json.dump(run_, open(os.path.join(settings['out_path'], vhdr_file, '.json', 'w' )))
 
     # previously analyzed run:
     #rf_data_median = np.load('rf_data_median.npy')
@@ -114,11 +132,3 @@ if __name__ == "__main__":
     #label_con = np.load('dat_con.npy')
     #label_ips = np.load('dat_ips.npy')
 
-    #real time analysis
-    # for the real time prediction it is necessary to load a previously trained classifier
-    real_time_analysis = False 
-    if real_time_analysis is True:
-        grid_classifiers = np.load('grid_classifiers.npy', allow_pickle=True)    
-        estimates = real_time_simulation(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_noise, \
-                        sess_right, dat_cortex, dat_subcortex, dat_label, ind_cortex, ind_subcortex, ind_label, ind_DAT, \
-                        filter_fun, proj_matrix_run, arr_act_grid_points, grid_classifiers, normalization_samples, ch_names)
