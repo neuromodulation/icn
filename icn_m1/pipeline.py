@@ -69,7 +69,7 @@ if __name__ == "__main__":
 
         #real time analysis
     # for the real time prediction it is necessary to load a previously trained classifier
-    real_time_analysis = True 
+    real_time_analysis = False 
     if real_time_analysis is True:
         grid_classifiers = np.load('grid_classifiers.npy', allow_pickle=True)    
         estimates = online_analysis.real_time_simulation(fs, settings['fs_new'], seglengths, settings['f_ranges'], grid_, downsample_idx, bv_raw, line_noise, \
