@@ -1,8 +1,9 @@
 {
     "BIDS_path": "/Users/hi/Documents/lab_work/BIDS/",
+    "out_path": "/Users/hi/Documents/lab_work/data_preprocessed/",
     "fs_new": 10,
-    "max_dist_ECOG": 20,
-    "max_dist_STN": 5,
+    "max_dist_cortex": 20,
+    "max_dist_subcortex": 5,
     "normalization_time": 10, 
     "f_ranges": [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 }
