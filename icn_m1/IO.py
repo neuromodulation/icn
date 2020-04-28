@@ -5,6 +5,64 @@ import os
 import pandas as pd
 import json
 
+def get_subfolders(subject_path, Verbose=True):
+    """
+    given and address, provides all the subfolder included in such path.
+    this function is called during get_address_vhdr_files function    
+
+    Parameters
+    ----------
+    subject_path : string
+        address to the subject folder
+    Verbose : boolean, optional
+
+    Returns 
+    -------
+    subfolders : list
+    
+
+    """
+    subfolders=[]
+    for entry in os.listdir(subject_path):
+        if os.path.isdir(os.path.join(subject_path, entry)):
+            subfolders.append(entry)
+            if Verbose: print(entry)
+            
+    return subfolders
+
+def get_address_vhdr_files(subject_path, subfolder, Verbose=True):
+    """
+    given an address to a subject folder and a list of subfolders, provides a list of all vhdr files
+    recorded for that particular subject.
+    
+    To access to a particular vhdr_file please see 'read_BIDS_file'.
+    
+    To get info from vhdr_file please see 'get_sess_run_subject'
+
+    
+    Parameters
+    ----------
+    subject_path : string
+    subfolder : list
+    Verbose : boolean, optional
+
+    Returns
+    -------
+    vhdr_files : list
+        list of addrress to access to a particular vhdr_file.
+        
+
+    """
+    vhdr_files=[]
+    for i in range(len(subfolder)):
+        session_path=subject_path+subfolder[i]+'/eeg'
+        for f_name in os.listdir(session_path):
+            if f_name.endswith('.vhdr'):
+                vhdr_files.append(session_path+ '/' +f_name)
+                if Verbose: print(f_name)
+    return vhdr_files
+    
+
 def read_BIDS_file(file_path):
     """
     Read one run file from BIDS standard
