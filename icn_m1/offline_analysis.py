@@ -110,7 +110,7 @@ def baseline_rope(y, lam=1):
               
     return z
 
-def baseline_correction(y, method='baseline_als', param=[1e2, 1e-4], thr=1e-1, normalize=True, Verbose=True):
+def baseline_correction(y, method='baseline_als', param=[1e2, 1e-4], thr=1e-1, normalize=True, Decimate=1, Verbose=True):
     """
     
     Parameters
@@ -131,14 +131,24 @@ def baseline_correction(y, method='baseline_als', param=[1e2, 1e-4], thr=1e-1, n
     normalize : boolean, optional
         if normalize is True the original signal as well as the output corrected signal
         will be scalled between 0 and 1. The default is True.
+    Decimate: number, optinal
+        before baseline correction it might be necessary to downsample the original raw
+        signal. We recommend to do this step. The default is 1, i.e. no decimation.
+    Verbose: boolean, optional
+        The default is True.
 
     Returns
     -------
     y_corrected: signal with baseline correction
-    y: original signal
     onoff: squared signal useful for onset target evaluation.
+    y: original signal
+
 
     """
+    if Decimate!=1:
+        if Verbose: print('>>Signal decimation is being done')
+        y=signal.decimate(y, Decimate)
+
     if method=='baseline_als' and np.size(param)!=2:
         raise ValueError("If baseline_als method is desired, param should be a 2 length object")
     if method=='baseline_rope' and np.size(param)>1:
