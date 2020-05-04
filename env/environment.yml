@@ -49,3 +49,4 @@ dependencies:
   - pybv
   - bids
   - sklearn
+  - cvxpy
