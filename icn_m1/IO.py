@@ -88,6 +88,20 @@ def read_grid():
     subcortex_right = np.array(pd.read_csv('settings/subcortex_right.tsv', sep="\t"))
     return cortex_left.T, cortex_right.T, subcortex_left.T, subcortex_right.T
 
+def read_M1_channel_specs(run_string):
+    # given a run in from, sub-000_ses-right_task-force_run-0, the M1 channel specs file is in form sub-000_ses-right_task-force_run-0_channels_M1.tsv 
+    """ 
+
+    given a run file, read the respective M1 channel specification file in format ch_name, rereference, used, predictor
+    
+    Args:
+        run_string (string): run string without specific ending in form sub-000_ses-right_task-force_run-0
+    returns: 
+        M1 specs dataframe
+    """
+
+    return pd.read_csv(run_string + "_channels_M1.tsv", sep="\t")
+
 def get_coords_df_from_vhdr(vhdr_file, BIDS_path):
     """
     given a vhdr file path and the BIDS path

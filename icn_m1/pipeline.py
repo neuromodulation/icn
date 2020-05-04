@@ -31,6 +31,9 @@ if __name__ == "__main__":
 
     sess_right = IO.sess_right(sess)
 
+    # read channels_M1 specifications
+    M1_specs = IO.read_M1_channel_specs(vhdr_file[:-9])
+
     # read channels that are meant to be used in the analysis, currently json file in settings folder
     used_channels = IO.read_used_channels()
 
@@ -71,7 +74,7 @@ if __name__ == "__main__":
     # for the real time prediction it is necessary to load a previously trained classifier
     real_time_analysis = False 
     if real_time_analysis is True:
-        grid_classifiers = np.load('grid_classifiers.npy', allow_pickle=True)    
+        grid_classifiers = np.load('grid_classifiers.npy', allow_pickle=True)  
         estimates = online_analysis.real_time_simulation(fs, settings['fs_new'], seglengths, settings['f_ranges'], grid_, downsample_idx, bv_raw, line_noise, \
                         sess_right, dat_cortex, dat_subcortex, dat_label, ind_cortex, ind_subcortex, ind_label, ind_dat, \
                         filter_fun, proj_matrix_run, arr_act_grid_points, grid_classifiers, normalization_samples, ch_names)
