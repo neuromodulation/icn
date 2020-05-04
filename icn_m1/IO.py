@@ -81,6 +81,21 @@ def read_all_vhdr_filenames(BIDS_path):
     files = layout.get(extension='vhdr', return_type='filename')
     return files
 
+def read_M1_channel_specs(run_string):
+    # given a run in from, sub-000_ses-right_task-force_run-0, the M1 channel specs file is in form sub-000_ses-right_task-force_run-0_channels_M1.tsv 
+    """ 
+
+    given a run file, read the respective M1 channel specification file in format ch_name, rereference, used, predictor
+    
+    Args:
+        run_string (string): run string without specific ending in form sub-000_ses-right_task-force_run-0
+    returns: 
+        M1 specs dataframe
+    """
+
+    return pd.read_csv(run_string + "_channels_M1.tsv", sep="\t")
+
+
 def read_grid():
     cortex_left = np.array(pd.read_csv('settings/cortex_left.tsv', sep="\t"))
     cortex_right = np.array(pd.read_csv('settings/cortex_right.tsv', sep="\t"))
