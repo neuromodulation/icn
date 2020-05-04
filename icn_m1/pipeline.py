@@ -32,16 +32,15 @@ if __name__ == "__main__":
     sess_right = IO.sess_right(sess)
 
     # read M1 channel 
-    df_channel = IO.read_M1_channel_specs(vhdr_file[:-9])
-
-    # read channels that are meant to be used in the analysis, currently json file in settings folder
-    used_channels = IO.read_used_channels()
+    used_channels = IO.read_M1_channel_specs(vhdr_file[:-9])
 
     # extract used channels/labels from brainvision file, split up in cortex/subcortex/labels
-    dat_cortex, dat_subcortex, dat_label, ind_cortex, ind_subcortex, ind_label, ind_dat = IO.get_dat_cortex_subcortex(bv_raw, ch_names, used_channels)
+    data_ = IO.get_dat_cortex_subcortex(bv_raw, ch_names, used_channels)
+
+    #dat_cortex, dat_subcortex, dat_label, ind_cortex, ind_subcortex, ind_label, ind_dat = IO.get_dat_cortex_subcortex(bv_raw, ch_names, used_channels)
 
     # read all used coordinates from session coordinates.tsv BIDS file
-    coord_patient = IO.get_patient_coordinates(ch_names, ind_cortex, ind_subcortex, vhdr_file, settings['BIDS_path'])
+    coord_patient = IO.get_patient_coordinates(ch_names, data_["ind_cortex"], data_["ind_subcortex"], vhdr_file, settings['BIDS_path'])
 
     # given those coordinates and the provided grid, estimate the projection matrix
     proj_matrix_run = projection.calc_projection_matrix(coord_patient, grid_, sess_right, settings['max_dist_cortex'], settings['max_dist_subcortex'])

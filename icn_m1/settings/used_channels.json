@@ -1,5 +1,0 @@
-{
-    "cortex": ["ECOG_RIGHT_0", "ECOG_RIGHT_1", "ECOG_RIGHT_2", "ECOG_RIGHT_3", "ECOG_RIGHT_4", "ECOG_RIGHT_5"], 
-    "subcortex": ["STN_RIGHT_0", "STN_RIGHT_1", "STN_RIGHT_2"],
-    "labels": ["MOV_LEFT", "MOV_RIGHT"]
-}

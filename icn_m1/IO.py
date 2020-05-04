@@ -85,15 +85,40 @@ def read_M1_channel_specs(run_string):
     # given a run in from, sub-000_ses-right_task-force_run-0, the M1 channel specs file is in form sub-000_ses-right_task-force_run-0_channels_M1.tsv 
     """ 
 
-    given a run file, read the respective M1 channel specification file in format ch_name, rereference, used, predictor
+    given a run file, read the respective M1 channel specification file in format ch_name, rereference, used, predictor and return a dict with "cortex", "subcortex" and "labels" channels 
+    if no cortex/subcortex channels are used, they are None
     
     Args:
         run_string (string): run string without specific ending in form sub-000_ses-right_task-force_run-0
     returns: 
-        M1 specs dataframe
+        used_channels
     """
 
-    return pd.read_csv(run_string + "_channels_M1.tsv", sep="\t")
+    df_channel = pd.read_csv(run_string + "_channels_M1.tsv", sep="\t")
+
+    # used channels is here a dict though with 'cortex' and 'subcortex' field
+    ch_ = np.where(df_channel['used']==1)[0]
+    ch_cortex = np.array([ch_idx for ch_idx, ch in enumerate(df_channel['name'][ch_]) if 'ECOG' in ch]) 
+    ch_subcortex = np.array([ch_idx for ch_idx, ch in enumerate(df_channel['name'][ch_]) if 'STN' in ch])  # needs to be specified
+
+    used_channels = {
+        "cortex" : None,
+        "subcortex" : None, 
+        "labels" : None
+    }
+
+    if ch_cortex.shape[0] != 0:
+        used_channels["cortex"] = ch_cortex
+    
+    if ch_subcortex.shape[0] != 0:
+        used_channels["subcortex"] = ch_subcortex
+
+    ch_labels = np.where(df_channel["predictor"] == 1)[0]
+
+    if ch_labels.shape[0] != 0:
+        used_channels["labels"] = ch_labels
+
+    return used_channels
 
 
 def read_grid():
@@ -126,7 +151,7 @@ def read_run_sampling_frequency(vhdr_file):
     """
     ch_file = vhdr_file[:-8]+'channels.tsv' # read out the channel, not eeg file (insted of eeg.eeg ending)
     df = pd.read_csv(ch_file, sep="\t")
-    return df.iloc[0]['sampling_frequency']  
+    return df['sampling_frequency']  
 
 def read_line_noise(BIDS_path, subject):
     """
@@ -149,16 +174,16 @@ def get_patient_coordinates(ch_names, ind_cortex, ind_subcortex, vhdr_file, BIDS
     for idx, ch_cortex in enumerate(np.array(ch_names)[ind_cortex]):
         coord_cortex[idx,:] = np.array(df[df['name']==ch_cortex].iloc[0][1:4]).astype('float')
 
-    if ind_subcortex.shape[0] !=0:
+    if ind_subcortex is not None:
         coord_subcortex = np.zeros([ind_subcortex.shape[0], 3])
         for idx, ch_subcortex in enumerate(np.array(ch_names)[ind_subcortex]):
             coord_subcortex[idx,:] = np.array(df[df['name']==ch_subcortex].iloc[0][1:4]).astype('float')
 
     coord_patient = np.empty(2, dtype=object)
     
-    if ind_cortex.shape[0] !=0:
+    if ind_cortex is not None:
         coord_patient[0] = coord_cortex
-    if ind_subcortex.shape[0] !=0:
+    if ind_subcortex is not None:
         coord_patient[1] = coord_subcortex
         
     return coord_patient
@@ -251,19 +276,28 @@ def get_dat_cortex_subcortex(bv_raw, ch_names, used_channels):
     :param bv_raw: raw np.array of Brainvision-read file
     :param ch_names
     """
-    ind_cortex = get_used_ch_idx(used_channels['cortex'], ch_names)
-    ind_subcortex = get_used_ch_idx(used_channels['subcortex'], ch_names)
-    ind_label = get_used_ch_idx(used_channels['labels'], ch_names)
-    ind_dat = np.arange(bv_raw.shape[0])[~np.isin(np.arange(bv_raw.shape[0]), ind_label)]
 
-    dat_cortex = None; dat_subcortex = None
-    if ind_cortex.shape[0] !=0:
-        dat_cortex = bv_raw[ind_cortex,:]
-    if ind_subcortex.shape[0] !=0:
-        dat_subcortex = bv_raw[ind_subcortex,:]
-    dat_mov = bv_raw[ind_label,:]
+    data_ = {
+        "dat_cortex" : None, 
+        "dat_subcortex" : None, 
+        "dat_label" : None, 
+        "ind_cortex" : used_channels['cortex'], 
+        "ind_subcortex" : used_channels['subcortex'], 
+        "ind_label" : used_channels['labels'], 
+        "ind_dat" : None
+    }
+
+    if used_channels['cortex'] is not None:
+        data_["dat_cortex"] = bv_raw[data_["ind_cortex"],:]
+
+    if used_channels['subcortex'] is not None:
+        data_["dat_subcortex"] = bv_raw[ data_["ind_subcortex"],:]
+
+    if used_channels['labels'] is not None:
+        data_["dat_label"] = bv_raw[data_["ind_label"] ,:]
+        data_["ind_data"] = np.arange(bv_raw.shape[0])[~np.isin(np.arange(bv_raw.shape[0]), data_["ind_label"])]
     
-    return dat_cortex, dat_subcortex, dat_mov, ind_cortex, ind_subcortex, ind_label, ind_dat
+    return data_
 
 def read_settings():
     with open('settings/settings.json', 'rb') as f: 
