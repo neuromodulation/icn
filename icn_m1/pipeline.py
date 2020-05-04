@@ -31,6 +31,9 @@ if __name__ == "__main__":
 
     sess_right = IO.sess_right(sess)
 
+    # read M1 channel 
+    df_channel = IO.read_M1_channel_specs(vhdr_file[:-9])
+
     # read channels that are meant to be used in the analysis, currently json file in settings folder
     used_channels = IO.read_used_channels()
 
