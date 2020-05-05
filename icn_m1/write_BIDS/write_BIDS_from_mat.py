@@ -5,7 +5,6 @@ import os
 from shutil import copyfile, copy
 from mne_bids import write_raw_bids, make_bids_basename
 import mne
-
 import numpy as np
 import scipy
 import pybv

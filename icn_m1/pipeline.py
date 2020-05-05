@@ -48,14 +48,22 @@ if __name__ == "__main__":
     # from the BIDS run channels.tsv read the sampling frequency 
     # here: the sampling frequency can be different for all channels
     # therefore read the frequency for all channels, which makes stuff complicated...
-    fs = IO.read_run_sampling_frequency(vhdr_file)
+    fs_array = IO.read_run_sampling_frequency(vhdr_file)
 
     # read line noise from participants.tsv
     line_noise = IO.read_line_noise(settings['BIDS_path'],subject)
 
-    resample_factor = fs/settings['fs_new']
-    seglengths = np.array([fs/1, fs/2, fs/2, fs/2, \
-              fs/2, fs/10, fs/10, fs/10]).astype(int)
+    resample_factor = fs_array/settings['fs_new']
+
+    seglengths = np.zeros([fs_array.shape[0], len(settings['seglength'])])
+    for idx_ch, _ in enumerate(fs_array):
+        for idx_fband in range(len(settings['seglength'])):
+            seglengths[idx_ch, idx_fband] = fs_array[idx_ch] / settings['seglengths'][idx_fband]
+
+    seglengths = seglengths.astype(int)
+
+
+    recording_time = bv_raw.shape[1] 
 
     normalization_samples = settings['normalization_time']*settings['fs_new']
     new_num_data_points = int((bv_raw.shape[1]/fs)*settings['fs_new'])
