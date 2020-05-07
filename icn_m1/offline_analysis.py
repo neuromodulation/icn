@@ -177,3 +177,161 @@ def baseline_correction(y, method='baseline_als', param=[1e2, 1e-4], thr=1e-1, n
     onoff[y_corrected>0]=1
     return y_corrected, onoff, y
 
+def create_events_array(onoff, raw_target_channel, sf):
+    """
+    
+
+    Parameters
+    ----------
+    onoff : array, shape(n_samples)
+        onoff array. squared signal. when up it indicates the target taks
+        was being done. Output of baseline_correction
+    raw_target_channel : array, shape(n_samples2)
+        the raw signal which which contains the performed taks.
+        Needed to estimate time of the events.
+    sf : float
+        sampling frequency of the raw_target_channel.
+        Needed to estimate the time of the events.
+
+    Returns
+    -------
+    events : array, shape(n_events, 2)
+        All events that were found.
+        The first column contains the event time in samples and the
+        second column contains the event id.
+        1= taks starts, -1=taks stops
+
+    """
+   
+    #create time vector
+    T=len(raw_target_channel)/sf
+    Df=len(raw_target_channel)/len(onoff)
+    
+    #time onoff_signal
+    t= np.arange(0.0, T-Df/sf , Df/sf)
+
+    #diff to find up and down times
+    onoff_dif=np.diff(onoff)
+    #create time info
+    index_start=onoff_dif==1
+    time_start=t[index_start]
+    index_stop=onoff_dif==-1
+    time_stop=t[index_stop]
+    
+    time_event=np.hstack((time_start, time_stop))    
+    time_event=np.sort(time_event)
+    
+    id_event=np.asarray([1,-1]*len(time_start))
+      
+    events=np.transpose(np.vstack((time_event, id_event )))
+    
+    return events
+
+def generate_continous_label_array(raw_data, sf, events):
+    """
+    given and arrray of events, this function returns sample-by-sample
+    label information of raw_date
+
+    Parameters
+    ----------
+    raw_data : array, shape(n_channels, n_samples)
+        raw_data to be epoched.
+    sf : int, float
+        sampling frequency of the raw_data
+    events : array, shape(n_events,2)
+        All events that were found by the function
+        'create_events_array'. 
+        The first column contains the event time in samples and the second column contains the event id.
+   
+    Returns
+    -------
+    labels : array (n_samples)
+        array of ones and zeros.
+
+    """
+    labels=np.zeros((raw_data.shape[1]))
+    
+    mask_start=events[:,1]==1
+    start_event_time=events[mask_start,0]
+    mask_stop=events[:,1]==-1
+    stop_event_time=events[mask_stop,0]
+    
+    for i in range(len(start_event_time)):
+        range_up=np.arange(int(np.round(start_event_time[i]*sf)), int(np.round(stop_event_time[i]*sf)))
+        labels[range_up]=1
+        
+    return labels
+  
+    
+
+def epoch_data(raw_data, events, sf, tmin=1, tmax=1):
+    """
+    this function segments data tmin sec before target onset and tmax sec
+    after target onset
+
+    Parameters
+    ----------
+    raw_data : array, shape(n_channels, n_samples)
+        raw_data to be epoched.
+    events : array, shape(n_events,2)
+        All events that were found by the function
+        'create_events_array'. 
+        The first column contains the event time in samples and the second column contains the event id.
+    sf : int, float
+        sampling frequency of the raw_data.
+    tmin : float
+        Start time before event (in sec). 
+        If nothing is provided, defaults to 1.
+    tmax : float
+        Stop time after  event (in sec). 
+        If nothing is provided, defaults to 1.
+    Raises
+    ------
+    ValueError
+        DESCRIPTION.
+
+    Returns
+    -------
+    X : array, shape(n_events, n_channels, n_samples)
+        epoched data
+    Y : array, shape(n_events, n_samples)
+        sample-wise label information of data.
+.
+
+    """
+    
+    
+    #get time_events index    
+    mask_start=events[:,1]==1
+    start_event_time=events[mask_start,0]
+    #labels
+    labels=generate_continous_label_array(raw_data, sf, events)
+    
+        
+    for i in range(len(start_event_time)):
+        #check inputs
+
+        if i==0:
+            if tmin>start_event_time[i]:
+                raise ValueError('pre_time too large. It should be lower than={:3.2f}'.format(start_event_time[i]))
+        else:
+            if tmin>start_event_time[i]:
+                Warning('pre_time too large. It gets data from previous trials.')
+        #<<still missing: tmax for last trail>>
+            
+        start_epoch=int(np.round((start_event_time[i]-tmin)*sf))
+        stop_epoch=int(np.round((start_event_time[i]+ tmax)*sf))
+        
+        epoch=raw_data[:,start_epoch:stop_epoch]
+        #reshape data (n_events, n_channels, n_samples)
+        nc, ns=np.shape(epoch)
+        epoch=np.reshape(epoch,(1, nc,ns))
+        label=labels[start_epoch:stop_epoch]
+        if i==0:
+            X=epoch
+            Y=label
+        else:
+            X=np.vstack((X,epoch))
+            Y=np.vstack((Y,label))
+            
+    return X, Y
