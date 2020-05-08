@@ -145,7 +145,7 @@ def read_M1_channel_specs(run_string):
     if ch_subcortex.shape[0] != 0:
         used_channels["subcortex"] = ch_subcortex
 
-    ch_labels = np.where(df_channel["predictor"] == 1)[0]
+    ch_labels = np.where(df_channel["target"] == 1)[0]
 
     if ch_labels.shape[0] != 0:
         used_channels["labels"] = ch_labels
