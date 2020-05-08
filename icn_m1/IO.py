@@ -280,11 +280,6 @@ def get_sess_run_subject(vhdr_file):
     
     return subject, run, sess
 
-def read_used_channels():
-    with open('settings/used_channels.json', 'rb') as f: 
-        used_channels = json.load(f)
-    return used_channels
-
 def get_used_ch_idx(used_channels, ch_names_BV):
     """read from the provided list of used_channels the indices of channels in the channel names brainvision file
 
