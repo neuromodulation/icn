@@ -7,6 +7,7 @@ import numpy as np
 import json
 import os
 import pickle 
+import rereference
 
 if __name__ == "__main__":
 
@@ -31,8 +32,11 @@ if __name__ == "__main__":
 
     sess_right = IO.sess_right(sess)
 
-    # read M1 channel 
+    # read M1 channel file
     used_channels = IO.read_M1_channel_specs(vhdr_file[:-9])
+
+    # rereferencing
+    bv_raw = rereference.rereference(bv_raw, vhdr_file[:-9])
 
     # extract used channels/labels from brainvision file, split up in cortex/subcortex/labels
     data_ = IO.get_dat_cortex_subcortex(bv_raw, ch_names, used_channels)
