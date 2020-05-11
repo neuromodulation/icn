@@ -313,7 +313,10 @@ def epoch_data(raw_data, events, sf, tmin=1, tmax=1):
 
         if i==0:
             if tmin>start_event_time[i]:
-                raise ValueError('pre_time too large. It should be lower than={:3.2f}'.format(start_event_time[i]))
+                tmin=0
+                Warning('pre_time too large. It should be lower than={:3.2f}'.format(start_event_time[i]))
+                Warning('for the first run is set equal to t0')
+
         else:
             if tmin>start_event_time[i]:
                 Warning('pre_time too large. It gets data from previous trials.')
