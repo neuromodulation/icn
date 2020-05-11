@@ -12,14 +12,12 @@ import rereference
 if __name__ == "__main__":
 
     settings = IO.read_settings()  # reads settings from settings/settings.json file in a dict 
-                                   # settings need to be defined for individual runs
-                                   # implement settings folder in BIDS? 
 
     # specify BIDS run 
 
     vhdr_file = '/Users/hi/Documents/lab_work/BIDS/sub-000/ses-right/eeg/sub-000_ses-right_task-force_run-3_eeg.vhdr'
 
-    #vhdr_files = IO.read_all_vhdr_filenames(settings['BIDS_path'])
+    #vhdr_files = IO.get_all_vhdr_files(settings['BIDS_path'])
     #vhdr_file = vhdr_files[3]
     
     # read grid from session
