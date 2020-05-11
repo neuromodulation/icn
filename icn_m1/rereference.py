@@ -3,7 +3,9 @@ import pandas as pd
 
 def rereference(raw_data, run_string):
     """
-    
+    This function rereference data to the indicated channel reference in the files
+    "*_channels_MI.tsv". This file must be customized by the user before running this 
+    script.
 
     Parameters
     ----------
