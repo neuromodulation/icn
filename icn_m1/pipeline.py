@@ -7,18 +7,17 @@ import numpy as np
 import json
 import os
 import pickle 
+import rereference
 
 if __name__ == "__main__":
 
     settings = IO.read_settings()  # reads settings from settings/settings.json file in a dict 
-                                   # settings need to be defined for individual runs
-                                   # implement settings folder in BIDS? 
 
     # specify BIDS run 
 
     vhdr_file = '/Users/hi/Documents/lab_work/BIDS/sub-000/ses-right/eeg/sub-000_ses-right_task-force_run-3_eeg.vhdr'
 
-    #vhdr_files = IO.read_all_vhdr_filenames(settings['BIDS_path'])
+    #vhdr_files = IO.get_all_vhdr_files(settings['BIDS_path'])
     #vhdr_file = vhdr_files[3]
     
     # read grid from session
@@ -31,8 +30,11 @@ if __name__ == "__main__":
 
     sess_right = IO.sess_right(sess)
 
-    # read M1 channel 
+    # read M1 channel file
     used_channels = IO.read_M1_channel_specs(vhdr_file[:-9])
+
+    # rereferencing
+    bv_raw = rereference.rereference(bv_raw, vhdr_file[:-9])
 
     # extract used channels/labels from brainvision file, split up in cortex/subcortex/labels
     data_ = IO.get_dat_cortex_subcortex(bv_raw, ch_names, used_channels)
@@ -53,47 +55,35 @@ if __name__ == "__main__":
     # read line noise from participants.tsv
     line_noise = IO.read_line_noise(settings['BIDS_path'],subject)
 
-    resample_factor = fs_array/settings['fs_new']
-
-    seglengths = np.zeros([fs_array.shape[0], len(settings['seglength'])])
-    for idx_ch, _ in enumerate(fs_array):
-        for idx_fband in range(len(settings['seglength'])):
-            seglengths[idx_ch, idx_fband] = fs_array[idx_ch] / settings['seglengths'][idx_fband]
-
-    seglengths = seglengths.astype(int)
-
+    seglengths = settings['seglengths']
 
     recording_time = bv_raw.shape[1] 
 
-    normalization_samples = settings['normalization_time']*settings['fs_new']
-    new_num_data_points = int((bv_raw.shape[1]/fs)*settings['fs_new'])
+    normalization_samples = settings['normalization_time']*settings['resamplingrate']
+    new_num_data_points = int((bv_raw.shape[1]/1000)*settings['resamplingrate'])
 
     # downsample_idx states the original brainvision sample indexes are used
-    downsample_idx = (np.arange(0,new_num_data_points,1)*fs/settings['fs_new']).astype(int)
+    downsample_idx = (np.arange(0,new_num_data_points,1)*1000/settings['resamplingrate']).astype(int)
 
-    filter_fun = filter.calc_band_filters(settings['f_ranges'], fs)
+    filter_fun = filter.calc_band_filters(settings['frequencyranges'], sample_rate=1000)
 
-    offset_start = int(seglengths[0] / (fs/settings['fs_new']))
+    offset_start = int(seglengths[0] / (1000/settings['resamplingrate'])) # resampling is done wrt a common sampling frequency of 1kHz
 
-    arr_act_grid_points = IO.get_active_grid_points(sess_right, ind_label, ch_names, proj_matrix_run, grid_)
-
-        #real time analysis
-    # for the real time prediction it is necessary to load a previously trained classifier
-    real_time_analysis = False 
-    if real_time_analysis is True:
-        grid_classifiers = np.load('grid_classifiers.npy', allow_pickle=True)    
-        estimates = online_analysis.real_time_simulation(fs, settings['fs_new'], seglengths, settings['f_ranges'], grid_, downsample_idx, bv_raw, line_noise, \
-                        sess_right, dat_cortex, dat_subcortex, dat_label, ind_cortex, ind_subcortex, ind_label, ind_dat, \
-                        filter_fun, proj_matrix_run, arr_act_grid_points, grid_classifiers, normalization_samples, ch_names)
+    arr_act_grid_points = IO.get_active_grid_points(sess_right, data_["ind_label"], ch_names, proj_matrix_run, grid_)
 
 
-    rf_data_median, pf_data_median, label_median = offline_analysis.preprocessing(fs, settings['fs_new'], seglengths, settings['f_ranges'], grid_, downsample_idx, bv_raw, line_noise, \
-                      sess_right, dat_cortex, dat_subcortex, dat_label, ind_cortex, ind_subcortex, ind_label, ind_dat, \
-                      filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples)
+    label_baseline_corrected = np.zeros(data_["dat_label"].shape)
+    label_baseline_corrected_onoff = np.zeros(data_["dat_label"].shape)
+    for label_idx in range(data_["dat_label"].shape[0]):
+        label_baseline_corrected[label_idx,:], label_baseline_corrected_onoff[label_idx,:], _ =  offline_analysis.baseline_correction(data_["dat_label"][label_idx, :])
+
+    rf_data_median, pf_data_median = offline_analysis.preprocessing(fs_array[0], settings['resamplingrate'], seglengths, settings['frequencyranges'], grid_, downsample_idx, bv_raw, line_noise, \
+                      sess_right, data_, filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples)
+
 
     run_ = {
         "vhdr_file" : vhdr_file,
-        "fs_new" : settings['fs_new'],
+        "resamplingrate" : settings['resamplingrate'],
         "BIDS_path" : settings['BIDS_path'], 
         "projection_grid" : grid_, 
         "bv_raw" : bv_raw, 
@@ -103,16 +93,10 @@ if __name__ == "__main__":
         "sess" : sess, 
         "sess_right" :  sess_right, 
         "used_channels" : used_channels, 
-        "dat_cortex" : dat_cortex, 
-        "dat_subcortex" : dat_subcortex, 
-        "dat_label" : dat_label, 
-        "ind_cortex" : ind_cortex, 
-        "ind_subcortex" : ind_subcortex, 
-        "ind_label" : ind_label, 
-        "ind_label" : ind_dat, 
+        "data_" : data_,
         "coord_patient" : coord_patient, 
         "proj_matrix_run" : proj_matrix_run, 
-        "fs" : fs, 
+        "fs" : fs_array[0], 
         "line_noise" : line_noise, 
         "resample_factor" : resample_factor, 
         "seglengths" : seglengths, 
@@ -124,21 +108,13 @@ if __name__ == "__main__":
         "arr_act_grid_points" : arr_act_grid_points, 
         "rf_data_median" : rf_data_median, 
         "pf_data_median" : pf_data_median, 
-        "label_median" : label_median
+        "label_baseline_corrected" : label_baseline_corrected, 
+        "label_baseline_corrected_onoff" : label_baseline_corrected_onoff,
+        "label_names" : ch_names[dat_["ind_label"]]
     }
 
     out_path = os.path.join(settings['out_path'],'sub_' + subject + '_sess_' + sess + '_run_' + run + '.p')
     
     with open(out_path, 'wb') as handle:
         pickle.dump(run_, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-    # we can/should also save the file as json, since this can be also read from MATLAB,
-    # here it is necessary though to transform every single numpy array to a list, e.g. np.arr.tolist()
-    #json.dump(run_, open(os.path.join(settings['out_path'], vhdr_file, '.json', 'w' )))
-
-    # previously analyzed run:
-    #rf_data_median = np.load('rf_data_median.npy')
-    #pf_data_median = np.load('pf_data_median.npy')
-    #label_con = np.load('dat_con.npy')
-    #label_ips = np.load('dat_ips.npy')
 

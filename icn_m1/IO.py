@@ -1,9 +1,10 @@
 import mne_bids
-from bids import BIDSLayout
 import numpy as np
 import os
 import pandas as pd
 import json
+import IO
+
 
 def get_subfolders(subject_path, Verbose=True):
     """
@@ -93,6 +94,23 @@ def get_files(subject_path, subfolder, endswith='.vhdr', Verbose=True):
                 vhdr_files.append(session_path+ '/' +f_name)
                 if Verbose: print(f_name)
     return vhdr_files
+
+def get_all_vhdr_files(BIDS_path):
+    """
+    
+    Given a BIDS path return all vhdr file paths without BIDS_Layout
+
+    Args:
+        BIDS_path (string)
+    Returns: 
+        vhdr_files (list)
+    """
+    vhdr_files = []
+    for root, dirs, files in os.walk(BIDS_path):
+        for file in files:
+            if file.endswith(".vhdr"):
+                vhdr_files.append(os.path.join(root, file))
+    return vhdr_files
     
 
 def read_BIDS_file(file_path):
@@ -104,14 +122,6 @@ def read_BIDS_file(file_path):
     bv_file = mne_bids.read.io.brainvision.read_raw_brainvision(file_path)
     bv_raw = bv_file.get_data()
     return bv_raw, bv_file.ch_names
-
-def read_all_vhdr_filenames(BIDS_path):
-    """
-    :return: files: list of all vhdr file paths in BIDS_path
-    """
-    layout = BIDSLayout(BIDS_path)
-    files = layout.get(extension='vhdr', return_type='filename')
-    return files
 
 def read_M1_channel_specs(run_string):
     # given a run in from, sub-000_ses-right_task-force_run-0, the M1 channel specs file is in form sub-000_ses-right_task-force_run-0_channels_M1.tsv 
@@ -129,9 +139,8 @@ def read_M1_channel_specs(run_string):
     df_channel = pd.read_csv(run_string + "_channels_M1.tsv", sep="\t")
 
     # used channels is here a dict though with 'cortex' and 'subcortex' field
-    ch_ = np.where(df_channel['used']==1)[0]
-    ch_cortex = np.array([ch_idx for ch_idx, ch in enumerate(df_channel['name'][ch_]) if 'ECOG' in ch]) 
-    ch_subcortex = np.array([ch_idx for ch_idx, ch in enumerate(df_channel['name'][ch_]) if 'STN' in ch])  # needs to be specified
+    ch_cortex = np.array([ch_idx for ch_idx, ch in enumerate(df_channel['name']) if 'ECOG' in ch and ch_idx in np.where(df_channel['used']==1)[0]])
+    ch_subcortex = np.array([ch_idx for ch_idx, ch in enumerate(df_channel['name']) if 'STN' in ch and ch_idx in np.where(df_channel['used']==1)[0]])   # needs to be specified
 
     used_channels = {
         "cortex" : None,
@@ -197,25 +206,22 @@ def get_patient_coordinates(ch_names, ind_cortex, ind_subcortex, vhdr_file, BIDS
     """
     for a given vhdr file, the respective BIDS path, and the used channel names of a BIDS run
     :return the coordinate file of the used channels 
-        in shape (2): cortex; subcortex; fiels might be empty (None if no cortex/subcortex channels are existent)
+        in shape (2): cortex; subcortex; fields might be empty (None if no cortex/subcortex channels are existent)
         appart from that the used fields are in numpy array field shape (num_coords, 3)
     """
     df = get_coords_df_from_vhdr(vhdr_file, BIDS_path)  # this dataframe contains all coordinates in this session
-    coord_cortex = np.zeros([ind_cortex.shape[0], 3])
+    coord_patient = np.empty(2, dtype=object)
 
-    for idx, ch_cortex in enumerate(np.array(ch_names)[ind_cortex]):
-        coord_cortex[idx,:] = np.array(df[df['name']==ch_cortex].iloc[0][1:4]).astype('float')
-
+    if ind_cortex is not None:
+        coord_cortex = np.zeros([ind_cortex.shape[0], 3])
+        for idx, ch_cortex in enumerate(np.array(ch_names)[ind_cortex]):
+            coord_cortex[idx,:] = np.array(df[df['name']==ch_cortex].iloc[0][1:4]).astype('float')
+        coord_patient[0] = coord_cortex
+    
     if ind_subcortex is not None:
         coord_subcortex = np.zeros([ind_subcortex.shape[0], 3])
         for idx, ch_subcortex in enumerate(np.array(ch_names)[ind_subcortex]):
             coord_subcortex[idx,:] = np.array(df[df['name']==ch_subcortex].iloc[0][1:4]).astype('float')
-
-    coord_patient = np.empty(2, dtype=object)
-    
-    if ind_cortex is not None:
-        coord_patient[0] = coord_cortex
-    if ind_subcortex is not None:
         coord_patient[1] = coord_subcortex
         
     return coord_patient
@@ -322,7 +328,7 @@ def get_dat_cortex_subcortex(bv_raw, ch_names, used_channels):
 
     if used_channels['labels'] is not None:
         data_["dat_label"] = bv_raw[data_["ind_label"] ,:]
-        data_["ind_data"] = np.arange(bv_raw.shape[0])[~np.isin(np.arange(bv_raw.shape[0]), data_["ind_label"])]
+        data_["ind_dat"] = np.arange(bv_raw.shape[0])[~np.isin(np.arange(bv_raw.shape[0]), data_["ind_label"])]
     
     return data_
 
@@ -338,3 +344,41 @@ def sess_right(sess):
     else:
         sess_right = False
     return sess_right
+
+def write_all_M1_channel_files():
+    """
+
+    Read all channels.tsv in the settings defined BIDS path, and write all all channels_M1.tsv files 
+    --> copy all channel names from channel.tsv as name
+    --> set targets to 'MOV' channels 
+    --> rereference all to average 
+    --> used all to 1 
+
+    """
+
+    settings = IO.read_settings()  # reads settings from settings/settings.json file in a dict 
+
+
+    BIDS_channel_tsv_files = []
+    for root, dirs, files in os.walk(settings["BIDS_path"]):
+        for file in files:
+            if file.endswith("_channels.tsv"):
+                ch_file = os.path.join(root, file)
+                
+                df_channel = pd.read_csv(ch_file, sep="\t")
+                
+                df = pd.DataFrame(np.nan, index=np.arange(len(list(df_channel['name']))), columns=['name', 'rereference', 'used', 'target'])
+
+                df['used'] = 1
+
+                df['name'] = list(df_channel['name'].copy(deep=True))
+
+                ch_mov = [ch_idx for ch_idx, ch in enumerate(df_channel['name']) if ch.startswith('MOV')]
+                target = np.zeros(len(list(df_channel['name'])))
+                target[ch_mov] = 1
+                df['target'] = target.astype(int)
+                df['rereference'] = ['average']*len(list(df_channel['name']))
+
+                df.to_csv(ch_file[:-12]+'channels_M1.tsv', sep='\t')
+
+                BIDS_channel_tsv_files.append(ch_file)
