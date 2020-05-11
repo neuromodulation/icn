@@ -53,27 +53,27 @@ if __name__ == "__main__":
     # read line noise from participants.tsv
     line_noise = IO.read_line_noise(settings['BIDS_path'],subject)
 
-    resample_factor = fs_array/settings['fs_new']
+    # resample_factor = fs_array/settings['resamplingrate']
 
-    seglengths = np.zeros([fs_array.shape[0], len(settings['seglength'])])
-    for idx_ch, _ in enumerate(fs_array):
-        for idx_fband in range(len(settings['seglength'])):
-            seglengths[idx_ch, idx_fband] = fs_array[idx_ch] / settings['seglengths'][idx_fband]
+    #seglengths = np.zeros([fs_array.shape[0], len(settings['seglength'])])
+    #for idx_ch, _ in enumerate(fs_array):
+    #    for idx_fband in range(len(settings['seglength'])):
+    #        seglengths[idx_ch, idx_fband] = fs_array[idx_ch] / settings['seglengths'][idx_fband]
 
-    seglengths = seglengths.astype(int)
+    seglengths = settings['seglengths']
 
 
     recording_time = bv_raw.shape[1] 
 
-    normalization_samples = settings['normalization_time']*settings['fs_new']
-    new_num_data_points = int((bv_raw.shape[1]/fs)*settings['fs_new'])
+    normalization_samples = settings['normalization_time']*settings['resamplingrate']
+    new_num_data_points = int((bv_raw.shape[1]/1000)*settings['resamplingrate'])
 
     # downsample_idx states the original brainvision sample indexes are used
-    downsample_idx = (np.arange(0,new_num_data_points,1)*fs/settings['fs_new']).astype(int)
+    downsample_idx = (np.arange(0,new_num_data_points,1)*1000/settings['resamplingrate']).astype(int)
 
-    filter_fun = filter.calc_band_filters(settings['f_ranges'], fs)
+    filter_fun = filter.calc_band_filters(settings['frequencyranges'], sample_rate=1000)
 
-    offset_start = int(seglengths[0] / (fs/settings['fs_new']))
+    offset_start = int(seglengths[0] / (1000/settings['resamplingrate'])) # resampling is done wrt a common sampling frequency of 1kHz
 
     arr_act_grid_points = IO.get_active_grid_points(sess_right, ind_label, ch_names, proj_matrix_run, grid_)
 
@@ -82,18 +82,18 @@ if __name__ == "__main__":
     real_time_analysis = False 
     if real_time_analysis is True:
         grid_classifiers = np.load('grid_classifiers.npy', allow_pickle=True)    
-        estimates = online_analysis.real_time_simulation(fs, settings['fs_new'], seglengths, settings['f_ranges'], grid_, downsample_idx, bv_raw, line_noise, \
+        estimates = online_analysis.real_time_simulation(fs, settings['resamplingrate'], seglengths, settings['frequencyranges'], grid_, downsample_idx, bv_raw, line_noise, \
                         sess_right, dat_cortex, dat_subcortex, dat_label, ind_cortex, ind_subcortex, ind_label, ind_dat, \
                         filter_fun, proj_matrix_run, arr_act_grid_points, grid_classifiers, normalization_samples, ch_names)
 
 
-    rf_data_median, pf_data_median, label_median = offline_analysis.preprocessing(fs, settings['fs_new'], seglengths, settings['f_ranges'], grid_, downsample_idx, bv_raw, line_noise, \
+    rf_data_median, pf_data_median, label_median = offline_analysis.preprocessing(fs, settings['resamplingrate'], seglengths, settings['frequencyranges'], grid_, downsample_idx, bv_raw, line_noise, \
                       sess_right, dat_cortex, dat_subcortex, dat_label, ind_cortex, ind_subcortex, ind_label, ind_dat, \
                       filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples)
 
     run_ = {
         "vhdr_file" : vhdr_file,
-        "fs_new" : settings['fs_new'],
+        "resamplingrate" : settings['resamplingrate'],
         "BIDS_path" : settings['BIDS_path'], 
         "projection_grid" : grid_, 
         "bv_raw" : bv_raw, 

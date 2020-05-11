@@ -44,7 +44,7 @@ def append_time_dim(X, y_=None, time_stamps=5):
     
 
 def predict(pf_stream, grid_classifiers, arr_act_grid_points):
-    res_predict = np.zeros([94])
+    res_predict = np.zeros([num_grid_points])
     X = np.clip(pf_stream, -2, 2)
     for grid_point in range(arr_act_grid_points.shape[0]):
         if arr_act_grid_points[grid_point] == 0:
@@ -65,12 +65,14 @@ def real_time_simulation(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx
                       sess_right, dat_cortex, dat_subcortex, dat_label, ind_cortex, ind_subcortex, ind_label, ind_DAT, \
                       filter_fun, proj_matrix_run, arr_act_grid_points, grid_classifiers, normalization_samples, ch_names):
     
+    num_grid_points = grid_[0].shape[1] + grid_[1].shape[1]+ grid_[2].shape[1]+ grid_[3].shape[1]
+
     label_con = dat_label[1,:][::100][10:]
     label_ips = dat_label[0,:][::100][10:]
     
     dat_buffer = np.zeros([ind_DAT.shape[0], 1000])
-    rf_data_rt = np.zeros([ind_DAT.shape[0], 8])
-    pf_data_rt = np.zeros([94, 8])
+    rf_data_rt = np.zeros([ind_DAT.shape[0], len(f_ranges)])
+    pf_data_rt = np.zeros([num_grid_points, len(f_ranges)])
 
 
     fig = plt.figure(figsize=(10, 5))
@@ -81,11 +83,11 @@ def real_time_simulation(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx
     
 
     dat_buffer = np.zeros([ind_DAT.shape[0], 1000])
-    dat_res = np.zeros([94, 100])
+    dat_res = np.zeros([num_grid_points, 100])
     dat_label_con = np.zeros([100])
     dat_label_ips = np.zeros([100])
-    rf_data_rt = np.zeros([ind_DAT.shape[0], 8])
-    pf_data_rt = np.zeros([94, 8])
+    rf_data_rt = np.zeros([ind_DAT.shape[0], len(f_ranges)])
+    pf_data_rt = np.zeros([num_grid_points, len(f_ranges)])
 
     pf_stream = []
     rf_stream = []
@@ -114,8 +116,8 @@ def real_time_simulation(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx
         #print(str(np.round(ind_time*(1/fs),2))+' s')
         buffer_counter = 0    
         
-        rf_data_rt = np.zeros([ind_DAT.shape[0], 8])
-        pf_data_rt = np.zeros([94, len(f_ranges)])
+        rf_data_rt = np.zeros([ind_DAT.shape[0], len(f_ranges)])
+        pf_data_rt = np.zeros([num_grid_points, len(f_ranges)])
         for ch in ind_DAT:  #  think about using multiprocessing pool to do this simulatenously
             dat_ = dat_buffer[ch,:]
             dat_filt = filter.apply_filter(dat_, sample_rate=fs, filter_fun=filter_fun, line_noise=line_noise, seglengths=seglengths)
@@ -160,7 +162,7 @@ def real_time_simulation(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx
             pf_stream.append(pf_data_rt)
             median_ = np.median(np.array(pf_stream)[n_idx,:,:][:,arr_act_grid_points>0,:], axis=0)
             pf_data_rt_median = (pf_data_rt[arr_act_grid_points>0,:] - median_) / median_
-            pf_data_set = np.zeros([94, len(f_ranges)])
+            pf_data_set = np.zeros([num_grid_points, len(f_ranges)])
             pf_data_set[arr_act_grid_points>0,:] = pf_data_rt_median
             pf_stream_median.append(pf_data_set)
             
