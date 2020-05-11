@@ -78,7 +78,11 @@ def write_proj_data(ch_names, sess_right, dat_label, ind_label, proj_cortex=None
     """
     :param proj_cortex - projected data on cortex grid 
     """
-    arr_all = np.empty([94, proj_cortex.shape[1]])
+    if proj_cortex is not None:
+        arr_all = np.empty([94, proj_cortex.shape[1]])
+    else:
+        arr_all = np.empty([94, proj_subcortex.shape[1]])
+        
     mov_channel = np.array(ch_names)[ind_label]
 
     Con_label = False; Ips_label = False

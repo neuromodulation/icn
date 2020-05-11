@@ -129,9 +129,8 @@ def read_M1_channel_specs(run_string):
     df_channel = pd.read_csv(run_string + "_channels_M1.tsv", sep="\t")
 
     # used channels is here a dict though with 'cortex' and 'subcortex' field
-    ch_ = np.where(df_channel['used']==1)[0]
-    ch_cortex = np.array([ch_idx for ch_idx, ch in enumerate(df_channel['name'][ch_]) if 'ECOG' in ch]) 
-    ch_subcortex = np.array([ch_idx for ch_idx, ch in enumerate(df_channel['name'][ch_]) if 'STN' in ch])  # needs to be specified
+    ch_cortex = np.array([ch_idx for ch_idx, ch in enumerate(df_channel['name']) if 'ECOG' in ch and ch_idx in np.where(df_channel['used']==1)[0]])
+    ch_subcortex = np.array([ch_idx for ch_idx, ch in enumerate(df_channel['name']) if 'STN' in ch and ch_idx in np.where(df_channel['used']==1)[0]])   # needs to be specified
 
     used_channels = {
         "cortex" : None,
@@ -197,25 +196,22 @@ def get_patient_coordinates(ch_names, ind_cortex, ind_subcortex, vhdr_file, BIDS
     """
     for a given vhdr file, the respective BIDS path, and the used channel names of a BIDS run
     :return the coordinate file of the used channels 
-        in shape (2): cortex; subcortex; fiels might be empty (None if no cortex/subcortex channels are existent)
+        in shape (2): cortex; subcortex; fields might be empty (None if no cortex/subcortex channels are existent)
         appart from that the used fields are in numpy array field shape (num_coords, 3)
     """
     df = get_coords_df_from_vhdr(vhdr_file, BIDS_path)  # this dataframe contains all coordinates in this session
-    coord_cortex = np.zeros([ind_cortex.shape[0], 3])
+    coord_patient = np.empty(2, dtype=object)
 
-    for idx, ch_cortex in enumerate(np.array(ch_names)[ind_cortex]):
-        coord_cortex[idx,:] = np.array(df[df['name']==ch_cortex].iloc[0][1:4]).astype('float')
-
+    if ind_cortex is not None:
+        coord_cortex = np.zeros([ind_cortex.shape[0], 3])
+        for idx, ch_cortex in enumerate(np.array(ch_names)[ind_cortex]):
+            coord_cortex[idx,:] = np.array(df[df['name']==ch_cortex].iloc[0][1:4]).astype('float')
+        coord_patient[0] = coord_cortex
+    
     if ind_subcortex is not None:
         coord_subcortex = np.zeros([ind_subcortex.shape[0], 3])
         for idx, ch_subcortex in enumerate(np.array(ch_names)[ind_subcortex]):
             coord_subcortex[idx,:] = np.array(df[df['name']==ch_subcortex].iloc[0][1:4]).astype('float')
-
-    coord_patient = np.empty(2, dtype=object)
-    
-    if ind_cortex is not None:
-        coord_patient[0] = coord_cortex
-    if ind_subcortex is not None:
         coord_patient[1] = coord_subcortex
         
     return coord_patient
@@ -322,7 +318,7 @@ def get_dat_cortex_subcortex(bv_raw, ch_names, used_channels):
 
     if used_channels['labels'] is not None:
         data_["dat_label"] = bv_raw[data_["ind_label"] ,:]
-        data_["ind_data"] = np.arange(bv_raw.shape[0])[~np.isin(np.arange(bv_raw.shape[0]), data_["ind_label"])]
+        data_["ind_dat"] = np.arange(bv_raw.shape[0])[~np.isin(np.arange(bv_raw.shape[0]), data_["ind_label"])]
     
     return data_
 
