@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-def rereference(raw_data, run_string):
+def rereference(run_string, data_cortex=None, data_subcortex=None):
     """
     This function rereference data to the indicated channel reference in the files
     "*_channels_MI.tsv". This file must be customized by the user before running this 
@@ -9,9 +9,12 @@ def rereference(raw_data, run_string):
 
     Parameters
     ----------
-    raw_dat : array, shape(n_channels, n_samples)
-        raw_data to be epoched.
     run_string (string): run string without specific ending in form sub-000_ses-right_task-force_run-0
+
+    data_cortex : array, shape(n_channels, n_samples)
+        raw data cortex to be epoched. Default it None.
+    data_subcortex : array, shape(n_channels, n_samples)
+        raw data subcortex to be epoched. Default it None.
 
     
     Returns
@@ -21,32 +24,60 @@ def rereference(raw_data, run_string):
 
     """
     
-    df_channel = pd.read_csv(run_string + "_channels_M1.tsv", sep="\t")
+    df_channel = pd.read_csv(run_string + "channels_M1.tsv", sep="\t")
     used_ch = np.where(df_channel['used'] == 1)[0]
     non_target_ch = np.where(df_channel['target'] == 0)[0]
 
     index_channels = np.intersect1d(used_ch, non_target_ch)
-
-    new_raw_data=raw_data.copy()
-   
+    
     channels_name=df_channel['name'].tolist()
-    for i in index_channels:
-        #print(df_channel['name'][i])
-        
-        elec_channel=index_channels==i
-        ch=raw_data[elec_channel,:]
-        if df_channel['rereference'][i] == 'average':
-            av=np.mean(raw_data[index_channels!=i,:], axis=0)
-            new_raw_data[i]=ch-av
-        else:
-            index=[]
-            ref_channels=df_channel['rereference'][i].split('+')
-
-            for j in range(len(ref_channels)):
-                if ref_channels[j] not in channels_name:
-                    raise ValueError('One or maybe more of the ref_channels are not part of the recording channels.')
-                index.append(channels_name.index(ref_channels[j]))
-                
-            new_raw_data[i]=ch-np.mean(raw_data[index,:], axis=0)
+    
+    if data_subcortex is not None:  
+        new_data_subcortex=data_subcortex.copy()
+           
+        for i in index_channels:
             
-    return new_raw_data
+            elec_channel=index_channels==i
+            ch=data_subcortex[elec_channel,:]
+            if df_channel['rereference'][i] == 'average':
+                av=np.mean(data_subcortex[index_channels!=i,:], axis=0)
+                new_data_subcortex[i]=ch-av
+            else:
+                index=[]
+                ref_channels=df_channel['rereference'][i].split('+')
+    
+                for j in range(len(ref_channels)):
+                    if ref_channels[j] not in channels_name:
+                        raise ValueError('One or maybe more of the ref_channels are not part of the recording channels.')
+                    index.append(channels_name.index(ref_channels[j]))
+                    
+                new_data_subcortex[i]=ch-np.mean(data_subcortex[index,:], axis=0)
+    else:
+        new_data_subcortex=None
+    
+    if data_cortex is not None:
+        new_data_cortex=data_cortex.copy()
+        
+        for i in index_channels:
+        
+            elec_channel=index_channels==i
+            ch=data_cortex[elec_channel,:]
+            if df_channel['rereference'][i] == 'average':
+                av=np.mean(data_cortex[index_channels!=i,:], axis=0)
+                new_data_cortex[i]=ch-av
+            else:
+                index=[]
+                ref_channels=df_channel['rereference'][i].split('+')
+    
+                for j in range(len(ref_channels)):
+                    if ref_channels[j] not in channels_name:
+                        raise ValueError('One or maybe more of the ref_channels are not part of the recording channels.')
+                    if ref_channels[j]==channels_name[i]:
+                        raise ValueError('You cannot rereference to the same channel.')
+                    index.append(channels_name.index(ref_channels[j]))
+                    
+                new_data_cortex[i]=ch-np.mean(data_cortex[index,:], axis=0)
+    else:
+        new_data_cortex=None
+            
+    return new_data_cortex, new_data_subcortex
