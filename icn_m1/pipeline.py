@@ -34,7 +34,7 @@ if __name__ == "__main__":
     used_channels = IO.read_M1_channel_specs(vhdr_file[:-9])
 
     # rereferencing
-    bv_raw = rereference.rereference(bv_raw, vhdr_file[:-9])
+    # bv_raw = rereference.rereference(bv_raw, vhdr_file[:-9])
 
     # extract used channels/labels from brainvision file, split up in cortex/subcortex/labels
     data_ = IO.get_dat_cortex_subcortex(bv_raw, ch_names, used_channels)
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     # read line noise from participants.tsv
     line_noise = IO.read_line_noise(settings['BIDS_path'],subject)
 
-    seglengths = settings['seglengths']
+    seglengths = np.array(settings['seglengths'])
 
     recording_time = bv_raw.shape[1] 
 
@@ -77,7 +77,7 @@ if __name__ == "__main__":
     for label_idx in range(data_["dat_label"].shape[0]):
         label_baseline_corrected[label_idx,:], label_baseline_corrected_onoff[label_idx,:], _ =  offline_analysis.baseline_correction(data_["dat_label"][label_idx, :])
 
-    rf_data_median, pf_data_median = offline_analysis.preprocessing(fs_array[0], settings['resamplingrate'], seglengths, settings['frequencyranges'], grid_, downsample_idx, bv_raw, line_noise, \
+    rf_data_median, pf_data_median = offline_analysis.run(fs_array[0], settings['resamplingrate'], seglengths, settings['frequencyranges'], grid_, downsample_idx, bv_raw, line_noise, \
                       sess_right, data_, filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples)
 
 

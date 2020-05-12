@@ -6,7 +6,7 @@ from scipy.sparse.linalg import spsolve
 import cvxpy as cp
 from scipy import signal
 
-def preprocessing(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_noise, \
+def run(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_noise, \
                       sess_right, data_, \
                       filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples):
 
@@ -40,7 +40,7 @@ def preprocessing(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_ra
             dat_subcortex = None
         else:
             dat_subcortex = rf_data[new_idx, data_["ind_subcortex"],:]
-            
+
         proj_cortex, proj_subcortex = projection.get_projected_cortex_subcortex_data(proj_matrix_run, sess_right, dat_cortex, dat_subcortex)
         pf_data[new_idx,:,:] = projection.write_proj_data(ch_names, sess_right, data_["dat_label"], data_["ind_label"], proj_cortex, proj_subcortex)
 
