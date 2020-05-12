@@ -56,7 +56,7 @@ def get_address_vhdr_files(subject_path, subfolder, Verbose=True):
     """
     vhdr_files=[]
     for i in range(len(subfolder)):
-        session_path=subject_path+subfolder[i]+'/eeg'
+        session_path=subject_path+subfolder[i]+'/ieeg'
         for f_name in os.listdir(session_path):
             if f_name.endswith('.vhdr'):
                 vhdr_files.append(session_path+ '/' +f_name)
@@ -88,7 +88,7 @@ def get_files(subject_path, subfolder, endswith='.vhdr', Verbose=True):
     """
     vhdr_files=[]
     for i in range(len(subfolder)):
-        session_path=subject_path+'/'+subfolder[i]+'/eeg'
+        session_path=subject_path+'/'+subfolder[i]+'/ieeg'
         for f_name in os.listdir(session_path):
             if f_name.endswith(endswith):
                 vhdr_files.append(session_path+ '/' +f_name)
@@ -181,7 +181,7 @@ def get_coords_df_from_vhdr(vhdr_file, BIDS_path):
         sess = 'right'
     else:
         sess = 'left'
-    coord_path = os.path.join(BIDS_path, 'sub-'+ subject, 'ses-'+ sess, 'eeg', 'sub-'+ subject+ '_electrodes.tsv')
+    coord_path = os.path.join(BIDS_path, 'sub-'+ subject, 'ses-'+ sess, 'ieeg', 'sub-'+ subject+ '_electrodes.tsv')
     df = pd.read_csv(coord_path, sep="\t")
     return df
 
@@ -190,7 +190,7 @@ def read_run_sampling_frequency(vhdr_file):
     given a .eeg vhdr file, read the respective channel file and return the the sampling frequency for the first
     index, since all channels are throughout the run recorded with the same sampling frequency 
     """
-    ch_file = vhdr_file[:-8]+'channels.tsv' # read out the channel, not eeg file (insted of eeg.eeg ending)
+    ch_file = vhdr_file[:-9]+'channels.tsv' # read out the channel
     df = pd.read_csv(ch_file, sep="\t")
     return df['sampling_frequency']  
 
@@ -282,7 +282,7 @@ def get_sess_run_subject(vhdr_file):
     run = str_run[str_run.find('-')+1:str_run.find('_')]
     
     str_sess = vhdr_file[vhdr_file.find('ses'):]
-    sess = str_sess[str_sess.find('-')+1:str_sess.find('eeg')-1]
+    sess = str_sess[str_sess.find('-')+1:str_sess.find('ieeg')-1]
     
     return subject, run, sess
 

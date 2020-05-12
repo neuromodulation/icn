@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     # specify BIDS run 
 
-    vhdr_file = '/Users/hi/Documents/lab_work/BIDS/sub-000/ses-right/eeg/sub-000_ses-right_task-force_run-3_eeg.vhdr'
+    vhdr_file = '/Users/hi/Documents/lab_work/BIDS_iEEG/sub-000/ses-right/ieeg/sub-000_ses-right_task-force_run-0_ieeg.vhdr'
 
     #vhdr_files = IO.get_all_vhdr_files(settings['BIDS_path'])
     #vhdr_file = vhdr_files[3]
@@ -31,10 +31,10 @@ if __name__ == "__main__":
     sess_right = IO.sess_right(sess)
 
     # read M1 channel file
-    used_channels = IO.read_M1_channel_specs(vhdr_file[:-9])
+    used_channels = IO.read_M1_channel_specs(vhdr_file[:-10])
 
     # rereferencing
-    # bv_raw = rereference.rereference(bv_raw, vhdr_file[:-9])
+    # bv_raw = rereference.rereference(bv_raw, vhdr_file[:-10])
 
     # extract used channels/labels from brainvision file, split up in cortex/subcortex/labels
     data_ = IO.get_dat_cortex_subcortex(bv_raw, ch_names, used_channels)
