@@ -360,7 +360,7 @@ def write_all_M1_channel_files():
 
 
     BIDS_channel_tsv_files = []
-    for root, dirs, files in os.walk(settings["BIDS_path"]):
+    for root, dirs, files in os.walk(settings['BIDS_path']):
         for file in files:
             if file.endswith("_channels.tsv"):
                 ch_file = os.path.join(root, file)

@@ -11,8 +11,12 @@ import rereference
 
 if __name__ == "__main__":
 
+    WRITE_M1_FILES = True
+
     settings = IO.read_settings()  # reads settings from settings/settings.json file in a dict 
 
+    if WRITE_M1_FILES is True:
+        IO.write_all_M1_channel_files()
     # specify BIDS run 
 
     vhdr_file = '/Users/hi/Documents/lab_work/BIDS_iEEG/sub-000/ses-right/ieeg/sub-000_ses-right_task-force_run-0_ieeg.vhdr'
