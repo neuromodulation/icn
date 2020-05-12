@@ -2,7 +2,7 @@ import numpy as np
 import mne 
 import scipy
 
-def calc_band_filters(f_ranges, sample_rate, filter_len=1001, l_trans_bandwidth=4, h_trans_bandwidth=4, plot_=False):
+def calc_band_filters(f_ranges, sample_rate, filter_len=1001, l_trans_bandwidth=4, h_trans_bandwidth=4:
     """
     This function returns for the given frequency band ranges filter coefficients with with length "filter_len"
     Thus the filters can be sequentially used for band power estimation
@@ -13,8 +13,6 @@ def calc_band_filters(f_ranges, sample_rate, filter_len=1001, l_trans_bandwidth=
         h = mne.filter.create_filter(None, sample_rate, l_freq=f_range[0], h_freq=f_range[1], 
                             fir_design='firwin', verbose=plot_, l_trans_bandwidth=l_trans_bandwidth, 
                             h_trans_bandwidth=h_trans_bandwidth, filter_length='1000ms')
-        if plot_ is True:              
-            plot_filter(h,sample_rate)
 
         filter_fun[a, :] = h
     return filter_fun
