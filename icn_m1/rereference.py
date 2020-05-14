@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import IO
 
 def rereference(run_string, data_cortex=None, data_subcortex=None):
     """
@@ -25,14 +26,16 @@ def rereference(run_string, data_cortex=None, data_subcortex=None):
     """
     
     df_channel = pd.read_csv(run_string + "channels_M1.tsv", sep="\t")
-    used_ch = np.where(df_channel['used'] == 1)[0]
-    non_target_ch = np.where(df_channel['target'] == 0)[0]
+    #non_target_ch = np.where(df_channel['target'] == 0)[0]
+    
+    used_channels = IO.read_M1_channel_specs(run_string)
 
-    index_channels = np.intersect1d(used_ch, non_target_ch)
+    #index_channels = np.intersect1d(used_ch['subcortex'], non_target_ch)
     
     channels_name=df_channel['name'].tolist()
     
-    if data_subcortex is not None:  
+    if data_subcortex is not None: 
+        index_channels=used_channels['subcortex']-min(used_channels['subcortex'])
         new_data_subcortex=data_subcortex.copy()
            
         for i in index_channels:
@@ -56,6 +59,8 @@ def rereference(run_string, data_cortex=None, data_subcortex=None):
         new_data_subcortex=None
     
     if data_cortex is not None:
+        index_channels=used_channels['cortex']-min(used_channels['cortex'])
+
         new_data_cortex=data_cortex.copy()
         
         for i in index_channels:

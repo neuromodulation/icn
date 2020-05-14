@@ -343,3 +343,84 @@ def epoch_data(data, events, sf, tmin=1, tmax=1):
             
     return X, Y
 
+
+def epoch_feature_matrix(feature_matrix, events, sf, tmin=1, tmax=1):
+    """
+    this function segments the feature matrix generated after the filter-bank
+    analysis made on the funciton RUN. The segment are extracted
+    tmin sec before target onset and tmax sec
+    after target onset
+
+    Parameters
+    ----------
+    feature_matrix : array, shape(n_features, n_ch, n_fb)
+        feature matrix of n_features at n_fb frequency bands
+        either before or after the grid-projection.
+    events : array, shape(n_events,2)
+        All events that were found by the function
+        'create_events_array'. 
+        The first column contains the event time in samples and the second 
+        column contains the event id.
+    sf : int, float
+        sampling frequency of the feature_matrix
+    tmin : float
+        Start time before event (in sec). 
+        If nothing is provided, defaults to 1.
+    tmax : float
+        Stop time after  event (in sec). 
+        If nothing is provided, defaults to 1.
+    Raises
+    ------
+    ValueError
+        DESCRIPTION.
+
+    Returns
+    -------
+    X : array, shape(n_events, n_channels, n_bf*n_samples)
+        epoched feature matrix. The features at specific time window are 
+        concatenated per each frequency band
+    Y : array, shape(n_events, n_bf*n_samples)
+        sample-wise label information of data.
+.
+
+    """
+    
+    
+    #get time_events index    
+    mask_start=events[:,1]==1
+    start_event_time=events[mask_start,0]
+    #labels
+    labels=generate_continous_label_array(np.transpose(feature_matrix), sf, events)
+    
+        
+    for i in range(len(start_event_time)):
+        #check inputs
+
+        if i==0:
+            if tmin>start_event_time[i]:
+                tmin=0
+                Warning('pre_time too large. It should be lower than={:3.2f}'.format(start_event_time[i]))
+                Warning('for the first run is set equal to t0')
+
+        else:
+            if tmin>start_event_time[i]:
+                Warning('pre_time too large. It gets data from previous trials.')
+        #<<still missing: tmax for last trail>>
+            
+        start_epoch=int(np.round((start_event_time[i]-tmin)*sf))
+        stop_epoch=int(np.round((start_event_time[i]+ tmax)*sf))
+        
+        epoch=feature_matrix[start_epoch:stop_epoch]
+        #reshape data (n_events, n_channels, n_samples)
+        nf, nc, nb=np.shape(epoch)
+        epoch=np.reshape(epoch,(1, nc,nb*nf))
+        label=labels[start_epoch:stop_epoch]
+        if i==0:
+            X=epoch
+            Y=label
+        else:
+            X=np.vstack((X,epoch))
+            Y=np.vstack((Y,label))
+            
+    return X, Y
+
