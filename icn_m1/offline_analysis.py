@@ -253,7 +253,7 @@ def generate_continous_label_array(raw_data, sf, events):
         array of ones and zeros.
 
     """
-    labels=np.zeros((raw_data.shape[1]))
+    labels=np.zeros((raw_data.shape[-1]))
     
     mask_start=events[:,1]==1
     start_event_time=events[mask_start,0]
@@ -268,15 +268,15 @@ def generate_continous_label_array(raw_data, sf, events):
   
     
 
-def epoch_data(raw_data, events, sf, tmin=1, tmax=1):
+def epoch_data(data, events, sf, tmin=1, tmax=1):
     """
     this function segments data tmin sec before target onset and tmax sec
     after target onset
 
     Parameters
     ----------
-    raw_data : array, shape(n_channels, n_samples)
-        raw_data to be epoched.
+    data : array, shape(n_channels, n_samples)
+        either cortex of subcortex data to be epoched.
     events : array, shape(n_events,2)
         All events that were found by the function
         'create_events_array'. 
@@ -309,7 +309,7 @@ def epoch_data(raw_data, events, sf, tmin=1, tmax=1):
     mask_start=events[:,1]==1
     start_event_time=events[mask_start,0]
     #labels
-    labels=generate_continous_label_array(raw_data, sf, events)
+    labels=generate_continous_label_array(data, sf, events)
     
         
     for i in range(len(start_event_time)):
@@ -329,7 +329,7 @@ def epoch_data(raw_data, events, sf, tmin=1, tmax=1):
         start_epoch=int(np.round((start_event_time[i]-tmin)*sf))
         stop_epoch=int(np.round((start_event_time[i]+ tmax)*sf))
         
-        epoch=raw_data[:,start_epoch:stop_epoch]
+        epoch=data[:,start_epoch:stop_epoch]
         #reshape data (n_events, n_channels, n_samples)
         nc, ns=np.shape(epoch)
         epoch=np.reshape(epoch,(1, nc,ns))
