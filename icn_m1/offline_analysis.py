@@ -8,7 +8,7 @@ from scipy import signal
 
 def run(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_noise, \
                       sess_right, data_, \
-                      filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples):
+                      filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples, Verbose=False):
 
     offset_start = int((fs/seglengths[0]) / (fs/fs_new))  # offset start is here the number of samples new_fs to skip, covert seglength to fs 
     num_channels = data_["ind_dat"].shape[0]
@@ -21,8 +21,9 @@ def run(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_no
     pf_data_median = np.zeros([new_num_data_points-offset_start, num_grid_points, num_f_bands])  # projected 
     new_idx = 0
 
-    for c in range(downsample_idx.shape[0]):  
-        print(str(np.round(c*(1/fs_new),2))+' s')
+    for c in range(downsample_idx.shape[0]):
+        if Verbose: 
+            print(str(np.round(c*(1/fs_new),2))+' s')
         if downsample_idx[c]<(fs/seglengths[0]):  # neccessary since downsample_idx starts with 0, wait till 1s for theta is over
             continue
 
