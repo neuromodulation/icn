@@ -231,15 +231,15 @@ def create_events_array(onoff, raw_target_channel, sf):
     
     return events
 
-def generate_continous_label_array(raw_data, sf, events):
+def generate_continous_label_array(L, sf, events):
     """
     given and arrray of events, this function returns sample-by-sample
     label information of raw_date
 
     Parameters
     ----------
-    raw_data : array, shape(n_channels, n_samples)
-        raw_data to be epoched.
+    L : float, 
+        lenght (n_samples) of the corresponding signal to labelled
     sf : int, float
         sampling frequency of the raw_data
     events : array, shape(n_events,2)
@@ -253,7 +253,8 @@ def generate_continous_label_array(raw_data, sf, events):
         array of ones and zeros.
 
     """
-    labels=np.zeros((raw_data.shape[-1]))
+    
+    labels=np.zeros(L)
     
     mask_start=events[:,1]==1
     start_event_time=events[mask_start,0]
