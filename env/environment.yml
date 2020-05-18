@@ -8,6 +8,7 @@ dependencies:
 - mkl
 - numpy
 - scipy
+- sys
 - matplotlib
 - numba
 - pyqt>=5.9
