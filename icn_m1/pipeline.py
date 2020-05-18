@@ -8,21 +8,24 @@ import json
 import os
 import pickle 
 import rereference
+import sys
 
 if __name__ == "__main__":
 
-    WRITE_M1_FILES = True
 
+    vhdr_file = '/Users/hi/Documents/lab_work/BIDS_iEEG/sub-000/ses-right/ieeg/sub-000_ses-right_task-force_run-3_ieeg.vhdr'  # specify the file indirectly
+
+
+    #vhdr_files = IO.get_all_vhdr_files(settings['BIDS_path'])  # read all files
+    #vhdr_file = vhdr_files[3]
+
+    #vhdr_file = sys.argv[1]  # read from command line the given vhdr file 
+
+    WRITE_M1_FILES = False
     settings = IO.read_settings()  # reads settings from settings/settings.json file in a dict 
 
     if WRITE_M1_FILES is True:
         IO.write_all_M1_channel_files()
-    # specify BIDS run 
-
-    vhdr_file = '/Users/hi/Documents/lab_work/BIDS_iEEG/sub-000/ses-right/ieeg/sub-000_ses-right_task-force_run-0_ieeg.vhdr'
-
-    #vhdr_files = IO.get_all_vhdr_files(settings['BIDS_path'])
-    #vhdr_file = vhdr_files[3]
     
     # read grid from session
     cortex_left, cortex_right, subcortex_left, subcortex_right = IO.read_grid()
@@ -102,7 +105,6 @@ if __name__ == "__main__":
         "proj_matrix_run" : proj_matrix_run, 
         "fs" : fs_array[0], 
         "line_noise" : line_noise, 
-        "resample_factor" : resample_factor, 
         "seglengths" : seglengths, 
         "normalization_samples" : normalization_samples, 
         "new_num_data_points" : new_num_data_points, 
@@ -114,10 +116,10 @@ if __name__ == "__main__":
         "pf_data_median" : pf_data_median, 
         "label_baseline_corrected" : label_baseline_corrected, 
         "label_baseline_corrected_onoff" : label_baseline_corrected_onoff,
-        "label_names" : ch_names[dat_["ind_label"]]
+        "label_names" : np.array(ch_names)[data_["ind_label"]]
     }
 
-    out_path = os.path.join(settings['out_path'],'sub_' + subject + '_sess_' + sess + '_run_' + run + '.p')
+    out_path = os.path.join(settings['output_path'],'sub_' + subject + '_sess_' + sess + '_run_' + run + '.p')
     
     with open(out_path, 'wb') as handle:
         pickle.dump(run_, handle, protocol=pickle.HIGHEST_PROTOCOL)
