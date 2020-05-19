@@ -6,6 +6,7 @@ from scipy.sparse.linalg import spsolve
 import cvxpy as cp
 from scipy import signal
 
+## TODO: online artifac rejection 
 def run(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_noise, \
                       sess_right, data_, \
                       filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples, Verbose=False):
