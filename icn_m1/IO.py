@@ -136,8 +136,8 @@ def read_M1_channel_specs(run_string):
         used_channels
     """
 
-    #df_channel = pd.read_csv(run_string + "_channels_M1.tsv", sep="\t")
-    df_channel = pd.read_csv(run_string + "channels_M1.tsv", sep="\t")
+    df_channel = pd.read_csv(run_string + "_channels_M1.tsv", sep="\t")
+    #df_channel = pd.read_csv(run_string + "channels_M1.tsv", sep="\t")
 
 
     # used channels is here a dict though with 'cortex' and 'subcortex' field

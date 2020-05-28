@@ -91,7 +91,7 @@ for f in range(len(vhdr_files)):
 
    
         t2= np.arange(0.0, T, Df/sf)
-        plt.figure(f+1, figsize=(8, 4))
+        plt.figure(f+1, figsize=(8, 5))
 
         plt.subplot(1,2,m+1)
         plt.plot(t2[:500],raw_target_channel[:500], label=labels_plot[0])
@@ -100,10 +100,10 @@ for f in range(len(vhdr_files)):
         plt.legend()
         plt.title('subject_'+ subject+ '_session' +sess+ '_run'+ run)
         
-        if m==1: plt.savefig(pp, format='pdf')
+        if m==len(dat_MOV)-1: plt.savefig(pp, format='pdf')
 
         
-        plt.figure(f+2, figsize=(8, 4))
+        plt.figure(f+2, figsize=(8, 5))
 
         plt.subplot(2,1,m+1)
         plt.plot(t2,raw_target_channel, label=labels_plot[0])
@@ -112,18 +112,18 @@ for f in range(len(vhdr_files)):
         plt.legend()
         plt.title('subject_'+ subject+ '_session' +sess+ '_run'+ run)
         
-        if m==1: plt.savefig(pp, format='pdf')
+        if m==len(dat_MOV)-1: plt.savefig(pp, format='pdf')
 
         
 #%%        
-for m in range(len(dat_MOV)):
-    plt.figure(f+3, figsize=(8, 4))
-    plt.subplot()
-    plt.plot(y[m])
-    plt.legend()
-    plt.title('LABELS: subject_'+ subject+ '_session' +sess+ '_run'+ run)
+# for m in range(len(dat_MOV)):
+#     plt.figure(f+3, figsize=(8, 4))
+#     plt.subplot()
+#     plt.plot(y[m])
+#     plt.legend()
+#     plt.title('LABELS: subject_'+ subject+ '_session' +sess+ '_run'+ run)
 
-    plt.savefig(pp, format='pdf')
+#     plt.savefig(pp, format='pdf')
 
 pp.close()
 
