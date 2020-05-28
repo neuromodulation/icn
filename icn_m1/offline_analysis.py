@@ -210,7 +210,7 @@ def create_events_array(onoff, raw_target_channel, sf):
    
     #create time vector
     T=round(len(raw_target_channel)/sf)
-    Df=len(raw_target_channel)/len(onoff)
+    Df=round(len(raw_target_channel)/len(onoff))
     
     #time onoff_signal
     t= np.arange(0.0, T-Df/sf , Df/sf)
