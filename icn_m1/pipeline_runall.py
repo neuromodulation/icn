@@ -1,6 +1,4 @@
 import sys
-# insert at 1, 0 is the script path (or '' in REPL)
-sys.path.insert(1, 'C:/Users/Pilin/Documents/GitHub/icn/icn_m1')
 import filter
 import IO
 import projection
@@ -21,12 +19,23 @@ import itertools
 import mne
 mne.set_log_level(verbose='warning') #to avoid info at terminal
 from collections import Counter
+import multiprocessing
+
+VICTORIA = False
 
 
-#%%
 settings = {}
-settings['BIDS_path'] = "C:\\Users\Pilin\Dropbox (Partners HealthCare)\Timon_raw_data\\"
-settings['out_path'] = "C:\\Users\Pilin\Dropbox (Partners HealthCare)\Experiments\ProcessedTimonData\Data_processed\\"
+
+if VICTORIA is True:
+    # insert at 1, 0 is the script path (or '' in REPL)
+    sys.path.insert(1, 'C:/Users/Pilin/Documents/GitHub/icn/icn_m1')
+
+    settings['BIDS_path'] = "C:\\Users\Pilin\Dropbox (Partners HealthCare)\Timon_raw_data\\"
+    settings['out_path'] = "C:\\Users\Pilin\Dropbox (Partners HealthCare)\Experiments\ProcessedTimonData\Data_processed\\"
+else:
+    settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
+    settings['out_path'] = "C:\\Users\\ICN_admin\\Documents\\Decoding_Toolbox\\gen_p_files\\"
+
 settings['resamplingrate']=10
 settings['max_dist_cortex']=20
 settings['max_dist_subcortex']=5
@@ -38,10 +47,13 @@ settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
 settings['BIDS_path']=settings['BIDS_path'].replace("\\", "/")
 settings['out_path']=settings['out_path'].replace("\\", "/")
 
-with open('settings/mysettings.json', 'w') as fp:
-    json.dump(settings, fp)
-    
-settings = IO.read_settings('mysettings')
+
+if VICTORIA is True:
+    with open('settings/mysettings.json', 'w') as fp:
+        json.dump(settings, fp)
+    settings = IO.read_settings('mysettings')
+settings = IO.read_settings()
+
 #2. write _channels_MI file
 IO.write_all_M1_channel_files()
 #3. get all vhdr files (from a subject or from all BIDS_path)
@@ -77,8 +89,8 @@ ecog_grid_right = grid_[2]
 # plt.legend()
 # plt.title('STN grid')
 
-#%%
-for s in range(16, 17):
+
+def run_vhdr_file(s):
    
     if s<10:
         subject_path=settings['BIDS_path'] + 'sub-00' + str(s)
@@ -270,4 +282,7 @@ for s in range(16, 17):
             pickle.dump(run_, handle, protocol=pickle.HIGHEST_PROTOCOL)    
 
                                 
-   
+
+if __name__ == "__main__":
+    pool = multiprocessing.Pool()
+    pool.map(run_vhdr_file, range(17))
