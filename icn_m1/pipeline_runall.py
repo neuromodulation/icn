@@ -90,7 +90,7 @@ ecog_grid_right = grid_[2]
 # plt.title('STN grid')
 
 
-def run_vhdr_file(s):
+def run_patient(s):
    
     if s<10:
         subject_path=settings['BIDS_path'] + 'sub-00' + str(s)
@@ -284,5 +284,5 @@ def run_vhdr_file(s):
                                 
 
 if __name__ == "__main__":
-    pool = multiprocessing.Pool()
-    pool.map(run_vhdr_file, range(17))
+    for s in range(17):
+        run_patient(s)
