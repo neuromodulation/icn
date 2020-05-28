@@ -25,7 +25,7 @@ def rereference(run_string, data_cortex=None, data_subcortex=None):
 
     """
     
-    df_channel = pd.read_csv(run_string + "channels_M1.tsv", sep="\t")
+    df_channel = pd.read_csv(run_string + "_channels_M1.tsv", sep="\t")
     #non_target_ch = np.where(df_channel['target'] == 0)[0]
     
     used_channels = IO.read_M1_channel_specs(run_string)
