@@ -13,7 +13,7 @@ import sys
 if __name__ == "__main__":
 
 
-    vhdr_file = '/Users/hi/Documents/lab_work/BIDS_iEEG/sub-000/ses-right/ieeg/sub-000_ses-right_task-force_run-3_ieeg.vhdr'  # specify the file indirectly
+    vhdr_file = '/Users/hi/Documents/lab_work/BIDS_iEEG/sub-016/ses-left/ieeg/sub-016_ses-left_task-force_run-0_ieeg.vhdr'  # specify the file indirectly
 
 
     #vhdr_files = IO.get_all_vhdr_files(settings['BIDS_path'])  # read all files
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     # from the BIDS run channels.tsv read the sampling frequency 
     # here: the sampling frequency can be different for all channels
     # therefore read the frequency for all channels, which makes stuff complicated...
-    fs_array = IO.read_run_sampling_frequency(vhdr_file)
+    fs_array = IO.read_run_sampling_frequency(vhdr_file).astype(int)
 
     # read line noise from participants.tsv
     line_noise = IO.read_line_noise(settings['BIDS_path'],subject)
@@ -67,14 +67,14 @@ if __name__ == "__main__":
     recording_time = bv_raw.shape[1] 
 
     normalization_samples = settings['normalization_time']*settings['resamplingrate']
-    new_num_data_points = int((bv_raw.shape[1]/1000)*settings['resamplingrate'])
+    new_num_data_points = int((bv_raw.shape[1]/fs_array[0])*settings['resamplingrate'])
 
     # downsample_idx states the original brainvision sample indexes are used
-    downsample_idx = (np.arange(0,new_num_data_points,1)*1000/settings['resamplingrate']).astype(int)
+    downsample_idx = (np.arange(0,new_num_data_points,1)*fs_array[0]/settings['resamplingrate']).astype(int)
 
-    filter_fun = filter.calc_band_filters(settings['frequencyranges'], sample_rate=1000)
+    filter_fun = filter.calc_band_filters(settings['frequencyranges'], sample_rate=fs_array[0])
 
-    offset_start = int(seglengths[0] / (1000/settings['resamplingrate'])) # resampling is done wrt a common sampling frequency of 1kHz
+    offset_start = int(seglengths[0] / (fs_array[0]/settings['resamplingrate'])) # resampling is done wrt a common sampling frequency of 1kHz
 
     arr_act_grid_points = IO.get_active_grid_points(sess_right, data_["ind_label"], ch_names, proj_matrix_run, grid_)
 
