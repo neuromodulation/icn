@@ -116,7 +116,7 @@ def baseline_rope(y, lam=1):
               
     return z
 
-def baseline_correction(y, method='baseline_als', param=[1e2, 1e-4], thr=1e-1, normalize=True, Decimate=1, Verbose=True):
+def baseline_correction(y, method='baseline_rope', param=1e5, thr=2e-1, normalize=True, Decimate=40, Verbose=True):
     """
     
     Parameters
@@ -209,7 +209,7 @@ def create_events_array(onoff, raw_target_channel, sf):
     """
    
     #create time vector
-    T=len(raw_target_channel)/sf
+    T=round(len(raw_target_channel)/sf)
     Df=len(raw_target_channel)/len(onoff)
     
     #time onoff_signal
@@ -222,6 +222,13 @@ def create_events_array(onoff, raw_target_channel, sf):
     time_start=t[index_start]
     index_stop=onoff_dif==-1
     time_stop=t[index_stop]
+    
+    if len(time_stop) > len(time_start):
+       if time_stop[0]<time_start[0]:
+           time_stop=time_stop[1:]
+    else:
+        if time_start[-1]>time_stop[-1]:
+           time_start=time_start[:-1] 
     
     time_event=np.hstack((time_start, time_stop))    
     time_event=np.sort(time_event)
