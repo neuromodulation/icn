@@ -78,7 +78,7 @@ ecog_grid_right = grid_[2]
 # plt.title('STN grid')
 
 #%%
-for s in range(16, 17):
+for s in range(0, 17):
    
     if s<10:
         subject_path=settings['BIDS_path'] + 'sub-00' + str(s)
