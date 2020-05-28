@@ -264,7 +264,7 @@ for s in range(0, 17):
             "label_con_true" : con_true,        
         }
 
-        out_path = os.path.join(settings['out_path'],'sub_' + subject + '_sess_' + sess + '_run_' + run + '.p')
+        out_path = os.path.join(settings['output_path'],'sub_' + subject + '_sess_' + sess + '_run_' + run + '.p')
     
         with open(out_path, 'wb') as handle:
             pickle.dump(run_, handle, protocol=pickle.HIGHEST_PROTOCOL)    
