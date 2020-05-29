@@ -32,7 +32,7 @@ settings['resamplingrate']=10
 settings['max_dist_cortex']=20
 settings['max_dist_subcortex']=5
 settings['normalization_time']=10
-settings['num_patients']=17
+settings['num_patients']=16
 
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
@@ -221,14 +221,14 @@ def run_CV(patient_test, model=LinearRegression(), time_stamps=5):
         patient_CV_out[grid_point] = train_grid_point(time_stamps, act_, patient_test, grid_point, model)
         
     if patient_test < 10:
-        subject_id = str('00') + str(patient_test)
+        subject_id = '00' + str(patient_test)
     else:
-        subject_id = str('0') + str(patient_test)
+        subject_id = '0' + str(patient_test)
 
     out_path_file = os.path.join(settings['out_path'], subject_id+'prediction.npy')
     np.save(out_path_file, patient_CV_out)
 #%%
-patients=17
+patients=16
     
 act_ = save_all_act_grid_points()
 grid_points_none = check_leave_out_grid_points(act_, False)
