@@ -23,7 +23,6 @@ mne.set_log_level(verbose='warning') #to avoid info at terminal
 from collections import Counter
 
 
-#%%
 settings = {}
 settings['BIDS_path'] = "C:\\Users\Pilin\Dropbox (Partners HealthCare)\Timon_raw_data\\"
 settings['out_path'] = "C:\\Users\Pilin\Dropbox (Partners HealthCare)\Experiments\ProcessedTimonData\Data_processed\\"
@@ -77,7 +76,6 @@ ecog_grid_right = grid_[2]
 # plt.legend()
 # plt.title('STN grid')
 
-#%%
 for s in range(0, 17):
    
     if s<10:
