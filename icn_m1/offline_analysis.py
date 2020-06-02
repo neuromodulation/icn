@@ -9,7 +9,8 @@ from scipy import signal
 ## TODO: online artifac rejection 
 def run(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_noise, \
                       sess_right, data_, \
-                      filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples, Verbose=False):
+                      filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples, Verbose=False,
+                      clip_low=-2, clip_high=2):
 
     offset_start = int((fs/seglengths[0]) / (fs/fs_new))  # offset start is here the number of samples new_fs to skip, covert seglength to fs 
     num_channels = data_["ind_dat"].shape[0]
@@ -66,6 +67,9 @@ def run(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_no
             pf_data_median[new_idx,arr_act_grid_points>0,:] = (pf_data[new_idx,arr_act_grid_points>0,:] - median_) / median_
             median_ = np.median(data_["dat_label"][:,n_idx], axis=1)
         new_idx += 1
+    rf_data_median = np.clip(rf_data_median, clip_low, clip_high)
+    pf_data_median = np.clip(pf_data_median, clip_low, clip_high)
+    
     return rf_data_median, pf_data_median
 
 def NormalizeData(data):

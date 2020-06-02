@@ -1,10 +1,1 @@
-{
-    "BIDS_path": "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\",
-    "output_path": "C:\\Users\\ICN_admin\\Documents\\Decoding_Toolbox\\gen_p_files\\",
-    "resamplingrate": 10,
-    "max_dist_cortex": 20,
-    "max_dist_subcortex": 5,
-    "normalization_time": 10,
-    "frequencyranges": [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]],
-    "seglengths": [1, 2, 2, 3, 3, 3, 10, 10, 10]
-}
+{"BIDS_path": "/mnt/Datos/BML_CNCRS/Data_BIDS/", "out_path": "/mnt/Datos/BML_CNCRS/Data_processed/", "resamplingrate": 10, "max_dist_cortex": 20, "max_dist_subcortex": 5, "normalization_time": 10, "num_patients": 16, "frequencyranges": [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]], "seglengths": [1, 2, 2, 3, 3, 3, 10, 10, 10]}
