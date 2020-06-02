@@ -23,7 +23,7 @@ if VICTORIA is True:
     # insert at 1, 0 is the script path (or '' in REPL)
     sys.path.insert(1, '/home/victoria/icn/icn_m1')
     settings['BIDS_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS/"
-    settings['out_path'] = "/mnt/Datos/BML_CNCRS/Data_processed"
+    settings['out_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/"
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
     settings['out_path'] = "C:\\Users\\ICN_admin\\Documents\\Decoding_Toolbox\\gen_p_files\\"
@@ -115,7 +115,7 @@ def append_time_dim(arr, y_, time_stamps):
             time_arr[time_idx, time_point*arr.shape[1]:(time_point+1)*arr.shape[1]] = arr[time_-time_point,:]
     return time_arr, y_[time_stamps:]
 
-def get_train_test_dat(patient_test, grid_point, act_, Train=True):
+def get_train_test_dat(patient_test, grid_point, act_, Train=True, Clip=True):
     """
     For a given grid_point, and a given provided test patient, acquire all combined dat and label information
     
@@ -157,13 +157,18 @@ def get_train_test_dat(patient_test, grid_point, act_, Train=True):
                     # fill dat
                     if start == 0:
                         dat = out['pf_data_median'][:,grid_point,:]
+                        if Clip:
+                            dat=np.clip(dat, -2,2)
                         if grid_point < 39 or (grid_point > 78 and grid_point < 86):  # contralateral
                             label = np.squeeze(out['label'][out['label_con_true']==True])
                         else:
                             label = np.squeeze(out['label'][out['label_con_true']==False])
                         start = 1
                     else:
-                        dat = np.concatenate((dat, out['pf_data_median'][:,grid_point,:]), axis=0)
+                        dat_new=out['pf_data_median'][:,grid_point,:]
+                        if Clip:
+                            dat_new=np.clip(dat_new, -2,2)
+                        dat = np.concatenate((dat, dat_new), axis=0)
 
                         if grid_point < 39 or (grid_point > 78 and grid_point < 86):  # contralateral
                             label_new=np.squeeze(out['label'][out['label_con_true']==True])
