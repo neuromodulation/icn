@@ -183,6 +183,9 @@ def train_grid_point(time_stamps, act_, patient_test, grid_point, model, Verbose
     dat_test, label_test = get_train_test_dat(patient_test, grid_point, act_, Train=False)
     dat_test,label_test = append_time_dim(dat_test, label_test, time_stamps)
 
+    dat_test = np.clip(dat_test, -2,2)
+    dat = np.clip(-2,2)
+
     model.fit(dat, label)
 
     y_test_pred = model.predict(dat_test)
@@ -227,7 +230,7 @@ def run_CV(patient_test, model=LinearRegression(), time_stamps=5):
 
     out_path_file = os.path.join(settings['out_path'], subject_id+'prediction.npy')
     np.save(out_path_file, patient_CV_out)
-#%%
+
 patients=16
     
 act_ = save_all_act_grid_points()
