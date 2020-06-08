@@ -74,14 +74,16 @@ def get_projected_cortex_subcortex_data(proj_matrix_run, sess_right, dat_cortex=
     return proj_cortex, proj_subcortex
 
 
-def write_proj_data(ch_names, sess_right, dat_label, ind_label, proj_cortex=None, proj_subcortex=None):
+def write_proj_data(ch_names, sess_right, dat_label, ind_label, grid_, proj_cortex=None, proj_subcortex=None):
     """
     :param proj_cortex - projected data on cortex grid 
     """
+    num_grid_points = grid_[0].shape[1] + grid_[1].shape[1] + grid_[2].shape[1] + grid_[3].shape[1]
+
     if proj_cortex is not None:
-        arr_all = np.empty([94, proj_cortex.shape[1]])
+        arr_all = np.empty([num_grid_points, proj_cortex.shape[1]])
     else:
-        arr_all = np.empty([94, proj_subcortex.shape[1]])
+        arr_all = np.empty([num_grid_points, proj_subcortex.shape[1]])
         
     mov_channel = np.array(ch_names)[ind_label]
 
@@ -92,7 +94,7 @@ def write_proj_data(ch_names, sess_right, dat_label, ind_label, proj_cortex=None
         if len([ch for ch in mov_channel if 'LEFT' in ch]) >0:
             Con_label =True
             dat_label_con = dat_label[[ch_idx for ch_idx, ch in enumerate(mov_channel) if 'LEFT' in ch][0],:]
-            arr_all[:39,:] = proj_cortex
+            arr_all[:grid_[0].shape[1],:] = proj_cortex
             if proj_subcortex is not None:
                  arr_all[78:86,:] = proj_subcortex
 
@@ -100,7 +102,7 @@ def write_proj_data(ch_names, sess_right, dat_label, ind_label, proj_cortex=None
         if len([ch for ch in mov_channel if 'RIGHT' in ch]) >0:
             Con_label =True
             dat_label_con = dat_label[[ch_idx for ch_idx, ch in enumerate(mov_channel) if 'RIGHT' in ch][0],:]
-            arr_all[:39,:] = proj_cortex
+            arr_all[:grid_[0].shape[1],:] = proj_cortex
             if proj_subcortex is not None:
                  arr_all[78:86,:] = proj_subcortex
 
@@ -111,15 +113,15 @@ def write_proj_data(ch_names, sess_right, dat_label, ind_label, proj_cortex=None
             Ips_label = True
             dat_label_ips = dat_label[[ch_idx for ch_idx, ch in enumerate(mov_channel) if 'LEFT' in ch][0],:]
 
-            arr_all[39:78,:] = proj_cortex
+            arr_all[grid_[0].shape[1]:grid_[0].shape[1]+grid_[2].shape[1],:] = proj_cortex
             if proj_subcortex is not None:
                  arr_all[86:,:] = proj_subcortex
     elif sess_right is True:
         if len([ch for ch in mov_channel if 'RIGHT' in ch]) >0:
             Ips_label = True
             dat_label_ips = dat_label[[ch_idx for ch_idx, ch in enumerate(mov_channel) if 'RIGHT' in ch][0],:]
-            arr_all[39:78,:] = proj_cortex
+            arr_all[grid_[0].shape[1]:grid_[0].shape[1]+grid_[2].shape[1],:] = proj_cortex
             if proj_subcortex is not None:
-                 arr_all[86:,:] = proj_subcortex
+                 arr_all[grid_[0].shape[1]+grid_[1].shape[1]+grid_[2].shape[1]:,:] = proj_subcortex
     #ind_active_ = np.where(np.sum(arr_all, axis=1) != 0)
     return arr_all

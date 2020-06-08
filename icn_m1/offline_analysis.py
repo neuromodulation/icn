@@ -45,7 +45,7 @@ def run(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_no
             dat_subcortex = rf_data[new_idx, data_["ind_subcortex"],:]
 
         proj_cortex, proj_subcortex = projection.get_projected_cortex_subcortex_data(proj_matrix_run, sess_right, dat_cortex, dat_subcortex)
-        pf_data[new_idx,:,:] = projection.write_proj_data(ch_names, sess_right, data_["dat_label"], data_["ind_label"], proj_cortex, proj_subcortex)
+        pf_data[new_idx,:,:] = projection.write_proj_data(ch_names, sess_right, data_["dat_label"], data_["ind_label"], grid_, proj_cortex, proj_subcortex)
 
         #normalize acc. to Median of previous normalization samples
         if c<normalization_samples:

@@ -49,15 +49,16 @@ settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
 settings['BIDS_path']=settings['BIDS_path'].replace("\\", "/")
 settings['out_path']=settings['out_path'].replace("\\", "/")
 
-
 if VICTORIA is True:
     with open('settings/mysettings.json', 'w') as fp:
         json.dump(settings, fp)
     settings = IO.read_settings('mysettings')
 
-
 #2. write _channels_MI file
-IO.write_all_M1_channel_files()
+write_ALL = False
+if write_ALL is True:
+    IO.write_all_M1_channel_files()
+
 #3. get all vhdr files (from a subject or from all BIDS_path)
 vhdr_files=IO.get_all_vhdr_files(settings['BIDS_path'])
 
@@ -169,7 +170,7 @@ def run_vhdr_file(s):
         
         # read line noise from participants.tsv
         line_noise = IO.read_line_noise(settings['BIDS_path'],subject)
-        if s==16:
+        if sf>1000:
             filter_len=sf
         else:
             filter_len=1001
@@ -286,5 +287,8 @@ def run_vhdr_file(s):
                                 
 
 if __name__ == "__main__":
-    pool = multiprocessing.Pool()
-    pool.map(run_vhdr_file, range(17))
+    
+    run_vhdr_file(0)
+
+    #pool = multiprocessing.Pool()
+    #pool.map(run_vhdr_file, range(17))

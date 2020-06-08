@@ -14,7 +14,7 @@ import sys
 import settings
 
 
-VICTORIA = True
+VICTORIA = False
 
 
 settings = {}
@@ -44,7 +44,7 @@ settings['out_path']=settings['out_path'].replace("\\", "/")
 with open('settings/settings.json', 'w') as fp:
     json.dump(settings, fp)
 
-#%%
+
 def get_int_runs(patient_idx):
     """
 
