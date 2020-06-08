@@ -23,7 +23,7 @@ import multiprocessing
 
 VICTORIA = False
 
-
+settings = IO.read_settings()
 settings = {}
 
 if VICTORIA is True:
@@ -35,6 +35,8 @@ if VICTORIA is True:
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
     settings['out_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_dist_10_Median_10\\"
+
+
 
 settings['resamplingrate']=10
 settings['max_dist_cortex']=10
@@ -52,7 +54,7 @@ if VICTORIA is True:
     with open('settings/mysettings.json', 'w') as fp:
         json.dump(settings, fp)
     settings = IO.read_settings('mysettings')
-settings = IO.read_settings()
+
 
 #2. write _channels_MI file
 IO.write_all_M1_channel_files()
