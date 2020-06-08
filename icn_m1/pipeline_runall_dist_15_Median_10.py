@@ -108,7 +108,8 @@ def run_vhdr_file(s):
     len(vhdr_files)
     for f in range(len(vhdr_files)):
         #%% 5. get info and files for the specific subject/session/run
-
+        if f != 3: 
+            continue
         vhdr_file=vhdr_files[f]
         
         
