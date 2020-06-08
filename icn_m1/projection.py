@@ -89,6 +89,10 @@ def write_proj_data(ch_names, sess_right, dat_label, ind_label, grid_, proj_cort
 
     Con_label = False; Ips_label = False
     
+    #78 = grid_[0].shape[1] + grid_[2].shape[1]
+    #86 = grid_[0].shape[1] + grid_[1].shape[1] + grid_[2].shape[1]
+    
+
      #WRITE CONTRALATERAL DATA if the respective movement channel exists
     if sess_right is True:
         if len([ch for ch in mov_channel if 'LEFT' in ch]) >0:
@@ -96,7 +100,7 @@ def write_proj_data(ch_names, sess_right, dat_label, ind_label, grid_, proj_cort
             dat_label_con = dat_label[[ch_idx for ch_idx, ch in enumerate(mov_channel) if 'LEFT' in ch][0],:]
             arr_all[:grid_[0].shape[1],:] = proj_cortex
             if proj_subcortex is not None:
-                 arr_all[78:86,:] = proj_subcortex
+                 arr_all[grid_[0].shape[1] + grid_[2].shape[1]:grid_[0].shape[1] + grid_[1].shape[1] + grid_[2].shape[1],:] = proj_subcortex
 
     elif sess_right is False:
         if len([ch for ch in mov_channel if 'RIGHT' in ch]) >0:
@@ -104,7 +108,7 @@ def write_proj_data(ch_names, sess_right, dat_label, ind_label, grid_, proj_cort
             dat_label_con = dat_label[[ch_idx for ch_idx, ch in enumerate(mov_channel) if 'RIGHT' in ch][0],:]
             arr_all[:grid_[0].shape[1],:] = proj_cortex
             if proj_subcortex is not None:
-                 arr_all[78:86,:] = proj_subcortex
+                 arr_all[grid_[0].shape[1] + grid_[2].shape[1]:grid_[0].shape[1] + grid_[1].shape[1] + grid_[2].shape[1],:] = proj_subcortex
 
 
     #WRITE IPSILATERAL DATA if the respective movement channel exists
@@ -115,7 +119,7 @@ def write_proj_data(ch_names, sess_right, dat_label, ind_label, grid_, proj_cort
 
             arr_all[grid_[0].shape[1]:grid_[0].shape[1]+grid_[2].shape[1],:] = proj_cortex
             if proj_subcortex is not None:
-                 arr_all[86:,:] = proj_subcortex
+                 arr_all[grid_[0].shape[1] + grid_[1].shape[1] + grid_[2].shape[1]:,:] = proj_subcortex
     elif sess_right is True:
         if len([ch for ch in mov_channel if 'RIGHT' in ch]) >0:
             Ips_label = True
