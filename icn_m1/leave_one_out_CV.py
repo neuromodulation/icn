@@ -232,9 +232,8 @@ NUM_ECOG_RIGHT = grid_[2].shape[1] + NUM_ECOG_LEFT # 78
 NUM_SUBCORTEX_LEFT = grid_[1].shape[1] + NUM_ECOG_RIGHT #85
 
 NUM_PATIENTS=16
-#act_ = save_all_act_grid_points()
-act_ = []
-grid_points_none = check_leave_out_grid_points(act_, True)
+act_ = save_all_act_grid_points()  # obtain here the act_.npy array and the grid points none array; needs to be adapted for different proprocessing parameters
+grid_points_none = check_leave_out_grid_points(act_, False)
 
 
 if __name__== "__main__":
