@@ -218,14 +218,17 @@ def run_vhdr_file(s):
 
                 else:
                     con_true[m]=False
-                    
+            
+            Df=settings['resamplingrate']
+        
             if subject == '016':
-                Df=55
                 target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=-dat_MOV[m], Decimate=Df,method='baseline_rope', param=1e-1, thr=2e-1, normalize=True)
             else:
-                Df=40
-                target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=dat_MOV[m], Decimate=Df,method='baseline_rope', param=1e5, thr=2e-1, normalize=True)
-
+                target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=dat_MOV[m], Decimate=Df,method='baseline_rope', param=1e4, thr=2e-1, normalize=True)
+            
+                target_channel_corrected=target_channel_corrected[100:-1:10]  
+                raw_target_channel=raw_target_channel[100:-1:10]  
+            
             events=offline_analysis.create_events_array(onoff=onoff, raw_target_channel=dat_MOV[m], sf=sf)
     
             label=offline_analysis.generate_continous_label_array(L=new_num_data_points, sf=settings['resamplingrate'], events=events) 
