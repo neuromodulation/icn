@@ -2,7 +2,7 @@ import os
 import numpy as np
 import settings
 import pickle
-
+import IO
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import train_test_split
@@ -19,30 +19,21 @@ VICTORIA = False
 
 settings = {}
 
+with open('settings/settings.json', 'w') as fp:
+    json.dump(settings, fp)
+
 if VICTORIA is True:
     # insert at 1, 0 is the script path (or '' in REPL)
     sys.path.insert(1, '/home/victoria/icn/icn_m1')
     settings['BIDS_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS/"
-    settings['out_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/"
+    settings['Preprocess_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/"
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
-    settings['out_path'] = "C:\\Users\\ICN_admin\\Documents\\Decoding_Toolbox\\gen_p_files\\"
-
-settings['resamplingrate']=10
-settings['max_dist_cortex']=20
-settings['max_dist_subcortex']=5
-settings['normalization_time']=10
-settings['num_patients']=16
-
-settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
-settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
-
+    settings['Preprocess_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_dist_10_Median_10\\"
+    settings['write_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\res_dist_10_Median_10\\"
 
 settings['BIDS_path']=settings['BIDS_path'].replace("\\", "/")
-settings['out_path']=settings['out_path'].replace("\\", "/")
-
-with open('settings/settings.json', 'w') as fp:
-    json.dump(settings, fp)
+settings['Preprocess_path']=settings['Preprocess_path'].replace("\\", "/")
 
 
 def get_int_runs(patient_idx):
@@ -51,12 +42,12 @@ def get_int_runs(patient_idx):
     :param patient_idx:
     :return: list with all run files for the given patient
     """
-    os.listdir(settings['out_path'])
+    os.listdir(settings['Preprocess_path'])
     if patient_idx < 10:
         subject_id = str('00') + str(patient_idx)
     else:
         subject_id = str('0') + str(patient_idx)
-    list_subject = [i for i in os.listdir(settings['out_path']) if i.startswith('sub_'+subject_id) and i.endswith('.p')]
+    list_subject = [i for i in os.listdir(settings['Preprocess_path']) if i.startswith('sub_'+subject_id) and i.endswith('.p')]
     return list_subject
 
 
@@ -64,13 +55,13 @@ def get_act_int_list(patient_idx):
     """
 
     :param patient_idx:
-    :return: array in shape (runs_for_patient_idx, 94) including the active grid points in every run
+    :return: array in shape (runs_for_patient_idx, num_grid_points) including the active grid points in every run
     """
 
     runs_ = get_int_runs(patient_idx)
-    act_ = np.zeros([len(runs_), 94])
+    act_ = np.zeros([len(runs_), num_grid_points])
     for idx in range(len(runs_)):
-        file = open(os.path.join(settings['out_path'], runs_[idx]), 'rb')
+        file = open(os.path.join(settings['Preprocess_path'], runs_[idx]), 'rb')
         out = pickle.load(file)
 
         act_[idx, :] = out['arr_act_grid_points']
@@ -85,7 +76,7 @@ def save_all_act_grid_points():
     """
     l_act = []
     
-    for patient_idx in range(settings['num_patients']):
+    for patient_idx in range(NUM_PATIENTS):
         l_act.append(get_act_int_list(patient_idx))
     np.save('act_.npy', np.array(l_act))
     return np.array(l_act)
@@ -98,8 +89,8 @@ def check_leave_out_grid_points(act_, load=True):
     if load is True:
         return np.load('grid_points_none.npy', allow_pickle=True)
     
-    grid_point_occurance = np.zeros(94)
-    for patient_idx in range(settings['num_patients']):
+    grid_point_occurance = np.zeros(num_grid_points)
+    for patient_idx in range(NUM_PATIENTS):
         grid_point_occurance[np.where(np.sum(act_[patient_idx], axis=0))[0]] += 1
     grid_points_none = np.where((grid_point_occurance == 0) | (grid_point_occurance == 1))[0]
     np.save('grid_points_none.npy', grid_points_none)
@@ -139,7 +130,7 @@ def get_train_test_dat(patient_test, grid_point, act_, Train=True, Clip=True):
 
     """
     start = 0
-    for patient_idx in range(settings['num_patients']):
+    for patient_idx in range(NUM_PATIENTS):
         if Train is True and patient_idx == patient_test:
             continue
         if Train is False and patient_idx != patient_test:
@@ -151,7 +142,7 @@ def get_train_test_dat(patient_test, grid_point, act_, Train=True, Clip=True):
                 # does this run has the grid point?
                 if act_[patient_idx][run_idx, grid_point] != 0:
                     # load file
-                    file = open(os.path.join(settings['out_path'], run), 'rb')
+                    file = open(os.path.join(settings['Preprocess_path'], run), 'rb')
                     out = pickle.load(file)
 
                     # fill dat
@@ -159,7 +150,7 @@ def get_train_test_dat(patient_test, grid_point, act_, Train=True, Clip=True):
                         dat = out['pf_data_median'][:,grid_point,:]
                         if Clip:
                             dat=np.clip(dat, -2,2)
-                        if grid_point < 39 or (grid_point > 78 and grid_point < 86):  # contralateral
+                        if grid_point < NUM_ECOG_LEFT or (grid_point > NUM_ECOG_RIGHT and grid_point < NUM_SUBCORTEX_LEFT):  # contralateral
                             label = np.squeeze(out['label'][out['label_con_true']==True])
                         else:
                             label = np.squeeze(out['label'][out['label_con_true']==False])
@@ -170,7 +161,7 @@ def get_train_test_dat(patient_test, grid_point, act_, Train=True, Clip=True):
                             dat_new=np.clip(dat_new, -2,2)
                         dat = np.concatenate((dat, dat_new), axis=0)
 
-                        if grid_point < 39 or (grid_point > 78 and grid_point < 86):  # contralateral
+                        if grid_point < NUM_ECOG_LEFT or (grid_point > NUM_ECOG_RIGHT and grid_point < NUM_SUBCORTEX_LEFT):  # contralateral
                             label_new=np.squeeze(out['label'][out['label_con_true']==True])
                             label = np.concatenate((label, label_new), axis=0)
                         else:
@@ -187,9 +178,6 @@ def train_grid_point(time_stamps, act_, patient_test, grid_point, model, Verbose
 
     dat_test, label_test = get_train_test_dat(patient_test, grid_point, act_, Train=False)
     dat_test,label_test = append_time_dim(dat_test, label_test, time_stamps)
-
-    dat_test = np.clip(dat_test, -2,2)
-    dat = np.clip(-2,2)
 
     model.fit(dat, label)
 
@@ -215,13 +203,13 @@ def run_CV(patient_test, model=LinearRegression(), time_stamps=5):
     :param model_fun: provided model function
     :return:
     """
-    act_ = np.load('act_.npy', allow_pickle=True)  # load array with active grid points for all patients and runs
+    act_ = np.load('act_.npy', allow_pickle=True)  # load array with active grid points for all NUM_PATIENTS and runs
 
     #get all active grid_points for that patient
-    arr_active_grid_points = np.zeros(94)
+    arr_active_grid_points = np.zeros(num_grid_points)
     arr_active_grid_points[np.nonzero(np.sum(act_[patient_test], axis=0))[0]] = 1
 
-    patient_CV_out = np.empty(94, dtype=object)
+    patient_CV_out = np.empty(num_grid_points, dtype=object)
 
     for grid_point in np.nonzero(arr_active_grid_points)[0]:
         if grid_point in grid_points_none:
@@ -233,15 +221,26 @@ def run_CV(patient_test, model=LinearRegression(), time_stamps=5):
     else:
         subject_id = '0' + str(patient_test)
 
-    out_path_file = os.path.join(settings['out_path'], subject_id+'prediction.npy')
+    out_path_file = os.path.join(settings['write_path'], subject_id+'prediction.npy')
     np.save(out_path_file, patient_CV_out)
 
-patients=16
-    
-act_ = save_all_act_grid_points()
-grid_points_none = check_leave_out_grid_points(act_, False)
+cortex_left, cortex_right, subcortex_left, subcortex_right = IO.read_grid()
+grid_ = [cortex_left, subcortex_left, cortex_right, subcortex_right]
+num_grid_points = np.concatenate(grid_, axis=1).shape[1] 
+NUM_ECOG_LEFT = grid_[0].shape[1] # 39
+NUM_ECOG_RIGHT = grid_[2].shape[1] + NUM_ECOG_LEFT # 78
+NUM_SUBCORTEX_LEFT = grid_[1].shape[1] + NUM_ECOG_RIGHT #85
+
+NUM_PATIENTS=16
+#act_ = save_all_act_grid_points()
+act_ = []
+grid_points_none = check_leave_out_grid_points(act_, True)
+
 
 if __name__== "__main__":
 
-    pool = multiprocessing.Pool()
-    pool.map(run_CV, np.arange(patients))
+    for patient in range(16):
+        run_CV(patient)
+
+    #pool = multiprocessing.Pool()
+    #pool.map(run_CV, np.arange(NUM_PATIENTS))
