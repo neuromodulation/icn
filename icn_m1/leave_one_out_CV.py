@@ -14,7 +14,7 @@ import sys
 import settings
 
 
-VICTORIA = False
+VICTORIA = True
 
 
 settings = {}
@@ -26,7 +26,9 @@ if VICTORIA is True:
     # insert at 1, 0 is the script path (or '' in REPL)
     sys.path.insert(1, '/home/victoria/icn/icn_m1')
     settings['BIDS_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS/"
-    settings['Preprocess_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/"
+    settings['Preprocess_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Derivatives/Int_dist_30_Median_10/"
+    settings['write_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Classification/res_dist_25_Median_10/"
+
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
     settings['Preprocess_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_dist_10_Median_10\\"
@@ -151,9 +153,9 @@ def get_train_test_dat(patient_test, grid_point, act_, Train=True, Clip=True):
                         if Clip:
                             dat=np.clip(dat, -2,2)
                         if grid_point < NUM_ECOG_LEFT or (grid_point > NUM_ECOG_RIGHT and grid_point < NUM_SUBCORTEX_LEFT):  # contralateral
-                            label = np.squeeze(out['label'][out['label_con_true']==True])
+                            label = np.squeeze(out['label_baseline_corrected'][out['label_con_true']==True])
                         else:
-                            label = np.squeeze(out['label'][out['label_con_true']==False])
+                            label = np.squeeze(out['label_baseline_corrected'][out['label_con_true']==False])
                         start = 1
                     else:
                         dat_new=out['pf_data_median'][:,grid_point,:]
@@ -162,10 +164,10 @@ def get_train_test_dat(patient_test, grid_point, act_, Train=True, Clip=True):
                         dat = np.concatenate((dat, dat_new), axis=0)
 
                         if grid_point < NUM_ECOG_LEFT or (grid_point > NUM_ECOG_RIGHT and grid_point < NUM_SUBCORTEX_LEFT):  # contralateral
-                            label_new=np.squeeze(out['label'][out['label_con_true']==True])
+                            label_new=np.squeeze(out['label_baseline_corrected'][out['label_con_true']==True])
                             label = np.concatenate((label, label_new), axis=0)
                         else:
-                            label_new=np.squeeze(out['label'][out['label_con_true']==False])
+                            label_new=np.squeeze(out['label_baseline_corrected'][out['label_con_true']==False])
                             label = np.concatenate((label, label_new), axis=0)
     return dat, label
 
@@ -223,7 +225,7 @@ def run_CV(patient_test, model=LinearRegression(), time_stamps=5):
 
     out_path_file = os.path.join(settings['write_path'], subject_id+'prediction.npy')
     np.save(out_path_file, patient_CV_out)
-
+#%%
 cortex_left, cortex_right, subcortex_left, subcortex_right = IO.read_grid()
 grid_ = [cortex_left, subcortex_left, cortex_right, subcortex_right]
 num_grid_points = np.concatenate(grid_, axis=1).shape[1] 
@@ -238,8 +240,8 @@ grid_points_none = check_leave_out_grid_points(act_, False)
 
 if __name__== "__main__":
 
-    for patient in range(16):
-        run_CV(patient)
+    # for patient in range(16):
+    #     run_CV(patient)
 
-    #pool = multiprocessing.Pool()
-    #pool.map(run_CV, np.arange(NUM_PATIENTS))
+    pool = multiprocessing.Pool()
+    pool.map(run_CV, np.arange(NUM_PATIENTS))
