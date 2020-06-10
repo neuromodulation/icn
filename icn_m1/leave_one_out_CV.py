@@ -27,7 +27,7 @@ if VICTORIA is True:
     sys.path.insert(1, '/home/victoria/icn/icn_m1')
     settings['BIDS_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS/"
     settings['Preprocess_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Derivatives/Int_dist_30_Median_10/"
-    settings['write_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Classification/res_dist_25_Median_10/"
+    settings['write_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Classification/res_dist_30_Median_10/"
 
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
@@ -172,7 +172,7 @@ def get_train_test_dat(patient_test, grid_point, act_, Train=True, Clip=True):
     return dat, label
 
 
-def train_grid_point(time_stamps, act_, patient_test, grid_point, model, Verbose=False):
+def train_grid_point(time_stamps, act_, patient_test, grid_point, model, Verbose=True):
     if Verbose:
         print(grid_point)
     dat, label = get_train_test_dat(patient_test, grid_point, act_, Train=True)
@@ -240,8 +240,8 @@ grid_points_none = check_leave_out_grid_points(act_, False)
 
 if __name__== "__main__":
 
-    # for patient in range(16):
-    #     run_CV(patient)
+    for patient in range(16):
+        run_CV(patient)
 
-    pool = multiprocessing.Pool()
-    pool.map(run_CV, np.arange(NUM_PATIENTS))
+    # pool = multiprocessing.Pool()
+    # pool.map(run_CV, np.arange(NUM_PATIENTS))
