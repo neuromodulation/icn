@@ -127,7 +127,7 @@ def baseline_rope(y, lam=1):
               
     return z
 
-def baseline_correction(y, method='baseline_rope', param=1e5, thr=2e-1, normalize=True, Decimate=40, Verbose=True):
+def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1, normalize=True, Decimate=1, Verbose=True):
     """
     
     Parameters
