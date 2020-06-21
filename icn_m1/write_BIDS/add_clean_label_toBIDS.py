@@ -25,8 +25,8 @@ settings = {}
 if VICTORIA is True:
     # insert at 1, 0 is the script path (or '' in REPL)
     
-    settings['BIDS_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS/"
-    settings['out_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Derivatives/"
+    settings['BIDS_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS_backup/"
+    settings['out_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS/"
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
     settings['out_path'] = "C:\\Users\\ICN_admin\\Documents\\Decoding_Toolbox\\gen_p_files\\"
@@ -47,19 +47,22 @@ def write_all_M1_channel_files(settings):
     """
 
     BIDS_channel_tsv_files = []
-    for root, dirs, files in os.walk(settings['BIDS_path']):
+    for root, dirs, files in os.walk(settings['out_path']):
         for file in files:
             if file.endswith("_channels.tsv"):
                 ch_file = os.path.join(root, file)
                 
                 df_channel = pd.read_csv(ch_file, sep="\t")
+                #get MOV data names and add new names
+                names=list(df_channel['name'].copy(deep=True))
+                mov_names = [i for i in names if i.startswith('MOV')]
+                [names.append(s + '_CLEAN') for s in mov_names]
                 
-                df = pd.DataFrame(np.nan, index=np.arange(len(list(df_channel['name']))+2), columns=['name', 'rereference', 'used', 'target'])
+                #define new df
+                df = pd.DataFrame(np.nan, index=np.arange(len(list(df_channel['name']))+len(mov_names)), columns=['name', 'rereference', 'used', 'target'])
 
                 df['used'] = 1
-                names=list(df_channel['name'].copy(deep=True))
-                names.append(names[-2:-1][0]+'_CLEAN')
-                names.append(names[-2:-1][0]+'_CLEAN')
+               
                 df['name'] =names
 
                 ch_mov = [ch_idx for ch_idx, ch in enumerate(df['name']) if ch.startswith('MOV')]
@@ -72,96 +75,80 @@ def write_all_M1_channel_files(settings):
 
                 BIDS_channel_tsv_files.append(ch_file)
 #%%
-def run_vhdr_file(s):
+# def run_vhdr_file(s):
    
-    if s<10:
-        subject_idx= 'sub-00' + str(s)
-    else:
-        subject_idx= 'sub-0' + str(s)
+#     if s<10:
+#         subject_idx= 'sub-00' + str(s)
+#     else:
+#         subject_idx= 'sub-0' + str(s)
     
-    subject_path=settings['BIDS_path'] + subject_idx
-    subfolder=IO.get_subfolders(subject_path)
+#     subject_path=settings['BIDS_path'] + subject_idx
+#     subfolder=IO.get_subfolders(subject_path)
            
-    vhdr_files=IO.get_files(subject_path, subfolder)
-    vhdr_files.sort()
+#     vhdr_files=IO.get_files(subject_path, subfolder)
+#     vhdr_files.sort()
 
-    for f in range(len(vhdr_files)):
-        #%% get info and files for the specific subject/session/run
+#     for f in range(len(vhdr_files)):
+#         #%% get info and files for the specific subject/session/run
 
-        vhdr_file=vhdr_files[f]
+#         vhdr_file=vhdr_files[f]
          
-        #get info from vhdr_file
-        subject, run, sess = IO.get_sess_run_subject(vhdr_file)
+#         #get info from vhdr_file
+#         subject, run, sess = IO.get_sess_run_subject(vhdr_file)
         
-        print('RUNNIN SUBJECT_'+ subject+ '_SESS_'+ sess + '_RUN_' + run)
+#         print('RUNNIN SUBJECT_'+ subject+ '_SESS_'+ sess + '_RUN_' + run)
 
         
-        #read sf
-        sf=IO.read_run_sampling_frequency(vhdr_file)
-        if len(sf.unique())==1: #all sf are equal
-            sf=int(sf[0])
-        else: 
-            Warning('Different sampling freq.')      
-        #read data
-        bv_raw, ch_names = IO.read_BIDS_file(vhdr_file)
-        used_channels = IO.read_M1_channel_specs(vhdr_file[:-10])
+#         #read sf
+#         sf=IO.read_run_sampling_frequency(vhdr_file)
+#         if len(sf.unique())==1: #all sf are equal
+#             sf=int(sf[0])
+#         else: 
+#             Warning('Different sampling freq.')      
+#         #read data
+#         bv_raw, ch_names = IO.read_BIDS_file(vhdr_file)
+#         used_channels = IO.read_M1_channel_specs(vhdr_file[:-10])
 
     
-        # extract used channels/labels from brainvision file, split up in cortex/subcortex/labels
-        #dat_ is a dict
-        dat_ = IO.get_dat_cortex_subcortex(bv_raw, ch_names, used_channels)
-        dat_MOV=dat_['dat_label']
+#         # extract used channels/labels from brainvision file, split up in cortex/subcortex/labels
+#         #dat_ is a dict
+#         dat_ = IO.get_dat_cortex_subcortex(bv_raw, ch_names, used_channels)
+#         dat_MOV=dat_['dat_label']
     
-        label=np.empty(np.shape(dat_MOV), dtype=object)
+#         label=np.empty(np.shape(dat_MOV), dtype=object)
     
-        for m in range(len(dat_MOV)):
-            label_name=ch_names[used_channels['labels'][m]]           
-            if subject == '016':
-                target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=-dat_MOV[m], param=1, thr=2e-1)
-            else:
-                target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=dat_MOV[m])
+#         for m in range(len(dat_MOV)):
+#             label_name=ch_names[used_channels['labels'][m]]           
+#             if subject == '016':
+#                 target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=-dat_MOV[m], param=1, thr=2e-1)
+#             else:
+#                 target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=dat_MOV[m])
     
-            label[m]=target_channel_corrected
+#             label[m]=target_channel_corrected
             
          
            
-             #change channel info
+#              #change channel info
                    
-            ch_names.append(label_name+'_CLEAN')
+#             ch_names.append(label_name+'_CLEAN')
         
-        data=np.vstack((bv_raw, label))
-        file_name=subject_idx+'_ses-'+sess+'_task-force_run-' +run +'_ieeg'
-        out_path=subject_path+'/ses-'+sess+'/ieeg'
-        pybv.write_brainvision(data, sfreq=1000, ch_names=ch_names, fname_base=file_name,
-                                   folder_out=out_path,
-                                   events=None, resolution=1e-7, scale_data=True,
-                                   fmt='binary_float32', meas_date=None)
+#         data=np.vstack((bv_raw, label))
+#         file_name=subject_idx+'_ses-'+sess+'_task-force_run-' +run +'_ieeg'
+#         out_path=settings['out_path'] + subject_idx+'/ses-'+sess+'/ieeg'
+#         pybv.write_brainvision(data, sfreq=1000, ch_names=ch_names, fname_base=file_name,
+#                                    folder_out=out_path,
+#                                    events=None, resolution=1e-7, scale_data=True,
+#                                    fmt='binary_float32', meas_date=None)
        
        
 #add label corrected to BIDS file
 write_ALL = True
 if write_ALL is True:
     write_all_M1_channel_files(settings)
-if __name__ == "__main__":
+#%%    
+# if __name__ == "__main__":
     
-    for sub in range(17):
-        run_vhdr_file(sub)
+    # for sub in range(17):
+    #     run_vhdr_file(sub)
         
-        
-# def optimize_baseline(data):
-#     """Apply Bayesian Optimization to baseline correction parameters."""
-#     def function(param, thr):
-              
-#         return baseline_correction(param, thr, y=data)
-
-#     optimizer = BayesianOptimization(
-#         f=function,
-#         pbounds={"param": (1e3, 1e5), "thr": (0.5e-1, 2e-1)},
-#         random_state=1234,
-#         verbose=2
-#     )
-#     optimizer.maximize(n_iter=10)
-
-#     print("Final result:", optimizer.max)        
-    
-# optimize_baseline(data)    
+         
