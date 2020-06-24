@@ -34,7 +34,7 @@ if VICTORIA is True:
     settings['out_path'] = "C:\\Users\Pilin\Dropbox (Partners HealthCare)\Experiments\ProcessedTimonData\Data_processed\\"
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
-    settings['out_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_dist_10_Median_10\\"
+    settings['out_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_dist_10_Mean_10\\"
 
 
 
@@ -191,7 +191,7 @@ def run_vhdr_file(s):
         offset_start = int((sf/seglengths[0]) / (sf/settings['resamplingrate']))
         
         rf_data_median, pf_data_median = offline_analysis.run(sf, settings['resamplingrate'], np.asarray(seglengths), settings['frequencyranges'], grid_, downsample_idx, bv_raw, line_noise, \
-                      sess_right, dat_, filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples)
+                      sess_right, dat_, filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples, usemean_=True)
         
         #%%ipsi o contralateral mov
     

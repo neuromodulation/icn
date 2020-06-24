@@ -26,7 +26,7 @@ if VICTORIA is True:
     # insert at 1, 0 is the script path (or '' in REPL)
     sys.path.insert(1, '/home/victoria/icn/icn_m1')
     settings['BIDS_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS/"
-    settings['Preprocess_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Derivatives/Int_dist_30_Median_10/"
+    settings['Preprocess_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Derivatives/Int_dist_25_Median_10/"
     settings['write_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Classification/res_dist_25_Median_10/"
 
 else:
@@ -241,6 +241,8 @@ grid_points_none = check_leave_out_grid_points(act_, False)
 if __name__== "__main__":
 
     # for patient in range(16):
+    #     print(patient)
+
     #     run_CV(patient)
 
     pool = multiprocessing.Pool()

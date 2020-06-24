@@ -30,14 +30,14 @@ if VICTORIA is True:
     # insert at 1, 0 is the script path (or '' in REPL)
     
     settings['BIDS_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS/"
-    settings['out_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Derivatives/Int_dist_30_Median_10/"
+    settings['out_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Derivatives/Int_dist_25_Median_10/"
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
     settings['out_path'] = "C:\\Users\\ICN_admin\\Documents\\Decoding_Toolbox\\gen_p_files\\"
 
 settings['resamplingrate']=10
-settings['max_dist_cortex']=30
-settings['max_dist_subcortex']=30
+settings['max_dist_cortex']=25
+settings['max_dist_subcortex']=25
 settings['normalization_time']=10
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
@@ -288,7 +288,7 @@ def run_vhdr_file(s):
 
 if __name__ == "__main__":
     
-    # for sub in range(17):
+    # for sub in range(1,2):
     #     run_vhdr_file(sub)
 
     pool = multiprocessing.Pool()
