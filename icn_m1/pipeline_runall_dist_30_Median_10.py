@@ -36,9 +36,9 @@ else:
     settings['out_path'] = "C:\\Users\\ICN_admin\\Documents\\Decoding_Toolbox\\gen_p_files\\"
 
 settings['resamplingrate']=10
-settings['max_dist_cortex']=25
-settings['max_dist_subcortex']=25
-settings['normalization_time']=10
+settings['max_dist_cortex']=20
+settings['max_dist_subcortex']=20
+settings['normalization_time']=30
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
 
