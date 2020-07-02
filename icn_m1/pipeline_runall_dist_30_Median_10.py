@@ -1,8 +1,8 @@
 import sys
 sys.path.insert(1, '/home/victoria/icn/icn_m1/')
 import filter
-import filter
 import IO
+import settings
 import projection
 import online_analysis
 import offline_analysis
@@ -22,6 +22,7 @@ import mne
 mne.set_log_level(verbose='warning') #to avoid info at terminal
 from collections import Counter
 import multiprocessing
+#%%
 VICTORIA = True
 
 settings = {}
@@ -172,11 +173,11 @@ def run_vhdr_file(s):
         else:
             filter_len=1001
         # get the lenght of the recording signals
-        recording_time = bv_raw.shape[1] 
+        recording_length = bv_raw.shape[1] 
         
         #resample
         normalization_samples = settings['normalization_time']*settings['resamplingrate']
-        new_num_data_points = int((bv_raw.shape[1]/sf)*settings['resamplingrate'])
+        new_num_data_points = int((recording_length/sf)*settings['resamplingrate'])
     
         # downsample_idx states the original brainvision sample indexes are used
         downsample_idx = (np.arange(0,new_num_data_points,1)*sf/settings['resamplingrate']).astype(int)
@@ -191,13 +192,13 @@ def run_vhdr_file(s):
                       sess_right, dat_, filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples)
         
         #%%ipsi o contralateral mov
-    
+            
         label_channels = np.array(ch_names)[used_channels['labels']]
         
-        
+        wl=int(recording_length/(new_num_data_points))
         mov_ch=int(len(dat_MOV)/2)
         con_true = np.empty(mov_ch, dtype=object)
-        onoff=np.zeros(np.size(dat_MOV[0][1000:-1:100]))
+        onoff=np.zeros(np.size(dat_MOV[0][sf:-1:wl]))
 
 
         #only contralateral mov
@@ -221,7 +222,7 @@ def run_vhdr_file(s):
 
             for m in range(mov_ch):
             
-                target_channel_corrected=dat_MOV[m+mov_ch][1000:-1:100]  
+                target_channel_corrected=dat_MOV[m+mov_ch][sf:-1:wl] 
 
                 onoff[target_channel_corrected>0]=1
             
