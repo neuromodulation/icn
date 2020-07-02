@@ -196,14 +196,15 @@ def run_vhdr_file(s):
         #%%ipsi o contralateral mov
     
         label_channels = np.array(ch_names)[used_channels['labels']]
-        con_true = np.empty(len(label_channels), dtype=object)
-        y=np.empty((len(dat_MOV),new_num_data_points-offset_start), dtype=object)
-        label_baseline_corrected=[]
-        label_baseline_corrected_onoff=[]
-        raw_label_baseline=[]
+        
+        
+        mov_ch=int(len(dat_MOV)/2)
+        con_true = np.empty(mov_ch, dtype=object)
+        onoff=np.zeros(np.size(dat_MOV[0][1000:-1:100]))
+
 
         #only contralateral mov
-        for m in range(len(label_channels)):
+        for m in range(mov_ch):
             #right session
             if sess_right is True:
                 if 'RIGHT' in label_channels[m]:
@@ -218,32 +219,21 @@ def run_vhdr_file(s):
 
                 else:
                     con_true[m]=False
-            
-            Df=settings['resamplingrate']
-        
-            if subject == '016':
-                target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=-dat_MOV[m], Decimate=Df,method='baseline_rope', param=1e-1, thr=2e-1, normalize=True)
-            else:
-                target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=dat_MOV[m], Decimate=Df,method='baseline_rope', param=1e4, thr=2e-1, normalize=True)
-            
-                target_channel_corrected=target_channel_corrected[100:-1:10]  
-                raw_target_channel=raw_target_channel[100:-1:10]  
-            
-            events=offline_analysis.create_events_array(onoff=onoff, raw_target_channel=dat_MOV[m], sf=sf)
-    
-            label=offline_analysis.generate_continous_label_array(L=new_num_data_points, sf=settings['resamplingrate'], events=events) 
-            y[m]=label[offset_start:]        
-
+                    
            
-            if m==0:
-                label_baseline_corrected=target_channel_corrected
-                label_baseline_corrected_onoff=onoff
-                raw_label_baseline=raw_target_channel
-            else:
-                label_baseline_corrected=np.vstack((label_baseline_corrected,target_channel_corrected))
-                label_baseline_corrected_onoff=np.vstack((label_baseline_corrected_onoff,onoff))
-                raw_label_baseline=np.vstack((raw_label_baseline, raw_target_channel))
-                
+
+            for m in range(mov_ch):
+            
+                target_channel_corrected=dat_MOV[m+mov_ch][1000:-1:100]  
+
+                onoff[target_channel_corrected>0]=1
+            
+                if m==0:
+                    mov=target_channel_corrected
+                    onoff_mov=onoff
+                else:
+                    mov=np.vstack((mov,target_channel_corrected))
+                    onoff_mov=np.vstack((onoff_mov,onoff))
             
             # label=offline_analysis.generate_continous_label_array(L=len(dat_MOV[m]), sf=sf, events=events) 
             # y[m]=label[1000:-1:100] 
@@ -275,10 +265,8 @@ def run_vhdr_file(s):
             "arr_act_grid_points" : arr_act_grid_points, 
             "rf_data_median" : rf_data_median, 
             "pf_data_median" : pf_data_median,
-            "raw_label_baseline" : raw_label_baseline,
-            "label_baseline_corrected" : label_baseline_corrected, 
-            "label_baseline_corrected_onoff" : label_baseline_corrected_onoff,
-            "label" : y, 
+            "label_baseline_corrected" : mov, 
+            "label" : onoff, 
             "label_con_true" : con_true,        
         }
 
