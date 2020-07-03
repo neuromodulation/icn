@@ -279,8 +279,8 @@ def run_vhdr_file(s):
 
 if __name__ == "__main__":
     
-    for sub in range(17):
-        run_vhdr_file(sub)
+    #for sub in range(17):
+    #    run_vhdr_file(sub)
 
-    #pool = multiprocessing.Pool()
-    #pool.map(run_vhdr_file, range(17))
+    pool = multiprocessing.Pool()
+    pool.map(run_vhdr_file, np.arange(0,16,1))
