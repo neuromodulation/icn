@@ -34,14 +34,14 @@ if VICTORIA is True:
     settings['out_path'] = "C:\\Users\Pilin\Dropbox (Partners HealthCare)\Experiments\ProcessedTimonData\Data_processed\\"
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
-    settings['out_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_dist_20_Median_20_5Hz\\"
+    settings['out_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_dist_10_Mean_10_rep\\"
 
 
 
-settings['resamplingrate']=5
-settings['max_dist_cortex']=20
-settings['max_dist_subcortex']=20
-settings['normalization_time']=20
+settings['resamplingrate']=10
+settings['max_dist_cortex']=10
+settings['max_dist_subcortex']=10
+settings['normalization_time']=10
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
 
