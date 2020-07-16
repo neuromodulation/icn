@@ -238,6 +238,8 @@ def write_CV_CNN(subject_test):
             for run_ in list_subject_train])))
 
     for grid_point in grid_points_test_used:
+        if grid_point > 78:
+            continue
         print("grid_point: "+str(grid_point))
         if grid_point not in grid_points_train_used:
             continue
