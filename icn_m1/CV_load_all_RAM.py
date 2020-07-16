@@ -12,17 +12,31 @@ import sys
 import pandas as pd
 from matplotlib import pyplot as plt
 from xgboost import XGBRegressor
-
+from keras.models import Sequential
+from keras.layers import Dense, Conv2D , MaxPool2D , Flatten , Dropout
+from keras.layers import BatchNormalization
+from keras.callbacks import EarlyStopping
+from keras.callbacks import ModelCheckpoint
+import tensorflow as tf
+from keras.models import load_model
+from sklearn.metrics import r2_score, roc_auc_score
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import f1_score
+from sklearn import metrics
 
 # load all data from an interpolated folder into the RAM
 settings = {}
-settings['Preprocess_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_dist_10_Median_10\\"
-settings['write_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\res_XGB_dist_10_Median_10\\"
-int_runs = os.listdir(settings['Preprocess_path'])  # all runs in the preprocessed path 
+settings['Preprocess_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_dist_25_Median_10\\"
+settings['write_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\res_dist_25_Median_10_CNN\\"
+int_runs = os.listdir(settings['Preprocess_path'])  # all runs in the preprocessed path
 dat_all = {}
 for file in os.listdir(settings['Preprocess_path']):
     with open(os.path.join(settings['Preprocess_path'], file), 'rb') as pickle_file:
         dat_all[file] = pickle.load(pickle_file)
+
+gpu_devices = tf.config.experimental.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(gpu_devices[0], True)
+
 
 def read_grid():
     cortex_left = np.array(pd.read_csv('C:\\Users\\ICN_admin\\Documents\\icn\\icn_m1\\settings\\cortex_left.tsv', sep="\t"))
@@ -34,7 +48,7 @@ def read_grid():
 # supply the grid paths individually in read_grid()
 cortex_left, cortex_right, subcortex_left, subcortex_right = read_grid()
 grid_ = [cortex_left, subcortex_left, cortex_right, subcortex_right]
-num_grid_points = np.concatenate(grid_, axis=1).shape[1] 
+num_grid_points = np.concatenate(grid_, axis=1).shape[1]
 NUM_ECOG_LEFT = grid_[0].shape[1] # 39
 NUM_ECOG_RIGHT = grid_[2].shape[1] + NUM_ECOG_LEFT # 78
 NUM_SUBCORTEX_LEFT = grid_[1].shape[1] + NUM_ECOG_RIGHT #85
@@ -63,10 +77,10 @@ def get_train_test_runs(subject_test):
         subject_id = str('00') + str(subject_test)
     else:
         subject_id = str('0') + str(subject_test)
-    list_subject_test = [i for i in os.listdir(settings['Preprocess_path']) 
+    list_subject_test = [i for i in os.listdir(settings['Preprocess_path'])
                          if i.startswith('sub_'+subject_id) and i.endswith('.p')]
-    list_subject_train = [i for i in os.listdir(settings['Preprocess_path']) 
-                          if not i.startswith('sub_'+subject_id) and i.endswith('.p') 
+    list_subject_train = [i for i in os.listdir(settings['Preprocess_path'])
+                          if not i.startswith('sub_'+subject_id) and i.endswith('.p')
                           and not i.startswith("sub_016")]
     return list_subject_test, list_subject_train
 
@@ -74,7 +88,7 @@ def get_train_test_dat(grid_point, int_runs, list_subject_test, list_subject_tra
     """read train and test set based on int-runs for a given grid point
 
     Args:
-        grid_point (int): 
+        grid_point (int):
         int_runs (list): all run strings of preprocessed path
         list_subject_test (list): all test runs
         list_subject_train (list): all train runs
@@ -94,9 +108,9 @@ def get_train_test_dat(grid_point, int_runs, list_subject_test, list_subject_tra
                     if grid_point < NUM_ECOG_LEFT or (grid_point > NUM_ECOG_RIGHT and grid_point < NUM_SUBCORTEX_LEFT):  # contralateral
                         label_test = np.squeeze(dat_all[run]['label_baseline_corrected'][dat_all[run]['label_con_true']==True])
                     else:
-                        label_test = np.squeeze(dat_all[run]['label_baseline_corrected'][dat_all[run]['label_con_true']==False])                
+                        label_test = np.squeeze(dat_all[run]['label_baseline_corrected'][dat_all[run]['label_con_true']==False])
                 else:
-                    dat_test = np.concatenate((dat_test, 
+                    dat_test = np.concatenate((dat_test,
                                            dat_all[run]["pf_data_median"][:,grid_point,:]), axis=0)
                     if grid_point < NUM_ECOG_LEFT or (grid_point > NUM_ECOG_RIGHT and grid_point < NUM_SUBCORTEX_LEFT):  # contralateral
                         label_new=np.squeeze(dat_all[run]['label_baseline_corrected'][dat_all[run]['label_con_true']==True])
@@ -104,7 +118,7 @@ def get_train_test_dat(grid_point, int_runs, list_subject_test, list_subject_tra
                     else:
                         label_new=np.squeeze(dat_all[run]['label_baseline_corrected'][dat_all[run]['label_con_true']==False])
                         label_test = np.concatenate((label_test, label_new), axis=0)
-        
+
         elif run in list_subject_train:
             if grid_point in np.nonzero(dat_all[run]["arr_act_grid_points"])[0]:
                 if start_TRAIN == 0:
@@ -113,9 +127,9 @@ def get_train_test_dat(grid_point, int_runs, list_subject_test, list_subject_tra
                     if grid_point < NUM_ECOG_LEFT or (grid_point > NUM_ECOG_RIGHT and grid_point < NUM_SUBCORTEX_LEFT):  # contralateral
                         label_train = np.squeeze(dat_all[run]['label_baseline_corrected'][dat_all[run]['label_con_true']==True])
                     else:
-                        label_train = np.squeeze(dat_all[run]['label_baseline_corrected'][dat_all[run]['label_con_true']==False])                
+                        label_train = np.squeeze(dat_all[run]['label_baseline_corrected'][dat_all[run]['label_con_true']==False])
                 else:
-                    dat_train = np.concatenate((dat_train, 
+                    dat_train = np.concatenate((dat_train,
                                            dat_all[run]["pf_data_median"][:,grid_point,:]), axis=0)
                     if grid_point < NUM_ECOG_LEFT or (grid_point > NUM_ECOG_RIGHT and grid_point < NUM_SUBCORTEX_LEFT):  # contralateral
                         label_new=np.squeeze(dat_all[run]['label_baseline_corrected'][dat_all[run]['label_con_true']==True])
@@ -129,27 +143,27 @@ def get_train_test_dat(grid_point, int_runs, list_subject_test, list_subject_tra
 
 def write_CV(subject_test):
     """for a given subject perform the CV; read train and test set for every active grid point
-    Write out file as npy 
+    Write out file as npy
     Args:
         subject_test (int)
     """
     patient_CV_out = np.empty(num_grid_points, dtype=object)
     list_subject_test, list_subject_train = get_train_test_runs(subject_test)
     grid_points_test_used = np.unique(np.concatenate(
-            np.array([np.nonzero(dat_all[run_]["arr_act_grid_points"])[0] 
+            np.array([np.nonzero(dat_all[run_]["arr_act_grid_points"])[0]
             for run_ in list_subject_test])))
     grid_points_train_used = np.unique(np.concatenate(
-            np.array([np.nonzero(dat_all[run_]["arr_act_grid_points"])[0] 
+            np.array([np.nonzero(dat_all[run_]["arr_act_grid_points"])[0]
             for run_ in list_subject_train])))
-    
+
     for grid_point in grid_points_test_used:
         print("grid_point: "+str(grid_point))
         if grid_point not in grid_points_train_used:
             continue
         dat_train, label_train, dat_test, label_test = \
-            get_train_test_dat(grid_point, int_runs, 
+            get_train_test_dat(grid_point, int_runs,
                                list_subject_test, list_subject_train)
-        
+
         # split data into train and test sets
         seed = 7
         test_size = 0.33
@@ -178,17 +192,113 @@ def write_CV(subject_test):
         subject_id = '00' + str(subject_test)
     else:
         subject_id = '0' + str(subject_test)
-        
+
+    out_path_file = os.path.join(settings['write_path'], subject_id+'prediction.npy')
+    np.save(out_path_file, patient_CV_out)
+
+def correlation(x, y):
+    mx = tf.math.reduce_mean(x)
+    my = tf.math.reduce_mean(y)
+    xm, ym = x-mx, y-my
+    r_num = tf.math.reduce_mean(tf.multiply(xm,ym))
+    r_den = tf.math.reduce_std(xm) * tf.math.reduce_std(ym)
+    return r_num / r_den
+
+
+def define_model():
+    model = Sequential()
+    model.add(Conv2D(32 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu' , input_shape = (8,5,1)))
+    model.add(BatchNormalization())
+    model.add(MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+    model.add(Conv2D(64 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+    model.add(MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+    model.add(Conv2D(64 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+    model.add(MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+    model.add(Conv2D(128 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+    model.add(MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+    model.add(Conv2D(256 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+    model.add(MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+    model.add(Flatten())
+    model.add(Dense(units = 50 , activation = 'relu'))
+    model.add(Dropout(0.2))
+    model.add(Dense(units = 1 , activation = 'linear'))
+    model.compile(optimizer = 'adam' , loss = "mse" , metrics = [correlation])
+    model.summary()
+    return model
+
+
+def write_CV_CNN(subject_test):
+    patient_CV_out = np.empty(num_grid_points, dtype=object)
+    list_subject_test, list_subject_train = get_train_test_runs(subject_test)
+    grid_points_test_used = np.unique(np.concatenate(
+            np.array([np.nonzero(dat_all[run_]["arr_act_grid_points"])[0]
+            for run_ in list_subject_test])))
+    grid_points_train_used = np.unique(np.concatenate(
+            np.array([np.nonzero(dat_all[run_]["arr_act_grid_points"])[0]
+            for run_ in list_subject_train])))
+
+    for grid_point in grid_points_test_used:
+        print("grid_point: "+str(grid_point))
+        if grid_point not in grid_points_train_used:
+            continue
+        X_train, y_train, X_test, y_test = \
+            get_train_test_dat(grid_point, int_runs,
+                               list_subject_test, list_subject_train)
+        X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.33, random_state=0)
+        X_train = X_train.reshape(X_train.shape[0], 8, 5, order="F")
+        X_val = X_val.reshape(X_val.shape[0], 8, 5, order="F")
+        X_test = X_test.reshape(X_test.shape[0], 8, 5, order="F")
+        X_train = X_train.reshape(-1, 8, 5, 1)
+        X_val = X_val.reshape(-1, 8, 5, 1)
+        X_test = X_test.reshape(-1, 8, 5, 1)
+        model = define_model()
+        with tf.device(tf.DeviceSpec(device_type="GPU")):
+            es = EarlyStopping(monitor='val_correlation', mode='max', verbose=1, patience=5)
+            mc = ModelCheckpoint('best_model.h5', monitor='val_correlation', mode='max', verbose=1, save_best_only=True)
+            history = model.fit(X_train, np.round(y_train,2),batch_size = 500, epochs=500,
+                      validation_data=(X_val, np.round(y_val,2)), callbacks=[es,mc])
+
+        dependencies = {
+            'correlation': correlation
+        }
+        model = load_model('best_model.h5',custom_objects=dependencies)
+        y_test_pred = model.predict(X_test)[:,0]#, ntree_limit=model.best_ntree_limit)
+        y_train_pred = model.predict(X_train)[:,0]#, ntree_limit=model.best_ntree_limit)
+
+        ### add here also AUCPR and corr
+        precision, recall, thresholds = precision_recall_curve(y_test>0, y_test_pred)
+        aucpr_test = metrics.auc(recall, precision)
+        precision, recall, thresholds = precision_recall_curve(y_train>0, y_train_pred)
+        aucpr_train = metrics.auc(recall, precision)
+
+        patient_CV_out[grid_point] = {
+            "y_pred_test": y_test_pred,
+            "y_test": y_test,
+            "y_pred_train": y_train_pred,
+            "y_train": y_train,
+            "r2_test": r2_score(y_test, y_test_pred),
+            "r2_train": r2_score(y_train, y_train_pred),
+            "r_test":np.corrcoef(y_test, y_test_pred)[0][1],
+            "r_train":np.corrcoef(y_train, y_train_pred)[0][1],
+            "aucpr_test":aucpr_test,
+            "aucpr_train":aucpr_train
+        }
+        print("R TEST: ")
+        print(np.corrcoef(y_test, y_test_pred)[0][1])
+        print("AUCPR TEST: ")
+        print(aucpr_test)
+    if subject_test < 10:
+        subject_id = '00' + str(subject_test)
+    else:
+        subject_id = '0' + str(subject_test)
+
     out_path_file = os.path.join(settings['write_path'], subject_id+'prediction.npy')
     np.save(out_path_file, patient_CV_out)
 
 
 
-    
-
 if __name__ == "__main__":
 
     NUM_PATIENTS = 16
     for sub in np.arange(0,NUM_PATIENTS,1): #  depending on the number of patients, this can be also parallized using multprocessing pool
-        write_CV(sub)
-
+        write_CV_CNN(sub)
