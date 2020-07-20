@@ -61,18 +61,22 @@ settings['out_path']=settings['out_path'].replace("\\", "/")
 
 
 #%%
-# def optimize_enet(x,y):
+space_LM = [Real(0, 1, "uniform", name='alpha'),
+           Real(0, 1, "uniform", name='l1_ratio')]
+         
+def optimize_enet(x,y):
     
-#     @use_named_args(space_LM)
-#     def objective(**params):
-#         reg.set_params(**params)
-#         cval = cross_val_score(reg, x, y, scoring='r2', cv=3)
-#         cval[np.where(cval < 0)[0]] = 0
+    @use_named_args(space_LM)
+    def objective(**params):
+        reg.set_params(**params)
+        cval = cross_val_score(reg, x, y, scoring='r2', cv=3)
+        cval[np.where(cval < 0)[0]] = 0
     
-#         return -cval.mean()
+        return -cval.mean()
 
-#     res_gp = gp_minimize(objective, space_LM, n_calls=20, random_state=0)
-#     return res_gp
+    res_gp = gp_minimize(objective, space_LM, n_calls=20, random_state=0)
+    return res_gp
+
 
 def get_int_runs(subject_id, subfolder):
     """
@@ -92,37 +96,37 @@ def get_int_runs(subject_id, subfolder):
                                                                                         
     return list_subject
 
-def enet_train(alpha,l1_ratio,x,y):
-    clf=ElasticNet(alpha=alpha, l1_ratio=l1_ratio, max_iter=1000,normalize=False)
-    #clf.fit(x,y)
+# def enet_train(alpha,l1_ratio,x,y):
+#     clf=ElasticNet(alpha=alpha, l1_ratio=l1_ratio, max_iter=1000,normalize=False)
+#     #clf.fit(x,y)
     
-    cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
-    cval[np.where(cval < 0)[0]] = 0
-    return cval.mean()
+#     cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
+#     cval[np.where(cval < 0)[0]] = 0
+#     return cval.mean()
     
-    return clf.score(x, y)
-def optimize_enet(x,y):
-    """Apply Bayesian Optimization to select enet parameters."""
-    def function(alpha, l1_ratio):
+#     return clf.score(x, y)
+# def optimize_enet(x,y):
+#     """Apply Bayesian Optimization to select enet parameters."""
+#     def function(alpha, l1_ratio):
           
-        return enet_train(alpha=alpha, l1_ratio=l1_ratio, x=x, y=y)
+#         return enet_train(alpha=alpha, l1_ratio=l1_ratio, x=x, y=y)
     
-    optimizer = BayesianOptimization(
-        f=function,
-        pbounds={"alpha": (1e-4, 0.99), "l1_ratio": (1e-4,0.99)},
-        random_state=0,
-        verbose=1,
-    )
-    optimizer.probe(
-    params=[1e-3, 1e-3],
-    lazy=True,
-    )
-    optimizer.maximize(n_iter=25, init_points=20, acq="ei", xi=1e-1)
+#     optimizer = BayesianOptimization(
+#         f=function,
+#         pbounds={"alpha": (1e-4, 0.99), "l1_ratio": (1e-4,0.99)},
+#         random_state=0,
+#         verbose=1,
+#     )
+#     optimizer.probe(
+#     params=[1e-3, 1e-3],
+#     lazy=True,
+#     )
+#     optimizer.maximize(n_iter=25, init_points=20, acq="ei", xi=1e-1)
 
     
-    #train enet
+#     #train enet
     
-    return optimizer.max
+#     return optimizer.max
     # print("Final result:", optimizer.max)        
 def append_time_dim(arr, y_, time_stamps):
     """
@@ -138,12 +142,6 @@ cv = KFold(n_splits=3, shuffle=False)
 laterality=[("CON"), ("IPS")]
 signal=["STN", "ECOG"]
 
-#clf=LinearRegression(normalize=True, n_jobs=-1)
-# clf=LinearRegression()
-# clf=ElasticNetCV(normalize=True, n_jobs=-1, tol=1e-2, l1_ratio=[.1, .5, .7, .9, .95, .99, 1])
-
-cv = KFold(n_splits=3, shuffle=False) 
-# model=linear_model.LinearRegression(normalize=True, n_jobs=-1)
 
 #%%cross-val within subject   
 len(settings['num_patients'])
