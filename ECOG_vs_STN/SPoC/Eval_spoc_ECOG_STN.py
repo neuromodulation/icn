@@ -45,8 +45,6 @@ import gc
 from sklearn.preprocessing import StandardScaler
 
 from FilterBank import *
-from sklearn.compose import TransformedTargetRegressor
-
 # plt.close('all')
 
 #%%
@@ -67,20 +65,15 @@ settings['BIDS_path']=settings['BIDS_path'].replace("\\", "/")
 settings['out_path']=settings['out_path'].replace("\\", "/")
 
 #%%
-space_LM = [Real(0, 1, "uniform", name='alpha'),
-           Real(0, 1, "uniform", name='l1_ratio')]
-         
+reg=ElasticNet(max_iter=1000)
+space_LM = [Real(0, 1, "uniform", name='alpha'),Real(0, 1, "uniform", name='l1_ratio')]
+#%%
 def optimize_enet(x,y):
-    reg=ElasticNet(max_iter=1000)  
-    scaler = StandardScaler()
     
-    clf = make_pipeline(scaler, reg)
-            
-
     @use_named_args(space_LM)
     def objective(**params):
         reg.set_params(**params)
-        cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
+        cval = cross_val_score(reg, x, y, scoring='r2', cv=3)
         cval[np.where(cval < 0)[0]] = 0
     
         return -cval.mean()
@@ -119,15 +112,7 @@ def optimize_enet(x,y):
 #     #train enet
     
 #     return optimizer.max
-#     # print("Final result:", optimizer.max)  
-
-def append_time_dim_y(y_, time_stamps):
-    """
-    apply added time dimension for the data array and label given time_stamps (with downsample_rate=100) in 100ms / need to check with 1375Hz
-    """
-    
-    return y_[time_stamps:]
-      
+    # print("Final result:", optimizer.max)        
 def append_time_dim(arr, y_, time_stamps):
     """
     apply added time dimension for the data array and label given time_stamps (with downsample_rate=100) in 100ms / need to check with 1375Hz
@@ -138,13 +123,15 @@ def append_time_dim(arr, y_, time_stamps):
             time_arr[time_idx, time_point*arr.shape[1]:(time_point+1)*arr.shape[1]] = arr[time_-time_point,:]
     return time_arr, y_[time_stamps:]
 
-               
 #%%
+spoc= SPoC(n_components=1, log=False, reg='oas', transform_into ='average_power', rank='full')
 laterality=[("CON"), ("IPS")]
-signal=["ECOG", "STN"]
+# signal=["ECOG", "STN"]
 
+signal=["STN"]
 #clf=LinearRegression(normalize=True, n_jobs=-1)
 # clf=LinearRegression()
+clf=ElasticNet()
 
 cv = KFold(n_splits=3, shuffle=False)
 #%% CV split
@@ -240,47 +227,85 @@ for m, eeg in enumerate(signal):
                 onoff_test=[]
                 onoff_train=[]
                 
-               
                 XX=np.swapaxes(X,0,1)
                 XX=np.swapaxes(XX,1,2)
                 XX=np.swapaxes(XX,2,3)
                 XX=XX.astype('float64')
-                                                     
                
-                spoc= SPoC(n_components=1, log=False, reg='oas', transform_into ='average_power', rank='full')
-
                 features=FilterBank(estimator=spoc)
 
-                for train_index, test_index in cv.split(label):
+                for train_index, test_index in cv.split(aux):
                     Ztr, Zte=label[train_index], label[test_index]
-                    
+                    #normalize Z
+                    # scaler_z = StandardScaler()
+                    # scaler_z.fit(Ztr.reshape(-1, 1))
+                    # Ztr=np.squeeze(scaler_z.transform(Ztr.reshape(-1, 1)))
+                    # Zte=np.squeeze(scaler_z.transform(Zte.reshape(-1, 1)))
                     
                     gtr=features.fit_transform(XX[train_index], Ztr)
                     gte=features.transform(XX[test_index])
                     
-                                        
-                    # #cropped the values
-                    gtr=np.clip(gtr,-2,2)   
-                    gte=np.clip(gte,-2,2)
+                    # for fb in range(nfb): 
+                    #     x=X[fb]
+                    #     Xtr, Xte=x[train_index,:,:], x[test_index,:,:]
+                    #     Xtr=Xtr.astype('float64')
+                    #     Xte=Xte.astype('float64')
+      
+                    #     #fit and transform data
+                    #     if fb==0:
+                            
+                    #         gtr=spoc.fit_transform(Xtr, Ztr)
+                            
+                    #         filters=spoc.filters_.reshape(-1, spoc.filters_.shape[0],spoc.filters_.shape[1])
+                    #         patterns=spoc.patterns_.reshape(-1, spoc.patterns_.shape[0],spoc.patterns_.shape[1])
+                            
+                    #         gte=spoc.transform(Xte)
+                    #     else:                
+                    #         gtr=np.hstack((gtr,spoc.fit_transform(Xtr, Ztr)))
+                            
+                    #         gte=np.hstack((gte,spoc.transform(Xte)))
+                            
+                    #         ff=spoc.filters_.reshape(-1, filters.shape[1],filters.shape[2])
+                    #         pp=spoc.patterns_.reshape(-1, filters.shape[1],filters.shape[2])
+                            
+                                
+                    #         filters=np.vstack((filters,ff))
+                    #         patterns=np.vstack((patterns,pp))   
                     
-                                               
+                    # #cropped the values
+                    # gtr=np.clip(gtr,-2,2)   
+                    # gte=np.clip(gte,-2,2)
+                    
+                    #standarized
+                    # scaler = StandardScaler()
+                    # scaler.fit(gtr)
+                    # gtr=scaler.transform(gtr)
+                    # gte=scaler.transform(gte)
+                            
                     dat_tr,label_tr = append_time_dim(gtr, Ztr,time_stamps=5)
                     dat_te,label_te = append_time_dim(gte, Zte,time_stamps=5)
                     
-                   
-                    Label_te[mov].append(label_te)
-                    Label_tr[mov].append(label_tr)
-                    
-                  
-                    
-                    optimizer=optimize_enet(x=dat_tr,y=label_tr)
-                    clf=ElasticNet(alpha=optimizer.x[0], l1_ratio=optimizer.x[1], max_iter=1000)
-         
-                    #train and evaluate the model on the best hyperparams
                     scaler = StandardScaler()
                     scaler.fit(dat_tr)
                     dat_tr=scaler.transform(dat_tr)
                     dat_te=scaler.transform(dat_te)
+    
+                    # Label_te[mov].append(Zte)
+                    # Label_tr[mov].append(Ztr)
+                    
+                    Label_te[mov].append(label_te)
+                    Label_tr[mov].append(label_tr)
+                    
+                    # scaler_z = StandardScaler()
+                    # scaler_z.fit(label_tr.reshape(-1, 1))
+                    # label_tr=np.squeeze(scaler_z.transform(label_tr.reshape(-1, 1)))
+                    # label_te=np.squeeze(scaler_z.transform(label_te.reshape(-1, 1)))
+                    
+                    optimizer=optimize_enet(x=dat_tr,y=label_tr)
+                    # clf=ElasticNet(alpha=optimizer['params']['alpha'], l1_ratio=optimizer['params']['l1_ratio'], max_iter=1000, normalize=False)
+                    clf=ElasticNet(alpha=optimizer.x[0], l1_ratio=optimizer.x[1], max_iter=1000)
+    
+                    
                     clf.fit(dat_tr, label_tr)
                     Ypre_te[mov].append(clf.predict(dat_te))
                     Ypre_tr[mov].append(clf.predict(dat_tr))
@@ -300,10 +325,9 @@ for m, eeg in enumerate(signal):
                     alpha_param[mov].append(clf.alpha)
                     l1_ratio_param[mov].append(clf.l1_ratio)
     
-    
         
                         
-            
+            print(np.mean(score_te["CON"]))
            
             #%% save 
             predict_ = {
@@ -323,8 +347,8 @@ for m, eeg in enumerate(signal):
                 
             }
             
-            # out_path_file = os.path.join(settings['out_path_process']+ settings['num_patients'][s]+'predictions_'+eeg+'_tlag'+'_'+str(subfolder[ss])+'.npy')
-            # np.save(out_path_file, predict_)        
+            out_path_file = os.path.join(settings['out_path_process']+ settings['num_patients'][s]+'predictions_'+eeg+'_tlag'+'_'+str(subfolder[ss])+'.npy')
+            np.save(out_path_file, predict_)        
             
             gc.collect()
             
