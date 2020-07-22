@@ -313,8 +313,8 @@ for m, eeg in enumerate(signal):
                    
                 }
                 
-            out_path_file = os.path.join(settings['out_path_process']+ settings['num_patients'][s]+'BestChpredictions_'+eeg+'_tlag_CVnorm_'+ str(subfolder[ss])+'.npy')
-            np.save(out_path_file, predict_)      
+            # out_path_file = os.path.join(settings['out_path_process']+ settings['num_patients'][s]+'BestChpredictions_'+eeg+'_tlag_CVnorm_'+ str(subfolder[ss])+'.npy')
+            # np.save(out_path_file, predict_)      
         
 
         
