@@ -38,10 +38,15 @@ class FilterBank(BaseEstimator, TransformerMixin):
             for i in range(X.shape[-1])
         ]
         
+        
         self.filters= [self.models[i].filters_ for i in range(X.shape[-1])]
         self.patterns= [self.models[i].patterns_ for i in range(X.shape[-1])]
+        
+        self.mean=[self.models[i].mean_ for i in range(X.shape[-1])]
+        self.std=[self.models[i].std_ for i in range(X.shape[-1])]
 
         return self
+ 
 
                
 

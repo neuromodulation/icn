@@ -59,7 +59,7 @@ space_LM = [Real(0, 1, "uniform", name='alpha'),
          
 def optimize_enet(x,y):
 
-    reg=ElasticNet(max_iter=1000,normalize=False)  
+    reg=ElasticNet(max_iter=1000)  
     scaler = StandardScaler()
     clf = make_pipeline(scaler, reg)
             
@@ -72,7 +72,7 @@ def optimize_enet(x,y):
     
         return -cval.mean()
 
-    res_gp = gp_minimize(objective, space_LM, n_calls=20, random_state=0)
+    res_gp = gp_minimize(objective, space_LM, n_calls=20)
     return res_gp
 
 
@@ -137,8 +137,8 @@ def append_time_dim(arr, y_, time_stamps):
     return time_arr, y_[time_stamps:]
 #%%
 cv = KFold(n_splits=3, shuffle=False)  
-laterality=[("CON"), ("IPS")]
-signal=["STN", "ECOG"]
+laterality=["CON", "IPS"]
+signal=["ECOG", "STN"]
 
 
 #%%cross-val within subject   
@@ -146,7 +146,7 @@ len(settings['num_patients'])
 for m, eeg in enumerate(signal):  
    
 
-    for s in range(1):
+    for s in range(len(settings['num_patients'])):
         subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][s]
         subfolder=IO.get_subfolders(subject_path)
        
@@ -250,27 +250,32 @@ for m, eeg in enumerate(signal):
                 for e in range(X.shape[1]):
                     
                     
-                    dat_,label_ = append_time_dim(X[:,e,:], label,time_stamps=5)    
-                    dat_tr, dat_te, label_tr, label_te = train_test_split(dat_, label_, test_size=0.1, random_state=0)
+                    dat_,label_ = append_time_dim(X[:,e,:], label,time_stamps=5) 
+                    # #z-score with no cv
+                    # scaler = StandardScaler()
+                    # scaler.fit(dat_)
+                    # dat_=scaler.transform(dat_)
+                    # #undomment this line (and chenge appropraitely) for having a testing data out
+                    # dat_tr, dat_te, label_tr, label_te = train_test_split(dat_, label_, test_size=0.1, random_state=0)
 
                      
-                    optimizer=optimize_enet(x=dat_tr,y=label_tr)
+                    optimizer=optimize_enet(x=dat_,y=label_)
                     # model=ElasticNet(alpha=optimizer['params']['alpha'], l1_ratio=optimizer['params']['l1_ratio'], max_iter=1000, normalize=False)
                     
-                    scaler = StandardScaler()
-                    scaler.fit(dat_tr)
-                    dat_tr=scaler.transform(dat_tr)
-                    dat_te=scaler.transform(dat_te)
-                    model=ElasticNet(alpha=optimizer.x[0], l1_ratio=optimizer.x[1], max_iter=1000, normalize=False)
+                    # scaler = StandardScaler()
+                    # scaler.fit(dat_tr)
+                    # dat_tr=scaler.transform(dat_tr)
+                    # dat_te=scaler.transform(dat_te)
+                    # model=ElasticNet(alpha=optimizer.x[0], l1_ratio=optimizer.x[1], max_iter=1000)
             
                                    
-                    model.fit(dat_tr, label_tr)
-                    Ypre_te=model.predict(dat_te)
-                    Ypre_tr=model.predict(dat_tr)
-                    r2_tr=model.score(dat_tr, label_tr)
-                    if r2_tr < 0: r2_tr = 0
-                    r2_te=model.score(dat_te, label_te)
-                    if r2_te < 0: r2_te = 0
+                    # model.fit(dat_tr, label_tr)
+                    # Ypre_te=model.predict(dat_te)
+                    # Ypre_tr=model.predict(dat_tr)
+                    # r2_tr=model.score(dat_tr, label_tr)
+                    # if r2_tr < 0: r2_tr = 0
+                    # r2_te=model.score(dat_te, label_te)
+                    # if r2_te < 0: r2_te = 0
                         
                         # onoff=np.zeros(np.shape(Ytr))
                         # onoff[Ytr>0]=1
@@ -280,36 +285,36 @@ for m, eeg in enumerate(signal):
                         # onoff[Yte>0]=1
                         # auc_te.append(roc_auc_score(onoff,Yte))   
                    
-        
-                    Score_tr[e]=r2_tr
-                    Score_te[e]=r2_te
-                    Label_te[e]=label_te
-                    Label_tr[e]=label_tr
-                    Labelpre_te[e]=Ypre_te
-                    Labelpre_tr[e]=Ypre_tr
+                    Score_te[e]=-optimizer.fun
+                    # Score_tr[e]=r2_tr
+                    # Score_te[e]=r2_te
+                    # Label_te[e]=label_te
+                    # Label_tr[e]=label_tr
+                    # Labelpre_te[e]=Ypre_te
+                    # Labelpre_tr[e]=Ypre_tr
                     # AUC_tr[e]=auc_tr
                     # AUC_te[e]=auc_te
         
-                sc_tr[mov] = Score_tr
+                # sc_tr[mov] = Score_tr
                 sc_te[mov] = Score_te
-                Yp_tr[mov] = Labelpre_te
-                Yp_te[mov] = Labelpre_tr
-                Yt_tr[mov] = Label_te
-                Yt_te[mov] = Label_tr
+                # Yp_tr[mov] = Labelpre_te
+                # Yp_te[mov] = Labelpre_tr
+                # Yt_tr[mov] = Label_te
+                # Yt_te[mov] = Label_tr
         
             
             predict_ = {
-                    "y_pred_test": Yp_te,
-                    "y_test": Yt_te,
-                    "y_pred_train": Yp_tr,
-                    "y_train": Yt_tr,
-                    "score_tr": sc_tr,
+                    # "y_pred_test": Yp_te,
+                    # "y_test": Yt_te,
+                    # "y_pred_train": Yp_tr,
+                    # "y_train": Yt_tr,
+                    # "score_tr": sc_tr,
                     "score_te": sc_te,
                    
                 }
                 
-            out_path_file = os.path.join(settings['out_path_process']+ settings['num_patients'][s]+'BestChpredictions_'+eeg+'_tlag_'+ str(subfolder[ss])+'.npy')
-            np.save(out_path_file, predict_)      
+            # out_path_file = os.path.join(settings['out_path_process']+ settings['num_patients'][s]+'BestChpredictions_'+eeg+'_tlag_CVnorm_'+ str(subfolder[ss])+'.npy')
+            # np.save(out_path_file, predict_)      
         
 
         
