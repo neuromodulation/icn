@@ -80,8 +80,15 @@ def run(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_no
     return rf_data_median, pf_data_median
 
 def NormalizeData(data):
-    return (data - np.min(data)) / (np.max(data) - np.min(data))
+    minv=np.min(data)
+    maxv=np.max(data)
+    data_new=(data - np.min(data)) / (np.max(data) - np.min(data))
+    return data_new, minv, maxv
 
+def DeNormalizeData(data,minv, maxv):
+   
+    data_new=(data + minv) * (maxv - minv)
+    return data_new
 def baseline_als(y, lam, p, niter=10): 
     """
     Baseline drift correction based on [1]
@@ -182,15 +189,19 @@ def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1, normaliz
     y_corrected=y-z
     
     #normalize
-    if normalize:
-        y=NormalizeData(y)
-        y_corrected=NormalizeData(y_corrected)
+       
+    y_corrected, minv, maxv=NormalizeData(y_corrected)
         
     #eliminate interferation
     y_corrected[y_corrected<thr]=0      
     #create on-off signal
     onoff=np.zeros(np.size(y_corrected))
     onoff[y_corrected>0]=1
+    
+    if normalize:
+        y, Nan, Nan=NormalizeData(y)
+    else:
+        y_corrected=DeNormalizeData(y_corrected, minv, maxv)
     return y_corrected, onoff, y
 
 def create_events_array(onoff, raw_target_channel, sf):

@@ -157,9 +157,9 @@ def run_vhdr_file(s):
         for m in range(len(dat_MOV)):
             label_name=ch_names[used_channels['labels'][m]]           
             if subject == '016':
-                target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=-dat_MOV[m], param=1, thr=2e-1)
+                target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=-dat_MOV[m], param=1, thr=2e-1, normalize=False)
             else:
-                target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=dat_MOV[m])
+                target_channel_corrected, onoff, raw_target_channel=offline_analysis.baseline_correction(y=dat_MOV[m], normalize=False)
     
             label[m]=target_channel_corrected
             
@@ -187,7 +187,7 @@ if write_ALL is True:
 # %%    
 if __name__ == "__main__":
     
-    for sub in range(17):
+    for sub in range(1):
         run_vhdr_file(sub)
         
          
