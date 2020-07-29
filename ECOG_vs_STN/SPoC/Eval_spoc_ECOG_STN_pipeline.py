@@ -66,16 +66,18 @@ settings['BIDS_path']=settings['BIDS_path'].replace("\\", "/")
 settings['out_path']=settings['out_path'].replace("\\", "/")
 
 #%%
-space_LM = [Real(0, 1, "uniform", name='alpha'),
-           Real(0, 1, "uniform", name='l1_ratio')]
+space_LM = [Real(1e-6, 1, "uniform", name='alpha'),
+           Real(1e-6, 1, "uniform", name='l1_ratio')]
 #%%
 def func(y, time_stamps=5):
     y_=y.copy()
-    y_[:time_stamps]=np.zeros((time_stamps,1))
-    return y_
+    # y_[:time_stamps]=np.zeros((time_stamps,1))
+
+    return y_[time_stamps:]
+
 def inverse_func(x, time_stamps=5):
     x_=x.copy()
-    # x_=np.vstack((x, np.zeros((time_stamps,1))))
+    x_=np.vstack((np.zeros((time_stamps,1)),x))
     # print(x_.shape)
 
     return x_
@@ -139,14 +141,14 @@ def optimize_enet(x,y):
     # print("Final result:", optimizer.max)        
 
 #%%
-laterality=[("CON")]
+laterality=["CON", "IPS"]
 # signal=["ECOG", "STN"]
 signal=["ECOG"]
 #%%
 len(settings['num_patients'])
 for m, eeg in enumerate(signal):    
 
-    for s in range( 1   ):
+    for s in range(1,2):
         gc.collect()
     
         subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][s]
@@ -234,9 +236,12 @@ for m, eeg in enumerate(signal):
                 
                 #I need to do this for the way the filter bank is implemented
                 XX=np.swapaxes(X,0,1)
+                del X
                 XX=np.swapaxes(XX,1,2)
                 XX=np.swapaxes(XX,2,3)
-                XX=XX.astype('float64')
+                # XX=XX.astype('float64')
+                
+              
                 
                 #I need to add label to data for time append lags
                 nt, nc,ns,nfb=np.shape(XX)   
@@ -245,8 +250,11 @@ for m, eeg in enumerate(signal):
                 for i in range(nfb):
                     new_data[:,:,:ns,i]=XX[:,:,:,i]
                     new_data[:,:,-1,i]=ll
-                    
-                    
+                # new_data=new_data.astype('float32')
+                del XX
+                del ll
+                gc.collect()
+    
 
                 optimizer=optimize_enet(x=new_data,y=label)
                 score_te[mov]= -optimizer.fun 
@@ -268,22 +276,22 @@ for m, eeg in enumerate(signal):
             gc.collect()
             
                 
-            #%% Plot the True mov and the predicted
-            fig, ax = plt.subplots(1, 1, figsize=[10, 4])
-            ind_best=np.argmax(score_te['CON'])
-            Ypre_te_best=Ypre_te['CON'][ind_best]
-            label_test_best=Label_te['CON'][ind_best]
-            #times = raw.times[meg_epochs.events[:, 0] - raw.first_samp]
-            ax.plot(Ypre_te_best, color='b', label='Predicted mov')
-            ax.plot(label_test_best, color='r', label='True mov')
-            ax.set_xlabel('Time (s)')
-            ax.set_ylabel('Movement')
-            ax.set_title('SPoC mov Predictions')
-            ax.text(0.33, 0.9, 'R2={:0.02f}'.format(score_te['CON'][ind_best]),
-            verticalalignment='bottom', horizontalalignment='right',
-            transform=ax.transAxes,fontsize=12) 
-            fig.suptitle(eeg+'-Subject_'+ settings['num_patients'][s], fontsize=14, fontweight='bold')
-            plt.legend()
-            plt.show()
+            # #%% Plot the True mov and the predicted
+            # fig, ax = plt.subplots(1, 1, figsize=[10, 4])
+            # ind_best=np.argmax(score_te['CON'])
+            # Ypre_te_best=Ypre_te['CON'][ind_best]
+            # label_test_best=Label_te['CON'][ind_best]
+            # #times = raw.times[meg_epochs.events[:, 0] - raw.first_samp]
+            # ax.plot(Ypre_te_best, color='b', label='Predicted mov')
+            # ax.plot(label_test_best, color='r', label='True mov')
+            # ax.set_xlabel('Time (s)')
+            # ax.set_ylabel('Movement')
+            # ax.set_title('SPoC mov Predictions')
+            # ax.text(0.33, 0.9, 'R2={:0.02f}'.format(score_te['CON'][ind_best]),
+            # verticalalignment='bottom', horizontalalignment='right',
+            # transform=ax.transAxes,fontsize=12) 
+            # fig.suptitle(eeg+'-Subject_'+ settings['num_patients'][s], fontsize=14, fontweight='bold')
+            # plt.legend()
+            # plt.show()
             
             

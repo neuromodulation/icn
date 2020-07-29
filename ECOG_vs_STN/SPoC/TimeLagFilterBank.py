@@ -67,10 +67,10 @@ class TimeLagFilterBank(BaseEstimator, TransformerMixin):
         """
         apply added time dimension for the data array and label given time_stamps (with downsample_rate=100) in 100ms / need to check with 1375Hz
         """
-        time_arr = np.zeros([np.shape(arr)[0], int(time_stamps*np.shape(arr)[1])])
+        time_arr = np.zeros([np.shape(arr)[0]-time_stamps, int(time_stamps*np.shape(arr)[1])])
         for time_idx, time_ in enumerate(np.arange(time_stamps, np.shape(arr)[0])):
             for time_point in range(time_stamps):
-                time_arr[time_idx+time_stamps, time_point*np.shape(arr)[1]:(time_point+1)*np.shape(arr)[1]] = arr[time_-time_point,:]
+                time_arr[time_idx, time_point*np.shape(arr)[1]:(time_point+1)*np.shape(arr)[1]] = arr[time_-time_point,:]
            
         return time_arr
  
