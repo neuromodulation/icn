@@ -9,6 +9,9 @@ import numpy as np
 import mne
 import scipy
 
+class NoValidTroughException(Exception):
+    pass
+
 class Waveform_analyzer:
 
     def __init__(self, sample_rate=1000, line_noise=60, bp_low_cutoff=5, bp_high_cutoff=90):
@@ -18,10 +21,7 @@ class Waveform_analyzer:
                                 fir_design='firwin', l_trans_bandwidth=5,
                                 h_trans_bandwidth=5, filter_length='1000ms')
 
-    class NoValidTroughException(Exception):
-        pass
-
-    def get_peaks_around(trough_ind, arr_ind_peaks, filtered_dat):
+    def get_peaks_around(self, trough_ind, arr_ind_peaks, filtered_dat):
 
         # find all peaks to the right (then left) side, then take the closest one to the trough
         ind_greater = np.where(arr_ind_peaks>trough_ind)[0]
@@ -39,17 +39,32 @@ class Waveform_analyzer:
 
         return peak_left_idx, peak_right_idx, filtered_dat[peak_left_idx], filtered_dat[peak_right_idx]
 
-    def analyze_waveform(raw_dat, peak_dist=1, trough_dist=5, mov_con=False, mov_ips=False):
+    def analyze_waveform(self, raw_dat, peak_dist=1, trough_dist=5, label=False, y_contra=None, y_ipsi=None, \
+                        plot_=False):
 
-        filtered_dat = scipy.signal.convolve(raw_dat, self.filter, mode='same')
+        # first notch filter data
+        dat_notch_filtered = mne.filter.notch_filter(x=raw_dat, Fs=self.sample_rate, trans_bandwidth=7,
+            freqs=np.arange(self.line_noise, 4*self.line_noise, self.line_noise),
+            fir_design='firwin', verbose=False, notch_widths=1,filter_length=raw_dat.shape[0]-1)
+
+        filtered_dat = scipy.signal.convolve(dat_notch_filtered, self.filter, mode='same')
+
         peaks = scipy.signal.find_peaks(filtered_dat, distance=peak_dist)[0]
         troughs = scipy.signal.find_peaks(-filtered_dat, distance=trough_dist)[0]
+
+        if plot_ is True:
+            plt.figure(figsize=(15,5))
+            plt.plot(peaks, filtered_dat[peaks], "xr");
+            plt.plot(troughs, filtered_dat[troughs], "ob");
+            plt.plot(filtered_dat, color='black'); plt.legend(['peaks', 'trough'])
+            plt.show()
 
         df  = pd.DataFrame()
         sharp_wave = {}
         for trough_idx in troughs:
             try:
-                peak_idx_left, peak_idx_right, peak_left, peak_right = get_peaks_around(trough_idx, peaks, filtered_dat)
+                peak_idx_left, peak_idx_right, peak_left, peak_right = self.get_peaks_around(trough_idx,
+                                                                                        peaks, filtered_dat)
             except NoValidTroughException as e:
                 # in this case there is no adjacent two peaks around this trough
                 print(str(e))
@@ -85,14 +100,31 @@ class Waveform_analyzer:
                 "trough" : filtered_dat[trough_idx], # mV
                 "trough_idx" : trough_idx,
                 "width" : peak_idx_right - peak_idx_left, # ms
-                "prominence": np.abs((peak_right + peak_left) / 2 - trough_idx), # mV
+                "prominence": np.abs((peak_right + peak_left) / 2 - filtered_dat[trough_idx]), # mV
                 "interval" : interval_, # ms
                 "decay_time": (peak_idx_left - trough_idx) *(1000/self.sample_rate),
                 "rise_time" : (peak_idx_right - trough_idx) *(1000/self.sample_rate),
                 "sharpness" : sharpness,
                 "rise_steepness" : rise_steepness,
                 "decay_steepness" : decay_steepness,
-                "slope_ratio" : rise_steepness - decay_steepness
+                "slope_ratio" : rise_steepness - decay_steepness,
+                "label" : False,
+                "MOV_TYPE" : None,
+                "y_contra" : None,
+                "y_ipsi" : None
             }
+
+            if label is True:
+                sharp_wave["label"] = True
+                    # movement
+                if y_ipsi[trough_idx] > 0:
+                    MOV_ = "IPS"
+                elif y_contra[trough_idx] > 0:
+                    MOV_ = "CON"
+                else:
+                    MOV_ = "NONE"
+                sharp_wave["MOV_TYPE"] = MOV_
+                sharp_wave["y_contra"] = y_contra[trough_idx]
+                sharp_wave["y_ipsi"] = y_ipsi[trough_idx]
             df = df.append(sharp_wave, ignore_index=True)
         return df 
