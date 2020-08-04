@@ -57,7 +57,6 @@ settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/"
 
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
-# settings['num_patients']=['000', '004', '005', '007', '008', '009', '010', '013', '014']
 settings['num_patients']=['000', '001', '004', '005', '006', '007', '008', '009', '010', '013', '014']
 
 
@@ -65,15 +64,18 @@ settings['BIDS_path']=settings['BIDS_path'].replace("\\", "/")
 settings['out_path']=settings['out_path'].replace("\\", "/")
 
 #%%
-reg=ElasticNet(max_iter=1000)
 space_LM = [Real(0, 1, "uniform", name='alpha'),Real(0, 1, "uniform", name='l1_ratio')]
 #%%
 def optimize_enet(x,y):
-    
+    scaler = StandardScaler()
+    reg=ElasticNet(max_iter=1000)
+    clf = make_pipeline(scaler, reg)
+
+      
     @use_named_args(space_LM)
     def objective(**params):
         reg.set_params(**params)
-        cval = cross_val_score(reg, x, y, scoring='r2', cv=3)
+        cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
         cval[np.where(cval < 0)[0]] = 0
     
         return -cval.mean()
@@ -112,7 +114,7 @@ def optimize_enet(x,y):
 #     #train enet
     
 #     return optimizer.max
-    print("Final result:", optimizer.max)        
+    # print("Final result:", optimizer.max)        
 def append_time_dim(arr, y_, time_stamps):
     """
     apply added time dimension for the data array and label given time_stamps (with downsample_rate=100) in 100ms / need to check with 1375Hz
@@ -124,20 +126,16 @@ def append_time_dim(arr, y_, time_stamps):
     return time_arr, y_[time_stamps:]
 
 #%%
-spoc= SPoC(n_components=2, log=True, reg='oas', transform_into ='average_power', rank='full')
+spoc= SPoC(n_components=1, log=True, reg='oas', transform_into ='average_power', rank='full')
 laterality=["CON", "IPS"]
-# signal=["ECOG", "STN"]
-
-signal=["ECOG"]
-#clf=LinearRegression(normalize=True, n_jobs=-1)
-# clf=LinearRegression()
+signal=["ECOG", "STN"]
 
 cv = KFold(n_splits=3, shuffle=False)
 #%% CV split
 len(settings['num_patients'])
 for m, eeg in enumerate(signal):    
 
-    for s in range(1):
+    for s in range(len(settings['num_patients'])):
         gc.collect()
     
         subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][s]
@@ -177,11 +175,7 @@ for m, eeg in enumerate(signal):
             Y_con=np.concatenate(Y_con, axis=0)
             Y_ips=np.concatenate(Y_ips, axis=0)  
     
-           
-    
-           
-            
-            
+            # for results storage           
             Ypre_tr= OrderedDict()
             score_tr= OrderedDict()
             Ypre_te= OrderedDict()
@@ -212,13 +206,9 @@ for m, eeg in enumerate(signal):
                 else:
                     label=Y_ips
                 
-                # #z-scored label also
-                # label=stats.zscore(label)
-                nfb, nt,nc,ns=np.shape(X)   
-                          
+                
                 result_lm=[]
                 result_rm=[]
-                aux=X[0][:,1,:]
                 
                 label_test=[]
                 label_train=[]
@@ -226,30 +216,30 @@ for m, eeg in enumerate(signal):
                 onoff_test=[]
                 onoff_train=[]
                 
-                XX=np.swapaxes(X,0,1)
-                XX=np.swapaxes(XX,1,2)
-                XX=np.swapaxes(XX,2,3)
-                XX=XX.astype('float64')
-                
-                nt, nc,ns,nfb=np.shape(XX)   
+                                
+                nfb, nt,nc,ns=np.shape(X)   
+                # adap data for the filter bank implementation 
+                new_data=[]
+                for i in range(nfb):
+                    new_data.append(X[i,:,:,:])
+                new_data=np.stack(new_data, axis=-1).astype('float64')
+                gc.collect()
+    
                
                 features=FilterBank(estimator=spoc)
 
-                for train_index, test_index in cv.split(aux):
+                for train_index, test_index in cv.split(label):
                     Ztr, Zte=label[train_index], label[test_index]
                     
                     
-                    gtr=features.fit_transform(XX[train_index], Ztr)
-                    gte=features.transform(XX[test_index])
+                    gtr=features.fit_transform(new_data[train_index], Ztr)
+                    gte=features.transform(new_data[test_index])
                     
                                                 
                     dat_tr,label_tr = append_time_dim(gtr, Ztr,time_stamps=5)
                     dat_te,label_te = append_time_dim(gte, Zte,time_stamps=5)
                     
-                    scaler = StandardScaler()
-                    scaler.fit(dat_tr)
-                    dat_tr=scaler.transform(dat_tr)
-                    dat_te=scaler.transform(dat_te)
+                    
     
                     # Label_te[mov].append(Zte)
                     # Label_tr[mov].append(Ztr)
@@ -257,15 +247,16 @@ for m, eeg in enumerate(signal):
                     Label_te[mov].append(label_te)
                     Label_tr[mov].append(label_tr)
                     
-                    # scaler_z = StandardScaler()
-                    # scaler_z.fit(label_tr.reshape(-1, 1))
-                    # label_tr=np.squeeze(scaler_z.transform(label_tr.reshape(-1, 1)))
-                    # label_te=np.squeeze(scaler_z.transform(label_te.reshape(-1, 1)))
-                    
+                                        
                     optimizer=optimize_enet(x=dat_tr,y=label_tr)
-                    clf=ElasticNet(alpha=optimizer['params']['alpha'], l1_ratio=optimizer['params']['l1_ratio'], max_iter=1000, normalize=True)
-                    # clf=ElasticNet(alpha=optimizer.x[0], l1_ratio=optimizer.x[1], max_iter=1000)
-    
+                    # clf=ElasticNet(alpha=optimizer['params']['alpha'], l1_ratio=optimizer['params']['l1_ratio'], max_iter=1000)
+                    clf=ElasticNet(alpha=optimizer.x[0], l1_ratio=optimizer.x[1], max_iter=1000)
+                    
+                    #now that the LM is fit, scaler training and testing data
+                    scaler = StandardScaler()
+                    scaler.fit(dat_tr)
+                    dat_tr=scaler.transform(dat_tr)
+                    dat_te=scaler.transform(dat_te)
                     
                     clf.fit(dat_tr, label_tr)
                     Ypre_te[mov].append(clf.predict(dat_te))
@@ -279,8 +270,8 @@ for m, eeg in enumerate(signal):
                     
                     score_tr[mov].append(r2_tr)
                           
-                    # Filters[mov].append(filters)
-                    # Patterns[mov].append(patterns)
+                    Filters[mov].append(features.filters)
+                    Patterns[mov].append(features.patterns)
                     
                     Coef[mov].append(clf.coef_)
                     alpha_param[mov].append(clf.alpha)
