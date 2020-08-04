@@ -142,13 +142,12 @@ def optimize_enet(x,y):
 
 #%%
 laterality=["CON", "IPS"]
-# signal=["ECOG", "STN"]
-signal=["ECOG"]
+signal=["ECOG", "STN"]
 #%%
 len(settings['num_patients'])
 for m, eeg in enumerate(signal):    
 
-    for s in range(1,2):
+    for s in range(len(settings['num_patients'])):
         gc.collect()
     
         subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][s]
@@ -226,7 +225,6 @@ for m, eeg in enumerate(signal):
                                       
                 result_lm=[]
                 result_rm=[]
-                aux=X[0][:,1,:]
                 
                 label_test=[]
                 label_train=[]
@@ -234,25 +232,37 @@ for m, eeg in enumerate(signal):
                 onoff_test=[]
                 onoff_train=[]
                 
-                #I need to do this for the way the filter bank is implemented
-                XX=np.swapaxes(X,0,1)
-                del X
-                XX=np.swapaxes(XX,1,2)
-                XX=np.swapaxes(XX,2,3)
-                # XX=XX.astype('float64')
+                # #I need to do this for the way the filter bank is implemented
+                # XX=np.swapaxes(X,0,1)
+                # # del X
+                # XX=np.swapaxes(XX,1,2)
+                # XX=np.swapaxes(XX,2,3)
+                # # XX=XX.astype('float64')
                 
               
                 
-                #I need to add label to data for time append lags
-                nt, nc,ns,nfb=np.shape(XX)   
-                ll=np.repeat(label.T[np.newaxis,...], nc, axis=0).T   
-                new_data=np.empty((nt,nc, ns+1, nfb))
+                # #I need to add label to data for time append lags
+                # nt, nc,ns,nfb=np.shape(XX)   
+                # ll=np.repeat(label.T[np.newaxis,...], nc, axis=0).T   
+                # new_data=np.empty((nt,nc, ns+1, nfb))
+                # for i in range(nfb):
+                #     new_data[:,:,:ns,i]=XX[:,:,:,i]
+                #     new_data[:,:,-1,i]=ll
+                # # new_data=new_data.astype('float32')
+                # # del XX
+                # # del ll
+                # gc.collect()
+                
+                 #I need to add label to data for time append lags
+                nfb, nt,nc,ns=np.shape(X)   
+                ll=np.repeat(label.T[np.newaxis,...], nc, axis=0).T
+                # ll=np.reshape(ll, (nt,nc,nfb))
+                new_data=[]
                 for i in range(nfb):
-                    new_data[:,:,:ns,i]=XX[:,:,:,i]
-                    new_data[:,:,-1,i]=ll
+                    new_data.append(np.dstack((X[i,:,:,:], ll)))
+                    # new_data[i,:,-1,:]=ll
+                new_data=np.stack(new_data, axis=-1)
                 # new_data=new_data.astype('float32')
-                del XX
-                del ll
                 gc.collect()
     
 
