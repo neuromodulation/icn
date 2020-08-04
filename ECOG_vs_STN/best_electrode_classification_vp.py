@@ -148,7 +148,7 @@ len(settings['num_patients'])
 for m, eeg in enumerate(signal):  
    
 
-    for s in range(8,9):
+    for s in range(len(settings['num_patients']):
         subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][s]
         subfolder=IO.get_subfolders(subject_path)
        
