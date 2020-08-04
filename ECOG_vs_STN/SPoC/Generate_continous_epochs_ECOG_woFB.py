@@ -92,7 +92,7 @@ settings['resamplingrate']=10
 settings['max_dist_cortex']=20
 settings['max_dist_subcortex']=5
 settings['normalization_time']=10
-settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
+settings['frequencyranges']=[[2, 250]]
 settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
 settings['num_patients']=['000', '001', '004', '005', '006', '007', '008', '009', '010', '013', '014']
 
@@ -108,7 +108,7 @@ IO.write_all_M1_channel_files()
 
 #%%
 
-for s in range(1):
+for s in range(len(settings["num_patients"])):
     
     
 
@@ -285,7 +285,7 @@ for s in range(1):
                 
             }
             
-            out_path = os.path.join(settings['out_path'],'epochs_sub_' + subject +'_sess_' +sess + '_run_'+ run + '.p')
+            out_path = os.path.join(settings['out_path'],'ECOG_epochs_wofb_sub_' + subject +'_sess_' +sess + '_run_'+ run + '.p')
             
             with open(out_path, 'wb') as handle:
                 pickle.dump(sub_, handle, protocol=pickle.HIGHEST_PROTOCOL)   

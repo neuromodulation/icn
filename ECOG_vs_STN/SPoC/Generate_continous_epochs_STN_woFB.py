@@ -89,10 +89,8 @@ settings = {}
 settings['BIDS_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS_new/"
 settings['out_path'] = "/mnt/Datos/BML_CNCRS/Spoc/"
 settings['resamplingrate']=10
-settings['max_dist_cortex']=20
-settings['max_dist_subcortex']=5
 settings['normalization_time']=10
-settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
+settings['frequencyranges']=[[2, 250]]
 settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
 settings['num_patients']=['000', '001', '004', '005', '006', '007', '008', '009', '010', '013', '014']
 
@@ -108,7 +106,7 @@ IO.write_all_M1_channel_files()
 
 #%%
 
-for s in range(1):
+for s in range(len(settings['num_patients'])):
     
     
 
@@ -128,10 +126,10 @@ for s in range(1):
         vhdr_files=get_files(subject_path, subfolder[ss])
         vhdr_files.sort()
         
-        if s==4 and ss==0:
-            vhdr_files.pop(0)
-        if s==4 and ss==1:
-            vhdr_files.pop(2)
+        # if s==4 and ss==0:
+        #     vhdr_files.pop(0)
+        # if s==4 and ss==1:
+        #     vhdr_files.pop(2)
     
 
         len(vhdr_files)
@@ -177,29 +175,31 @@ for s in range(1):
             
             label_channels = np.array(ch_names)[used_channels['labels']]
     
-            #%% REREFERENCE
             dat_ECOG, dat_STN =rereference.rereference(run_string=vhdr_file[:-10], data_cortex=dat_ECOG, data_subcortex=dat_STN)
 
+            if dat_STN is None:
+                continue
         
             #%% filter data
             line_noise = IO.read_line_noise(settings['BIDS_path'],subject)
-            x_filtered=transform_channels(dat_ECOG, settings, sf, line_noise)
+            x_filtered=transform_channels(dat_STN, settings, sf, line_noise)
             
             #%% create MNE object
             # Build epochs as sliding windows over the continuous raw file
-            channels_ecog=[ch_names[i] for i in ind_cortex] 
-            info_ecog = mne.create_info(ch_names=channels_ecog, sfreq=sf, ch_types='ecog')           
-               
+            channels_stn=[ch_names[i] for i in ind_subcortex] 
+            info_stn= mne.create_info(ch_names=channels_stn, sfreq=sf, ch_types='ecog')           
+            
+            
             
             mov_ch=int(len(dat_MOV)/2)
             con_true = np.empty(mov_ch, dtype=object)
 
-            onoff=np.zeros(np.size(dat_MOV[0][::100]))
+            onoff=np.zeros(np.size(dat_MOV[0][1000:-1:100]))
 
             for m in range(mov_ch):
             
-                target_channel_corrected=dat_MOV[m+mov_ch][::100]  
-
+                target_channel_corrected=dat_MOV[m+mov_ch]
+                target_channel_corrected=target_channel_corrected[1000:-1:100]  
 
                 onoff[target_channel_corrected>0]=1
             
@@ -230,6 +230,7 @@ for s in range(1):
             
             onoff_mov_con=np.squeeze(onoff_mov[con_true==True])
             onoff_mov_ips=np.squeeze(onoff_mov[con_true==False])
+            
   
     #%% epoch data with mne
         
@@ -237,16 +238,25 @@ for s in range(1):
             data=[]
 
             for fb in range(len(f_ranges)): 
-                raw_ecog = mne.io.RawArray(x_filtered[fb], info_ecog)
+                raw_stn = mne.io.RawArray(x_filtered[fb], info_stn)
                             
                     
-                events_ecog=mne.make_fixed_length_events(raw_ecog, id=1, start=0, stop=None, duration=.1)
-                ecog_epoch=Epochs(raw_ecog, events_ecog, event_id=1, tmin=0, tmax=1, baseline=None)
-                aux_data=ecog_epoch.get_data().astype('float32')
-                data.append(aux_data)
+                events_stn=mne.make_fixed_length_events(raw_stn, id=1, start=0, stop=None, duration=.1)
+                stn_epoch=Epochs(raw_stn, events_stn, event_id=1, tmin=0, tmax=1, baseline=None)
+             
+                data.append(stn_epoch.get_data())
                     
                # print(np.shape(data))
             gc.collect()
+            
+            if np.shape(data[0])[0] > len(y_con):
+                y_con=np.hstack((y_con, 0))
+                y_ips=np.hstack((y_ips, 0))
+                onoff_mov_con=np.hstack((onoff_mov_con, 0))
+                onoff_mov_ips=np.hstack((onoff_mov_ips, 0))
+
+
+
 
             label_con=y_con[:np.shape(data)[1]]
             label_ips=y_ips[:np.shape(data)[1]]
@@ -254,18 +264,7 @@ for s in range(1):
             onoff_con=onoff_mov_con[:np.shape(data)[1]]
             onoff_ips=onoff_mov_ips[:np.shape(data)[1]]
             
-            # X.append(data)
-            # Y_con.append(label_con)
-            # OnOff_con.append(onoff_con)
-            # Y_ips.append(label_ips)
-            # OnOff_ips.append(onoff_ips)
-        
-
-            # X=np.concatenate(data, axis=1)
-            # Y_con=np.concatenate(label_con, axis=0)
-            # Y_ips=np.concatenate(label_ips, axis=0)            
-            # OnOff_con=np.concatenate(onoff_con, axis=0)
-            # OnOff_ips=np.concatenate(onoff_ips, axis=0)
+           
             #%% save
             sub_ = {
                 "ch_names" : ch_names, 
@@ -280,12 +279,13 @@ for s in range(1):
                 "epochs" : data,
                 "session": sess,
                 "run": run,
-                "info_mne" : info_ecog,
+                "info_mne" : info_stn,
               
                 
             }
             
-            out_path = os.path.join(settings['out_path'],'epochs_sub_' + subject +'_sess_' +sess + '_run_'+ run + '.p')
+            out_path = os.path.join(settings['out_path'],'STN_epochs_wofb_sub_' + subject +'_sess_' +sess + '_run_'+ run + '.p')
             
             with open(out_path, 'wb') as handle:
                 pickle.dump(sub_, handle, protocol=pickle.HIGHEST_PROTOCOL)   
+        

@@ -7,19 +7,136 @@ Created on Thu May 21 18:49:39 2020
 import sys
 # insert at 1, 0 is the script path (or '' in REPL)
 sys.path.insert(1, '/home/victoria/icn/icn_m1')
+import filter
 import IO
+import online_analysis
+import offline_analysis
 import rereference
 import numpy as np
 import json
 import os
 import pickle 
+from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D #for 3D plotting
+import scipy
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score, roc_auc_score
+from sklearn.model_selection import train_test_split
+import itertools
 import mne
+from mne.decoding import CSP
 from mne import Epochs
+from mne.decoding import SPoC
 mne.set_log_level(verbose='warning') #to avoid info at terminal
 
+from sklearn.pipeline import make_pipeline
+from sklearn.linear_model import Ridge
+from sklearn.model_selection import KFold, cross_val_predict
+from sklearn import linear_model
+from sklearn.linear_model import LogisticRegression
 import gc
 
 #%%
+
+def epoch_data_ML(data, events, sf, toffset=0.1, twindows=1):
+    """
+    this function segments data in rest and movement epochs.
+    Rest epoch are taken between trials from the tmin sec before target onset and tmax sec
+    after target onset
+
+    Parameters
+    ----------
+    data : array, shape(n_channels, n_samples)
+        either cortex of subcortex data to be epoched.
+    events : array, shape(n_events,2)
+        All events that were found by the function
+        'create_events_array'. 
+        The first column contains the event time in samples and the second column contains the event id.
+    sf : int, float
+        sampling frequency of the raw_data.
+    tmin : float
+        Start time before event (in sec). 
+        If nothing is provided, defaults to 1.
+    tmax : float
+        Stop time after  event (in sec). 
+        If nothing is provided, defaults to 1.
+    Raises
+    ------
+    ValueError
+        DESCRIPTION.
+
+    Returns
+    -------
+    X : array, shape(n_events, n_channels, n_samples)
+        epoched data
+    Y : array, shape(n_events, n_samples)
+        sample-wise label information of data.
+.
+
+    """
+    
+    
+    #get time_events index    
+    mask_start=events[:,1]==1
+    
+    n_trials=len(events)
+    #labels
+            
+    Y=np.zeros(n_trials)
+    Y[mask_start]=1
+    
+    #time up
+    time_up=[x - events[i - 1] for i, x in enumerate(events[:,0])][1:]
+    time_up=np.asarray(time_up)[:,0]
+    min_time_up=min(time_up)
+    #check inputs
+    if twindows > min_time_up:
+        Warning('twindows too large. It should be lower than={:3.2f}'.format(min_time_up))
+        twindows=min_time_up
+      
+        
+    for i in range(len(events)):
+        start_epoch=int(np.round((events[i,0]+toffset)*sf))
+        stop_epoch=int(np.round((events[i,0]+toffset+twindows)*sf))
+        
+        if stop_epoch > data.shape[1]:
+            Warning('Not enough data to extract last trial given the desided window length')
+            Y[:-1]
+        else:
+            epoch=data[:,start_epoch:stop_epoch]
+        #reshape data (n_events, n_channels, n_samples)
+        nc, ns=np.shape(epoch)
+        epoch=np.reshape(epoch,(1, nc,ns))
+        if i==0:
+            X=epoch
+        else:
+            X=np.vstack((X,epoch))
+           
+    return X, Y
+
+def continous_epoch_data(data, sf, t_min=0.0, t_windows=1, t_stride=0.04):
+    
+    
+    time_start_epoch = np.arange(0, data.shape[1], t_stride)
+    for e in range(len(time_start_epoch)):
+        start_epoch=int(np.round((time_start_epoch[e]+t_min)*sf))
+        stop_epoch=start_epoch + int(np.round(t_windows*sf))
+        
+        
+        epoch=data[:,start_epoch:stop_epoch]
+        
+        if epoch.shape[1]<int(round(t_windows*sf)):
+            break
+        #reshape data (n_events, n_channels, n_samples)
+        nc, ns=np.shape(epoch)
+        epoch=np.reshape(epoch,(1, nc,ns))
+        if e==0:
+            X=epoch
+        else:
+            X=np.vstack((X,epoch))
+    return X
+
+
 def t_f_transform(x, sample_rate, f_ranges, line_noise):
     """
     calculate time frequency transform with mne filter function
@@ -107,8 +224,9 @@ settings = IO.read_settings('mysettings')
 IO.write_all_M1_channel_files()
 
 #%%
-
-for s in range(1):
+len(settings['num_patients'])
+for s in range(len(settings['num_patients'])
+):
     
     
 
@@ -177,9 +295,11 @@ for s in range(1):
             
             label_channels = np.array(ch_names)[used_channels['labels']]
     
-            #%% REREFERENCE
+            
+             # #%% REREFERENCE
             dat_ECOG, dat_STN =rereference.rereference(run_string=vhdr_file[:-10], data_cortex=dat_ECOG, data_subcortex=dat_STN)
 
+        
         
             #%% filter data
             line_noise = IO.read_line_noise(settings['BIDS_path'],subject)
@@ -194,12 +314,12 @@ for s in range(1):
             mov_ch=int(len(dat_MOV)/2)
             con_true = np.empty(mov_ch, dtype=object)
 
-            onoff=np.zeros(np.size(dat_MOV[0][::100]))
+            onoff=np.zeros(np.size(dat_MOV[0][::100][10:]))
 
             for m in range(mov_ch):
             
                 target_channel_corrected=dat_MOV[m+mov_ch][::100]  
-
+                target_channel_corrected=target_channel_corrected[10:]
 
                 onoff[target_channel_corrected>0]=1
             
@@ -285,7 +405,132 @@ for s in range(1):
                 
             }
             
-            out_path = os.path.join(settings['out_path'],'epochs_sub_' + subject +'_sess_' +sess + '_run_'+ run + '.p')
+            out_path = os.path.join(settings['out_path'],'epochs_10s_sub_' + subject +'_sess_' +sess + '_run_'+ run + '.p')
             
             with open(out_path, 'wb') as handle:
                 pickle.dump(sub_, handle, protocol=pickle.HIGHEST_PROTOCOL)   
+        
+# channels_mov=[ch_names[i] for i in ind_label] 
+            # info_mov = mne.create_info(ch_names=channels_mov, sfreq=25, ch_types='stim')
+            # f_ranges=settings['frequencyranges']
+            #%%
+            # for fb in range(len(f_ranges)): 
+                
+               
+
+            
+                
+            #     #events_mov=mne.make_fixed_length_events(raw_mov, id=1, start=0, stop=None, duration=.04)
+            #     #mov_epoch=Epochs(raw_mov, events_mov, event_id=1, tmin=0, tmax=1, baseline=None)
+                # data = ecog_epoch.get_data()
+            #     if f==0:
+            #         X[fb]=data
+            #     else:
+            #         X[fb]=np.vstack((X[fb],data))
+            
+            # I need this for making the right epoching.        
+            #ind=events_ecog[:,0]+1000<dat_MOV.shape[-1]
+                
+        
+                
+            #mov=np.zeros((dat_MOV.shape[0], round(len(dat_MOV[1])/40)+1))
+            #mov=np.zeros((dat_MOV.shape[0], data.shape[0]))   
+
+    # X.append(x_filtered)
+        # Y_con.append(y_con)
+        # OnOff_con.append(onoff_mov_con)
+        # Y_ips.append(y_ips)
+        # OnOff_ips.append(onoff_mov_ips)
+    
+    # f_ranges=settings['frequencyranges']
+    # data=[]
+    # for fb in range(len(f_ranges)): 
+    #     raw_ecog = mne.io.RawArray(x_filtered[fb], info_ecog)
+                    
+            
+    #     events_ecog=mne.make_fixed_length_events(raw_ecog, id=1, start=0, stop=None, duration=.04)
+    #     ecog_epoch=Epochs(raw_ecog, events_ecog, event_id=1, tmin=0, tmax=1, baseline=None)
+     
+    #     data.append(ecog_epoch.get_data())    
+    # X=np.concatenate(X, axis=2)
+    # Y_con=np.concatenate(Y_con, axis=0)
+    # Y_ips=np.concatenate(Y_ips, axis=0)            
+    # OnOff_con=np.concatenate(OnOff_con, axis=0)
+    # OnOff_ips=np.concatenate(OnOff_ips, axis=0)
+        
+        # if f==0:
+        #     X=x_filtered
+        #     Y_con=y_con
+        #     OnOff_con=onoff_mov_con
+        #     Y_ips=y_ips
+        #     OnOff_ips=onoff_mov_ips
+        # else:
+        #     X=np.concatenate((X,x_filtered), axis=2)
+        #     Y_con=np.concatenate((Y_con,y_con), axis=0)
+        #     Y_ips=np.concatenate((Y_ips,y_ips), axis=0)            
+        #     OnOff_con=np.concatenate((OnOff_con,onoff_mov_con), axis=0)
+        #     OnOff_ips=np.concatenate((OnOff_ips,onoff_mov_ips), axis=0)
+        # print(X.shape)
+        # print(Y_con.shape)    
+    # classi_result = {
+    #     "subject" : subject, 
+    #     "lm_ypre" :Ypre_, 
+    #     "rd_ypre": 
+        
+    # }
+    
+    # out_path = os.path.join(settings['out_path'],'sub_' + subject + '.p')
+    
+    # with open(out_path, 'wb') as handle:
+    #     pickle.dump(sub_, handle, protocol=pickle.HIGHEST_PROTOCOL)       
+    # print(np.mean(result_lm))
+    # print(np.mean(result_rm))
+
+                
+
+
+
+            
+    #     # Classification pipeline with SPoC spatial filtering and Ridge Regression
+    #     clf = make_pipeline(spoc, Ridge())
+        
+        
+    #     # Run cross validaton
+    #     y_preds = cross_val_predict(clf, X, Y, cv=cv)
+        
+    
+
+
+    #         # #%% filter data
+    #         # nt,nc,ns=X.shape
+    #         # X_filtered=np.zeros((nt,nc,ns, len(f_ranges)))
+        
+    #         # for f, f_range in enumerate(f_ranges):
+    #         #     X_filtered[:,:,:,f]=mne.filter.filter_data(X, sf, f_range[0], f_range[1])
+    #         # #%% csp
+            
+            
+    #     # csp = CSP(n_components=2, reg='empirical', log=True, norm_trace=False, cov_est='epoch')
+    #     # #learn csp filters for each FB
+    #     # Gtr=np.zeros((nt,2*len(f_ranges)))
+    #     # for f in range(len(f_ranges)):
+    #     #     Gtr[:,f*2:f*2+2]=csp.fit_transform(X_filtered[:,:,:,f],Y)
+        
+        
+    
+            
+    #     # filter_len=501
+    #     # 
+    #     # filter_fun = np.zeros([len(f_ranges), filter_len])
+    
+    #     # for a, f_range in enumerate(f_ranges):
+    #     #     h = mne.filter.create_filter(None, sf, l_freq=f_range[0], h_freq=f_range[1], 
+    #     #                         fir_design='firwin', filter_length='500ms', l_trans_bandwidth=3.5, h_trans_bandwidth=3.5)
+    
+    #     #     filter_fun[a, :] = h
+    # #     #%%
+    # # #filter_fun = filter.calc_band_filters(, sample_rate=sf, filter_len=501)
+    # # filtered = np.zeros((filter_fun.shape[0],dat_notch_filtered.shape[0]+1))
+    # # for filt in range(filter_fun.shape[0]):
+    # #     filtered=scipy.signal.convolve(filter_fun[filt,:], 
+    # #                                             # dat_notch_filtered, mode='same')
