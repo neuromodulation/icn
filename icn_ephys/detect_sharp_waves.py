@@ -8,6 +8,13 @@ import pandas as pd
 import numpy as np
 import mne
 import scipy
+import pickle
+import multiprocessing
+
+
+BIDS_PATH = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
+COMB_RUNS_PATH = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\Combined_runs\\"
+PATH_OUT = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\SharpWaveAnalysis\\"
 
 class NoValidTroughException(Exception):
     pass
@@ -82,8 +89,8 @@ class Waveform_analyzer:
                 (trough_idx + int(5*(1000/self.sample_rate)) > filtered_dat.shape[0]):
                 continue
             # convert 5 ms to sample rate
-            sharpness = (filtered_dat[trough_idx-int(5*(1000/self.sample_rate))] +
-                         filtered_dat[trough_idx+int(5*(1000/self.sample_rate))]) / 2
+            sharpness = ((filtered_dat[trough_idx] - filtered_dat[trough_idx-int(5*(1000/self.sample_rate))]) +
+                         (filtered_dat[trough_idx] - filtered_dat[trough_idx+int(5*(1000/self.sample_rate))])) / 2
 
             # rise_steepness, first der. from trough to peak
             # here  + 1 due to python syntax, s.t. the last element is included
@@ -127,4 +134,31 @@ class Waveform_analyzer:
                 sharp_wave["y_contra"] = y_contra[trough_idx]
                 sharp_wave["y_ipsi"] = y_ipsi[trough_idx]
             df = df.append(sharp_wave, ignore_index=True)
-        return df 
+
+        return df
+
+def analyze_sharpwaves_subject(subject_id):
+
+    waveform_analyzer = Waveform_analyzer(sample_rate=1000, line_noise=60)
+    with open(os.path.join(COMB_RUNS_PATH, "sub_"+subject_id+"_comb.p"), "rb") as handle:
+        dat = pickle.load(handle)
+
+    for ch in dat.keys():
+        df = waveform_analyzer.analyze_waveform(dat[ch]["data"], peak_dist=1, trough_dist=12,
+                        label=True, y_contra=dat[ch]["mov_con"], y_ipsi=dat[ch]["mov_con"], plot_=False)
+
+        df.to_pickle(PATH_OUT + "sub_"+subject_id+"_ch_"+ch+".p")
+
+if __name__ == '__main__':
+
+    sub_str = []
+    for sub_idx  in range(16):
+        print(sub_idx)
+        if sub_idx<10:
+            subject_id = '00' + str(sub_idx)
+        else:
+            subject_id = '0' + str(sub_idx)
+        sub_str.append(subject_id)
+
+    pool = multiprocessing.Pool()
+    pool.map(analyze_sharpwaves_subject, sub_str)
