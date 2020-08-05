@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jul  8 20:55:45 2020
+Created on Wed Jul  29  2020
 
-@author: victoria
+@author: Victoria Peterson
 """
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-from copy import deepcopy
-# from mne import 
 import mne
 from scipy import linalg
 
@@ -16,17 +14,86 @@ from scipy import linalg
 
 class SSD(BaseEstimator, TransformerMixin):
     """
-    This is a Python Implementation of the ssd function available at 
-    https://github.com/svendaehne/matlab_SPoC/tree/master/SSD
+    
+    This is a Python Implementation of Spatio Spectral Decomposition (SSD) 
+    method [1],[2] for epoched data. This source code is  based on
+    the matlab implementation available at 
+    https://github.com/svendaehne/matlab_SPoC/tree/master/SSD 
+    
+    SSD seeks at maximizing the power at a frequency band of interest while
+    simultaneously minimizing it at the flanking (surrounding) frequency bins
+    (considered noise). It extremizes the covariance matrices associated to 
+    signal and noise.
+    
+    Cosidering f as the freq. of interest, noise signals were calculated
+    by filtering the raw signal in the frequency range [f−Δfb:f+Δfb] and then 
+    performing band-stop filtering around frequency f [f−Δfs:f+Δfs], where Δfb
+    and Δfs are set equal to 2 and 1 Hz, respectively, as indicated in [1]. 
+        
+
+    Parameters
+    ----------
+    n_components : int| float
+        The number of components to decompose the signals. 
+        If n_components is a float number, then the number of component is
+        selected based on the threshold criteria proposed in (Eq. 10) [2], 
+        being n_components the so defined "q" nonnegative constant.
+    freq : list with shape (3,2)
+        First index: cut-off frequencies of the freq. band of interest 
+        (signal)
+        Second index: cut-off frequencies for the lowest and highest 
+        frequencies defining flanking intervals.
+        Third index: cut-off frequencies for the band-stop filtering of 
+        the central frequency process.
+    sampling_freq : float
+        sampling frequency (in Hz) of the recordings.
+    denoised : bool (default True)
+        If set to True, the output will be a matrix with the same 
+        dimentionality of the original input data but denoised based on the 
+        low-rank factorization. For more information about this, please see
+        the section of "low-rank factorization" in [2].          
+        The default is True.
+    return_filtered : bool (default True)
+        If denoised is True, the recontructed signal is denoised but not 
+        filtered in the freq. band of interest. For further analysis, most 
+        probably the denoised recontructed signal would be desired to be used 
+        in the especific freq. band of interest. If "return_filtered" is True, 
+        then the denoised signal is band-pass filtered in the freq. band given
+        in freq[0].
+        
+        The default is True.
+    reg : float | str | None (default None)
+        As in mne.decoding.SPoC 
+        If not None (same as 'empirical', default), allow regularization for
+        covariance estimation. If float, shrinkage is used 
+        (0 <= shrinkage <= 1). For str options, reg will be passed to method 
+        to mne.compute_covariance().
+    cov_method_params : TYPE, optional
+        As in mne.decoding.SPoC 
+        The default is None.
+    rank : None | dict | ‘info’ | ‘full’
+        As in mne.decoding.SPoC 
+        This controls the rank computation that can be read from the
+        measurement info or estimated from the data. 
+        See Notes of mne.compute_rank() for details.The default is None.
+        The default is None.
+
+    
+    REFERENCES:
+    [1] Nikulin, V. V., Nolte, G., & Curio, G. (2011). A novel method for 
+    reliable and fast extraction of neuronal EEG/MEG oscillations on the basis 
+    of spatio-spectral decomposition. NeuroImage, 55(4), 1528-1535.
+    [2] Haufe, S., Dähne, S., & Nikulin, V. V. (2014). Dimensionality reduction
+    for the analysis of brain oscillations. NeuroImage, 101, 583-597.
     """
   
 
 
     def __init__(self, n_components,freq, sampling_freq, denoised=True, return_filtered= True, reg=None, 
                  cov_method_params=None, rank=None):
-        # Init default CSP
-        if not isinstance(n_components, int):
-            raise ValueError('n_components must be an integer.')
+        
+        
+        
         self.n_components = n_components
         
         # make sure FREQS has the correct dimensions
@@ -66,14 +133,13 @@ class SSD(BaseEstimator, TransformerMixin):
         self._check_Xy(X)
 
         
-        # data X is already filtered in the freq. of interest.
-        # compure cov matrix of "signal"
-        # the following cope is copied drom mne csp
+        # data X is epoched 
+        # part of the following code is copied from mne csp
         n_epochs, n_channels, n_samples = X.shape
 
         # Estimate single trial covariance
         signal_band = self.freq[0] #signal bandpass band
-        #rephase for filtering
+        #reshape for filtering
         X_aux=np.reshape(X, [n_epochs, n_channels*n_samples])
         X_s=mne.filter.filter_data(X_aux, self.sampling_freq, l_freq=signal_band[0], h_freq=signal_band[1])  
         #reshape to original shape
@@ -109,14 +175,14 @@ class SSD(BaseEstimator, TransformerMixin):
         evals, evecs = linalg.eigh(C_s, C_n)
         evals = evals.real
         evecs = evecs.real
-        # sort vectors
+        # index of sorted eigenvalues
         ix = np.argsort(np.abs(evals))[::-1]
 
         # sort eigenvectors
         evecs = evecs[:, ix].T
 
         # spatial patterns
-        self.patterns_ = linalg.pinv(evecs).T  # n_channels x n_channels
+        self.patterns_ = linalg.pinv(evecs).T  # n_channels x n_channels (each row is a patter)
         self.filters_ = evecs  # n_channels x n_channels (each row is a filter)
         
         
@@ -125,13 +191,19 @@ class SSD(BaseEstimator, TransformerMixin):
  
 
     def best_component(self,q): 
+        """
+        this is an implementation for finding the best number of components 
+        given the power. This is based on [2]
+        """
         W=self.filters_       #each row a filter
         Q25=np.percentile(np.var(W, axis=1),25)
         Q75=np.percentile(np.var(W, axis=1),75)
 
         thr=Q75+q*(Q75-Q25)
         n_comps=np.where(np.var(W, axis=1)>=thr)[0]
-        if len(n_comps)==0:
+        if len(n_comps)==0: 
+            #if there is no component reaching the thresholding
+            #select at lest the half of the components
             n_comps=round(len(W)/2)
         else:
             n_comps=len(n_comps)
@@ -159,14 +231,16 @@ class SSD(BaseEstimator, TransformerMixin):
             raise RuntimeError('No filters available. Please first fit CSP '
                                'decomposition.')
 
-        if self.n_components==-1:
-             n_comps=self.best_component(q=0.01)
-             self.n_components=n_comps
+        if not isinstance(self.n_components, int):
+            n_comps=self.best_component(q=self.n_components)
+            self.n_components=n_comps
            
+        #project data on source space
         pick_filters = self.filters_[:self.n_components]
         X = np.asarray([np.dot(pick_filters, epoch) for epoch in X])
-        if self.denoised:
         
+        if self.denoised:
+            #back-project data on signal space
             pick_patterns = self.patterns_[:self.n_components]
             X=np.asarray([np.dot(pick_patterns.T, epoch) for epoch in X])
             if self.return_filtered:
