@@ -10,7 +10,7 @@ import mne
 import scipy
 import pickle
 import multiprocessing
-
+from itertools import repeat
 
 BIDS_PATH = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
 COMB_RUNS_PATH = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\Combined_runs\\"
@@ -46,9 +46,15 @@ class Waveform_analyzer:
 
         return peak_left_idx, peak_right_idx, filtered_dat[peak_left_idx], filtered_dat[peak_right_idx]
 
-    def analyze_waveform(self, raw_dat, peak_dist=1, trough_dist=5, label=False, y_contra=None, y_ipsi=None, \
-                        plot_=False):
+    #def analyze_waveform(self, raw_dat, peak_dist=1, trough_dist=5, label=False, y_contra=None, y_ipsi=None, \
+    #                        plot_=False):
+    def analyze_waveform(self, ch, dat):
 
+
+        peak_dist=1; trough_dist=5; label=False; y_contra=None; y_ipsi=None; plot_=False
+        y_contra = dat[ch]["mov_con"]
+        y_ipsi = dat[ch]["mov_ips"]
+        raw_dat = dat[ch]["data"]
         # first notch filter data
         dat_notch_filtered = mne.filter.notch_filter(x=raw_dat, Fs=self.sample_rate, trans_bandwidth=7,
             freqs=np.arange(self.line_noise, 4*self.line_noise, self.line_noise),
@@ -129,25 +135,41 @@ class Waveform_analyzer:
                 elif y_contra[trough_idx] > 0:
                     MOV_ = "CON"
                 else:
-                    MOV_ = "NONE"
+                    MOV_ = "NO_MOV"
                 sharp_wave["MOV_TYPE"] = MOV_
                 sharp_wave["y_contra"] = y_contra[trough_idx]
                 sharp_wave["y_ipsi"] = y_ipsi[trough_idx]
             df = df.append(sharp_wave, ignore_index=True)
 
-        return df
-
+        df.to_pickle(PATH_OUT + "sub_"+subject_id+"_ch_"+ch+".p")
+        #return df
+global dat
 def analyze_sharpwaves_subject(subject_id):
 
     waveform_analyzer = Waveform_analyzer(sample_rate=1000, line_noise=60)
+
     with open(os.path.join(COMB_RUNS_PATH, "sub_"+subject_id+"_comb.p"), "rb") as handle:
         dat = pickle.load(handle)
 
-    for ch in dat.keys():
-        df = waveform_analyzer.analyze_waveform(dat[ch]["data"], peak_dist=1, trough_dist=12,
-                        label=True, y_contra=dat[ch]["mov_con"], y_ipsi=dat[ch]["mov_con"], plot_=False)
+    pool = multiprocessing.Pool()
 
-        df.to_pickle(PATH_OUT + "sub_"+subject_id+"_ch_"+ch+".p")
+    ch_left = []
+    for ch in dat.keys():
+        # check if outfile already exists
+        if os.path.exists(PATH_OUT + "sub_"+subject_id+"_ch_"+ch+".p") is False:
+            ch_left.append(ch)
+
+    print("channel left subject "+str(subject_id))
+    print(ch_left)
+
+    pool.starmap(waveform_analyzer.analyze_waveform, zip(ch_left, repeat(dat)))
+
+    #for ch in dat.keys():
+    #    df = waveform_analyzer.analyze_waveform(dat[ch]["data"], peak_dist=1, trough_dist=12,
+    #                     label=True, y_contra=dat[ch]["mov_con"], y_ipsi=dat[ch]["mov_ips"], plot_=False)
+
+
+    #df.to_pickle(PATH_OUT + "sub_"+subject_id+"_ch_"+ch+".p")
 
 if __name__ == '__main__':
 
@@ -159,6 +181,4 @@ if __name__ == '__main__':
         else:
             subject_id = '0' + str(sub_idx)
         sub_str.append(subject_id)
-
-    pool = multiprocessing.Pool()
-    pool.map(analyze_sharpwaves_subject, sub_str)
+        analyze_sharpwaves_subject(subject_id)
