@@ -70,7 +70,7 @@ if VICTORIA is True:
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
     settings['out_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_old_grid\\"
-    settings['out_path_process'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\MOVEMENT DATA\\ECoG_STN\XGB_Out\\"
+    settings['out_path_process'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\MOVEMENT DATA\\ECoG_STN\LM_Out\\"
 
 
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
@@ -234,7 +234,7 @@ signal=["STN", "ECOG"]
 
 #%%cross-val within subject
 for signal_idx, signal_ in enumerate(signal):
-    for sub_idx in range(len(settings['num_patients']):
+    for sub_idx in range(len(settings['num_patients'])):
         subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][sub_idx]
         subfolder=IO.get_subfolders(subject_path)
 
@@ -330,6 +330,7 @@ for signal_idx, signal_ in enumerate(signal):
                     score_te= []
                     label_test=[]
                     label_train=[]
+                    coords = []
 
                     for train_index, test_index in cv.split(X):
                         Xtr, Xte=X[train_index,ch_idx,:], X[test_index,ch_idx,:]
@@ -352,7 +353,7 @@ for signal_idx, signal_ in enumerate(signal):
                         elif USED_MODEL == 1: # XGB
                             optimizer=optimize_xgb(x=dat_tr, y=label_tr)
                             model=XGBRegressor(max_depth=optimizer['params']['max_depth'],
-                                               learning_rate=optimizer['params']['learning_rate']
+                                               learning_rate=optimizer['params']['learning_rate'],
                                                gamma=optimizer['params']['gamma'])
                         elif USED_MODEL == 2:
                              optimizer=optimize_nn(x=dat_tr, y=label_tr)
@@ -402,6 +403,7 @@ for signal_idx, signal_ in enumerate(signal):
                 "y_train": Yt_tr,
                 "score_tr": sc_tr,
                 "score_te": sc_te,
+                "coord_patient" : run_["coord_patient"]
             }
             out_path_file = os.path.join(settings['out_path_process']+ \
                 settings['num_patients'][subject_idx]+'BestChpredictions_'+location_+'-'+ str(subfolder[sess_idx])+'.npy')
