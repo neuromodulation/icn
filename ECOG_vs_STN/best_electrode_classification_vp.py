@@ -40,15 +40,13 @@ from sklearn.linear_model import LassoCV
 from sklearn.linear_model import ElasticNetCV
 from sklearn.linear_model import ElasticNet
 
-
 from scipy import stats
 from collections import OrderedDict
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.pipeline import make_pipeline
 from sklearn import metrics
-from metrics import r2_score
 from bayes_opt import BayesianOptimization
-from skopt.space import Real
+from skopt.space import Real, Integer, Categorical
 from skopt.utils import use_named_args
 from skopt import gp_minimize
 import gc
@@ -72,15 +70,11 @@ else:
     settings['out_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_old_grid\\"
     settings['out_path_process'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\MOVEMENT DATA\\ECoG_STN\LM_Out\\"
 
-
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
 settings['num_patients']=['000', '001', '004', '005', '006', '007', '008', '009', '010', '013', '014']
-
-
 settings['BIDS_path']=settings['BIDS_path'].replace("\\", "/")
 settings['out_path']=settings['out_path'].replace("\\", "/")
-
 
 #%%
 space_LM = [Real(0, 1, "uniform", name='alpha'),
@@ -100,6 +94,7 @@ def optimize_enet(x,y):
 
     @use_named_args(space_LM)
     def objective(**params):
+        reg=ElasticNet(max_iter=1000, normalize=False)
         reg.set_params(**params)
         cval = cross_val_score(reg, x, y, scoring='r2', cv=3)
         cval[np.where(cval < 0)[0]] = 0
@@ -242,12 +237,12 @@ for signal_idx, signal_ in enumerate(signal):
             X=[]
             Y_con=[]
             Y_ips=[]
-            list_subject=get_int_runs(settings['num_patients'][subject_idx], subfolder[sess_idx])
+            list_subject=get_int_runs(settings['num_patients'][sub_idx], subfolder[sess_idx])
             list_subject=sorted(list_subject)
             if signal_=="ECOG":
-                if subject_idx==4 and sess_idx==0: #for sake of comparison with spoc
+                if sub_idx==4 and sess_idx==0: #for sake of comparison with spoc
                     list_subject.pop(0)
-                if subject_idx==4 and sess_idx==1:
+                if sub_idx==4 and sess_idx==1:
                     list_subject.pop(2)
 
             print('RUNNIN SUBJECT_'+ settings['num_patients'][sub_idx]+ '_SESS_'+ str(subfolder[sess_idx]) + '_SIGNAL_' + signal_)
@@ -302,12 +297,12 @@ for signal_idx, signal_ in enumerate(signal):
 
             for laterality_idx, laterality_ in enumerate(laterality):
                 print("training %s" %laterality_)
-                sc_tr[mov] = []
-                sc_te[mov] = []
-                Yp_tr[mov] = []
-                Yp_te[mov] = []
-                Yt_tr[mov] = []
-                Yt_te[mov] = []
+                sc_tr[laterality_] = []
+                sc_te[laterality_] = []
+                Yp_tr[laterality_] = []
+                Yp_te[laterality_] = []
+                Yt_tr[laterality_] = []
+                Yt_te[laterality_] = []
 
                 if laterality_=="CON":
                     label=Y_con
@@ -346,27 +341,27 @@ for signal_idx, signal_ in enumerate(signal):
 
                         if USED_MODEL == 0: # Enet
                             optimizer=optimize_enet(x=dat_tr,y=label_tr)
-                            model=ElasticNet(alpha=optimizer['params']['alpha'],
-                                               l1_ratio=optimizer['params']['l1_ratio'],
+                            model=ElasticNet(alpha=optimizer['x'][0],
+                                               l1_ratio=optimizer['x'][1],
                                                max_iter=1000,
                                                normalize=False)
                         elif USED_MODEL == 1: # XGB
                             optimizer=optimize_xgb(x=dat_tr, y=label_tr)
-                            model=XGBRegressor(max_depth=optimizer['params']['max_depth'],
-                                               learning_rate=optimizer['params']['learning_rate'],
-                                               gamma=optimizer['params']['gamma'])
+                            model=XGBRegressor(max_depth=optimizer['x'][0],
+                                               learning_rate=optimizer['x'][1],
+                                               gamma=optimizer['x'][2])
                         elif USED_MODEL == 2:
                              optimizer=optimize_nn(x=dat_tr, y=label_tr)
                              global learning_rate
-                             learning_rate=optimizer['params']['learning_rate']
+                             learning_rate=optimizer['x'][0]
                              global num_dense_layers
-                             num_dense_layers=optimizer['params']['num_dense_layers']
+                             num_dense_layers=optimizer['x'][1]
                              global num_input_nodes
-                             num_input_nodes=optimizer['params']['num_input_nodes']
+                             num_input_nodes=optimizer['x'][2]
                              global num_dense_nodes
-                             num_dense_nodes=optimizer['params']['num_dense_nodes']
+                             num_dense_nodes=optimizer['x'][3]
                              global activation
-                             activation=optimizer['params']['activation']
+                             activation=optimizer['x'][4]
                              model = KerasRegressor(build_fn=create_model_NN, epochs=100, batch_size=1000, verbose=0)
                         else:
                             break
@@ -406,5 +401,5 @@ for signal_idx, signal_ in enumerate(signal):
                 "coord_patient" : run_["coord_patient"]
             }
             out_path_file = os.path.join(settings['out_path_process']+ \
-                settings['num_patients'][subject_idx]+'BestChpredictions_'+location_+'-'+ str(subfolder[sess_idx])+'.npy')
+                settings['num_patients'][sub_idx]+'BestChpredictions_'+location_+'-'+ str(subfolder[sess_idx])+'.npy')
             np.save(out_path_file, predict_)
