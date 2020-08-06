@@ -52,11 +52,12 @@ from skopt import gp_minimize
 import gc
 from sklearn.preprocessing import StandardScaler
 
+import xgboost as xgb
 from xgboost import XGBRegressor
 
 VICTORIA = False
 WRITE_OUT_CH_IND = False
-USED_MODEL = 0 # 0 - Enet, 1 - XGB, 2 - NN
+USED_MODEL = 1 # 0 - Enet, 1 - XGB, 2 - NN
 settings = {}
 
 if VICTORIA is True:
@@ -68,7 +69,7 @@ if VICTORIA is True:
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
     settings['out_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_old_grid\\"
-    settings['out_path_process'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\MOVEMENT DATA\\ECoG_STN\LM_Out\\"
+    settings['out_path_process'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\MOVEMENT DATA\\ECoG_STN\XGB_Out\\"
 
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
@@ -186,12 +187,12 @@ def optimize_xgb(x,y):
              'eta': 0.1,
              'disable_default_eval_metric' : 1,
              'scale_pos_weight ' : 1}
+             #'nthread':59}
              #'tree_method' : 'gpu_hist'}
              #'gpu_id' : 1}
 
-        cv_result = xgb.cv(params_, dtrain, num_boost_round=30, feval=evalerror, nfold=3, stratified=True)
-
-    return -cv_result['test-r2-mean'].iloc[-1]
+        cv_result = xgb.cv(params_, xgb.DMatrix(x, label=y), num_boost_round=30, feval=evalerror, nfold=3)
+        return -cv_result['test-r2-mean'].iloc[-1]
 
     res_gp = gp_minimize(objective, space_XGB, n_calls=20, random_state=0)
     return res_gp
@@ -229,11 +230,15 @@ signal=["STN", "ECOG"]
 
 #%%cross-val within subject
 for signal_idx, signal_ in enumerate(signal):
-    for sub_idx in range(len(settings['num_patients'])):
+    for sub_idx in np.arange(0, len(settings['num_patients']), 1):
         subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][sub_idx]
         subfolder=IO.get_subfolders(subject_path)
 
         for sess_idx in range(len(subfolder)):
+            if os.path.exists(os.path.join(settings['out_path_process'],
+                        settings['num_patients'][sub_idx]+'BestChpredictions_'+signal_+'-'+
+                            str(subfolder[sess_idx])+'.npy')) is True:
+                continue
             X=[]
             Y_con=[]
             Y_ips=[]
@@ -349,7 +354,7 @@ for signal_idx, signal_ in enumerate(signal):
                             optimizer=optimize_xgb(x=dat_tr, y=label_tr)
                             model=XGBRegressor(max_depth=optimizer['x'][0],
                                                learning_rate=optimizer['x'][1],
-                                               gamma=optimizer['x'][2])
+                                               gamma=optimizer['x'][2])#, nthread=59)
                         elif USED_MODEL == 2:
                              optimizer=optimize_nn(x=dat_tr, y=label_tr)
                              global learning_rate
@@ -401,5 +406,5 @@ for signal_idx, signal_ in enumerate(signal):
                 "coord_patient" : run_["coord_patient"]
             }
             out_path_file = os.path.join(settings['out_path_process']+ \
-                settings['num_patients'][sub_idx]+'BestChpredictions_'+location_+'-'+ str(subfolder[sess_idx])+'.npy')
+                settings['num_patients'][sub_idx]+'BestChpredictions_'+signal_+'-'+ str(subfolder[sess_idx])+'.npy')
             np.save(out_path_file, predict_)
