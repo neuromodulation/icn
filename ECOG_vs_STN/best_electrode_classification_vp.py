@@ -17,12 +17,21 @@ from mne.decoding import CSP
 from mne import Epochs
 from mne.decoding import SPoC
 mne.set_log_level(verbose='warning') #to avoid info at terminal
-import pickle 
+import pickle
 import sys
-# insert at 1, 0 is the script path (or '' in REPL)
-sys.path.insert(1, '/home/victoria/icn/icn_m1')
 import IO
 import os
+
+import tensorflow
+import keras
+from keras.layers import BatchNormalization
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.wrappers.scikit_learn import KerasClassifier, KerasRegressor
+from keras.optimizers import Adam
+
+from tensorflow.python.keras import backend as K
+from sklearn.model_selection import StratifiedKFold
 
 from sklearn.linear_model import Ridge
 from sklearn.linear_model import LinearRegression
@@ -42,17 +51,26 @@ from skopt.utils import use_named_args
 from skopt import gp_minimize
 import gc
 from sklearn.preprocessing import StandardScaler
-#%%
+
+VICTORIA = False
+
 settings = {}
 
-settings['BIDS_path'] = "//mnt/Datos/BML_CNCRS/Data_BIDS_new/"
-settings['out_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Derivatives/"
-settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/"
+if VICTORIA is True:
+    # insert at 1, 0 is the script path (or '' in REPL)
+    sys.path.insert(1, '/home/victoria/icn/icn_m1')
+
+    settings['BIDS_path'] = "//mnt/Datos/BML_CNCRS/Data_BIDS_new/"
+    settings['out_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Derivatives/"
+    settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/"
+else:
+    settings['BIDS_path'] = "C:\Users\ICN_admin\Dropbox (Brain Modulation Lab)\Shared Lab Folders\CRCNS\MOVEMENT DATA"
+    settings['out_path'] = "C:\Users\ICN_admin\Dropbox (Brain Modulation Lab)\Shared Lab Folders\CRCNS\MOVEMENT DATA\derivatives\Int_old_grid"
+    settings['out_path_process'] = "C:\Users\ICN_admin\Dropbox (Brain Modulation Lab)\Shared Lab Folders\CRCNS\MOVEMENT DATA\ECoG_STN\XGB_Out"
 
 
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
-# settings['num_patients']=['000', '004', '005', '007', '008', '009', '010', '013', '014']
 settings['num_patients']=['000', '001', '004', '005', '006', '007', '008', '009', '010', '013', '014']
 
 
@@ -63,18 +81,121 @@ settings['out_path']=settings['out_path'].replace("\\", "/")
 #%%
 space_LM = [Real(0, 1, "uniform", name='alpha'),
            Real(0, 1, "uniform", name='l1_ratio')]
-         
+
+space_XGB = [Integer(1, 100, name='max_depth'),
+          Real(10**-5, 10**0, "log-uniform", name='learning_rate'),
+          Integer(10**0, 10**3, "log-uniform", name='n_estimators'),
+          Real(10**0, 10**1, "uniform", name="gamma")]
+
+space_NN = [Real(low=1e-4, high=1e-2, prior='log-uniform', name='learning_rate'),
+              Integer(low=1, high=3, name='num_dense_layers'),
+              Integer(low=1, high=10, prior='uniform', name='num_input_nodes'),
+              Integer(low=1, high=10, name='num_dense_nodes'),
+              Categorical(categories=['relu', 'tanh'], name='activation')
+          ]
+
 def optimize_enet(x,y):
-    
+
     @use_named_args(space_LM)
     def objective(**params):
         reg.set_params(**params)
         cval = cross_val_score(reg, x, y, scoring='r2', cv=3)
         cval[np.where(cval < 0)[0]] = 0
-    
+
         return -cval.mean()
 
     res_gp = gp_minimize(objective, space_LM, n_calls=20, random_state=0)
+    return res_gp
+
+def optimize_nn(x,y):
+
+    def create_model_NN():
+        """
+        Create NN tensorflow with different numbers of hidden layers / hidden units
+        """
+
+        #start the model making process and create our first layer
+        model = Sequential()
+        model.add(Dense(num_input_nodes, input_shape=(40,), activation=activation
+                       ))
+        model.add(BatchNormalization())
+        #create a loop making a new dense layer for the amount passed to this model.
+        #naming the layers helps avoid tensorflow error deep in the stack trace.
+        for i in range(num_dense_layers):
+            name = 'layer_dense_{0}'.format(i+1)
+            model.add(Dense(num_dense_nodes,
+                     activation=activation,
+                            name=name
+                     ))
+        #add our classification layer.
+        model.add(Dense(1,activation='linear'))
+
+        #setup our optimizer and compile
+        adam = Adam(lr=learning_rate)
+        model.compile(optimizer=adam, loss='mean_squared_error',
+                     metrics=['mse'])
+        return model
+
+    @use_named_args(space_NN)
+    def objective(**params):
+        print(params)
+
+        global learning_rate
+        learning_rate=params["learning_rate"]
+        global num_dense_layers
+        num_dense_layers=params["num_dense_layers"]
+        global num_input_nodes
+        num_input_nodes=params["num_input_nodes"]
+        global num_dense_nodes
+        num_dense_nodes=params["num_dense_nodes"]
+        global activation
+        activation=params["activation"]
+
+        model = KerasRegressor(build_fn=create_model_NN, epochs=100, batch_size=1000, verbose=0)
+        cv_res = cross_val_score(model, x, y, cv=3, n_jobs=59, scoring="r2")
+        cv_res[np.where(cv_res < 0)[0]] = 0
+        return -np.mean(cv_res)
+
+    res_gp = gp_minimize(objective, space_NN, n_calls=20, random_state=0)
+    return res_gp
+
+def optimize_xgb(x,y):
+
+    def evalerror(preds, dtrain):
+        """
+        Custom defined r^2 evaluation function
+        """
+        labels = dtrain.get_label()
+        # return a pair metric_name, result. The metric name must not contain a
+        # colon (:) or a space since preds are margin(before logistic
+        # transformation, cutoff at 0)
+
+        r2 = metrics.r2_score(labels, preds)
+
+        if r2 < 0:
+            r2 = 0
+
+        return 'r2', r2
+
+    @use_named_args(space_XGB)
+    def objective(**params):
+        print(params)
+
+        params_ = {'max_depth': int(params["max_depth"]),
+             'gamma': params['gamma'],
+             'n_estimators': int(params["n_estimators"]),
+             'learning_rate': params["learning_rate"],
+             'subsample': 0.8,
+             'eta': 0.1,
+             'disable_default_eval_metric' : 1}
+             #'tree_method' : 'gpu_hist'}
+             #'gpu_id' : 1}
+
+        cv_result = xgb.cv(params_, dtrain, num_boost_round=30, feval=evalerror, nfold=3)
+
+    return -cv_result['test-r2-mean'].iloc[-1]
+
+    res_gp = gp_minimize(objective, space_XGB, n_calls=20, random_state=0)
     return res_gp
 
 
@@ -85,49 +206,15 @@ def get_int_runs(subject_id, subfolder):
     :return: list with all run files for the given patient
     """
     os.listdir(settings['out_path'])
-    # if patient_idx < 10:
-    #     subject_id = str('00') + str(patient_idx)
-    # else:
-    #     subject_id = str('0') + str(patient_idx)
+
     if 'right' in str(subfolder):
         list_subject = [i for i in os.listdir(settings['out_path']) if i.startswith('sub_'+subject_id+'_sess_right') and i.endswith('.p')]
     else:
         list_subject = [i for i in os.listdir(settings['out_path']) if i.startswith('sub_'+subject_id+'_sess_left') and i.endswith('.p')]
-                                                                                        
+
     return list_subject
 
-# def enet_train(alpha,l1_ratio,x,y):
-#     clf=ElasticNet(alpha=alpha, l1_ratio=l1_ratio, max_iter=1000,normalize=False)
-#     #clf.fit(x,y)
-    
-#     cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
-#     cval[np.where(cval < 0)[0]] = 0
-#     return cval.mean()
-    
-#     return clf.score(x, y)
-# def optimize_enet(x,y):
-#     """Apply Bayesian Optimization to select enet parameters."""
-#     def function(alpha, l1_ratio):
-          
-#         return enet_train(alpha=alpha, l1_ratio=l1_ratio, x=x, y=y)
-    
-#     optimizer = BayesianOptimization(
-#         f=function,
-#         pbounds={"alpha": (1e-4, 0.99), "l1_ratio": (1e-4,0.99)},
-#         random_state=0,
-#         verbose=1,
-#     )
-#     optimizer.probe(
-#     params=[1e-3, 1e-3],
-#     lazy=True,
-#     )
-#     optimizer.maximize(n_iter=25, init_points=20, acq="ei", xi=1e-1)
 
-    
-#     #train enet
-    
-#     return optimizer.max
-    # print("Final result:", optimizer.max)        
 def append_time_dim(arr, y_, time_stamps):
     """
     apply added time dimension for the data array and label given time_stamps (with downsample_rate=100) in 100ms / need to check with 1375Hz
@@ -138,20 +225,19 @@ def append_time_dim(arr, y_, time_stamps):
             time_arr[time_idx, time_point*arr.shape[1]:(time_point+1)*arr.shape[1]] = arr[time_-time_point,:]
     return time_arr, y_[time_stamps:]
 #%%
-cv = KFold(n_splits=3, shuffle=False)  
+cv = KFold(n_splits=3, shuffle=False)
 laterality=[("CON"), ("IPS")]
 signal=["STN", "ECOG"]
 
 
-#%%cross-val within subject   
+#%%cross-val within subject
 len(settings['num_patients'])
-for m, eeg in enumerate(signal):  
-   
+for m, eeg in enumerate(signal):
 
     for s in range(len(settings['num_patients']):
         subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][s]
         subfolder=IO.get_subfolders(subject_path)
-       
+
         for ss in range(len(subfolder)):
             X=[]
             Y_con=[]
@@ -163,64 +249,63 @@ for m, eeg in enumerate(signal):
                     list_subject.pop(0)
                 if s==4 and ss==1:
                     list_subject.pop(2)
-                  
-    
+
             print('RUNNIN SUBJECT_'+ settings['num_patients'][s]+ '_SESS_'+ str(subfolder[ss]) + '_SIGNAL_' + eeg)
-    
+
             for run_idx in range(len(list_subject)):
                 with open(settings['out_path']+ '/'+ list_subject[run_idx], 'rb') as handle:
                     run_ = pickle.load(handle)
                 #concatenate features
                 #get cortex data only
-                if eeg=="ECOG":    
-                    ind_cortex=run_['used_channels']['cortex']    
+                if eeg=="ECOG":
+                    ind_cortex=run_['used_channels']['cortex']
                     rf=run_['rf_data_median']
                     x=rf[:,ind_cortex,:]
                     x=np.clip(x, -2,2)
-                    
+
                     y=run_['label_baseline_corrected']
                     con_true=run_['label_con_true']
                     y_con=np.squeeze(y[con_true==True])
                     y_ips=np.squeeze(y[con_true==False])
-                    
+
                     X.append(x)
                     Y_con.append(y_con)
                     Y_ips.append(y_ips)
-            
-                
+
+
                 else:
                     ind_subcortex=run_['used_channels']['subcortex']
                     if ind_subcortex is not None:
-                      
+
                         rf=run_['rf_data_median']
                         x=rf[:,ind_subcortex,:]
                         x=np.clip(x, -2,2)
-                        
+
                         y=run_['label_baseline_corrected']
                         con_true=run_['label_con_true']
                         y_con=np.squeeze(y[con_true==True])
                         y_ips=np.squeeze(y[con_true==False])
-                        
+
                         X.append(x)
                         Y_con.append(y_con)
                         Y_ips.append(y_ips)
-            
+
             gc.collect()
-            
+
             X=np.concatenate(X, axis=0)
             Y_con=np.concatenate(Y_con, axis=0)
-            Y_ips=np.concatenate(Y_ips, axis=0)  
-                
-      
-            
+            Y_ips=np.concatenate(Y_ips, axis=0)
+
+
+
             Yp_tr= OrderedDict()
             sc_tr= OrderedDict()
             Yp_te= OrderedDict()
             sc_te= OrderedDict()
-           
+
             Yt_tr= OrderedDict()
             Yt_te= OrderedDict()
-    
+
             for l, mov in enumerate(laterality):
                 print("training %s" %mov)
                 sc_tr[mov] = []
@@ -229,26 +314,25 @@ for m, eeg in enumerate(signal):
                 Yp_te[mov] = []
                 Yt_tr[mov] = []
                 Yt_te[mov] = []
-             
+
                 if mov=="CON":
                     label=Y_con
                 else:
                     label=Y_ips
-              
-                         
+
+
                 #run CV
-                       
-                Score_tr=np.empty(X.shape[1], dtype=object)    
-                Score_te=np.empty(X.shape[1], dtype=object)     
+
+                Score_tr=np.empty(X.shape[1], dtype=object)
+                Score_te=np.empty(X.shape[1], dtype=object)
                 Label_te=np.empty(X.shape[1], dtype=object)
-                Label_tr=np.empty(X.shape[1], dtype=object)    
+                Label_tr=np.empty(X.shape[1], dtype=object)
                 Labelpre_te=np.empty(X.shape[1], dtype=object)
-                Labelpre_tr=np.empty(X.shape[1], dtype=object)     
-                # AUC_te=np.empty(X.shape[1], dtype=object) 
-                # AUC_tr=np.empty(X.shape[1], dtype=object)     
-        
-        
-            
+                Labelpre_tr=np.empty(X.shape[1], dtype=object)
+                # AUC_te=np.empty(X.shape[1], dtype=object)
+                # AUC_tr=np.empty(X.shape[1], dtype=object)
+
+
                 #for each electrode
                 for e in range(X.shape[1]):
                     Ypre_te= []
@@ -256,33 +340,27 @@ for m, eeg in enumerate(signal):
                     score_tr= []
                     Ypre_te= []
                     score_te= []
-                    
+
                     label_test=[]
                     label_train=[]
                     auc_tr=[]
                     auc_te=[]
-        
+
                     for train_index, test_index in cv.split(X):
                         Xtr, Xte=X[train_index,e,:], X[test_index,e,:]
                         Ytr, Yte=label[train_index], label[test_index]
                         label_test.append(Yte)
-                        label_train.append(Ytr)    
-                        
-                                                                     
+                        label_train.append(Ytr)
+
+
                         dat_tr,label_tr = append_time_dim(Xtr, Ytr,time_stamps=5)
                         dat_te,label_te = append_time_dim(Xte, Yte,time_stamps=5)
-                        
-                        scaler = StandardScaler()
-                        scaler.fit(dat_tr)
-                        dat_tr=scaler.transform(dat_tr)
-                        dat_te=scaler.transform(dat_te)
-        
-                                  
+
+
                         optimizer=optimize_enet(x=dat_tr,y=label_tr)
                         model=ElasticNet(alpha=optimizer['params']['alpha'], l1_ratio=optimizer['params']['l1_ratio'], max_iter=1000, normalize=False)
-                        # clf=ElasticNet(alpha=optimizer.x[0], l1_ratio=optimizer.x[1], max_iter=1000)
-            
-                                   
+
+
                         model.fit(dat_tr, label_tr)
                         Ypre_te.append(model.predict(dat_te))
                         Ypre_tr.append(model.predict(dat_tr))
@@ -292,46 +370,30 @@ for m, eeg in enumerate(signal):
                         r2_te=model.score(dat_te, label_te)
                         if r2_te < 0: r2_te = 0
                         score_te.append(r2_te)
-                        
-                        # onoff=np.zeros(np.shape(Ytr))
-                        # onoff[Ytr>0]=1
-                        # auc_tr.append(roc_auc_score(onoff,Ytr))
-                        
-                        # onoff=np.zeros(np.shape(Yte))
-                        # onoff[Yte>0]=1
-                        # auc_te.append(roc_auc_score(onoff,Yte))   
-                   
-        
+
                     Score_tr[e]=np.mean(score_tr)
                     Score_te[e]=np.mean(score_te)
                     Label_te[e]=label_test
                     Label_tr[e]=label_train
                     Labelpre_te[e]=Ypre_te
                     Labelpre_tr[e]=Ypre_tr
-                    # AUC_tr[e]=auc_tr
-                    # AUC_te[e]=auc_te
-        
+
                 sc_tr[mov] = Score_tr
                 sc_te[mov] = Score_te
                 Yp_tr[mov] = Labelpre_te
                 Yp_te[mov] = Labelpre_tr
                 Yt_tr[mov] = Label_te
                 Yt_te[mov] = Label_tr
-        
-            
-            predict_ = {
-                    "y_pred_test": Yp_te,
-                    "y_test": Yt_te,
-                    "y_pred_train": Yp_tr,
-                    "y_train": Yt_tr,
-                    "score_tr": sc_tr,
-                    "score_te": sc_te,
-                   
-                }
-                
-            out_path_file = os.path.join(settings['out_path_process']+ settings['num_patients'][s]+'BestChpredictions_'+eeg+'_tlag_'+ str(subfolder[ss])+'.npy')
-            np.save(out_path_file, predict_)      
-        
 
-        
-        
+
+            predict_ = {
+                "y_pred_test": Yp_te,
+                "y_test": Yt_te,
+                "y_pred_train": Yp_tr,
+                "y_train": Yt_tr,
+                "score_tr": sc_tr,
+                "score_te": sc_te,
+            }
+
+            out_path_file = os.path.join(settings['out_path_process']+ settings['num_patients'][s]+'BestChpredictions_'+eeg+'_tlag_'+ str(subfolder[ss])+'.npy')
+            np.save(out_path_file, predict_)
