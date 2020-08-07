@@ -69,7 +69,7 @@ if VICTORIA is True:
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
     settings['out_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_old_grid\\"
-    settings['out_path_process'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\MOVEMENT DATA\\ECoG_STN\XGB_Out\\"
+    settings['out_path_process'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\MOVEMENT DATA\\ECoG_STN\XGB_Out_Full\\"
 
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
@@ -81,8 +81,9 @@ settings['out_path']=settings['out_path'].replace("\\", "/")
 space_LM = [Real(0, 1, "uniform", name='alpha'),
            Real(0, 1, "uniform", name='l1_ratio')]
 
-space_XGB = [Integer(1, 10, name='max_depth'),
+space_XGB  = [Integer(1, 100, name='max_depth'),
           Real(10**-5, 10**0, "log-uniform", name='learning_rate'),
+          Integer(10**0, 10**3, "log-uniform", name='n_estimators'),
           Real(10**0, 10**1, "uniform", name="gamma")]
 
 space_NN = [Real(low=1e-4, high=1e-2, prior='log-uniform', name='learning_rate'),
@@ -299,6 +300,7 @@ for signal_idx, signal_ in enumerate(signal):
             sc_te= OrderedDict()
             Yt_tr= OrderedDict()
             Yt_te= OrderedDict()
+            Model_coef = OrderedDict()
 
             for laterality_idx, laterality_ in enumerate(laterality):
                 print("training %s" %laterality_)
@@ -308,6 +310,7 @@ for signal_idx, signal_ in enumerate(signal):
                 Yp_te[laterality_] = []
                 Yt_tr[laterality_] = []
                 Yt_te[laterality_] = []
+                Model_coef[laterality_] = []
 
                 if laterality_=="CON":
                     label=Y_con
@@ -320,6 +323,8 @@ for signal_idx, signal_ in enumerate(signal):
                 Label_tr=np.empty(X.shape[1], dtype=object)
                 Labelpre_te=np.empty(X.shape[1], dtype=object)
                 Labelpre_tr=np.empty(X.shape[1], dtype=object)
+                COEF_ = np.empty(X.shape[1])
+
 
                 #for each electrode
                 for ch_idx in range(X.shape[1]):
@@ -331,6 +336,7 @@ for signal_idx, signal_ in enumerate(signal):
                     label_test=[]
                     label_train=[]
                     coords = []
+                    coef_ = []
 
                     for train_index, test_index in cv.split(X):
                         Xtr, Xte=X[train_index,ch_idx,:], X[test_index,ch_idx,:]
@@ -339,10 +345,6 @@ for signal_idx, signal_ in enumerate(signal):
                         label_train.append(Ytr)
                         dat_tr,label_tr = append_time_dim(Xtr, Ytr, time_stamps=5)
                         dat_te,label_te = append_time_dim(Xte, Yte, time_stamps=5)
-
-                        space_XGB = [Integer(1, 10, name='max_depth'),
-                                  Real(10**-5, 10**0, "log-uniform", name='learning_rate'),
-                                  Real(10**0, 10**1, "uniform", name="gamma")]
 
                         if USED_MODEL == 0: # Enet
                             optimizer=optimize_enet(x=dat_tr,y=label_tr)
@@ -382,12 +384,15 @@ for signal_idx, signal_ in enumerate(signal):
                         if r2_te < 0: r2_te = 0
                         score_te.append(r2_te)
 
+                        coef_.append(optimizer['x'])
+
                     Score_tr[ch_idx]=np.mean(score_tr)
                     Score_te[ch_idx]=np.mean(score_te)
                     Label_te[ch_idx]=label_test
                     Label_tr[ch_idx]=label_train
                     Labelpre_te[ch_idx]=Ypre_te
                     Labelpre_tr[ch_idx]=Ypre_tr
+                    COEF_[ch_idx]=coef_
 
                 sc_tr[laterality_] = Score_tr
                 sc_te[laterality_] = Score_te
@@ -395,6 +400,7 @@ for signal_idx, signal_ in enumerate(signal):
                 Yp_te[laterality_] = Labelpre_tr
                 Yt_tr[laterality_] = Label_te
                 Yt_te[laterality_] = Label_tr
+                Model_coef[laterality_] = COEF_
 
             predict_ = {
                 "y_pred_test": Yp_te,
@@ -403,7 +409,8 @@ for signal_idx, signal_ in enumerate(signal):
                 "y_train": Yt_tr,
                 "score_tr": sc_tr,
                 "score_te": sc_te,
-                "coord_patient" : run_["coord_patient"]
+                "coord_patient" : run_["coord_patient"],
+                "model_coef" : Model_coef
             }
             out_path_file = os.path.join(settings['out_path_process']+ \
                 settings['num_patients'][sub_idx]+'BestChpredictions_'+signal_+'-'+ str(subfolder[sess_idx])+'.npy')
