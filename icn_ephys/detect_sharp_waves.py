@@ -48,10 +48,10 @@ class Waveform_analyzer:
 
     #def analyze_waveform(self, raw_dat, peak_dist=1, trough_dist=5, label=False, y_contra=None, y_ipsi=None, \
     #                        plot_=False):
-    def analyze_waveform(self, ch, dat):
+    def analyze_waveform(self, ch, dat, subject_id):
 
 
-        peak_dist=1; trough_dist=5; label=False; y_contra=None; y_ipsi=None; plot_=False
+        peak_dist=1; trough_dist=5; label=True; y_contra=None; y_ipsi=None; plot_=False
         y_contra = dat[ch]["mov_con"]
         y_ipsi = dat[ch]["mov_ips"]
         raw_dat = dat[ch]["data"]
@@ -91,8 +91,8 @@ class Waveform_analyzer:
                 interval_ = 0
 
             # sharpness
-            if (trough_idx - int(5*(1000/self.sample_rate)) < 0) or \
-                (trough_idx + int(5*(1000/self.sample_rate)) > filtered_dat.shape[0]):
+            if (trough_idx - int(5*(1000/self.sample_rate)) <= 0) or \
+                (trough_idx + int(5*(1000/self.sample_rate)) >= filtered_dat.shape[0]):
                 continue
             # convert 5 ms to sample rate
             sharpness = ((filtered_dat[trough_idx] - filtered_dat[trough_idx-int(5*(1000/self.sample_rate))]) +
@@ -162,7 +162,7 @@ def analyze_sharpwaves_subject(subject_id):
     print("channel left subject "+str(subject_id))
     print(ch_left)
 
-    pool.starmap(waveform_analyzer.analyze_waveform, zip(ch_left, repeat(dat)))
+    pool.starmap(waveform_analyzer.analyze_waveform, zip(ch_left, repeat(dat), repeat(subject_id)))
 
     #for ch in dat.keys():
     #    df = waveform_analyzer.analyze_waveform(dat[ch]["data"], peak_dist=1, trough_dist=12,
@@ -174,7 +174,7 @@ def analyze_sharpwaves_subject(subject_id):
 if __name__ == '__main__':
 
     sub_str = []
-    for sub_idx  in range(16):
+    for sub_idx  in np.flip(np.arange(0, 16, 1)):
         print(sub_idx)
         if sub_idx<10:
             subject_id = '00' + str(sub_idx)
