@@ -51,7 +51,12 @@ class Waveform_analyzer:
     def analyze_waveform(self, ch, dat):
 
 
-        peak_dist=1; trough_dist=5; label=False; y_contra=None; y_ipsi=None; plot_=False
+        peak_dist=1;
+        trough_dist=5;
+        label=True;
+        y_contra=None;
+        y_ipsi=None;
+        plot_=False
         y_contra = dat[ch]["mov_con"]
         y_ipsi = dat[ch]["mov_ips"]
         raw_dat = dat[ch]["data"]
