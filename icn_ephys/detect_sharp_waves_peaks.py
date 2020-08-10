@@ -50,11 +50,21 @@ class Waveform_analyzer:
     #                        plot_=False):
     def analyze_waveform(self, ch, dat, subject_id):
 
+<<<<<<< HEAD
 
         peak_dist=5; trough_dist=1; label=True; y_contra=None; y_ipsi=None; plot_=False
+=======
+        peak_dist=5;
+        trough_dist=1;
+        label=True;
+        y_contra=None;
+        y_ipsi=None;
+        plot_=False
+>>>>>>> fbdcc8087a7fab3f01f708bd7f0a0ab72512ecbc
         y_contra = dat[ch]["mov_con"]
         y_ipsi = dat[ch]["mov_ips"]
         raw_dat = dat[ch]["data"]
+        
         # first notch filter data
         dat_notch_filtered = mne.filter.notch_filter(x=raw_dat, Fs=self.sample_rate, trans_bandwidth=7,
             freqs=np.arange(self.line_noise, 4*self.line_noise, self.line_noise),
