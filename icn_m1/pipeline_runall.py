@@ -53,16 +53,16 @@ settings['out_path']=settings['out_path'].replace("\\", "/")
 #     settings = IO.read_settings('mysettings')
 
 #2. write _channels_MI file
-write_ALL = False
+write_ALL = True
 if write_ALL is True:
-    IO.write_all_M1_channel_files()
+    IO.write_all_M1_channel_files(settings)
 
 #3. get all vhdr files (from a subject or from all BIDS_path)
 vhdr_files=IO.get_all_vhdr_files(settings['BIDS_path'])
 
-#4. read grid
-#%% grid projection
-#read grid from session
+4. read grid
+%% grid projection
+read grid from session
 cortex_left, cortex_right, subcortex_left, subcortex_right = IO.read_grid()
 grid_ = [cortex_left, subcortex_left, cortex_right, subcortex_right]
 #%% plotting
@@ -147,7 +147,7 @@ def run_vhdr_file(s):
                
         
         #%% 6. rereference
-        dat_ECOG_r, dat_STN_r =rereference.rereference(run_string=vhdr_file[:-10], data_cortex=dat_ECOG, data_subcortex=dat_STN)
+        dat_ECOG, dat_STN =rereference.rereference(run_string=vhdr_file[:-10], data_cortex=dat_ECOG, data_subcortex=dat_STN)
         #%% 7. detet bad-channels.      
                 
         #%% 8. project data to grid points
