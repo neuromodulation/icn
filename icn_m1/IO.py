@@ -350,18 +350,18 @@ def sess_right(sess):
         sess_right = False
     return sess_right
 
-def write_all_M1_channel_files():
+def write_all_M1_channel_files(settings, cortex_ref='average', subcortex_ref='-'):
     """
 
     Read all channels.tsv in the settings defined BIDS path, and write all all channels_M1.tsv files 
     --> copy all channel names from channel.tsv as name
     --> set targets to 'MOV' channels 
-    --> rereference all to average 
+    --> rereference all cortex to average, subcortex=None
     --> used all to 1 
 
     """
 
-    settings = IO.read_settings()  # reads settings from settings/settings.json file in a dict 
+    #settings = IO.read_settings()  # reads settings from settings/settings.json file in a dict 
 
 
     BIDS_channel_tsv_files = []
@@ -382,7 +382,19 @@ def write_all_M1_channel_files():
                 target = np.zeros(len(list(df_channel['name'])))
                 target[ch_mov] = 1
                 df['target'] = target.astype(int)
-                df['rereference'] = ['average']*len(list(df_channel['name']))
+                
+                rereference = ["" for x in range(len(list(df_channel['name'])))]
+
+                for ch_idx, ch in enumerate(df_channel['name']):
+                    if ch.startswith('ECOG'):
+                        rereference[ch_idx]=cortex_ref 
+                    if ch.startswith('STN'):
+                        rereference[ch_idx]=subcortex_ref 
+
+
+                
+
+                df['rereference'] =rereference
 
                 df.to_csv(ch_file[:-12]+'channels_M1.tsv', sep='\t')
 
