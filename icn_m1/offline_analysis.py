@@ -79,10 +79,10 @@ def run(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_no
     
     return rf_data_median, pf_data_median
 
-def create_continous_epochs(fs, fs_new, offset_start, f_ranges, downsample_idx, bv_raw, line_noise, \
+def create_continous_epochs(fs, fs_new, offset_start, f_ranges, downsample_idx, line_noise, \
                       data_, filter_fun, new_num_data_points, Verbose=False):
 
-    num_channels = data_["ind_dat"].shape[0]
+    num_channels = data_.shape[0]
     num_f_bands = len(f_ranges)
     num_samples =  np.shape(filter_fun)[1]
     #
@@ -96,25 +96,17 @@ def create_continous_epochs(fs, fs_new, offset_start, f_ranges, downsample_idx, 
         if downsample_idx[c]<downsample_idx[offset_start]:  # neccessary since downsample_idx starts with 0, wait till 1s for theta is over
             continue
 
-        for ch in data_["ind_dat"]:    
-            dat_ = bv_raw[ch, downsample_idx[c-offset_start]:downsample_idx[c]]
+        for ch in range(num_channels):    
+            dat_ = data_[ch, downsample_idx[c-offset_start]:downsample_idx[c]]
             dat_filt = filter.apply_filter(dat_, sample_rate=fs, filter_fun=filter_fun, line_noise=line_noise, variance=False)
             rf_data[new_idx,ch,:,:] = dat_filt
 
         
         new_idx += 1
         
-    #Get cortex and subcortex data
-    if data_["ind_cortex"] is None:
-        dat_cortex = None
-    else:
-        dat_cortex = rf_data[:, data_["ind_cortex"],:,:]
-    if data_["ind_subcortex"] is None:
-        dat_subcortex = None
-    else:
-        dat_subcortex = rf_data[:, data_["ind_subcortex"],:],
     
-    return dat_cortex, dat_subcortex
+    
+    return rf_data
 
 def NormalizeData(data):
     minv=np.min(data)
