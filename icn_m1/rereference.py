@@ -42,6 +42,8 @@ def rereference(run_string, data_cortex=None, data_subcortex=None):
             
             elec_channel=index_channels==i
             ch=data_subcortex[elec_channel,:]
+            if df_channel['rereference'][i] == '-':
+                continue
             if df_channel['rereference'][i] == 'average':
                 av=np.mean(data_subcortex[index_channels!=i,:], axis=0)
                 new_data_subcortex[i]=ch-av
@@ -67,6 +69,8 @@ def rereference(run_string, data_cortex=None, data_subcortex=None):
         
             elec_channel=index_channels==i
             ch=data_cortex[elec_channel,:]
+            if df_channel['rereference'][i] == '-':
+                continue
             if df_channel['rereference'][i] == 'average':
                 av=np.mean(data_cortex[index_channels!=i,:], axis=0)
                 new_data_cortex[i]=ch-av
