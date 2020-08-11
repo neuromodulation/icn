@@ -60,9 +60,9 @@ if write_ALL is True:
 #3. get all vhdr files (from a subject or from all BIDS_path)
 vhdr_files=IO.get_all_vhdr_files(settings['BIDS_path'])
 
-4. read grid
-%% grid projection
-read grid from session
+#4. read grid
+#%% grid projection
+#read grid from session
 cortex_left, cortex_right, subcortex_left, subcortex_right = IO.read_grid()
 grid_ = [cortex_left, subcortex_left, cortex_right, subcortex_right]
 #%% plotting
