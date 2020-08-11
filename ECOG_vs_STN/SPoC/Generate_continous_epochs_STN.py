@@ -8,6 +8,8 @@ import sys
 # insert at 1, 0 is the script path (or '' in REPL)
 sys.path.insert(1, '/home/victoria/icn/icn_m1')
 import IO
+import offline_analysis
+import filter
 import rereference
 import numpy as np
 import json
@@ -20,38 +22,6 @@ mne.set_log_level(verbose='warning') #to avoid info at terminal
 import gc
 
 #%%
-def t_f_transform(x, sample_rate, f_ranges, line_noise):
-    """
-    calculate time frequency transform with mne filter function
-    """
-    filtered_x = []
-
-    for f_range in f_ranges:
-        if line_noise in np.arange(f_range[0], f_range[1], 1):
-            #do line noise filtering
-
-            x = mne.filter.notch_filter(x=x, Fs=sample_rate, 
-                freqs=np.arange(line_noise, 4*line_noise, line_noise), 
-                fir_design='firwin', verbose=False, notch_widths=2)
-
-        h = mne.filter.create_filter(x, sample_rate, l_freq=f_range[0], h_freq=f_range[1], \
-                                     fir_design='firwin', verbose=False, l_trans_bandwidth=2, h_trans_bandwidth=2)
-        filtered_x.append(np.convolve(h, x, mode='same'))
- 
-    return np.array(filtered_x)
-
-
-def transform_channels(bv_raw, settings, sample_rate, line_noise):
-    """
-    calculate t-f-transform for every channel
-    :param bv_raw: Raw (channel x time) datastream
-    :return: t-f transformed array in shape (len(f_ranges), channels, time)
-    """
-    x_filtered = np.zeros([len(settings['frequencyranges']), bv_raw.shape[0], bv_raw.shape[1]])
-    for ch in range(bv_raw.shape[0]):
-        x_filtered[:, ch, :] = t_f_transform(bv_raw[ch, :], sample_rate, settings['frequencyranges'], line_noise)
-    return x_filtered
-
 def get_files(subject_path, subfolder, endswith='.vhdr', Verbose=True):
     """
     given an address to a subject folder and a list of subfolders, provides a list of all vhdr files
@@ -175,31 +145,42 @@ for s in range(len(settings['num_patients'])):
             
             label_channels = np.array(ch_names)[used_channels['labels']]
     
-            dat_ECOG, dat_STN =rereference.rereference(run_string=vhdr_file[:-10], data_cortex=dat_ECOG, data_subcortex=dat_STN)
+            Nan, dat_STN =rereference.rereference(run_string=vhdr_file[:-10], data_cortex=dat_ECOG, data_subcortex=dat_STN)
 
             if dat_STN is None:
                 continue
         
-            #%% filter data
+            #%% REREFERENCE
+            Nan, dat_STN =rereference.rereference(run_string=vhdr_file[:-10], data_cortex=dat_ECOG, data_subcortex=dat_STN)
+
+            #%% FILTER AND EPOCHED DATA
+            #define parameters
+            seglengths = settings['seglengths']
+            recording_length = bv_raw.shape[1] 
             line_noise = IO.read_line_noise(settings['BIDS_path'],subject)
-            x_filtered=transform_channels(dat_STN, settings, sf, line_noise)
+            new_num_data_points = int((recording_length/sf)*settings['resamplingrate'])
+
+            downsample_idx = (np.arange(0,new_num_data_points,1)*sf/settings['resamplingrate']).astype(int)
+            filter_fun = filter.calc_band_filters(settings['frequencyranges'], sample_rate=sf)
+            offset_start = int((sf/seglengths[0]) / (sf/settings['resamplingrate']))
             
-            #%% create MNE object
-            # Build epochs as sliding windows over the continuous raw file
-            channels_stn=[ch_names[i] for i in ind_subcortex] 
-            info_stn= mne.create_info(ch_names=channels_stn, sfreq=sf, ch_types='ecog')           
             
-            
+            data=offline_analysis.create_continous_epochs(sf, settings['resamplingrate'], offset_start, settings['frequencyranges'], downsample_idx, line_noise, \
+                      dat_STN, filter_fun, new_num_data_points, Verbose=False)
+                      
+               
             
             mov_ch=int(len(dat_MOV)/2)
             con_true = np.empty(mov_ch, dtype=object)
 
-            onoff=np.zeros(np.size(dat_MOV[0][1000:-1:100]))
+            onoff=np.zeros(np.size(dat_MOV[0][::100][10:]))
 
             for m in range(mov_ch):
             
-                target_channel_corrected=dat_MOV[m+mov_ch]
-                target_channel_corrected=target_channel_corrected[1000:-1:100]  
+                target_channel_corrected=dat_MOV[m+mov_ch][::100]
+                target_channel_corrected=target_channel_corrected[10:]
+
+
 
                 onoff[target_channel_corrected>0]=1
             
@@ -230,41 +211,9 @@ for s in range(len(settings['num_patients'])):
             
             onoff_mov_con=np.squeeze(onoff_mov[con_true==True])
             onoff_mov_ips=np.squeeze(onoff_mov[con_true==False])
-            
   
-    #%% epoch data with mne
-        
-            f_ranges=settings['frequencyranges']
-            data=[]
-
-            for fb in range(len(f_ranges)): 
-                raw_stn = mne.io.RawArray(x_filtered[fb], info_stn)
-                            
-                    
-                events_stn=mne.make_fixed_length_events(raw_stn, id=1, start=0, stop=None, duration=.1)
-                stn_epoch=Epochs(raw_stn, events_stn, event_id=1, tmin=0, tmax=1, baseline=None)
-             
-                data.append(stn_epoch.get_data())
-                    
-               # print(np.shape(data))
-            gc.collect()
+       
             
-            if np.shape(data[0])[0] > len(y_con):
-                y_con=np.hstack((y_con, 0))
-                y_ips=np.hstack((y_ips, 0))
-                onoff_mov_con=np.hstack((onoff_mov_con, 0))
-                onoff_mov_ips=np.hstack((onoff_mov_ips, 0))
-
-
-
-
-            label_con=y_con[:np.shape(data)[1]]
-            label_ips=y_ips[:np.shape(data)[1]]
-            
-            onoff_con=onoff_mov_con[:np.shape(data)[1]]
-            onoff_ips=onoff_mov_ips[:np.shape(data)[1]]
-            
-           
             #%% save
             sub_ = {
                 "ch_names" : ch_names, 
@@ -272,17 +221,17 @@ for s in range(len(settings['num_patients'])):
                 "used_channels" : used_channels, 
                 "fs" : sf, 
                 "line_noise" : line_noise, 
-                "label_con" : label_con, 
-                "label_ips" : label_ips,         
-                "onoff_con" : onoff_con, 
-                "onoff_ips" : onoff_ips, 
+                "label_con" : y_con, 
+                "label_ips" : y_ips,         
+                "onoff_con" : onoff_mov_con, 
+                "onoff_ips" : onoff_mov_ips, 
                 "epochs" : data,
                 "session": sess,
                 "run": run,
-                "info_mne" : info_stn,
               
                 
             }
+            
             
             out_path = os.path.join(settings['out_path'],'STN_epochs_sub_' + subject +'_sess_' +sess + '_run_'+ run + '.p')
             
