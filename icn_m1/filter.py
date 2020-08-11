@@ -69,7 +69,7 @@ def apply_filter(dat_, sample_rate, filter_fun, line_noise, variance=True, segle
     """    
     dat_noth_filtered = mne.filter.notch_filter(x=dat_, Fs=sample_rate, trans_bandwidth=7,
             freqs=np.arange(line_noise, 4*line_noise, line_noise),
-            fir_design='firwin', verbose=False, notch_widths=1,filter_length=dat_.shape[0]-1)
+            fir_design='firwin', verbose=False, notch_widths=1,filter_length=dat_.shape[0])
 
    
     filtered = []
