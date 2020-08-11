@@ -299,7 +299,7 @@ def generate_continous_label_array(L, sf, events):
   
     
 
-def epoch_data(data, events, sf, tmin=1, tmax=1):
+def create_epochs_data(data, events, sf, tmin=1, tmax=1):
     """
     this function segments data tmin sec before target onset and tmax sec
     after target onset
@@ -375,7 +375,7 @@ def epoch_data(data, events, sf, tmin=1, tmax=1):
     return X, Y
 
 
-def epoch_feature_matrix(feature_matrix, events, sf, tmin=1, tmax=1):
+def create_epochs_feature_matrix(feature_matrix, events, sf, tmin=1, tmax=1):
     """
     this function segments the feature matrix generated after the filter-bank
     analysis made on the funciton RUN. The segment are extracted
