@@ -38,21 +38,29 @@ from collections import OrderedDict
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.pipeline import make_pipeline
 from bayes_opt import BayesianOptimization
-from skopt.space import Real
+from skopt.space import Real, Integer, Categorical
 from skopt.utils import use_named_args
 from skopt import gp_minimize
 import gc
+from sklearn import metrics
+
 from sklearn.preprocessing import StandardScaler
+import xgboost as xgb
+from xgboost import XGBRegressor
 
 from FilterBank import *
-# plt.close('all')
+plt.close('all')
 
 #%%
+USED_MODEL = 1 # 0 - Enet, 1 - XGB, 2 - NN
+
 settings = {}
 
 settings['BIDS_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS/"
 settings['out_path'] = "/mnt/Datos/BML_CNCRS/Spoc/"
-settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/"
+if USED_MODEL==0: settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/LM_Out_SPoC/"
+if USED_MODEL==1: settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/XGB_Out_SPoC/"
+
 
 
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
@@ -65,6 +73,10 @@ settings['out_path']=settings['out_path'].replace("\\", "/")
 
 #%%
 space_LM = [Real(0, 1, "uniform", name='alpha'),Real(0, 1, "uniform", name='l1_ratio')]
+space_XGB  = [Integer(1, 100, name='max_depth'),
+          Real(10**-5, 10**0, "log-uniform", name='learning_rate'),
+          Real(10**0, 10**1, "uniform", name="gamma")]
+
 #%%
 def optimize_enet(x,y):
     scaler = StandardScaler()
@@ -81,6 +93,47 @@ def optimize_enet(x,y):
         return -cval.mean()
 
     res_gp = gp_minimize(objective, space_LM, n_calls=20, random_state=0)
+    return res_gp
+
+
+def optimize_xgb(x,y):
+
+    def evalerror(preds, dtrain):
+        """
+        Custom defined r^2 evaluation function
+        """
+        labels = dtrain.get_label()
+        # return a pair metric_name, result. The metric name must not contain a
+        # colon (:) or a space since preds are margin(before logistic
+        # transformation, cutoff at 0)
+
+        r2 = metrics.r2_score(labels, preds)
+
+        if r2 < 0:
+            r2 = 0
+
+        return 'r2', r2
+
+    @use_named_args(space_XGB)
+    def objective(**params):
+        print(params)
+
+        params_ = {'max_depth': int(params["max_depth"]),
+             'gamma': params['gamma'],
+             #'n_estimators': int(params["n_estimators"]),
+             'learning_rate': params["learning_rate"],
+             'subsample': 0.8,
+             'eta': 0.1,
+             'disable_default_eval_metric' : 1,
+             'scale_pos_weight ' : 1}
+             #'nthread':59}
+             #'tree_method' : 'gpu_hist'}
+             #'gpu_id' : 1}
+
+        cv_result = xgb.cv(params_, xgb.DMatrix(x, label=y), num_boost_round=30, feval=evalerror, nfold=3)
+        return -cv_result['test-r2-mean'].iloc[-1]
+
+    res_gp = gp_minimize(objective, space_XGB, n_calls=20, random_state=0)
     return res_gp
 
 # def enet_train(alpha,l1_ratio,x,y):
@@ -114,7 +167,6 @@ def optimize_enet(x,y):
 #     #train enet
     
 #     return optimizer.max
-    # print("Final result:", optimizer.max)        
 def append_time_dim(arr, y_, time_stamps):
     """
     apply added time dimension for the data array and label given time_stamps (with downsample_rate=100) in 100ms / need to check with 1375Hz
@@ -150,10 +202,8 @@ for m, eeg in enumerate(signal):
             print('RUNNIN SUBJECT_'+ settings['num_patients'][s]+ '_SESS_'+ str(subfolder[ss]) + '_SIGNAL_' + eeg)
     
             list_of_files = os.listdir(settings['out_path']) #list of files in the current directory
-            if eeg=="ECOG":
-                file_name='epochs_sub_' + settings['num_patients'][s] + '_sess_'+subfolder[ss][4:]
-            else:
-                file_name='STN_epochs_sub_' + settings['num_patients'][s] + '_sess_'+subfolder[ss][4:]
+            
+            file_name=eeg+'_epochs_sub_' + settings['num_patients'][s] + '_sess_'+subfolder[ss][4:]
             for each_file in list_of_files:
                 
                 if each_file.startswith(file_name):  #since its all type str you can simply use startswith
@@ -171,7 +221,7 @@ for m, eeg in enumerate(signal):
             
             gc.collect()
             
-            X=np.concatenate(X, axis=1)
+            X=np.concatenate(X, axis=0)
             Y_con=np.concatenate(Y_con, axis=0)
             Y_ips=np.concatenate(Y_ips, axis=0)  
     
@@ -217,12 +267,12 @@ for m, eeg in enumerate(signal):
                 onoff_train=[]
                 
                                 
-                nfb, nt,nc,ns=np.shape(X)   
+                nt, nc,ns, nfb=np.shape(X)   
                 # adap data for the filter bank implementation 
-                new_data=[]
-                for i in range(nfb):
-                    new_data.append(X[i,:,:,:])
-                new_data=np.stack(new_data, axis=-1).astype('float64')
+                # new_data=[]
+                # for i in range(nfb):
+                #     new_data.append(X[:,:,i,:])
+                # new_data=np.stack(new_data, axis=-1).astype('float64')
                 gc.collect()
     
                
@@ -232,8 +282,8 @@ for m, eeg in enumerate(signal):
                     Ztr, Zte=label[train_index], label[test_index]
                     
                     
-                    gtr=features.fit_transform(new_data[train_index], Ztr)
-                    gte=features.transform(new_data[test_index])
+                    gtr=features.fit_transform(X[train_index], Ztr)
+                    gte=features.transform(X[test_index])
                     
                                                 
                     dat_tr,label_tr = append_time_dim(gtr, Ztr,time_stamps=5)
@@ -248,15 +298,26 @@ for m, eeg in enumerate(signal):
                     Label_tr[mov].append(label_tr)
                     
                                         
-                    optimizer=optimize_enet(x=dat_tr,y=label_tr)
+                    if USED_MODEL == 0: # Enet
+                            optimizer=optimize_enet(x=dat_tr,y=label_tr)
+                            clf=ElasticNet(alpha=optimizer['x'][0],
+                                               l1_ratio=optimizer['x'][1],
+                                               max_iter=1000,
+                                               normalize=False)
+                            scaler = StandardScaler()
+                            scaler.fit(dat_tr)
+                            dat_tr=scaler.transform(dat_tr)
+                            dat_te=scaler.transform(dat_te)
+                    elif USED_MODEL == 1: # XGB
+                            optimizer=optimize_xgb(x=dat_tr, y=label_tr)
+                            clf=XGBRegressor(max_depth=optimizer['x'][0],
+                                               learning_rate=optimizer['x'][1],
+                                               gamma=optimizer['x'][2])
+                            
                     # clf=ElasticNet(alpha=optimizer['params']['alpha'], l1_ratio=optimizer['params']['l1_ratio'], max_iter=1000)
-                    clf=ElasticNet(alpha=optimizer.x[0], l1_ratio=optimizer.x[1], max_iter=1000)
                     
                     #now that the LM is fit, scaler training and testing data
-                    scaler = StandardScaler()
-                    scaler.fit(dat_tr)
-                    dat_tr=scaler.transform(dat_tr)
-                    dat_te=scaler.transform(dat_te)
+                    
                     
                     clf.fit(dat_tr, label_tr)
                     Ypre_te[mov].append(clf.predict(dat_te))
@@ -273,7 +334,7 @@ for m, eeg in enumerate(signal):
                     Filters[mov].append(features.filters)
                     Patterns[mov].append(features.patterns)
                     
-                    Coef[mov].append(clf.coef_)
+                    if USED_MODEL == 0: Coef[mov].append(clf.coef_)
                     alpha_param[mov].append(clf.alpha)
                     l1_ratio_param[mov].append(clf.l1_ratio)
     
