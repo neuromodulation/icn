@@ -67,12 +67,6 @@ settings['num_patients']=['000', '001', '004', '005', '006', '007', '008', '009'
 settings['BIDS_path']=settings['BIDS_path'].replace("\\", "/")
 settings['out_path']=settings['out_path'].replace("\\", "/")
 
-with open('settings/mysettings.json', 'w') as fp:
-    json.dump(settings, fp)
-    
-settings = IO.read_settings('mysettings')
-#2. write _channels_MI file
-IO.write_all_M1_channel_files()
 
 #%%
 
@@ -173,14 +167,12 @@ for s in range(len(settings['num_patients'])):
             mov_ch=int(len(dat_MOV)/2)
             con_true = np.empty(mov_ch, dtype=object)
 
-            onoff=np.zeros(np.size(dat_MOV[0][::100][10:]))
+            wl=int(recording_length/(new_num_data_points))
+            onoff=np.zeros(np.size(dat_MOV[0][sf:-1:wl]))
 
             for m in range(mov_ch):
             
-                target_channel_corrected=dat_MOV[m+mov_ch][::100]
-                target_channel_corrected=target_channel_corrected[10:]
-
-
+                target_channel_corrected=dat_MOV[m+mov_ch][sf:-1:wl] 
 
                 onoff[target_channel_corrected>0]=1
             
