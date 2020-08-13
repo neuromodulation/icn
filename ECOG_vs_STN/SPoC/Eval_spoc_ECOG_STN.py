@@ -233,8 +233,7 @@ for m, eeg in enumerate(signal):
             Patterns= OrderedDict()
             Filters= OrderedDict()
             Coef= OrderedDict()
-            alpha_param= OrderedDict()
-            l1_ratio_param= OrderedDict()
+            hyperparams= OrderedDict()
             Label_tr= OrderedDict()
             Label_te= OrderedDict()
     
@@ -249,8 +248,7 @@ for m, eeg in enumerate(signal):
                 Patterns[mov]=[]
                 Filters[mov]=[]
                 Coef[mov]=[]
-                alpha_param[mov]=[]
-                l1_ratio_param[mov]=[]
+                hyperparams[mov]=[]
                 if l==0:
                     label=Y_con
                 else:
@@ -335,8 +333,7 @@ for m, eeg in enumerate(signal):
                     Patterns[mov].append(features.patterns)
                     
                     if USED_MODEL == 0: Coef[mov].append(clf.coef_)
-                    alpha_param[mov].append(clf.alpha)
-                    l1_ratio_param[mov].append(clf.l1_ratio)
+                    hyperparams[mov].append(optimizer['x'])
     
         
                         
@@ -354,8 +351,7 @@ for m, eeg in enumerate(signal):
                 "patterns": Patterns,
                 "coef": Coef,
                 "classifiers": clf,
-                "alpha_param": alpha_param,
-                "l1ratio_param": l1_ratio_param,
+                "model_hyperparams": hyperparams,
                 "methods": spoc
                 
             }
