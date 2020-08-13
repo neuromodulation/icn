@@ -86,7 +86,7 @@ def create_continous_epochs(fs, fs_new, offset_start, f_ranges, downsample_idx, 
     num_f_bands = len(f_ranges)
     num_samples =  np.shape(filter_fun)[1]
     #
-    rf_data = np.zeros([new_num_data_points-offset_start, num_channels, num_f_bands, num_samples])  # raw frequency array
+    rf_data = np.zeros([new_num_data_points-offset_start, num_channels, num_samples, num_f_bands])  # raw frequency array
 
     new_idx = 0
 
@@ -99,7 +99,7 @@ def create_continous_epochs(fs, fs_new, offset_start, f_ranges, downsample_idx, 
         for ch in range(num_channels):    
             dat_ = data_[ch, downsample_idx[c-offset_start]:downsample_idx[c]]
             dat_filt = filter.apply_filter(dat_, sample_rate=fs, filter_fun=filter_fun, line_noise=line_noise, variance=False)
-            rf_data[new_idx,ch,:,:] = dat_filt
+            rf_data[new_idx,ch,:,:] = dat_filt.T
 
         
         new_idx += 1
