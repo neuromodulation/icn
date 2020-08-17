@@ -148,7 +148,7 @@ for s in range(len(settings['num_patients'])):
             
             
             data=offline_analysis.create_continous_epochs(sf, settings['resamplingrate'], offset_start, settings['frequencyranges'], downsample_idx, line_noise, \
-                      dat_ECOG, filter_fun, new_num_data_points, Verbose=False)
+                      dat_ECOG, filter_fun, new_num_data_points,seglengths=seglengths, Verbose=False)
                       
                
             
