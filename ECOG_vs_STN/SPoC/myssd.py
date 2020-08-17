@@ -8,6 +8,7 @@ Created on Wed Jul  29  2020
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 import mne
+mne.set_log_level(verbose='warning') #to avoid info at terminal
 from scipy import linalg
 
 
@@ -141,7 +142,7 @@ class SSD(BaseEstimator, TransformerMixin):
         signal_band = self.freq[0] #signal bandpass band
         #reshape for filtering
         X_aux=np.reshape(X, [n_epochs, n_channels*n_samples])
-        X_s=mne.filter.filter_data(X_aux, self.sampling_freq, l_freq=signal_band[0], h_freq=signal_band[1])  
+        X_s=mne.filter.filter_data(X_aux, self.sampling_freq, l_freq=signal_band[0], h_freq=signal_band[1],method='iir', phase='zero-double')  
         #reshape to original shape
         X_s=np.reshape(X_s, [n_epochs,n_channels,n_samples])
         covs = np.empty((n_epochs, n_channels, n_channels))
@@ -158,8 +159,8 @@ class SSD(BaseEstimator, TransformerMixin):
         noise_bs_band = self.freq[2] # noise bandstop band
         #rephase for filtering
         X_aux=np.reshape(X, [n_epochs, n_channels*n_samples])
-        X_n=mne.filter.filter_data(X_aux, self.sampling_freq, l_freq=noise_bp_band[0], h_freq=noise_bp_band[1])  
-        X_n=mne.filter.filter_data(X_n, self.sampling_freq, l_freq=noise_bs_band[1], h_freq=noise_bs_band[0],l_trans_bandwidth=2, h_trans_bandwidth=2)#band stop   
+        X_n=mne.filter.filter_data(X_aux, self.sampling_freq, l_freq=noise_bp_band[0], h_freq=noise_bp_band[1],method='iir', phase='zero-double')  
+        X_n=mne.filter.filter_data(X_n, self.sampling_freq, l_freq=noise_bs_band[1], h_freq=noise_bs_band[0],method='iir', phase='zero-double')#band stop   
         #reshape to original shape
         X_n=np.reshape(X_n, [n_epochs,n_channels,n_samples])
         # Estimate single trial covariance
@@ -170,20 +171,49 @@ class SSD(BaseEstimator, TransformerMixin):
                 rank=self.rank)
 
         C_n = covs_n.mean(0)
-               
+        
+        
+        D, V = linalg.eig(C_s)
+        D, V = np.real(D), np.real(V)
+    
+        ev_sorted = np.sort(D)
+        sort_idx = np.argsort(D)
+        sort_idx = sort_idx[::-1]
+        ev_sorted = ev_sorted[::-1]
+        V = V[:, sort_idx]
+        tol = ev_sorted[0] * 10 ** -6
+        r = np.sum(ev_sorted > tol)
+    
+        if r < n_channels:
+            lambda2 = ev_sorted[0:r].reshape((1, r))
+            M = V[:, 0:r] * (1 / np.sqrt(lambda2))
+        else:
+            M = np.eye(n_channels)
+    
+        C_s_r = np.dot(np.dot(M.T, C_s), M)
+        C_n_r = np.dot(np.dot(M.T, C_n), M)
         # solve eigenvalue decomposition
-        evals, evecs = linalg.eigh(C_s, C_n)
+        # evals, evecs = linalg.eig(C_s, C_n)
+        evals, evecs = linalg.eig(C_s_r, C_n_r+C_n_r)
+
         evals = evals.real
         evecs = evecs.real
         # index of sorted eigenvalues
-        ix = np.argsort(np.abs(evals))[::-1]
+        # ix = np.argsort(np.abs(evals))[::-1]
+        ix = np.argsort(evals)[::-1]
 
         # sort eigenvectors
-        evecs = evecs[:, ix].T
-
+        W = evecs[:, ix]
+        
+        W = np.dot(M, W) #filters in columns
+        
+        
         # spatial patterns
-        self.patterns_ = linalg.pinv(evecs).T  # n_channels x n_channels (each row is a patter)
-        self.filters_ = evecs  # n_channels x n_channels (each row is a filter)
+        # A = C * W / (W'* C * W);
+        A = linalg.lstsq(np.dot(np.dot(W.T, C_s), W), np.dot(W.T, C_s))[0]
+        # A = A.T
+        self.patterns_ = A  # n_channels x n_channels (each row is a patter)
+        self.filters_ = W.T  # n_channels x n_channels (each row is a filter)
         
         
                 
@@ -249,7 +279,7 @@ class SSD(BaseEstimator, TransformerMixin):
                 signal_band = self.freq[0] #signal bandpass band
                 #rephase for filtering
                 X_aux=np.reshape(X, [n_epochs, n_channels*n_samples])
-                X_s=mne.filter.filter_data(X_aux, self.sampling_freq, l_freq=signal_band[0], h_freq=signal_band[1])  
+                X_s=mne.filter.filter_data(X_aux, self.sampling_freq, l_freq=signal_band[0], h_freq=signal_band[1],method='iir', phase='zero-double')  
                 #reshape to original shape
                 X=np.reshape(X_s, [n_epochs,n_channels,n_samples])
                 
