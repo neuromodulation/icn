@@ -9,10 +9,7 @@ Created on Mon Jun  1 17:30:37 2020
 #%%
 import numpy as np
 from matplotlib import pyplot as plt
-from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, roc_auc_score
-from sklearn.model_selection import train_test_split
-import itertools
 import mne
 from mne.decoding import CSP
 from mne import Epochs
@@ -26,15 +23,9 @@ import IO
 import os
 from myssd import SSD
 
-from sklearn.linear_model import Ridge
-from sklearn.linear_model import LinearRegression
-from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import LassoCV
-from sklearn.linear_model import ElasticNetCV
 from sklearn.linear_model import ElasticNet
 
 
-from scipy import stats
 from collections import OrderedDict
 from sklearn.model_selection import KFold, cross_val_score
 from sklearn.pipeline import make_pipeline
@@ -45,15 +36,15 @@ from skopt import gp_minimize
 import gc
 from sklearn.preprocessing import StandardScaler
 
-from FilterBank import *
-# plt.close('all')
+from FilterBank import FilterBank
+plt.close('all')
 
 #%%
 settings = {}
 
 settings['BIDS_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS/"
 settings['out_path'] = "/mnt/Datos/BML_CNCRS/Spoc/"
-settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/"
+settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/LM_Out_SPoC_SSD/"
 
 
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
@@ -69,47 +60,47 @@ settings['out_path']=settings['out_path'].replace("\\", "/")
 # reg=ElasticNet(max_iter=1000)
 space_LM = [Real(0, 1, "uniform", name='alpha'),Real(0, 1, "uniform", name='l1_ratio')]
 #%%
-def optimize_enet(x,y):
-    reg=ElasticNet(max_iter=1000)  
-    scaler = StandardScaler()
-    clf = make_pipeline(scaler, reg)
-    @use_named_args(space_LM)
-    def objective(**params):
-        reg.set_params(**params)
-        cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
-        cval[np.where(cval < 0)[0]] = 0
-    
-        return -cval.mean()
-
-    res_gp = gp_minimize(objective, space_LM, n_calls=20, random_state=0)
-    return res_gp
-
-# def enet_train(alpha,l1_ratio,x,y):
-#     clf=ElasticNet(alpha=alpha, l1_ratio=l1_ratio, max_iter=1000,normalize=False)
-#     #clf.fit(x,y)
-    
-#     cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
-#     cval[np.where(cval < 0)[0]] = 0
-#     return cval.mean()
-    
-#     return clf.score(x, y)
 # def optimize_enet(x,y):
-#     """Apply Bayesian Optimization to select enet parameters."""
-#     def function(alpha, l1_ratio):
-          
-#         return enet_train(alpha=alpha, l1_ratio=l1_ratio, x=x, y=y)
+#     reg=ElasticNet(max_iter=1000)  
+#     scaler = StandardScaler()
+#     clf = make_pipeline(scaler, reg)
+#     @use_named_args(space_LM)
+#     def objective(**params):
+#         reg.set_params(**params)
+#         cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
+#         cval[np.where(cval < 0)[0]] = 0
     
-#     optimizer = BayesianOptimization(
-#         f=function,
-#         pbounds={"alpha": (1e-4, 0.99), "l1_ratio": (1e-4,0.99)},
-#         random_state=0,
-#         verbose=1,
-#     )
-#     optimizer.probe(
-#     params=[1e-4, 1e-4],
-#     lazy=True,
-#     )
-#     optimizer.maximize(n_iter=25, init_points=20, acq="ei", xi=1e-1)
+#         return -cval.mean()
+
+#     res_gp = gp_minimize(objective, space_LM, n_calls=20, random_state=0)
+#     return res_gp
+
+def enet_train(alpha,l1_ratio,x,y):
+    clf=ElasticNet(alpha=alpha, l1_ratio=l1_ratio, max_iter=1000,normalize=False)
+    #clf.fit(x,y)
+    
+    cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
+    cval[np.where(cval < 0)[0]] = 0
+    return cval.mean()
+    
+    return clf.score(x, y)
+def optimize_enet(x,y):
+    """Apply Bayesian Optimization to select enet parameters."""
+    def function(alpha, l1_ratio):
+          
+        return enet_train(alpha=alpha, l1_ratio=l1_ratio, x=x, y=y)
+    
+    optimizer = BayesianOptimization(
+        f=function,
+        pbounds={"alpha": (1e-4, 0.99), "l1_ratio": (1e-4,0.99)},
+        random_state=0,
+        verbose=1,
+    )
+    optimizer.probe(
+    params=[1e-4, 1e-4],
+    lazy=True,
+    )
+    optimizer.maximize(n_iter=25, init_points=20, acq="ei", xi=1e-1)
 
     
     # train enet
@@ -161,7 +152,7 @@ def DetecBadTrials(X,y, verbose=True):
 #%%
 spoc= SPoC(n_components=1, log=True, reg='oas', transform_into ='average_power', rank='full')
 laterality=["CON", "IPS"]
-signal=["ECOG", "STN"]
+signal=["ECOG","STN"]
 
 # signal=[]
 #clf=LinearRegression(normalize=True, n_jobs=-1)
@@ -205,7 +196,7 @@ for m, eeg in enumerate(signal):
             
             gc.collect()
             
-            X=np.concatenate(X, axis=1)
+            X=np.concatenate(X, axis=0)
             Y_con=np.concatenate(Y_con, axis=0)
             Y_ips=np.concatenate(Y_ips, axis=0)  
             
@@ -253,11 +244,11 @@ for m, eeg in enumerate(signal):
                 x, label= DetecBadTrials(x,label)
                 # #z-scored label also
                 # label=stats.zscore(label)
-                nfb, nt,nc,ns=np.shape(X)   
+                nt, nc,ns=np.shape(x)   
                           
                 result_lm=[]
                 result_rm=[]
-                aux=X[0][:,1,:]
+               
                 
                 label_test=[]
                 label_train=[]
@@ -285,6 +276,7 @@ for m, eeg in enumerate(signal):
                     for fb in range(len( settings['frequencyranges'])): 
                         
                         band= settings['frequencyranges'][fb]
+                        # fpass =[-1,1] np.divide(band,10)
                         freq = [band, band+np.array([-2,2]), band+np.array([-1,1])]
                         ssd=SSD(n_components=nc-1,freq=freq, sampling_freq=1000.0, reg='oas',rank='full')
                         
@@ -296,26 +288,7 @@ for m, eeg in enumerate(signal):
                         
                         Xte=ssd.transform(Xte)
                         
-                        # plt.figure()
-                        # plt.psd(X_denoised[0,0,:],Fs=1000,label='denoised')
-                        # plt.psd(Xtr[0,0,:],Fs=1000, label='true')
-                        # # plt.psd(X_denoised2[0,0,:],Fs=1000, label='denoised2')
-                        # plt.legend()
-                    
-                        # lala0=mne.time_frequency.psd_array_welch(W[0], sfreq=1000, fmin=0, fmax=500)
-                        # # lala1=mne.time_frequency.psd_array_welch(X_denoised2, sfreq=1000, fmin=0, fmax=500)
-                        # lala2=mne.time_frequency.psd_array_welch(X_denoised, sfreq=1000, fmin=0, fmax=60)
-    
-                        # plt.figure()
-                        # plt.plot(lala0[1], lala0[0][0,0,:],label='true')
-                        # # plt.plot(lala1[1], lala1[0][0,0,:],label='denoised2') 
-                        # plt.plot(lala2[1], lala2[0][0,0,:],label='denoised') 
-                        # plt.legend()
-
-
-
-
-      
+                            
                         #fit and transform data
                         if fb==0:
                             
@@ -338,15 +311,10 @@ for m, eeg in enumerate(signal):
                             patterns=np.vstack((patterns,pp))   
                     
                     #cropped the values
-                    # gtr=np.clip(gtr,-2,2)   
-                    # gte=np.clip(gte,-2,2)
+                    gtr=np.clip(gtr,-2,2)   
+                    gte=np.clip(gte,-2,2)
                     
-                    # standarized
-                    # scaler = StandardScaler()
-                    # scaler.fit(gtr)
-                    # gtr=scaler.transform(gtr)
-                    # gte=scaler.transform(gte)
-                            
+                                                
                     dat_tr,label_tr = append_time_dim(gtr, Ztr,time_stamps=5)
                     dat_te,label_te = append_time_dim(gte, Zte,time_stamps=5)
                     
@@ -363,8 +331,9 @@ for m, eeg in enumerate(signal):
                     # label_te=np.squeeze(scaler_z.transform(label_te.reshape(-1, 1)))
                     
                     optimizer=optimize_enet(x=dat_tr,y=label_tr)
-                    # clf=ElasticNet(alpha=optimizer['params']['alpha'], l1_ratio=optimizer['params']['l1_ratio'], max_iter=1000, normalize=False)
-                    clf=ElasticNet(alpha=optimizer.x[0], l1_ratio=optimizer.x[1], max_iter=1000)
+                    clf=ElasticNet(alpha=optimizer['params']['alpha'], l1_ratio=optimizer['params']['l1_ratio'], max_iter=1000, normalize=False)
+                    # clf=ElasticNet(alpha=optimizer.x[0], l1_ratio=optimizer.x[1], max_iter=1000)
+                    
                     scaler = StandardScaler()
                     scaler.fit(dat_tr)
                     dat_tr=scaler.transform(dat_tr)
@@ -408,32 +377,33 @@ for m, eeg in enumerate(signal):
                 "classifiers": clf,
                 "alpha_param": alpha_param,
                 "l1ratio_param": l1_ratio_param,
-                "methods": spoc
+                "methods": spoc,
+                "ssd":ssd
                 
             }
             
-            out_path_file = os.path.join(settings['out_path_process']+ settings['num_patients'][s]+'predictions_'+eeg+'_tlag_ssdv2_'+str(subfolder[ss])+'.npy')
+            out_path_file = os.path.join(settings['out_path_process']+ settings['num_patients'][s]+'predictions_'+eeg+'_tlag_ssd_bopt_nc1'+str(subfolder[ss])+'.npy')
             np.save(out_path_file, predict_)        
             
             gc.collect()
             
                 
-            # #%% Plot the True mov and the predicted
-            # fig, ax = plt.subplots(1, 1, figsize=[10, 4])
-            # ind_best=np.argmax(score_te['CON'])
-            # Ypre_te_best=Ypre_te['CON'][ind_best]
-            # label_test_best=Label_te['CON'][ind_best]
-            # #times = raw.times[meg_epochs.events[:, 0] - raw.first_samp]
-            # ax.plot(Ypre_te_best, color='b', label='Predicted mov')
-            # ax.plot(label_test_best, color='r', label='True mov')
-            # ax.set_xlabel('Time (s)')
-            # ax.set_ylabel('Movement')
-            # ax.set_title('SPoC mov Predictions')
-            # ax.text(0.33, 0.9, 'R2={:0.02f}'.format(score_te['CON'][ind_best]),
-            # verticalalignment='bottom', horizontalalignment='right',
-            # transform=ax.transAxes,fontsize=12) 
-            # fig.suptitle(eeg+'-Subject_'+ settings['num_patients'][s], fontsize=14, fontweight='bold')
-            # plt.legend()
-            # plt.show()
+            # %% Plot the True mov and the predicted
+            fig, ax = plt.subplots(1, 1, figsize=[10, 4])
+            ind_best=np.argmax(score_te['CON'])
+            Ypre_te_best=Ypre_te['CON'][ind_best]
+            label_test_best=Label_te['CON'][ind_best]
+            #times = raw.times[meg_epochs.events[:, 0] - raw.first_samp]
+            ax.plot(Ypre_te_best, color='b', label='Predicted mov')
+            ax.plot(label_test_best, color='r', label='True mov')
+            ax.set_xlabel('Time (s)')
+            ax.set_ylabel('Movement')
+            ax.set_title('SPoC mov Predictions')
+            ax.text(0.33, 0.9, 'R2={:0.02f}'.format(score_te['CON'][ind_best]),
+            verticalalignment='bottom', horizontalalignment='right',
+            transform=ax.transAxes,fontsize=12) 
+            fig.suptitle(eeg+'-Subject_'+ settings['num_patients'][s], fontsize=14, fontweight='bold')
+            plt.legend()
+            plt.show()
             
             
