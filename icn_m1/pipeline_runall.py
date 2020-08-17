@@ -6,7 +6,7 @@ import settings
 import projection
 import online_analysis
 import offline_analysis
-import rereference
+import preprocessing
 import numpy as np
 import json
 import os
@@ -144,13 +144,10 @@ def run_vhdr_file(s):
         dat_MOV=dat_['dat_label']
         dat_STN=dat_['dat_subcortex']
         
-               
-        
-        #%% 6. rereference
-        dat_ECOG, dat_STN =rereference.rereference(run_string=vhdr_file[:-10], data_cortex=dat_ECOG, data_subcortex=dat_STN)
-        #%% 7. detet bad-channels.      
+                  
+        #%% 6. detect bad-channels.      
                 
-        #%% 8. project data to grid points
+        #%% 7. project data to grid points
         #read all used coordinates from session coordinates.tsv BIDS file
         coord_patient = IO.get_patient_coordinates(ch_names, ind_cortex, ind_subcortex, vhdr_file, settings['BIDS_path'])
         # # # given those coordinates and the provided grid, estimate the projection matrix
@@ -163,7 +160,7 @@ def run_vhdr_file(s):
         # #%% this function tells you which points are actually active after the projection
         arr_act_grid_points = IO.get_active_grid_points(sess_right, used_channels['labels'], ch_names, proj_matrix_run, grid_)
 
-        #%%
+        #%% 8. feature extraction
         seglengths = settings['seglengths']
         
         # read line noise from participants.tsv
@@ -188,8 +185,11 @@ def run_vhdr_file(s):
     
         offset_start = int((sf/seglengths[0]) / (sf/settings['resamplingrate']))
         
-        rf_data_median, pf_data_median = offline_analysis.run(sf, settings['resamplingrate'], np.asarray(seglengths), settings['frequencyranges'], grid_, downsample_idx, bv_raw, line_noise, \
-                      sess_right, dat_, filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples)
+        #now rereferencing is done after feature extraction
+        
+    
+        rf_data_median, pf_data_median = offline_analysis.run(sf, settings['resamplingrate'], np.asarray(seglengths), settings['frequencyranges'], downsample_idx, bv_raw, line_noise, \
+                      sess_right, dat_, new_num_data_points, vhdr_file[:-10], normalization_samples, filter_fun, grid_, proj_matrix_run, arr_act_grid_points)
         
         #%%ipsi o contralateral mov
             
