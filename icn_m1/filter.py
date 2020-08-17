@@ -79,7 +79,10 @@ def apply_filter(dat_, sample_rate, filter_fun, line_noise, variance=True, segle
             filtered.append(np.var(scipy.signal.convolve(filter_fun[filt,:], 
                                                dat_noth_filtered, mode='same')[-seglengths[filt]:]))
         else:
+            # filtered.append(scipy.signal.convolve(filter_fun[filt,:], 
+            #                                     dat_noth_filtered, mode='same')[-seglengths[filt]:])
             filtered.append(scipy.signal.convolve(filter_fun[filt,:], 
-                                               dat_noth_filtered, mode='same'))
+                                                dat_noth_filtered, mode='same'))
+            
                 
     return np.array(filtered)
