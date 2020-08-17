@@ -5,23 +5,32 @@ from scipy import sparse
 from scipy.sparse.linalg import spsolve
 import cvxpy as cp
 from scipy import signal
+import preprocessing
 
 ## TODO: online artifac rejection 
-def run(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_noise, \
-                      sess_right, data_, \
-                      filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples, Verbose=False,
-                      clip_low=-2, clip_high=2, usemean_=False):
-
+def run(fs, fs_new, seglengths, f_ranges, downsample_idx, bv_raw, line_noise, \
+                      sess_right, data_, new_num_data_points, run_string, normalization_samples, \
+                      filter_fun, grid_=None, proj_matrix_run=None, arr_act_grid_points=None, Verbose=False,
+                      clip_low=-2, clip_high=2, usemean_=False, project=True):
+    
+    #Rereference
+    bv_raw,ch_names=preprocessing.rereference(run_string, bv_raw)
+    
     offset_start = int((fs/seglengths[0]) / (fs/fs_new))  # offset start is here the number of samples new_fs to skip, covert seglength to fs 
     num_channels = data_["ind_dat"].shape[0]
-    num_grid_points = np.concatenate(grid_, axis=1).shape[1] # since grid_ is setup in cortex left, subcortex left, cortex right, subcortex right
     num_f_bands = len(f_ranges)
 
     rf_data = np.zeros([new_num_data_points-offset_start, num_channels, num_f_bands])  # raw frequency array
-    rf_data_median = np.zeros([new_num_data_points-offset_start, num_channels, num_f_bands])
-    pf_data = np.zeros([new_num_data_points-offset_start, num_grid_points, num_f_bands])  # projected 
-    pf_data_median = np.zeros([new_num_data_points-offset_start, num_grid_points, num_f_bands])  # projected 
+    rf_data_norm = np.zeros([new_num_data_points-offset_start, num_channels, num_f_bands])
+    if project:
+        num_grid_points = np.concatenate(grid_, axis=1).shape[1] # since grid_ is setup in cortex left, subcortex left, cortex right, subcortex right
+
+        pf_data = np.zeros([new_num_data_points-offset_start, num_grid_points, num_f_bands])  # projected 
+        pf_data_norm = np.zeros([new_num_data_points-offset_start, num_grid_points, num_f_bands])  # projected 
+   
     new_idx = 0
+    
+   
 
     for c in range(downsample_idx.shape[0]):
         if Verbose: 
@@ -35,17 +44,18 @@ def run(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_no
             rf_data[new_idx,ch,:] = dat_filt
 
         #PROJECTION of RF_data to pf_data
-        if data_["ind_cortex"] is None:
-            dat_cortex = None
-        else:
-            dat_cortex = rf_data[new_idx, data_["ind_cortex"],:]
-        if data_["ind_subcortex"] is None:
-            dat_subcortex = None
-        else:
-            dat_subcortex = rf_data[new_idx, data_["ind_subcortex"],:]
-
-        proj_cortex, proj_subcortex = projection.get_projected_cortex_subcortex_data(proj_matrix_run, sess_right, dat_cortex, dat_subcortex)
-        pf_data[new_idx,:,:] = projection.write_proj_data(ch_names, sess_right, data_["dat_label"], data_["ind_label"], grid_, proj_cortex, proj_subcortex)
+        if project:
+            if data_["ind_cortex"] is None:
+                dat_cortex = None
+            else:
+                dat_cortex = rf_data[new_idx, data_["ind_cortex"],:]
+            if data_["ind_subcortex"] is None:
+                dat_subcortex = None
+            else:
+                dat_subcortex = rf_data[new_idx, data_["ind_subcortex"],:]
+    
+            proj_cortex, proj_subcortex = projection.get_projected_cortex_subcortex_data(proj_matrix_run, sess_right, dat_cortex, dat_subcortex)
+            pf_data[new_idx,:,:] = projection.write_proj_data(ch_names, sess_right, data_["dat_label"], data_["ind_label"], grid_, proj_cortex, proj_subcortex)
 
         #normalize acc. to Median of previous normalization samples
         if c<normalization_samples:
@@ -57,27 +67,31 @@ def run(fs, fs_new, seglengths, f_ranges, grid_, downsample_idx, bv_raw, line_no
             n_idx = np.arange(new_idx-normalization_samples, new_idx, 1)
 
         if new_idx == 0:
-            rf_data_median[n_idx,:,:] = rf_data[n_idx,:,:]
-            pf_data_median[n_idx,:,:] = pf_data[n_idx,:,:]
+            rf_data_norm[n_idx,:,:] = rf_data[n_idx,:,:]
+            if project:
+                pf_data_norm[n_idx,:,:] = pf_data[n_idx,:,:]
         else:
             if usemean_ is True:   
                 mean_ = np.mean(rf_data[n_idx,:,:], axis=0)
-                rf_data_median[new_idx,:,:] = (rf_data[new_idx,:,:] - mean_) / mean_
-                
-                mean_ = np.mean(pf_data[n_idx,:,:][:,arr_act_grid_points>0,:], axis=0)
-                pf_data_median[new_idx,arr_act_grid_points>0,:] = (pf_data[new_idx,arr_act_grid_points>0,:] - mean_) / mean_
+                rf_data_norm[new_idx,:,:] = (rf_data[new_idx,:,:] - mean_) / mean_
+                if project:
+                    mean_ = np.mean(pf_data[n_idx,:,:][:,arr_act_grid_points>0,:], axis=0)
+                    pf_data_norm[new_idx,arr_act_grid_points>0,:] = (pf_data[new_idx,arr_act_grid_points>0,:] - mean_) / mean_
             else:
                 median_ = np.median(rf_data[n_idx,:,:], axis=0)
-                rf_data_median[new_idx,:,:] = (rf_data[new_idx,:,:] - median_) / median_
-                
-                median_ = np.median(pf_data[n_idx,:,:][:,arr_act_grid_points>0,:], axis=0)
-                pf_data_median[new_idx,arr_act_grid_points>0,:] = (pf_data[new_idx,arr_act_grid_points>0,:] - median_) / median_
+                rf_data_norm[new_idx,:,:] = (rf_data[new_idx,:,:] - median_) / median_
+                if project:
+                    median_ = np.median(pf_data[n_idx,:,:][:,arr_act_grid_points>0,:], axis=0)
+                    pf_data_norm[new_idx,arr_act_grid_points>0,:] = (pf_data[new_idx,arr_act_grid_points>0,:] - median_) / median_
 
         new_idx += 1
-    rf_data_median = np.clip(rf_data_median, clip_low, clip_high)
-    pf_data_median = np.clip(pf_data_median, clip_low, clip_high)
+    rf_data_norm = np.clip(rf_data_norm, clip_low, clip_high)
+    if project:
+        pf_data_norm = np.clip(pf_data_norm, clip_low, clip_high)
     
-    return rf_data_median, pf_data_median
+        return rf_data_norm, pf_data_norm
+    else:
+        return rf_data_norm
 
 def create_continous_epochs(fs, fs_new, offset_start, f_ranges, downsample_idx, line_noise, \
                       data_, filter_fun, new_num_data_points, Verbose=False):
