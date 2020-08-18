@@ -57,7 +57,7 @@ settings['BIDS_path']=settings['BIDS_path'].replace("\\", "/")
 settings['out_path']=settings['out_path'].replace("\\", "/")
 
 
-for s in range(1,len(settings['num_patients'])):   
+for s in range(len(settings['num_patients'])):   
     subject_path=settings['BIDS_path'] + 'sub-' +settings['num_patients'][s]
            
     subfolder=IO.get_subfolders(subject_path)
@@ -109,7 +109,9 @@ for s in range(1,len(settings['num_patients'])):
         
         #%% 6. rereference
         new_data, ch_names =preprocessing.rereference(run_string=vhdr_file[:-10], bv_raw=bv_raw)
-       
+        #%% coordinates 
+        coord_patient = IO.get_patient_coordinates(ch_names, ind_cortex, ind_subcortex, vhdr_file, settings['BIDS_path'])
+
         #%% filtering
         seglengths = settings['seglengths']
         
@@ -191,6 +193,7 @@ for s in range(1,len(settings['num_patients'])):
             "run" : run, 
             "sess" : sess, 
             "sess_right" :  sess_right, 
+            "coord_patient" : coord_patient, 
             "used_channels" : used_channels, 
             "fs" : sf, 
             "line_noise" : line_noise, 
