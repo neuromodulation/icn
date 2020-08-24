@@ -188,8 +188,8 @@ def run_vhdr_file(s):
     
         offset_start = int((sf/seglengths[0]) / (sf/settings['resamplingrate']))
         
-        rf_data_median, pf_data_median = offline_analysis.run(sf, settings['resamplingrate'], np.asarray(seglengths), settings['frequencyranges'], grid_, downsample_idx, bv_raw, line_noise, \
-                      sess_right, dat_, filter_fun, proj_matrix_run, arr_act_grid_points, new_num_data_points, ch_names, normalization_samples)
+        rf_data_median, pf_data_median = offline_analysis.run(sf, settings['resamplingrate'], np.asarray(seglengths), settings['frequencyranges'], downsample_idx, bv_raw, line_noise, \
+                      sess_right, dat_, new_num_data_points, vhdr_file[:-10], normalization_samples, filter_fun, grid_, proj_matrix_run, arr_act_grid_points)
         
         #%%ipsi o contralateral mov
             
