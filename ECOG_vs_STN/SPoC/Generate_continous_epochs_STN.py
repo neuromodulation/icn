@@ -10,7 +10,7 @@ sys.path.insert(1, '/home/victoria/icn/icn_m1')
 import IO
 import offline_analysis
 import filter
-import rereference
+import preprocessing
 import numpy as np
 import json
 import os
@@ -138,14 +138,13 @@ for s in range(len(settings['num_patients'])):
             dat_STN=dat_['dat_subcortex']
             
             label_channels = np.array(ch_names)[used_channels['labels']]
-    
-            Nan, dat_STN =rereference.rereference(run_string=vhdr_file[:-10], data_cortex=dat_ECOG, data_subcortex=dat_STN)
+   
 
             if dat_STN is None:
                 continue
         
             #%% REREFERENCE
-            Nan, dat_STN =rereference.rereference(run_string=vhdr_file[:-10], data_cortex=dat_ECOG, data_subcortex=dat_STN)
+            dat_ECOG, dat_STN =preprocessing.rereference(run_string=vhdr_file[:-10], bv_raw=bv_raw, get_ch_names=False, get_cortex_subcortex=True)
 
             #%% FILTER AND EPOCHED DATA
             #define parameters

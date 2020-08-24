@@ -10,7 +10,7 @@ sys.path.insert(1, '/home/victoria/icn/icn_m1')
 import IO
 import filter
 import offline_analysis
-import rereference
+import preprocessing
 import numpy as np
 import json
 import os
@@ -133,7 +133,7 @@ for s in range(len(settings['num_patients'])):
             label_channels = np.array(ch_names)[used_channels['labels']]
     
             #%% REREFERENCE
-            dat_ECOG, dat_STN =rereference.rereference(run_string=vhdr_file[:-10], data_cortex=dat_ECOG, data_subcortex=dat_STN)
+            dat_ECOG, dat_STN =preprocessing.rereference(run_string=vhdr_file[:-10], bv_raw=bv_raw, get_ch_names=False, get_cortex_subcortex=True)
 
             #%% FILTER AND EPOCHED DATA
             #define parameters
@@ -148,7 +148,7 @@ for s in range(len(settings['num_patients'])):
             
             
             data=offline_analysis.create_continous_epochs(sf, settings['resamplingrate'], offset_start, settings['frequencyranges'], downsample_idx, line_noise, \
-                      dat_ECOG, filter_fun, new_num_data_points,seglengths=seglengths, Verbose=False)
+                      dat_ECOG, filter_fun, new_num_data_points, Verbose=False)
                       
                
             

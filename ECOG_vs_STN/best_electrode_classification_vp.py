@@ -22,16 +22,16 @@ import sys
 import IO
 import os
 
-import tensorflow
-import keras
-from keras.layers import BatchNormalization
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.wrappers.scikit_learn import KerasClassifier, KerasRegressor
-from keras.optimizers import Adam
+# import tensorflow
+# import keras
+# from keras.layers import BatchNormalization
+# from keras.models import Sequential
+# from keras.layers import Dense
+# from keras.wrappers.scikit_learn import KerasClassifier, KerasRegressor
+# from keras.optimizers import Adam
 
-from tensorflow.python.keras import backend as K
-from sklearn.model_selection import StratifiedKFold
+# from tensorflow.python.keras import backend as K
+# from sklearn.model_selection import StratifiedKFold
 
 from sklearn.linear_model import Ridge
 from sklearn.linear_model import LinearRegression
@@ -55,7 +55,7 @@ from sklearn.preprocessing import StandardScaler
 import xgboost as xgb
 from xgboost import XGBRegressor
 
-VICTORIA = False
+VICTORIA = True
 WRITE_OUT_CH_IND = False
 USED_MODEL = 1 # 0 - Enet, 1 - XGB, 2 - NN
 settings = {}
@@ -64,8 +64,11 @@ if VICTORIA is True:
     # insert at 1, 0 is the script path (or '' in REPL)
     sys.path.insert(1, '/home/victoria/icn/icn_m1')
     settings['BIDS_path'] = "//mnt/Datos/BML_CNCRS/Data_BIDS_new/"
-    settings['out_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Derivatives/"
-    settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/"
+    settings['out_path'] = "/mnt/Datos/BML_CNCRS/Data_processed/Derivatives/Raw_pipeline/"
+    if USED_MODEL==0 :
+           settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/LM_Out/"
+    if USED_MODEL==1 :
+           settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/XGB_Out/"
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
     settings['out_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_old_grid\\"
@@ -77,13 +80,14 @@ settings['num_patients']=['000', '001', '004', '005', '006', '007', '008', '009'
 settings['BIDS_path']=settings['BIDS_path'].replace("\\", "/")
 settings['out_path']=settings['out_path'].replace("\\", "/")
 
+
+
 #%%
 space_LM = [Real(0, 1, "uniform", name='alpha'),
            Real(0, 1, "uniform", name='l1_ratio')]
 
 space_XGB  = [Integer(1, 100, name='max_depth'),
           Real(10**-5, 10**0, "log-uniform", name='learning_rate'),
-          Integer(10**0, 10**3, "log-uniform", name='n_estimators'),
           Real(10**0, 10**1, "uniform", name="gamma")]
 
 space_NN = [Real(low=1e-4, high=1e-2, prior='log-uniform', name='learning_rate'),
@@ -106,57 +110,57 @@ def optimize_enet(x,y):
     res_gp = gp_minimize(objective, space_LM, n_calls=20, random_state=0)
     return res_gp
 
-def optimize_nn(x,y):
+# def optimize_nn(x,y):
 
-    def create_model_NN():
-        """
-        Create NN tensorflow with different numbers of hidden layers / hidden units
-        """
+#     def create_model_NN():
+#         """
+#         Create NN tensorflow with different numbers of hidden layers / hidden units
+#         """
 
-        #start the model making process and create our first layer
-        model = Sequential()
-        model.add(Dense(num_input_nodes, input_shape=(40,), activation=activation
-                       ))
-        model.add(BatchNormalization())
-        #create a loop making a new dense layer for the amount passed to this model.
-        #naming the layers helps avoid tensorflow error deep in the stack trace.
-        for i in range(num_dense_layers):
-            name = 'layer_dense_{0}'.format(i+1)
-            model.add(Dense(num_dense_nodes,
-                     activation=activation,
-                            name=name
-                     ))
-        #add our classification layer.
-        model.add(Dense(1,activation='linear'))
+#         #start the model making process and create our first layer
+#         model = Sequential()
+#         model.add(Dense(num_input_nodes, input_shape=(40,), activation=activation
+#                        ))
+#         model.add(BatchNormalization())
+#         #create a loop making a new dense layer for the amount passed to this model.
+#         #naming the layers helps avoid tensorflow error deep in the stack trace.
+#         for i in range(num_dense_layers):
+#             name = 'layer_dense_{0}'.format(i+1)
+#             model.add(Dense(num_dense_nodes,
+#                      activation=activation,
+#                             name=name
+#                      ))
+#         #add our classification layer.
+#         model.add(Dense(1,activation='linear'))
 
-        #setup our optimizer and compile
-        adam = Adam(lr=learning_rate)
-        model.compile(optimizer=adam, loss='mean_squared_error',
-                     metrics=['mse'])
-        return model
+#         #setup our optimizer and compile
+#         adam = Adam(lr=learning_rate)
+#         model.compile(optimizer=adam, loss='mean_squared_error',
+#                      metrics=['mse'])
+#         return model
 
-    @use_named_args(space_NN)
-    def objective(**params):
-        print(params)
+#     @use_named_args(space_NN)
+#     def objective(**params):
+#         print(params)
 
-        global learning_rate
-        learning_rate=params["learning_rate"]
-        global num_dense_layers
-        num_dense_layers=params["num_dense_layers"]
-        global num_input_nodes
-        num_input_nodes=params["num_input_nodes"]
-        global num_dense_nodes
-        num_dense_nodes=params["num_dense_nodes"]
-        global activation
-        activation=params["activation"]
+#         global learning_rate
+#         learning_rate=params["learning_rate"]
+#         global num_dense_layers
+#         num_dense_layers=params["num_dense_layers"]
+#         global num_input_nodes
+#         num_input_nodes=params["num_input_nodes"]
+#         global num_dense_nodes
+#         num_dense_nodes=params["num_dense_nodes"]
+#         global activation
+#         activation=params["activation"]
 
-        model = KerasRegressor(build_fn=create_model_NN, epochs=100, batch_size=1000, verbose=0)
-        cv_res = cross_val_score(model, x, y, cv=3, n_jobs=59, scoring="r2")
-        cv_res[np.where(cv_res < 0)[0]] = 0
-        return -np.mean(cv_res)
+#         model = KerasRegressor(build_fn=create_model_NN, epochs=100, batch_size=1000, verbose=0)
+#         cv_res = cross_val_score(model, x, y, cv=3, n_jobs=59, scoring="r2")
+#         cv_res[np.where(cv_res < 0)[0]] = 0
+#         return -np.mean(cv_res)
 
-    res_gp = gp_minimize(objective, space_NN, n_calls=20, random_state=0)
-    return res_gp
+#     res_gp = gp_minimize(objective, space_NN, n_calls=20, random_state=0)
+#     return res_gp
 
 def optimize_xgb(x,y):
 
@@ -186,8 +190,8 @@ def optimize_xgb(x,y):
              'learning_rate': params["learning_rate"],
              'subsample': 0.8,
              'eta': 0.1,
-             'disable_default_eval_metric' : 1,
-             'scale_pos_weight ' : 1}
+             'disable_default_eval_metric' : 1}
+             # 'scale_pos_weight ' : 1}
              #'nthread':59}
              #'tree_method' : 'gpu_hist'}
              #'gpu_id' : 1}
@@ -300,8 +304,9 @@ for signal_idx, signal_ in enumerate(signal):
             sc_te= OrderedDict()
             Yt_tr= OrderedDict()
             Yt_te= OrderedDict()
-            Model_coef = OrderedDict()
-
+            Model_coef= OrderedDict()
+            Model_hyperarams= OrderedDict()
+            
             for laterality_idx, laterality_ in enumerate(laterality):
                 print("training %s" %laterality_)
                 sc_tr[laterality_] = []
@@ -311,6 +316,8 @@ for signal_idx, signal_ in enumerate(signal):
                 Yt_tr[laterality_] = []
                 Yt_te[laterality_] = []
                 Model_coef[laterality_] = []
+                Model_hyperarams[laterality_] = []
+
 
                 if laterality_=="CON":
                     label=Y_con
@@ -323,7 +330,8 @@ for signal_idx, signal_ in enumerate(signal):
                 Label_tr=np.empty(X.shape[1], dtype=object)
                 Labelpre_te=np.empty(X.shape[1], dtype=object)
                 Labelpre_tr=np.empty(X.shape[1], dtype=object)
-                COEF_ = np.empty(X.shape[1])
+                COEF_ = np.empty(X.shape[1],dtype=object)
+                Hyperarapms= np.empty(X.shape[1],dtype=object)
 
 
                 #for each electrode
@@ -337,7 +345,7 @@ for signal_idx, signal_ in enumerate(signal):
                     label_train=[]
                     coords = []
                     coef_ = []
-
+                    hyp_=[]
                     for train_index, test_index in cv.split(X):
                         Xtr, Xte=X[train_index,ch_idx,:], X[test_index,ch_idx,:]
                         Ytr, Yte=label[train_index], label[test_index]
@@ -356,23 +364,26 @@ for signal_idx, signal_ in enumerate(signal):
                             optimizer=optimize_xgb(x=dat_tr, y=label_tr)
                             model=XGBRegressor(max_depth=optimizer['x'][0],
                                                learning_rate=optimizer['x'][1],
-                                               gamma=optimizer['x'][2])#, nthread=59)
-                        elif USED_MODEL == 2:
-                             optimizer=optimize_nn(x=dat_tr, y=label_tr)
-                             global learning_rate
-                             learning_rate=optimizer['x'][0]
-                             global num_dense_layers
-                             num_dense_layers=optimizer['x'][1]
-                             global num_input_nodes
-                             num_input_nodes=optimizer['x'][2]
-                             global num_dense_nodes
-                             num_dense_nodes=optimizer['x'][3]
-                             global activation
-                             activation=optimizer['x'][4]
-                             model = KerasRegressor(build_fn=create_model_NN, epochs=100, batch_size=1000, verbose=0)
-                        else:
-                            break
-                            print("ARCHITECTURE IS NOT DEFINED")
+                                               gamma=optimizer['x'][2], subsample= 0.8,
+                                               eta= 0.1,
+                                               disable_default_eval_metric= 1)
+                                              
+                        # elif USED_MODEL == 2:
+                        #      optimizer=optimize_nn(x=dat_tr, y=label_tr)
+                        #      global learning_rate
+                        #      learning_rate=optimizer['x'][0]
+                        #      global num_dense_layers
+                        #      num_dense_layers=optimizer['x'][1]
+                        #      global num_input_nodes
+                        #      num_input_nodes=optimizer['x'][2]
+                        #      global num_dense_nodes
+                        #      num_dense_nodes=optimizer['x'][3]
+                        #      global activation
+                        #      activation=optimizer['x'][4]
+                        #      model = KerasRegressor(build_fn=create_model_NN, epochs=100, batch_size=1000, verbose=0)
+                        # else:
+                        #     break
+                        #     print("ARCHITECTURE IS NOT DEFINED")
 
                         model.fit(dat_tr, label_tr)
                         Ypre_te.append(model.predict(dat_te) if USED_MODEL != 2 else model.predict(dat_te)[:,0])
@@ -384,7 +395,9 @@ for signal_idx, signal_ in enumerate(signal):
                         if r2_te < 0: r2_te = 0
                         score_te.append(r2_te)
 
-                        coef_.append(optimizer['x'])
+                        if USED_MODEL == 0: coef_.append(model.coef_)
+                        hyp_.append(optimizer['x'])
+                        # hyp_.append(optimizer['params'])
 
                     Score_tr[ch_idx]=np.mean(score_tr)
                     Score_te[ch_idx]=np.mean(score_te)
@@ -393,6 +406,7 @@ for signal_idx, signal_ in enumerate(signal):
                     Labelpre_te[ch_idx]=Ypre_te
                     Labelpre_tr[ch_idx]=Ypre_tr
                     COEF_[ch_idx]=coef_
+                    Hyperarapms[ch_idx]=hyp_
 
                 sc_tr[laterality_] = Score_tr
                 sc_te[laterality_] = Score_te
@@ -401,6 +415,7 @@ for signal_idx, signal_ in enumerate(signal):
                 Yt_tr[laterality_] = Label_te
                 Yt_te[laterality_] = Label_tr
                 Model_coef[laterality_] = COEF_
+                Model_hyperarams[laterality_]=Hyperarapms
 
             predict_ = {
                 "y_pred_test": Yp_te,
@@ -410,7 +425,10 @@ for signal_idx, signal_ in enumerate(signal):
                 "score_tr": sc_tr,
                 "score_te": sc_te,
                 "coord_patient" : run_["coord_patient"],
-                "model_coef" : Model_coef
+                "coef" :Model_coef, 
+                "model_hyperparams": Model_hyperarams
+             
+                
             }
             out_path_file = os.path.join(settings['out_path_process']+ \
                 settings['num_patients'][sub_idx]+'BestChpredictions_'+signal_+'-'+ str(subfolder[sess_idx])+'.npy')
