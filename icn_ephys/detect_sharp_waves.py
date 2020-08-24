@@ -48,22 +48,23 @@ class Waveform_analyzer:
 
     #def analyze_waveform(self, raw_dat, peak_dist=1, trough_dist=5, label=False, y_contra=None, y_ipsi=None, \
     #                        plot_=False):
-    def analyze_waveform(self, ch, dat, subject_id):
+    def analyze_waveform(self, ch, dat, subject_id, DETECT_PEAKS):
 
-
-<<<<<<< HEAD
-        peak_dist=1; trough_dist=5; label=True; y_contra=None; y_ipsi=None; plot_=False
-=======
-        peak_dist=1;
-        trough_dist=5;
         label=True;
-        y_contra=None;
-        y_ipsi=None;
         plot_=False
->>>>>>> fbdcc8087a7fab3f01f708bd7f0a0ab72512ecbc
-        y_contra = dat[ch]["mov_con"]
-        y_ipsi = dat[ch]["mov_ips"]
+        trough_dist=5;
+
+        y_contra = dat[ch]["mov_con"]; # else: y_contra=None;
+        y_ipsi = dat[ch]["mov_ips"]# else: y_ipsi=None;
         raw_dat = dat[ch]["data"]
+
+        if DETECT_PEAKS is True:
+            peak_dist=5; trough_dist=1;
+            raw_dat = -dat[ch]["data"]  # Negative for Peaks
+        else:
+            peak_dist=1; trough_dist=5;
+            raw_dat = dat[ch]["data"]
+
         # first notch filter data
         dat_notch_filtered = mne.filter.notch_filter(x=raw_dat, Fs=self.sample_rate, trans_bandwidth=7,
             freqs=np.arange(self.line_noise, 4*self.line_noise, self.line_noise),
@@ -171,7 +172,7 @@ def analyze_sharpwaves_subject(subject_id):
     print("channel left subject "+str(subject_id))
     print(ch_left)
 
-    pool.starmap(waveform_analyzer.analyze_waveform, zip(ch_left, repeat(dat), repeat(subject_id)))
+    pool.starmap(waveform_analyzer.analyze_waveform, zip(ch_left, repeat(dat), repeat(subject_id), repeat(True))) # repeat True for PEAKS
 
     #for ch in dat.keys():
     #    df = waveform_analyzer.analyze_waveform(dat[ch]["data"], peak_dist=1, trough_dist=12,
