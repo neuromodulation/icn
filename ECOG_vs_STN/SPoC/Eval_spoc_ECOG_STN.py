@@ -52,7 +52,7 @@ from FilterBank import *
 plt.close('all')
 
 #%%
-USED_MODEL = 0 # 0 - Enet, 1 - XGB, 2 - NN
+USED_MODEL = 1 # 0 - Enet, 1 - XGB, 2 - NN
 
 settings = {}
 
@@ -78,95 +78,95 @@ space_XGB  = [Integer(1, 100, name='max_depth'),
           Real(10**0, 10**1, "uniform", name="gamma")]
 
 #%%
-# def optimize_enet(x,y):
-#     scaler = StandardScaler()
-#     reg=ElasticNet(max_iter=1000)
-#     clf = make_pipeline(scaler, reg)
+def optimize_enet(x,y):
+    scaler = StandardScaler()
+    reg=ElasticNet(max_iter=1000)
+    clf = make_pipeline(scaler, reg)
 
       
-#     @use_named_args(space_LM)
-#     def objective(**params):
-#         reg.set_params(**params)
-#         cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
-#         cval[np.where(cval < 0)[0]] = 0
+    @use_named_args(space_LM)
+    def objective(**params):
+        reg.set_params(**params)
+        cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
+        cval[np.where(cval < 0)[0]] = 0
     
-#         return -cval.mean()
+        return -cval.mean()
 
-#     res_gp = gp_minimize(objective, space_LM, n_calls=20, random_state=0)
-#     return res_gp
+    res_gp = gp_minimize(objective, space_LM, n_calls=20, random_state=0)
+    return res_gp
 
 
-# def optimize_xgb(x,y):
+def optimize_xgb(x,y):
 
-#     def evalerror(preds, dtrain):
-#         """
-#         Custom defined r^2 evaluation function
-#         """
-#         labels = dtrain.get_label()
-#         # return a pair metric_name, result. The metric name must not contain a
-#         # colon (:) or a space since preds are margin(before logistic
-#         # transformation, cutoff at 0)
+    def evalerror(preds, dtrain):
+        """
+        Custom defined r^2 evaluation function
+        """
+        labels = dtrain.get_label()
+        # return a pair metric_name, result. The metric name must not contain a
+        # colon (:) or a space since preds are margin(before logistic
+        # transformation, cutoff at 0)
 
-#         r2 = metrics.r2_score(labels, preds)
+        r2 = metrics.r2_score(labels, preds)
 
-#         if r2 < 0:
-#             r2 = 0
+        if r2 < 0:
+            r2 = 0
 
-#         return 'r2', r2
+        return 'r2', r2
 
-#     @use_named_args(space_XGB)
-#     def objective(**params):
-#         print(params)
+    @use_named_args(space_XGB)
+    def objective(**params):
+        print(params)
 
-#         params_ = {'max_depth': int(params["max_depth"]),
-#              'gamma': params['gamma'],
-#              #'n_estimators': int(params["n_estimators"]),
-#              'learning_rate': params["learning_rate"],
-#              'subsample': 0.8,
-#              'eta': 0.1,
-#              'disable_default_eval_metric' : 1
-#              }
-#              #'nthread':59}
-#              #'tree_method' : 'gpu_hist'}
-#              #'gpu_id' : 1}
+        params_ = {'max_depth': int(params["max_depth"]),
+             'gamma': params['gamma'],
+             #'n_estimators': int(params["n_estimators"]),
+             'learning_rate': params["learning_rate"],
+             'subsample': 0.8,
+             'eta': 0.1,
+             'disable_default_eval_metric' : 1}
+             # 'scale_pos_weight ' : 1}
+             #'nthread':59}
+             #'tree_method' : 'gpu_hist'}
+             #'gpu_id' : 1}
 
-#         cv_result = xgb.cv(params_, xgb.DMatrix(x, label=y), num_boost_round=30, feval=evalerror, nfold=3)
-#         return -cv_result['test-r2-mean'].iloc[-1]
+        cv_result = xgb.cv(params_, xgb.DMatrix(x, label=y), num_boost_round=30, feval=evalerror, nfold=3)
+        return -cv_result['test-r2-mean'].iloc[-1]
 
-#     res_gp = gp_minimize(objective, space_XGB, n_calls=20, random_state=0)
-#     return res_gp
+    res_gp = gp_minimize(objective, space_XGB, n_calls=20, random_state=0)
+    return res_gp
 
-def enet_train(alpha,l1_ratio,x,y):
-    clf=ElasticNet(alpha=alpha, l1_ratio=l1_ratio, max_iter=1000,normalize=False)
-    #clf.fit(x,y)
+# def enet_train(alpha,l1_ratio,x,y):
+#     clf=ElasticNet(alpha=alpha, l1_ratio=l1_ratio, max_iter=1000,normalize=False)
+#     #clf.fit(x,y)
     
-    cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
-    cval[np.where(cval < 0)[0]] = 0
-    return cval.mean()
+#     cval = cross_val_score(clf, x, y, scoring='r2', cv=3)
+#     cval[np.where(cval < 0)[0]] = 0
+#     return cval.mean()
     
-    # return clf.score(x, y)
-def optimize_enet(x,y):
-    """Apply Bayesian Optimization to select enet parameters."""
-    def function(alpha, l1_ratio):
+#     # return clf.score(x, y)
+# def optimize_enet(x,y):
+#     """Apply Bayesian Optimization to select enet parameters."""
+#     def function(alpha, l1_ratio):
           
-        return enet_train(alpha=alpha, l1_ratio=l1_ratio, x=x, y=y)
+#         return enet_train(alpha=alpha, l1_ratio=l1_ratio, x=x, y=y)
     
-    optimizer = BayesianOptimization(
-        f=function,
-        pbounds={"alpha": (1e-6, 0.99), "l1_ratio": (1e-6,0.99)},
-        random_state=0,
-        verbose=1,
-    )
-    optimizer.probe(
-    params=[1e-3, 1e-3],
-    lazy=True,
-    )
-    optimizer.maximize(n_iter=25, init_points=20, acq="ei", xi=1e-1)
+#     optimizer = BayesianOptimization(
+#         f=function,
+#         pbounds={"alpha": (1e-6, 0.99), "l1_ratio": (1e-6,0.99)},
+#         random_state=0,
+#         verbose=1,
+#     )
+#     optimizer.probe(
+#     params=[1e-3, 1e-3],
+#     lazy=True,
+#     )
+#     optimizer.maximize(n_iter=25, init_points=20, acq="ei", xi=1e-1)
 
     
-    #train enet
+#     #train enet
     
-    return optimizer.max
+#     return optimizer.max
 def append_time_dim(arr, y_, time_stamps):
     """
     apply added time dimension for the data array and label given time_stamps (with downsample_rate=100) in 100ms / need to check with 1375Hz
@@ -180,7 +180,7 @@ def append_time_dim(arr, y_, time_stamps):
 #%%
 spoc= SPoC(n_components=1, log=True, reg='oas', transform_into ='average_power', rank='full')
 laterality=["CON", "IPS"]
-signal=["ECOG"]
+signal=["STN", "ECOG"]
 
 cv = KFold(n_splits=3, shuffle=False)
 #%% CV split
@@ -301,11 +301,11 @@ for m, eeg in enumerate(signal):
                                         
                     if USED_MODEL == 0: # Enet
                             optimizer=optimize_enet(x=dat_tr,y=label_tr)
-                            # clf=ElasticNet(alpha=optimizer['x'][0],
-                            #                    l1_ratio=optimizer['x'][1],
-                            #                    max_iter=1000,
-                            #                    normalize=False)
-                            clf=ElasticNet(alpha=optimizer['params']['alpha'], l1_ratio=optimizer['params']['l1_ratio'], max_iter=1000)
+                            clf=ElasticNet(alpha=optimizer['x'][0],
+                                                l1_ratio=optimizer['x'][1],
+                                                max_iter=1000,
+                                                normalize=False)
+                            # clf=ElasticNet(alpha=optimizer['params']['alpha'], l1_ratio=optimizer['params']['l1_ratio'], max_iter=1000)
 
                             scaler = StandardScaler()
                             scaler.fit(dat_tr)
@@ -315,7 +315,9 @@ for m, eeg in enumerate(signal):
                             optimizer=optimize_xgb(x=dat_tr, y=label_tr)
                             clf=XGBRegressor(max_depth=optimizer['x'][0],
                                                learning_rate=optimizer['x'][1],
-                                               gamma=optimizer['x'][2])
+                                               gamma=optimizer['x'][2], subsample= 0.8,
+                                               eta= 0.1,
+                                               disable_default_eval_metric= 1)
                             
                     
                     #now that the LM is fit, scaler training and testing data
@@ -337,8 +339,8 @@ for m, eeg in enumerate(signal):
                     Patterns[mov].append(features.patterns)
                     
                     if USED_MODEL == 0: Coef[mov].append(clf.coef_)
-                    # hyperparams[mov].append(optimizer['x'])
-                    hyperparams[mov].append(optimizer['params'])
+                    hyperparams[mov].append(optimizer['x'])
+                    # hyperparams[mov].append(optimizer['params'])
     
         
                         
@@ -357,11 +359,13 @@ for m, eeg in enumerate(signal):
                 "coef": Coef,
                 "classifiers": clf,
                 "model_hyperparams": hyperparams,
-                "methods": spoc
+                "methods": spoc,
+                # "coord_patient" : sub_["coord_patient"] 
+
                 
             }
             
-            out_path_file = os.path.join(settings['out_path_process']+ settings['num_patients'][s]+'predictions_'+eeg+'_tlag_bopt_'+str(subfolder[ss])+'.npy')
+            out_path_file = os.path.join(settings['out_path_process']+ settings['num_patients'][s]+'predictions_'+eeg+'_tlag_'+str(subfolder[ss])+'.npy')
             np.save(out_path_file, predict_)        
             
             gc.collect()

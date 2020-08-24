@@ -43,7 +43,7 @@ settings = {}
 
 settings['BIDS_path'] = "/mnt/Datos/BML_CNCRS/Data_BIDS/"
 settings['out_path'] = "/mnt/Datos/BML_CNCRS/Spoc/"
-settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/"
+settings['out_path_process'] = "/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/SPOC_predictions_space/"
 
 
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
@@ -110,7 +110,7 @@ cv = KFold(n_splits=3, shuffle=False)
 len(settings['num_patients'])
 for m, eeg in enumerate(signals):    
 
-    for s in range(len(settings['num_patients'])):
+    for s in range(9,11):
         gc.collect()
     
         subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][s]
@@ -126,7 +126,7 @@ for m, eeg in enumerate(signals):
     
             list_of_files = os.listdir(settings['out_path']) #list of files in the current directory
             if eeg=="ECOG":
-                file_name='epochs_sub_' + settings['num_patients'][s] + '_sess_'+subfolder[ss][4:]
+                file_name='ECOG_epochs_sub_' + settings['num_patients'][s] + '_sess_'+subfolder[ss][4:]
             else:
                 file_name='STN_epochs_sub_' + settings['num_patients'][s] + '_sess_'+subfolder[ss][4:]
             for each_file in list_of_files:
@@ -146,14 +146,14 @@ for m, eeg in enumerate(signals):
             
             gc.collect()
             
-            X=np.concatenate(X, axis=1)
+            X=np.concatenate(X, axis=0)
             Y_con=np.concatenate(Y_con, axis=0)
             Y_ips=np.concatenate(Y_ips, axis=0)  
     
-            nf,nt,nc,ns=np.shape(X)   
+            nt,nc,ns,nf=np.shape(X)   
 
             #X in full beta
-            x=np.squeeze(X[7])
+            x=np.squeeze(X[:,:,:,7])
     
            
             spoc= SPoC(n_components=1, log=None, reg='oas', transform_into ='csp_space', rank='full')
@@ -280,7 +280,7 @@ for m, eeg in enumerate(signals):
         # %% Plot the True mov and the predicted
             fig, ax = plt.subplots(1, 1, figsize=[10, 4])
             ind_best=np.argmax(corr['CON'])
-            Ypre_te_best=Ypre_te['CON'][ind_best]
+            Ypre_te_best=NormalizeData(Ypre_te['CON'][ind_best])[0]
             label_test_best=Label_te['CON'][ind_best]
             lags, c=xcorr(Ypre_te_best,label_test_best, normed=True, detrend=False, maxlags=None)
                     

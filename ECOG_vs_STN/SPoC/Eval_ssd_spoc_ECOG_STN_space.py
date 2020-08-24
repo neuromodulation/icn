@@ -139,7 +139,7 @@ cv = KFold(n_splits=3, shuffle=False)
 len(settings['num_patients'])
 for m, eeg in enumerate(signals):    
 
-    for s in range(len(settings['num_patients'])):
+    for s in range(9,11):
         gc.collect()
     
         subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][s]
@@ -173,7 +173,7 @@ for m, eeg in enumerate(signals):
             
             gc.collect()
             
-            X=np.concatenate(X, axis=1)
+            X=np.concatenate(X, axis=0)
             Y_con=np.concatenate(Y_con, axis=0)
             Y_ips=np.concatenate(Y_ips, axis=0)  
     
