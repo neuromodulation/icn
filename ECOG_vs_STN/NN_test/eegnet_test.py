@@ -274,112 +274,112 @@ def get_data_raw_combined(sub, sess, loc ,f_):
 
               yield batch_features, batch_labels, [None]
 
-              cv = KFold(n_splits=3, shuffle=False)
-              kernLength = 64 # half of fs
-              batch_size = 300
-              fs_new = 128
-              samples = 128
-              fs = 1000
+  cv = KFold(n_splits=3, shuffle=False)
+  kernLength = 64 # half of fs
+  batch_size = 300
+  fs_new = 128
+  samples = 128
+  fs = 1000
 
-              for sub in subjects:
-                  for loc in ["ECOG", "STN"]:
-                      for sess in ["right", "left"]:
-                          f_ = [file for file in vhdr_files if sub in file and sess in file]
-                          if len(f_) == 0:
-                              continue
+  for sub in subjects:
+      for loc in ["ECOG", "STN"]:
+          for sess in ["right", "left"]:
+              f_ = [file for file in vhdr_files if sub in file and sess in file]
+              if len(f_) == 0:
+                  continue
 
-                          X, y_con, y_ips = get_data_raw_combined(sub, sess, loc, f_)
+              X, y_con, y_ips = get_data_raw_combined(sub, sess, loc, f_)
 
-                          # resample data
-                          y_con = signal.resample(y_con, int(y_con.shape[0]*fs_new / fs), axis=0)
-                          y_ips = signal.resample(y_ips, int(y_ips.shape[0]*fs_new / fs), axis=0)
-                          X = signal.resample(X, int(X.shape[1]*fs_new / fs), axis=1).T
+              # resample data
+              y_con = signal.resample(y_con, int(y_con.shape[0]*fs_new / fs), axis=0)
+              y_ips = signal.resample(y_ips, int(y_ips.shape[0]*fs_new / fs), axis=0)
+              X = signal.resample(X, int(X.shape[1]*fs_new / fs), axis=1).T
 
-                          chans=X.shape[1]
-                          #X = X[:,::10].T # 6 channels, here downsampled to 500Hz!
-                          #y_con = y_con[::10] # read cleaned movement labels
-                          #y_ips = y_ips[::10]
+              chans=X.shape[1]
+              #X = X[:,::10].T # 6 channels, here downsampled to 500Hz!
+              #y_con = y_con[::10] # read cleaned movement labels
+              #y_ips = y_ips[::10]
 
-                          Yp_tr= OrderedDict() # Y_predict_train
-                          sc_tr= OrderedDict() # score_train
-                          Yp_te= OrderedDict()
-                          sc_te= OrderedDict()
-                          Yt_tr= OrderedDict()
-                          Yt_te= OrderedDict()
-                          hist_ = OrderedDict()
+              Yp_tr= OrderedDict() # Y_predict_train
+              sc_tr= OrderedDict() # score_train
+              Yp_te= OrderedDict()
+              sc_te= OrderedDict()
+              Yt_tr= OrderedDict()
+              Yt_te= OrderedDict()
+              hist_ = OrderedDict()
 
-                          for lat in ["CON", "IPS"]:
-                              if lat == "CON":
-                                  y_ = y_con
-                              else:
-                                  y_ = y_ips
+              for lat in ["CON", "IPS"]:
+                  if lat == "CON":
+                      y_ = y_con
+                  else:
+                      y_ = y_ips
 
-                              print("RUNNING subject "+str(sub)+" sess: "+str(sess)+" lat: "+ str(lat)+ "loc: "+str(loc))
-                              score_te = []; score_tr = []
-                              pr_te = []; te = []; pr_tr = []; tr = []
-                              for train_index, test_index in cv.split(X):
-                                  X_train, X_test=X[train_index, :], X[test_index, :]
-                                  y_train, y_test=y_[train_index], y_[test_index]
+                  print("RUNNING subject "+str(sub)+" sess: "+str(sess)+" lat: "+ str(lat)+ "loc: "+str(loc))
+                  score_te = []; score_tr = []
+                  pr_te = []; te = []; pr_tr = []; tr = []
+                  for train_index, test_index in cv.split(X):
+                      X_train, X_test=X[train_index, :], X[test_index, :]
+                      y_train, y_test=y_[train_index], y_[test_index]
 
-                                  #X_train, X_test, y_train, y_test = train_test_split(X, y_, train_size=0.7,shuffle=False)
-                                  X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, train_size=0.8,shuffle=False)
+                      #X_train, X_test, y_train, y_test = train_test_split(X, y_, train_size=0.7,shuffle=False)
+                      X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, train_size=0.8,shuffle=False)
 
 
-                                  model  = EEGNet(Chans = chans, Samples = samples, kernLength=kernLength)
-                                  model.compile(loss = 'mse', optimizer = 'adam', metrics=["mean_squared_error"])
+                      model  = EEGNet(Chans = chans, Samples = samples, kernLength=kernLength)
+                      model.compile(loss = 'mse', optimizer = 'adam', metrics=["mean_squared_error"])
 
-                                  es = EarlyStopping(monitor='val_mean_squared_error', mode='min', verbose=1, patience=10)
-                                  mc = ModelCheckpoint('best_model.h5', monitor='val_mean_squared_error', mode='min', verbose=1, save_best_only=True)
+                      es = EarlyStopping(monitor='val_mean_squared_error', mode='min', verbose=1, patience=10)
+                      mc = ModelCheckpoint('best_model.h5', monitor='val_mean_squared_error', mode='min', verbose=1, save_best_only=True)
 
-                                  with tf.device('/gpu:0'):
-                                      gen_tr = generator_new(X_train, y_train, batch_size, chans, samples)
-                                      gen_val = generator_new(X_val, y_val, batch_size, chans, samples)
-                                      hist = model.fit(gen_tr, validation_data=gen_val, steps_per_epoch=int(X_train.shape[0]/batch_size), \
-                                                       epochs=100, validation_steps=int(X_val.shape[0]/batch_size), callbacks=[es,mc])
-                                  model = load_model('best_model.h5', custom_objects={'r2_keras': r2_keras})
+                      with tf.device('/gpu:0'):
+                          gen_tr = generator_new(X_train, y_train, batch_size, chans, samples)
+                          gen_val = generator_new(X_val, y_val, batch_size, chans, samples)
+                          hist = model.fit(gen_tr, validation_data=gen_val, steps_per_epoch=int(X_train.shape[0]/batch_size), \
+                                           epochs=100, validation_steps=int(X_val.shape[0]/batch_size), callbacks=[es,mc])
+                      model = load_model('best_model.h5', custom_objects={'r2_keras': r2_keras})
 
-                                  gen_ = generator_new(X_train, y_train, batch_size, chans, samples)
-                                  pr_train = model.predict(gen_, steps=int(X_train.shape[0]/batch_size))[:,0]
-                                  gen_ = generator_new(X_train, y_train, batch_size, chans, samples)
-                                  y_train_ = get_label_from_gen(gen_, X_train, batch_size)
+                      gen_ = generator_new(X_train, y_train, batch_size, chans, samples)
+                      pr_train = model.predict(gen_, steps=int(X_train.shape[0]/batch_size))[:,0]
+                      gen_ = generator_new(X_train, y_train, batch_size, chans, samples)
+                      y_train_ = get_label_from_gen(gen_, X_train, batch_size)
 
-                                  gen_ = generator_new(X_test, y_test, batch_size, chans, samples)
-                                  pr_test = model.predict(gen_, steps=int(X_test.shape[0]/batch_size))[:,0]
-                                  gen_ = generator_new(X_test, y_test, batch_size, chans, samples)
-                                  y_test_ = get_label_from_gen(gen_, X_test, batch_size)
+                      gen_ = generator_new(X_test, y_test, batch_size, chans, samples)
+                      pr_test = model.predict(gen_, steps=int(X_test.shape[0]/batch_size))[:,0]
+                      gen_ = generator_new(X_test, y_test, batch_size, chans, samples)
+                      y_test_ = get_label_from_gen(gen_, X_test, batch_size)
 
-                                  sc = metrics.r2_score(pr_test, y_test_)
-                                  if sc < 0: sc = 0
-                                  print(sc)
-                                  print("score test: "+str(sc))
-                                  score_te.append(sc)
+                      sc = metrics.r2_score(pr_test, y_test_)
+                      if sc < 0: sc = 0
+                      print(sc)
+                      print("score test: "+str(sc))
+                      score_te.append(sc)
 
-                                  sc = metrics.r2_score(pr_train, y_train_)
-                                  if sc < 0: sc = 0
-                                  print("score train: "+str(sc))
-                                  score_tr.append(sc)
+                      sc = metrics.r2_score(pr_train, y_train_)
+                      if sc < 0: sc = 0
+                      print("score train: "+str(sc))
+                      score_tr.append(sc)
 
-                                  pr_tr.append(pr_train)
-                                  tr.append(y_train_)
-                                  pr_te.append(pr_test)
-                                  te.append(y_test_)
+                      pr_tr.append(pr_train)
+                      tr.append(y_train_)
+                      pr_te.append(pr_test)
+                      te.append(y_test_)
 
-                              Yp_te[lat] = pr_te
-                              Yp_tr[lat] = pr_tr
-                              Yt_te[lat] = te
-                              Yt_tr[lat] = tr
-                              sc_te[lat] = np.mean(score_te)
-                              sc_tr[lat] = np.mean(score_tr)
-                              hist_[lat] = hist.history
+                  Yp_te[lat] = pr_te
+                  Yp_tr[lat] = pr_tr
+                  Yt_te[lat] = te
+                  Yt_tr[lat] = tr
+                  sc_te[lat] = np.mean(score_te)
+                  sc_tr[lat] = np.mean(score_tr)
+                  hist_[lat] = hist.history
 
-                          predict_ = {
-                              "y_pred_test": Yp_te,
-                              "y_test": Yt_te,
-                              "y_pred_train": Yp_tr,
-                              "y_train": Yt_tr,
-                              "score_tr": sc_tr,
-                              "score_te": sc_te,
-                              "hist": hist_
-                          }
+              predict_ = {
+                  "y_pred_test": Yp_te,
+                  "y_test": Yt_te,
+                  "y_pred_train": Yp_tr,
+                  "y_train": Yt_tr,
+                  "score_tr": sc_tr,
+                  "score_te": sc_te,
+                  "hist": hist_
+              }
 
-                          np.save(sub + "BestChpredictions_"+str(loc)+"-ses-"+str(sess)+".npy", predict_)
+              np.save(sub + "BestChpredictions_"+str(loc)+"-ses-"+str(sess)+".npy", predict_)
