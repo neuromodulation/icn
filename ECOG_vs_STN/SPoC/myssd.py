@@ -29,7 +29,7 @@ class SSD(BaseEstimator, TransformerMixin):
     Cosidering f as the freq. of interest, noise signals were calculated
     by filtering the raw signal in the frequency range [f−Δfb:f+Δfb] and then 
     performing band-stop filtering around frequency f [f−Δfs:f+Δfs], where Δfb
-    and Δfs are set equal to 2 and 1 Hz, respectively, as indicated in [1]. 
+    and Δfs generally are set equal to 2 and 1 Hz, respectively, as indicated in [1]. 
         
 
     Parameters
@@ -194,7 +194,7 @@ class SSD(BaseEstimator, TransformerMixin):
         C_n_r = np.dot(np.dot(M.T, C_n), M)
         # solve eigenvalue decomposition
         # evals, evecs = linalg.eig(C_s, C_n)
-        evals, evecs = linalg.eig(C_s_r, C_n_r+C_n_r)
+        evals, evecs = linalg.eigh(C_s_r, C_n_r+C_n_r)
 
         evals = evals.real
         evecs = evecs.real

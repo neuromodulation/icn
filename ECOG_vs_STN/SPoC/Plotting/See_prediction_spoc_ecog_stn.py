@@ -57,7 +57,7 @@ def xcorr(x, y, normed=True, detrend=False, maxlags=10):
     c = c[Nx - 1 - maxlags:Nx + maxlags]
     return lags, c
 #%%
-METHOD=2
+METHOD=0
 auc_all_ecog=[]
 laterality= ["CON", "IPS"]
 signals=["ECOG", "STN"]
@@ -87,7 +87,7 @@ for m, eeg in enumerate(signals):
     for n, lat in enumerate(laterality):
         r2_all=[]
 
-        for s in range(9,10):
+        for s in range(11):
    
             subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][s]
             subfolder=IO.get_subfolders(subject_path)
