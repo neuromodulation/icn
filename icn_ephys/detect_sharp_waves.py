@@ -14,7 +14,7 @@ from itertools import repeat
 
 BIDS_PATH = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
 COMB_RUNS_PATH = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\Combined_runs\\"
-PATH_OUT = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\SharpWaveAnalysis\\"
+PATH_OUT = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\SharpWaveAnalysis_Peaks\\"
 
 class NoValidTroughException(Exception):
     pass
@@ -184,7 +184,8 @@ def analyze_sharpwaves_subject(subject_id):
 if __name__ == '__main__':
 
     sub_str = []
-    for sub_idx  in np.flip(np.arange(0, 16, 1)):
+    #for sub_idx  in np.flip(np.arange(0, 16, 1)):
+    for sub_idx  in np.arange(0, 16, 1):
         print(sub_idx)
         if sub_idx<10:
             subject_id = '00' + str(sub_idx)

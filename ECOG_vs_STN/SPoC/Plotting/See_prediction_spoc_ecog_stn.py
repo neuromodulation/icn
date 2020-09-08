@@ -14,9 +14,7 @@ sys.path.insert(1, '/home/victoria/icn/icn_m1')
 import IO
 import os
 from scipy import signal
-import sys
-sys.path.insert(1, '/home/victoria/icn/ECOG_vs_STN/SPoC')
-import myssd
+
 from matplotlib.backends.backend_pdf import PdfPages
 plt.close('all')
 settings = {}
@@ -57,48 +55,37 @@ def xcorr(x, y, normed=True, detrend=False, maxlags=10):
     c = c[Nx - 1 - maxlags:Nx + maxlags]
     return lags, c
 #%%
+<<<<<<< HEAD
 METHOD=0
+=======
+>>>>>>> e43fce1212f79d1f29a55f399f151dea8802e700
 auc_all_ecog=[]
-laterality= ["CON", "IPS"]
+methods= ["CON", "IPS"]
 signals=["ECOG", "STN"]
-if METHOD==0:
-    address='/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/LM_Out_SPoC/'
-    spec='_tlag_bopt_'
-    namepdf='output_plot_lm_bop.pdf'
-    namefig='/home/victoria/Dropbox/Presentaciones/crcns/figs/prediction_'
-if METHOD==1:
-    address='/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/LM_Out_SPoC_SSD/'
-    spec='_tlag_ssd_bopt_nc1'
-    namepdf='output_plot_lm_ssd_bop.pdf'
-    namefig='/home/victoria/Dropbox/Presentaciones/crcns/figs/prediction_SSD_'
-if METHOD==2:
-     address='/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/SPOC_predictions_space/'
-     spec='_space_'
-     namepdf='output_plot_lm_space.pdf'
-
-     namefig='/home/victoria/Dropbox/Presentaciones/crcns/figs/prediction_space_'
-
-
-pp = PdfPages(namepdf, keep_empty=False)
+address='/mnt/Datos/BML_CNCRS/Spoc/ECoG_STN/LM_Out_SPoC/'
+pp = PdfPages('output_plot_lm_bop.pdf', keep_empty=False)
 
 r2_stn_ecog=np.zeros((2,2,16))    
 TRAINING=False
 for m, eeg in enumerate(signals):    
-    for n, lat in enumerate(laterality):
+    for n, method in enumerate(methods):
         r2_all=[]
 
+<<<<<<< HEAD
         for s in range(11):
+=======
+        for s in range(len(settings['num_patients'])):
+>>>>>>> e43fce1212f79d1f29a55f399f151dea8802e700
    
             subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][s]
             subfolder=IO.get_subfolders(subject_path)
-            for ss in range(1,len(subfolder)):
-                archive=address+ settings['num_patients'][s]+'predictions_'+eeg+spec+str(subfolder[ss])+'.npy'
-
-                result=np.load(archive,allow_pickle=True)
+            for ss in range(len(subfolder)):
+                
+                result=np.load(address + settings['num_patients'][s]+'predictions_'+eeg+'_tlag_bopt_'+str(subfolder[ss])+'.npy',allow_pickle=True)
                 result=result.tolist()
                         
-                score_te=result['score_te'][lat]
-                # score_tr=result['score_tr'][lat]
+                score_te=result['score_te'][method]
+                score_tr=result['score_tr'][method]
                 xc=[]
                 
                
@@ -109,36 +96,20 @@ for m, eeg in enumerate(signals):
                 fig0, ax0 = plt.subplots(1, 1, figsize=[10, 4])
                
                 #times = raw.times[meg_epochs.events[:, 0] - raw.first_samp]
-                time=np.arange(0,len(ypre_))
-                ax0.plot(time,ypre_, color='b', label='Predicted mov')
-                ax0.plot(time,ytrue_, color='r', label='True mov')
+                ax0.plot(ypre_, color='b', label='Predicted mov')
+                ax0.plot(ytrue_, color='r', label='True mov')
                 ax0.set_xlabel('Time (s)')
                 ax0.set_ylabel('Movement')
                 ax0.set_title('SPoC mov Predictions')
                 ax0.text(0.33, 0.9, 'R2={:0.02f}'.format(score_te[ind_best]),
                 verticalalignment='bottom', horizontalalignment='right',
                 transform=ax0.transAxes,fontsize=12) 
-                fig0.suptitle(eeg+'_'+lat+' S_'+ settings['num_patients'][s], fontsize=14, fontweight='bold')
+                fig0.suptitle(eeg+'-Subject_'+ settings['num_patients'][s], fontsize=14, fontweight='bold')
                 plt.legend()
-                plt.savefig(pp,bbox_inches='tight', format='pdf')
-                if lat=='CON':
-                    if s==0 or s==8:
-                        fig0, ax0 = plt.subplots(1, 1, figsize=[10, 4])
-                        ax0.plot(time[:800],ypre_[:800], color='b', label='Predicted mov')
-                        ax0.plot(time[:800],ytrue_[:800], color='r', label='True mov')
-                        ax0.set_xlabel('Time (s)')
-                        ax0.set_ylabel('Movement')
-                        ax0.set_title('SPoC mov Predictions')
-                        ax0.text(0.33, 0.9, 'R2={:0.02f}'.format(score_te[ind_best]),
-                        verticalalignment='bottom', horizontalalignment='right',
-                        transform=ax0.transAxes,fontsize=12) 
-                        fig0.suptitle(eeg+'-'+lat+'-S'+ settings['num_patients'][s], fontsize=14, fontweight='bold')
-                        plt.legend()
-                        
-                        plt.savefig(namefig+eeg+'_'+lat+'_s_'+ settings['num_patients'][s]+'.png',bbox_inches='tight', format='png')
+                plt.savefig(pp, format='pdf')
                 #
                                 
-                lags, c=xcorr(ypre_,ytrue_, normed=True, detrend=False, maxlags=20)
+                lags, c=xcorr(ypre_,ytrue_, normed=True, detrend=False, maxlags=None)
                                    
                 maxi=np.argmax(c)
 
@@ -160,14 +131,9 @@ for m, eeg in enumerate(signals):
                 ax.text(0.33, 0.8, 'lag={:0.02f}'.format(lags[maxi]),
                 verticalalignment='bottom', horizontalalignment='right',
                 transform=ax.transAxes,fontsize=12) 
-                fig.suptitle(eeg+'-'+lat+'-S'+ settings['num_patients'][s], fontsize=14, fontweight='bold')
+                fig.suptitle(eeg+'-Subject_'+ settings['num_patients'][s], fontsize=14, fontweight='bold')
                 
-                plt.savefig(pp, bbox_inches='tight',format='pdf')
-                
-                if lat=='CON':
-                    if s==0 or s==8:
-                     name='/home/victoria/Dropbox/Presentaciones/crcns/figs/xcorr_'+eeg+'_s_'+ settings['num_patients'][s]+'.png'
-                     plt.savefig(name, bbox_inches='tight', format='png')
+                plt.savefig(pp, format='pdf')
                 r2_all.append(np.mean(score_te))    
         r2_stn_ecog[m,n]=r2_all
         
@@ -180,7 +146,7 @@ fig.subplots_adjust(wspace=0)
 cont=0
 for ax, name in zip(axes, ['ECOG','STN']):
     
-    bp=ax.boxplot(r2_stn_ecog[cont].T,)
+    bp=ax.boxplot(r2_stn_ecog[cont].T)
 
     ax.set(xticklabels=['CON', 'IPS'], xlabel=name)
     if name=='ECOG': 
