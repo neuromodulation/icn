@@ -63,6 +63,10 @@ class SSD(BaseEstimator, TransformerMixin):
        if set to True, the components are sorted according to the spectral ratio
        See [1] Nikulin 2011, Eq. (24)
        
+   return_filtered : bool (default False)
+        If return_filtered is True, data is bandpassed and projected onto 
+        the SSD components.
+        
    n_fft: int (default None)
        if sort_by_spectral_ratio is set to True, then the sources will be sorted
        accordinly to their spectral ratio which is calculated based on 
@@ -96,7 +100,7 @@ class SSD(BaseEstimator, TransformerMixin):
 
     def __init__(self, filt_params_signal, filt_params_noise, sampling_freq,
                  estimator='oas', n_components=None, picks=None,
-                 sort_by_spectral_ratio=True, n_fft=None, cov_method_params=None, rank=None):
+                 sort_by_spectral_ratio=True, return_filtered=False, n_fft=None, cov_method_params=None, rank=None):
         
         """Initialize instance"""
 
@@ -132,6 +136,8 @@ class SSD(BaseEstimator, TransformerMixin):
             self.n_fft=n_fft
         self.picks_ = picks
         
+        self.return_filtered=return_filtered
+        
        
         self.estimator = estimator
         self.n_components = n_components
@@ -150,7 +156,7 @@ class SSD(BaseEstimator, TransformerMixin):
             self.max_components=len(self.picks_)
             inst_signal = inst.copy()
             inst_signal.filter(picks=self.picks_, **self.filt_params_signal)
-            
+            self.Xs=inst_signal
             #noise
             inst_noise = inst.copy()
             inst_noise.filter(picks=self.picks_, **self.filt_params_noise)
@@ -183,6 +189,7 @@ class SSD(BaseEstimator, TransformerMixin):
                 # Estimate single trial covariance
                 #reshape to original shape
                 X_s=np.reshape(X_s, [n_epochs,n_channels,n_samples])
+                self.Xs=X_s
                 covs = np.empty((n_epochs, n_channels, n_channels))
                 for ii, epoch in enumerate(X_s):
                     covs[ii] = _regularized_covariance(
@@ -263,6 +270,8 @@ class SSD(BaseEstimator, TransformerMixin):
         """
         if self.filters_ is None:
             raise RuntimeError('No filters available. Please first call fit')
+        if self.return_filtered:
+            inst=self.Xs
         if isinstance(inst, BaseRaw):
             data=inst.get_data()
             X_ssd=np.dot(self.filters_.T, data[self.picks_])
