@@ -21,6 +21,7 @@ import pickle
 import sys
 import IO
 import os
+import multiprocessing
 
 #import tensorflow
 #import tensorflow as tf
@@ -84,6 +85,7 @@ VICTORIA = False
 WRITE_OUT_CH_IND = False
 USED_MODEL = 2 # 0 - Enet, 1 - XGB, 2 - NN
 settings = {}
+VERBOSE_ALL = 0
 
 if VICTORIA is True:
     # insert at 1, 0 is the script path (or '' in REPL)
@@ -190,10 +192,10 @@ def optimize_nn(x,y):
                 y_train, y_test=y[train_index], y[test_index]
                 X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, train_size=0.8,shuffle=False)
                 #model = KerasRegressor(build_fn=create_model_NN, epochs=1000, batch_size=500, verbose=2)
-                es = EarlyStopping(monitor='val_mse', mode='min', verbose=1, patience=10)
-                mc = ModelCheckpoint('best_model.h5', monitor='val_mse', mode='min', verbose=1, save_best_only=True)
+                es = EarlyStopping(monitor='val_mse', mode='min', verbose=VERBOSE_ALL, patience=10)
+                mc = ModelCheckpoint('best_model.h5', monitor='val_mse', mode='min', verbose=VERBOSE_ALL, save_best_only=True)
                 model = create_model_NN()
-                model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=1000, batch_size=500, verbose=1, callbacks=[mc,es])
+                model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=1000, batch_size=500, verbose=VERBOSE_ALL, callbacks=[mc,es])
                 model = load_model('best_model.h5')
                 sc = metrics.r2_score(model.predict(X_test), y_test)
                 if sc < 0: sc = 0
@@ -278,8 +280,11 @@ laterality=[("CON"), ("IPS")]
 signal=["STN", "ECOG"]
 
 #%%cross-val within subject
-for signal_idx, signal_ in enumerate(signal):
-    for sub_idx in np.arange(0, len(settings['num_patients']), 1):
+#for sub_idx in np.arange(0, len(settings['num_patients']), 1):
+
+def run_patient(sub_idx):
+    print("IN there")
+    for signal_idx, signal_ in enumerate(signal):
         subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][sub_idx]
         subfolder=IO.get_subfolders(subject_path)
 
@@ -380,6 +385,7 @@ for signal_idx, signal_ in enumerate(signal):
 
                 #for each electrode
                 for ch_idx in range(X.shape[1]):
+                    print("running channel "+str(ch_idx))
                     Ypre_te= []
                     Ypre_tr= []
                     score_tr= []
@@ -431,14 +437,16 @@ for signal_idx, signal_ in enumerate(signal):
                             print("ARCHITECTURE IS NOT DEFINED")
 
                         if USED_MODEL == 2:
-                            es = EarlyStopping(monitor='val_mse', mode='min', verbose=1, patience=10)
-                            mc = ModelCheckpoint('best_model.h5', monitor='val_mse', mode='min', verbose=1, save_best_only=True)
+                            es = EarlyStopping(monitor='val_mse', mode='min', verbose=VERBOSE_ALL, patience=10)
+                            mc = ModelCheckpoint('best_model.h5', monitor='val_mse', mode='min', verbose=VERBOSE_ALL, save_best_only=True)
                             X_train, X_val, y_train, y_val = train_test_split(dat_tr, label_tr, train_size=0.8,shuffle=True)
-                            model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=1000, batch_size=500, verbose=1, callbacks=[mc,es])
+                            model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=1000, batch_size=500, verbose=VERBOSE_ALL, callbacks=[mc,es])
                             r2_tr = metrics.r2_score(model.predict(X_train), y_train)
                             if r2_tr < 0: r2_tr = 0
                             r2_te = metrics.r2_score(model.predict(dat_te), label_te)
+                            print("channel: "+str(ch_idx)+" r2 test: "+str(r2_te))
                             if r2_te < 0: r2_te = 0
+
                         else:
                             model.fit(dat_tr, label_tr)
                             r2_tr=model.score(dat_tr, label_tr)
@@ -490,3 +498,8 @@ for signal_idx, signal_ in enumerate(signal):
             out_path_file = os.path.join(settings['out_path_process']+ \
                 settings['num_patients'][sub_idx]+'BestChpredictions_'+signal_+'-'+ str(subfolder[sess_idx])+'.npy')
             np.save(out_path_file, predict_)
+
+if __name__ == '__main__':
+    #for sub_idx in np.arange(0, len(settings['num_patients']), 1):
+    pool = multiprocessing.Pool()
+    pool.map(run_patient, np.arange(0, len(settings['num_patients']), 1))
