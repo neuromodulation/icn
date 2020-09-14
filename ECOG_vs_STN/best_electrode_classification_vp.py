@@ -32,6 +32,7 @@ import multiprocessing
 #from keras.wrappers.scikit_learn import KerasClassifier, KerasRegressor
 #from keras.optimizers import Adam
 
+import tensorflow
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Dense, Activation, Permute, Dropout
@@ -49,8 +50,6 @@ from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.callbacks import ModelCheckpoint
 from tensorflow.keras import backend as K
 from tensorflow.keras.models import load_model
-
-
 
 #from tensorflow.python.keras import backend as K
 from sklearn.model_selection import StratifiedKFold
@@ -186,7 +185,7 @@ def optimize_nn(x,y):
 
         cv = KFold(n_splits=3, shuffle=True)
         cv_res = []
-        with tf.device(tf.DeviceSpec(device_type="CPU")):
+        with tf.device(tf.DeviceSpec(device_type="")):
             for train_index, test_index in cv.split(x):
                 X_train, X_test=x[train_index, :], x[test_index, :]
                 y_train, y_test=y[train_index], y[test_index]
@@ -284,6 +283,7 @@ signal=["STN", "ECOG"]
 
 def run_patient(sub_idx):
     print("IN there")
+
     for signal_idx, signal_ in enumerate(signal):
         subject_path=settings['BIDS_path'] + 'sub-' + settings['num_patients'][sub_idx]
         subfolder=IO.get_subfolders(subject_path)
@@ -437,6 +437,7 @@ def run_patient(sub_idx):
                             print("ARCHITECTURE IS NOT DEFINED")
 
                         if USED_MODEL == 2:
+
                             es = EarlyStopping(monitor='val_mse', mode='min', verbose=VERBOSE_ALL, patience=10)
                             mc = ModelCheckpoint('best_model.h5', monitor='val_mse', mode='min', verbose=VERBOSE_ALL, save_best_only=True)
                             X_train, X_val, y_train, y_val = train_test_split(dat_tr, label_tr, train_size=0.8,shuffle=True)
@@ -456,11 +457,9 @@ def run_patient(sub_idx):
 
                         score_tr.append(r2_tr)
                         score_te.append(r2_te)
+                        #with tf.device(tf.DeviceSpec(device_type="CPU", device_index=0)):
                         Ypre_te.append(model.predict(dat_te) if USED_MODEL != 2 else model.predict(dat_te)[:,0])
                         Ypre_tr.append(model.predict(dat_tr) if USED_MODEL != 2 else model.predict(dat_tr)[:,0])
-
-
-
                         if USED_MODEL == 0: coef_.append(model.coef_)
                         hyp_.append(optimizer['x'])
 
@@ -501,5 +500,11 @@ def run_patient(sub_idx):
 
 if __name__ == '__main__':
     #for sub_idx in np.arange(0, len(settings['num_patients']), 1):
-    pool = multiprocessing.Pool()
-    pool.map(run_patient, np.arange(0, len(settings['num_patients']), 1))
+    #my_devices = tf.config.experimental.list_physical_devices(device_type='CPU')
+    #tf.config.experimental.set_visible_devices(devices= my_devices, device_type='CPU')
+    #pool = multiprocessing.Pool()
+    #pool.map(run_patient, np.arange(0, len(settings['num_patients']), 1))
+    sess = tf.Session(config=tf.ConfigProto(
+      allow_soft_placement=True, log_device_placement=True))
+    for sub in np.arange(0, len(settings['num_patients']), 1):
+        run_patient(sub)
