@@ -22,15 +22,36 @@ import sys
 import IO
 import os
 
-import tensorflow
-import keras
-from keras.layers import BatchNormalization
-from keras.models import Sequential
-from keras.layers import Dense
-from keras.wrappers.scikit_learn import KerasClassifier, KerasRegressor
-from keras.optimizers import Adam
+#import tensorflow
+#import tensorflow as tf
+#import keras
+#from keras.layers import BatchNormalization
+#from keras.models import Sequential
+#from keras.layers import Dense, Dropout
+#from keras.wrappers.scikit_learn import KerasClassifier, KerasRegressor
+#from keras.optimizers import Adam
 
-from tensorflow.python.keras import backend as K
+import tensorflow as tf
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, Activation, Permute, Dropout
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, AveragePooling2D
+from tensorflow.keras.layers import SeparableConv2D, DepthwiseConv2D
+from tensorflow.keras.layers import BatchNormalization
+from tensorflow.keras.layers import SpatialDropout2D
+from tensorflow.keras.regularizers import l1_l2
+from tensorflow.keras.layers import Input, Flatten
+from tensorflow.keras.constraints import max_norm
+from tensorflow.keras import backend as K
+from tensorflow.keras.optimizers import Adam
+import tensorflow.keras as keras
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras import backend as K
+from tensorflow.keras.models import load_model
+
+
+
+#from tensorflow.python.keras import backend as K
 from sklearn.model_selection import StratifiedKFold
 
 from sklearn.linear_model import Ridge
@@ -39,6 +60,10 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import LassoCV
 from sklearn.linear_model import ElasticNetCV
 from sklearn.linear_model import ElasticNet
+#from keras.callbacks import EarlyStopping
+#from keras.callbacks import ModelCheckpoint
+#from keras.models import load_model
+#from tensorflow.keras.layers import Dense, Activation, Permute, Dropout
 
 from scipy import stats
 from collections import OrderedDict
@@ -72,7 +97,7 @@ if VICTORIA is True:
 else:
     settings['BIDS_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\"
     settings['out_path'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\MOVEMENT DATA\\derivatives\\Int_old_grid\\"
-    settings['out_path_process'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\MOVEMENT DATA\\ECoG_STN\XGB_Out_Full\\"
+    settings['out_path_process'] = "C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\MOVEMENT DATA\\ECoG_STN\\NN_Out\\"
 
 settings['frequencyranges']=[[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
 settings['seglengths']=[1, 2, 2, 3, 3, 3, 10, 10, 10]
@@ -110,17 +135,13 @@ def optimize_enet(x,y):
     res_gp = gp_minimize(objective, space_LM, n_calls=20, random_state=0)
     return res_gp
 
-def optimize_nn(x,y):
-
-    def create_model_NN():
+def create_model_NN():
         """
         Create NN tensorflow with different numbers of hidden layers / hidden units
         """
 
         #start the model making process and create our first layer
-        model = Sequential()
-        model.add(BatchNormalization())
-        model.add(Dropout(0.2))
+        model = tensorflow.keras.Sequential()
         model.add(Dense(num_input_nodes, input_shape=(40,), activation=activation))
 
         #create a loop making a new dense layer for the amount passed to this model.
@@ -134,8 +155,8 @@ def optimize_nn(x,y):
                             name=name
                      ))
         #add our classification layer.
-        model.add(Dropout(0.2))
         model.add(BatchNormalization())
+        model.add(Dropout(0.2))
         model.add(Dense(1,activation='linear'))
 
         #setup our optimizer and compile
@@ -144,10 +165,12 @@ def optimize_nn(x,y):
                      metrics=['mse'])
         return model
 
+def optimize_nn(x,y):
+
+
     @use_named_args(space_NN)
     def objective(**params):
         print(params)
-
         global learning_rate
         learning_rate=params["learning_rate"]
         global num_dense_layers
@@ -158,9 +181,26 @@ def optimize_nn(x,y):
         num_dense_nodes=params["num_dense_nodes"]
         global activation
         activation=params["activation"]
-        model = KerasRegressor(build_fn=create_model_NN, epochs=100, batch_size=1000, verbose=0)
-        cv_res = cross_val_score(model, x, y, cv=3, n_jobs=59, scoring="r2")
-        cv_res[np.where(cv_res < 0)[0]] = 0
+
+        cv = KFold(n_splits=3, shuffle=True)
+        cv_res = []
+        with tf.device(tf.DeviceSpec(device_type="CPU")):
+            for train_index, test_index in cv.split(x):
+                X_train, X_test=x[train_index, :], x[test_index, :]
+                y_train, y_test=y[train_index], y[test_index]
+                X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, train_size=0.8,shuffle=False)
+                #model = KerasRegressor(build_fn=create_model_NN, epochs=1000, batch_size=500, verbose=2)
+                es = EarlyStopping(monitor='val_mse', mode='min', verbose=1, patience=10)
+                mc = ModelCheckpoint('best_model.h5', monitor='val_mse', mode='min', verbose=1, save_best_only=True)
+                model = create_model_NN()
+                model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=1000, batch_size=500, verbose=1, callbacks=[mc,es])
+                model = load_model('best_model.h5')
+                sc = metrics.r2_score(model.predict(X_test), y_test)
+                if sc < 0: sc = 0
+                cv_res.append(sc)
+
+        #cv_res = cross_val_score(model, x, y, cv=3, n_jobs=59, scoring="r2")
+        #cv_res[np.where(cv_res < 0)[0]] = 0
         return -np.mean(cv_res)
 
     res_gp = gp_minimize(objective, space_NN, n_calls=20, random_state=0)
@@ -373,31 +413,45 @@ for signal_idx, signal_ in enumerate(signal):
                                                disable_default_eval_metric= 1)
 
                         elif USED_MODEL == 2:
-                             optimizer=optimize_nn(x=dat_tr, y=label_tr)
-                             global learning_rate
-                             learning_rate=optimizer['x'][0]
-                             global num_dense_layers
-                             num_dense_layers=optimizer['x'][1]
-                             global num_input_nodes
-                             num_input_nodes=optimizer['x'][2]
-                             global num_dense_nodes
-                             num_dense_nodes=optimizer['x'][3]
-                             global activation
-                             activation=optimizer['x'][4]
-                             model = KerasRegressor(build_fn=create_model_NN, epochs=100, batch_size=1000, verbose=0)
+                            optimizer=optimize_nn(x=dat_tr, y=label_tr)
+                            global learning_rate
+                            learning_rate=optimizer['x'][0]
+                            global num_dense_layers
+                            num_dense_layers=optimizer['x'][1]
+                            global num_input_nodes
+                            num_input_nodes=optimizer['x'][2]
+                            global num_dense_nodes
+                            num_dense_nodes=optimizer['x'][3]
+                            global activation
+                            activation=optimizer['x'][4]
+
+                            model = create_model_NN()
                         else:
                             break
                             print("ARCHITECTURE IS NOT DEFINED")
 
-                        model.fit(dat_tr, label_tr)
+                        if USED_MODEL == 2:
+                            es = EarlyStopping(monitor='val_mse', mode='min', verbose=1, patience=10)
+                            mc = ModelCheckpoint('best_model.h5', monitor='val_mse', mode='min', verbose=1, save_best_only=True)
+                            X_train, X_val, y_train, y_val = train_test_split(dat_tr, label_tr, train_size=0.8,shuffle=True)
+                            model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=1000, batch_size=500, verbose=1, callbacks=[mc,es])
+                            r2_tr = metrics.r2_score(model.predict(X_train), y_train)
+                            if r2_tr < 0: r2_tr = 0
+                            r2_te = metrics.r2_score(model.predict(dat_te), label_te)
+                            if r2_te < 0: r2_te = 0
+                        else:
+                            model.fit(dat_tr, label_tr)
+                            r2_tr=model.score(dat_tr, label_tr)
+                            if r2_tr < 0: r2_tr = 0
+                            r2_te=model.score(dat_te, label_te)
+                            if r2_te < 0: r2_te = 0
+
+                        score_tr.append(r2_tr)
+                        score_te.append(r2_te)
                         Ypre_te.append(model.predict(dat_te) if USED_MODEL != 2 else model.predict(dat_te)[:,0])
                         Ypre_tr.append(model.predict(dat_tr) if USED_MODEL != 2 else model.predict(dat_tr)[:,0])
-                        r2_tr=model.score(dat_tr, label_tr)
-                        if r2_tr < 0: r2_tr = 0
-                        score_tr.append(r2_tr)
-                        r2_te=model.score(dat_te, label_te)
-                        if r2_te < 0: r2_te = 0
-                        score_te.append(r2_te)
+
+
 
                         if USED_MODEL == 0: coef_.append(model.coef_)
                         hyp_.append(optimizer['x'])
