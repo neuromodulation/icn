@@ -64,7 +64,7 @@ from sklearn.linear_model import LassoCV
 from sklearn.linear_model import ElasticNetCV
 from sklearn.linear_model import ElasticNet
 #from keras.callbacks import EarlyStopping
-#from keras.callbacks import ModelCheckpoint  did NOT work
+#from keras.callbacks import ModelCheckpoint
 #from keras.models import load_model
 #from tensorflow.keras.layers import Dense, Activation, Permute, Dropout
 
@@ -206,6 +206,10 @@ def optimize_xgb(x,y):
         Custom defined r^2 evaluation function
         """
         labels = dtrain.get_label()
+        # return a pair metric_name, result. The metric name must not contain a
+        # colon (:) or a space since preds are margin(before logistic
+        # transformation, cutoff at 0)
+
         r2 = metrics.r2_score(labels, preds)
 
         if r2 < 0:
@@ -261,10 +265,13 @@ def append_time_dim(arr, y_, time_stamps):
         for time_point in range(time_stamps):
             time_arr[time_idx, time_point*arr.shape[1]:(time_point+1)*arr.shape[1]] = arr[time_-time_point,:]
     return time_arr, y_[time_stamps:]
-
+#%%
 cv = KFold(n_splits=3, shuffle=False)
 laterality=[("CON"), ("IPS")]
 signal=["ECOG", "STN"]
+
+#%%cross-val within subject
+#for sub_idx in np.arange(0, len(settings['num_patients']), 1):
 
 def run_patient(sub_idx):
 
@@ -333,22 +340,24 @@ def run_patient(sub_idx):
             X=np.concatenate(X, axis=0)
             Y_con=np.concatenate(Y_con, axis=0)
             Y_ips=np.concatenate(Y_ips, axis=0)
-
-            pool = multiprocessing.Pool()
             list_param = []
             threads_ = []
             for laterality_idx, laterality_ in enumerate(laterality):
                 for ch_idx in range(X.shape[1]):
-                    list_param.append((laterality_, ch_idx, X, Y_con, Y_ips))
-            pool.starmap(pool_function_la, list_param)
+                    thred_A = Thread(target=pool_function_la, args=(laterality_, ch_idx))
+                    print("start "+ str(ch_idx)+"th thread")
+                    thred_A.start()
+                    threads_.append(thred_A)
+            for t_idx, thread_ in enumerate(threads_):
 
+                thread_.join()
 
-def pool_function_la(laterality_, ch_idx, X, Y_con, Y_ips):
+def pool_function_la(laterality_, ch_idx):
     #config = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1, \
     #    inter_op_parallelism_threads=2, allow_soft_placement=True, device_count = {'CPU': 64 })
     #tf.compat.v1.keras.backend.set_session(tf.compat.v1.Session(config=config))
-
     #K.set_session(sess)
+
     if laterality_=="CON":
         label=Y_con
     else:
