@@ -376,7 +376,7 @@ def pool_function_la(X, label, ch_idx, laterality_, signal_, subfolder, sess_idx
                                disable_default_eval_metric= 1)
 
         elif USED_MODEL == 2:
-            optimizer = optimize_nn(dat_tr, label_tr, ch_idx, laterality_)
+            
             try:
                 optimizer = optimize_nn(dat_tr, label_tr, ch_idx, laterality_)
             except Exception as e:
