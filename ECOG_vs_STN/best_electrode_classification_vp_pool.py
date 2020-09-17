@@ -189,8 +189,13 @@ def optimize_nn(x,y, ch_idx, laterality_):
                 es = EarlyStopping(monitor='val_mse', mode='min', verbose=VERBOSE_ALL, patience=10)
                 mc = ModelCheckpoint('best_model_'+str(ch_idx)+str(laterality_)+'.h5', monitor='val_mse', mode='min', verbose=VERBOSE_ALL, save_best_only=True)
                 model = create_model_NN(learning_rate, num_dense_layers, num_input_nodes, num_dense_nodes, activation)
-                model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=1000, batch_size=100, verbose=VERBOSE_ALL, callbacks=[mc,es])
-                model = load_model('best_model_'+str(ch_idx)+str(laterality_)+'.h5', compile = False)
+                try:
+                    model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=1000, batch_size=100, verbose=VERBOSE_ALL, callbacks=[mc,es])
+                    model = load_model('best_model_'+str(ch_idx)+str(laterality_)+'.h5', compile = False)
+                except Exception as e:
+                    # error
+                    print(e)
+                    model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=1000, batch_size=100, verbose=VERBOSE_ALL)
                 sc = metrics.r2_score(model.predict(X_test), y_test)
                 if sc < 0: sc = 0
                 cv_res.append(sc)
@@ -336,6 +341,12 @@ def get_patient_data():
                             label_here = Y_con
                         else:
                             label_here = Y_ips
+                        out_path_file = os.path.join(settings['out_path_process']+ \
+                            settings['num_patients'][sub_idx]+'BestChpredictions_'+\
+                            signal_+'-ch-'+str(ch_idx)+'-lat-'+str(laterality_)+'-'+str(subfolder[sess_idx])+'.npy')
+                        if os.path.exists(out_path_file) is True:
+                            print("file already exists: "+str(out_path_file))
+                            continue
                         yield X[:,ch_idx,:], label_here, ch_idx, laterality_, signal_, subfolder, sess_idx, sub_idx
                         #list_param.append((X[:,ch_idx,:], label_here, ch_idx, laterality_, signal_, subfolder, sess_idx, sub_idx))
         #pool = multiprocessing.Pool(len(list_param))
@@ -376,13 +387,12 @@ def pool_function_la(X, label, ch_idx, laterality_, signal_, subfolder, sess_idx
                                disable_default_eval_metric= 1)
 
         elif USED_MODEL == 2:
-            
             try:
                 optimizer = optimize_nn(dat_tr, label_tr, ch_idx, laterality_)
             except Exception as e:
                 print(e)
-                #print("INF / NAN ERROR")
                 continue
+
             learning_rate=optimizer['x'][0]
             num_dense_layers=optimizer['x'][1]
             num_input_nodes=optimizer['x'][2]
@@ -396,9 +406,16 @@ def pool_function_la(X, label, ch_idx, laterality_, signal_, subfolder, sess_idx
         if USED_MODEL == 2:
 
             es = EarlyStopping(monitor='val_mse', mode='min', verbose=VERBOSE_ALL, patience=10)
-            mc = ModelCheckpoint('best_model.h5', monitor='val_mse', mode='min', verbose=VERBOSE_ALL, save_best_only=True)
+            mc = ModelCheckpoint('best_model_'+str(ch_idx)+str(laterality_)+'.h5', monitor='val_mse', mode='min', verbose=VERBOSE_ALL, save_best_only=True)
             X_train, X_val, y_train, y_val = train_test_split(dat_tr, label_tr, train_size=0.8,shuffle=True)
-            model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=1000, batch_size=100, verbose=VERBOSE_ALL, callbacks=[mc,es])
+            try:
+                model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=1000, batch_size=100, verbose=VERBOSE_ALL, callbacks=[mc,es])
+                model = load_model('best_model_'+str(ch_idx)+str(laterality_)+'.h5', compile = False)
+            except Exception as e:
+                # error
+                print(e)
+                model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=1000, batch_size=100, verbose=VERBOSE_ALL)
+
             r2_tr = metrics.r2_score(model.predict(X_train), y_train)
             if r2_tr < 0: r2_tr = 0
             r2_te = metrics.r2_score(model.predict(dat_te), label_te)
@@ -456,8 +473,8 @@ if __name__ == '__main__':
 
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
-    NUM_PROCESSES = multiprocessing.cpu_count()-1
-    #NUM_PROCESSES = 1
+    #NUM_PROCESSES = multiprocessing.cpu_count()-1
+    NUM_PROCESSES = 50
     patient_dat_generator = get_patient_data()
     gen_counter = 0
     l_dat_gen = []
@@ -470,6 +487,6 @@ if __name__ == '__main__':
         gen_counter +=1
         if (gen_counter % NUM_PROCESSES) == 0:
             print("starting pool with "+str(NUM_PROCESSES)+ " iterations")
-            pool = multiprocessing.Pool()
+            pool = multiprocessing.Pool(NUM_PROCESSES)
             pool.starmap(pool_function_la, l_dat_gen) # https://stackoverflow.com/questions/8533318/multiprocessing-pool-when-to-use-apply-apply-async-or-map
             l_dat_gen = []
