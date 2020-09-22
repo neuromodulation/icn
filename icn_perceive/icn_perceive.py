@@ -14,7 +14,7 @@ import icn_tb as tb
 
 
 def read_file(filename):
-    return pd.read_json(filename, typ='Series')
+    return pd.read_json(filename, typ='Series',convert_dates=False)
 
 
 def patient_name(filename):
