@@ -74,10 +74,14 @@ def write_TF(Name_begin, patient_f, patient_idx):
 
     idx_ecog = []
     for ch in channel_df["name"]:
+        PATH_save = 'C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\PD_ButtonPress\\derivatives\\'+\
+                        "sub_"+subjects[patient_idx] +"_ch_"+ch[4:]+'.npy'
+        if os.path.exists(PATH_save) is True:
+            continue
         if ch.startswith(Name_begin) is False or \
                 channel_df.iloc[channel_df[channel_df.name == ch].index[0]]["status"] != "good":
             continue
-        idx_ecog = [idx for idx, ch_ in enumerate(dat.ch_names) if ch_ == ch][0]
+        idx_ecog = [idx for idx, ch_ in enumerate(dat.ch_names) if ch_.startswith(ch)][0]
         info = create_info(ch_names=[ch[4:]], sfreq=2000, ch_types='ecog')
         epochs = calc_epochs(dat.get_data()[idx_ecog,:], mov_bin, info, threshold=0.5, epoch_lim=2500*2)
         freqs = np.arange(7, 200, 1)
@@ -92,8 +96,8 @@ def write_TF(Name_begin, patient_f, patient_idx):
         #plt.gca().invert_yaxis()
         #plt.title(Name_begin[4:] + " " + subjects[patient_idx])
         #plt.show()
-        np.save('C:\\Users\\ICN_admin\\Dropbox (Brain Modulation Lab)\\Shared Lab Folders\\CRCNS\\PD_ButtonPress\\derivatives\\'+
-                        "sub_"+subjects[patient_idx] +"_ch_"+ch[4:]+'.npy', dat_z)
+        np.save(PATH_save, dat_z)
+
 
 if __name__ == '__main__':
 
