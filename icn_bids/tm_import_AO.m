@@ -69,7 +69,7 @@ BIDS_struct_save.fsample = fsample;
 
 save(strcat('BIDS_save_', filename), 'BIDS_struct_save')
 
-no_further_processing = 1;
+no_further_processing = 0;
 
 if no_further_processing == 0
 
