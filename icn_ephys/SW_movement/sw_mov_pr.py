@@ -137,16 +137,20 @@ def get_dat_():
         for sub in subjects:
             files = np.sort(np.array([f for f in files_troughs if loc in f and sub in f]))
             for f_idx, f in enumerate(files):
+                key = f[f.find("ch_")+3:f.find(".p")] # from syntax: 'sub_000_ch_ECOG_RIGHT_0.p'
+                if os.path.exists(os.path.join(PATH_SW_SAVE,"sub_"+str(sub)+"_loc_"+str(loc)+"_ch_"+str(key)+".npy")) is True:
+                    continue
                 df_TROUGHS = np.load(os.path.join(PATH_TROUGHS, files[f_idx]), allow_pickle=True)
                 res = np.load(os.path.join(PATH_COMBINED, [f for f in files_combined if sub in f][0]), allow_pickle=True)
 
-                key = f[f.find("ch_")+3:f.find(".p")] # from syntax: 'sub_000_ch_ECOG_RIGHT_0.p'
+
 
                 mov_con = res[key]["mov_con"]
                 mov_ips = res[key]["mov_ips"]
                 print("loc: "+str(loc))
                 print("sub: "+str(sub))
                 print("f: "+str(f))
+
                 yield sub, loc, key, mov_con, mov_ips, df_TROUGHS
 
 if __name__ == "__main__":
@@ -161,18 +165,27 @@ if __name__ == "__main__":
 
     POOL_ = True
 
-    if POOL_ is True:
+    while POOL_ is True:
 
         l_ = []
-        for i in range(10):
-            dat = next(gen_)
+        for i in range(59):
+            try:
+
+                dat = next(gen_)
+            except:
+                pool = multiprocessing.Pool(processes=59)
+                pool.starmap(get_sw_pr_ch, l_)
+                pool.close()
+                pool.join()
+                POOL_ = False
             if dat is not None:
                 l_.append(dat)
             else:
                 print("TERMINATE ITERATIONS, last channel reached")
-                break
 
-        pool = multiprocessing.Pool(processes=10)
-        pool.starmap(get_sw_pr_ch, l_)
-        pool.close()
-        pool.join()
+                break
+        if POOL_ is not False:
+            pool = multiprocessing.Pool(processes=59)
+            pool.starmap(get_sw_pr_ch, l_)
+            pool.close()
+            pool.join()
