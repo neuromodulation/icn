@@ -7,7 +7,6 @@
 #Richards mod of TMs preprocessing script
 
 import sys
-sys.path.append(r'/Users/richardkoehler/Documents/GitHub/icn/icn_onset')
 import os
 import numpy as np
 import pandas as pd

@@ -7,15 +7,14 @@
 # Normalization script by VP, modified by RK
 
 import sys
-sys.path.append(r'/Users/richardkoehler/Documents/GitHub/icn/icn_m1')
-import filter
+#sys.path.append(r'/Users/richardkoehler/Documents/GitHub/icn/icn_m1')
+#import filter
 import numpy as np
-import projection
+#import projection
 from scipy import sparse
 from scipy.sparse.linalg import spsolve
 import cvxpy as cp
 from scipy import signal
-import preprocessing
 
 ## TODO: online artifac rejection 
 def run(fs, fs_new, seglengths, f_ranges, downsample_idx, bv_raw, line_noise,                       sess_right, data_, new_num_data_points, run_string, normalization_samples,                       filter_fun, grid_=None, proj_matrix_run=None, arr_act_grid_points=None, Verbose=False,
