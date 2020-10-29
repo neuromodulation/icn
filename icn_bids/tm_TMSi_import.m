@@ -13,6 +13,8 @@ nfname = strrep(strrep(filename(1:end-6),'.','_'),' ','_');
 D=wjn_import_rawdata(nfname,d.samples,chans,d.sample_rate);
 
 D=wjn_remove_channels(D.fullfile,{'Stat','STATUS','COUNTER','Counter 2power24','SaO2','Pleth','HRate','Status','Saw'});
+D=wjn_remove_channels(D.fullfile,{'STATUS','COUNTER','Counter 2power24'});
+
 D=tm_remove_bad_time_segments(D.fullfile,[0 1;D.time(end)-1 D.time(end)], "remove",filename);
 
 
