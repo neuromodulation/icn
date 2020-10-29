@@ -218,12 +218,13 @@ def resample(vhdr_file, ch_names, x_filtered_zscored, mov_label_zscored):
     #sub-002_ses-right_task-force_run-0_eeg.vhdr
 
     fs_new = settings["resampling_rate"]
-    ch_file = vhdr_file[:-9] + 'channels.tsv'  # the channel file name has the same path/structure as the vhdr file
-    df = pd.read_csv(ch_file, sep="\t")
+    #ch_file = vhdr_file[:-9] + 'channels.tsv'  # the channel file name has the same path/structure as the vhdr file
+    #df = pd.read_csv(ch_file, sep="\t")
 
-    ch_name = ch_names[1]
-    ind_ch = np.where(df['name'] == ch_name)[0][0]  # read out the dataframes channel names frequency, here implementation: same fs for all channels in one run
-    fs = df['sampling_frequency'][ind_ch]
+    #ch_name = ch_names[0]
+    #ind_ch = np.where(df['name'] == ch_name)[0][0]  # read out the dataframes channel names frequency, here implementation: same fs for all channels in one run
+    #fs = df['sampling_frequency'][ind_ch]
+    fs = settings["sample_rate"]
     
 
     dat_points = x_filtered_zscored.shape[2]
