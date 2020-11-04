@@ -57,8 +57,6 @@ def permutationTestSpearmansRho(x, y, plot_=True, x_unit=None, p=5000):
         plt.show()
     return gT, p_val
 
-    ### Now write a second version where two distributions are compared
-    ### Write this as a function
 def permutationTest(x, y, plot_=True, x_unit=None, p=5000):
     """
     Calculate permutation test
@@ -105,4 +103,45 @@ def permutationTest(x, y, plot_=True, x_unit=None, p=5000):
         plt.xlabel(x_unit)
         plt.legend()
         plt.show()
+    return gT, p_val
+
+def permutationTest_relative(x, y, plot_=True, x_unit=None, p=5000):
+    """
+    Calculate permutation test
+    https://towardsdatascience.com/how-to-assess-statistical-significance-in-your-data-with-permutation-tests-8bb925b2113d
+
+    x (np array) : first distr.
+    y (np array) : first distr.
+    plot_ (boolean) : if True: permutation histplot and ground truth will be potted
+    x_unit (str) : histplot xlabel
+    p (int): number of permutations
+
+    returns:
+    gT (float) : estimated ground truth, here abs difference of distribution means
+    p (float) : p value of permutation test
+
+    """
+    gT = np.abs(np.average(x) - np.average(y))
+    pD = []
+    for i in range(0,p):
+        l_ = []
+        for i in range(x.shape[0]):
+            if random.randint(0,1) == 1:
+                l_.append((x[i], y[i]))
+            else:
+                l_.append((y[i], x[i]))
+        pD.append(np.abs(np.average(np.array(l_)[:,0])- np.average(np.array(l_)[:,1])))
+    if gT < 0:
+        p_val = len(np.where(pD<=gT)[0])/p
+    else:
+        p_val = len(np.where(pD>=gT)[0])/p
+
+    if plot_ is True:
+        plt.hist(pD, bins=30,label="permutation results")
+        plt.axvline(gT, color="orange", label="ground truth")
+        plt.title("ground truth "+x_unit+"="+str(gT)+" p="+str(p_val))
+        plt.xlabel(x_unit)
+        plt.legend()
+        plt.show()
+
     return gT, p_val
