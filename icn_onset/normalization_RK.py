@@ -7,8 +7,8 @@
 # Normalization script by VP, modified by RK
 
 import sys
-#sys.path.append(r'/Users/richardkoehler/Documents/GitHub/icn/icn_m1')
-#import filter
+sys.path.append(r'/Users/richardkoehler/Documents/GitHub/icn/icn_m1')
+import filter
 import numpy as np
 #import projection
 from scipy import sparse
@@ -17,14 +17,30 @@ import cvxpy as cp
 from scipy import signal
 
 ## TODO: online artifac rejection 
-def run(fs, fs_new, seglengths, f_ranges, downsample_idx, bv_raw, line_noise,                       sess_right, data_, new_num_data_points, run_string, normalization_samples,                       filter_fun, grid_=None, proj_matrix_run=None, arr_act_grid_points=None, Verbose=False,
-                      clip_low=-2, clip_high=2, usemean_=False, project=True):
+def run(fs, fs_new, seglengths, f_ranges, downsample_idx, bv_raw, line_noise,                       sess_right, new_num_data_points, normalization_samples,                       filter_fun, grid_=None, proj_matrix_run=None, arr_act_grid_points=None, Verbose=False,
+                      clip_low=-2, clip_high=2, usemean_=False, project=False):
+    
+    """
+    fs (Hz) : original sampling frequency
+    fs_new (Hz) : 100
+    seglenghts (1/s) = Hz : [1,2,2,3,3,10,10,10]
+    f_ranges : [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]]
+    downsample_idx : (np.arange(0,new_num_data_points,1)*sf/settings['resamplingrate']).astype(int)
+    bv_raw : mne.raw file
+    line_noise (Hz) : 50
+    sess_right (is ECoG on the right hemisphere) : False
+    data_ : optional
+    new_num_data_points (recording_length is in number of datapoints) : int((recording_length/sf)*settings['resamplingrate'])
+    run_string : optional preprocessing.rereference
+    normalization_samples : 
+    filter_fun : filter.fd_filters(settings['frequencyranges'], sample_rate=sf, filter_len=filter_len)
+    """ 
     
     #Rereference
-    bv_raw,ch_names=preprocessing.rereference(run_string, bv_raw)
+    #bv_raw,ch_names=preprocessing.rereference(run_string, bv_raw)
     
     offset_start = int((fs/seglengths[0]) / (fs/fs_new))  # offset start is here the number of samples new_fs to skip, covert seglength to fs 
-    num_channels = data_["ind_dat"].shape[0]
+    num_channels = 8
     num_f_bands = len(f_ranges)
 
     rf_data = np.zeros([new_num_data_points-offset_start, num_channels, num_f_bands])  # raw frequency array
@@ -45,7 +61,7 @@ def run(fs, fs_new, seglengths, f_ranges, downsample_idx, bv_raw, line_noise,   
         if downsample_idx[c]<(fs/seglengths[0]):  # neccessary since downsample_idx starts with 0, wait till 1s for theta is over
             continue
 
-        for ch in data_["ind_dat"]:    
+        for ch in range(0,num_channels):    
             dat_ = bv_raw[ch, downsample_idx[c-offset_start]:downsample_idx[c]]
             dat_filt = filter.apply_filter(dat_, sample_rate=fs, filter_fun=filter_fun, line_noise=line_noise, seglengths=(fs/seglengths).astype(int))
             rf_data[new_idx,ch,:] = dat_filt
@@ -275,15 +291,17 @@ def create_events_array(onoff, raw_target_channel, sf):
     #create time vector
     T=len(raw_target_channel)/sf
     Df=len(raw_target_channel)/len(onoff)
+    Af=round(T-Df/sf)
     
     #time onoff_signal
-    t= np.arange(0.0, T-Df/sf , Df/sf)
-
+    t= np.arange(0.0, Af, Df/sf)
+    print('tshape= ', t.shape)
     
     #diff to find up and down times
     onoff_dif=np.diff(onoff)
     #create time info
     index_start=onoff_dif==1
+    print('index_start= ', index_start.shape)
     time_start=t[index_start]
     index_stop=onoff_dif==-1
     time_stop=t[index_stop]
@@ -299,7 +317,7 @@ def create_events_array(onoff, raw_target_channel, sf):
     time_event=np.sort(time_event)
     
     
-    id_event=np.asarray([1]*len(time_event))
+    id_event=np.asarray([1, -1]*len(time_start))
     
     print('id_event: ', id_event.shape)
     print('time_event: ', time_event.shape)
@@ -329,7 +347,7 @@ def generate_continous_label_array(L, sf, events):
         array of ones and zeros.
     """
     
-    labels=np.zeros(L)
+    labels=np.zeros(len(L[0,:]))
     
     mask_start=events[:,1]==1
     start_event_time=events[mask_start,0]
