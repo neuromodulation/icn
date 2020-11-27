@@ -27,11 +27,11 @@ import matplotlib.pyplot as plt
 
 settings = {
     "f_ranges" : [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]],
-    "BIDS_path" : Path("/Users/richardkoehler/Documents/Neurology_Data/MovementPrediction/test/derivatives/mne-p"),
+    #"BIDS_path" : Path("/Users/richardkoehler/Documents/Neurology_Data/BIDS Berlin/"),
     "sample_rate" : 4096,
     "var_rolling_window" : 4096,
     "resampling_rate" : 100,
-    "out_path_folder" : Path("/Users/richardkoehler/Documents/Neurology_Data/MovementPrediction/test/derivatives/mne-p/preproc")
+    #"out_path_folder" : Path("/Users/richardkoehler/Documents/Neurology_Data/MovementPrediction/test/derivatives/mne-p/preproc")
 }
 
 def read_BIDS_file(vhdr_file):
@@ -94,7 +94,7 @@ def get_sess_run_subject(vhdr_file):
     run = str_run[str_run.find('-')+1:str_run.find('_')]
 
     str_sess = vhdr_file[vhdr_file.find('ses'):]
-    sess = str_sess[str_sess.find('-')+1:str_sess.find('ieeg')-1]
+    sess = str_sess[str_sess.find('-')+1:str_sess.find('-')+9]
 
     return subject, run, sess
 
@@ -214,16 +214,14 @@ def resample(vhdr_file, ch_names, x_filtered_zscored, mov_label_zscored):
         mov_label_zscored ([type]): [description]
     """
 
-    #sub-002_ses-right_task-force_run-0_channels.tsv
-    #sub-002_ses-right_task-force_run-0_eeg.vhdr
-
     fs_new = settings["resampling_rate"]
-    ch_file = vhdr_file[:-9] + 'channels.tsv'  # the channel file name has the same path/structure as the vhdr file
-    df = pd.read_csv(ch_file, sep="\t")
+    #ch_file = vhdr_file[:-9] + 'channels.tsv'  # the channel file name has the same path/structure as the vhdr file
+    #df = pd.read_csv(ch_file, sep="\t")
 
-    ch_name = ch_names[1]
-    ind_ch = np.where(df['name'] == ch_name)[0][0]  # read out the dataframes channel names frequency, here implementation: same fs for all channels in one run
-    fs = df['sampling_frequency'][ind_ch]
+    #ch_name = ch_names[0]
+    #ind_ch = np.where(df['name'] == ch_name)[0][0]  # read out the dataframes channel names frequency, here implementation: same fs for all channels in one run
+    #fs = df['sampling_frequency'][ind_ch]
+    fs = settings["sample_rate"]
     
 
     dat_points = x_filtered_zscored.shape[2]
@@ -233,7 +231,7 @@ def resample(vhdr_file, ch_names, x_filtered_zscored, mov_label_zscored):
 
     return dat_resampled, mov_resampled
 
-def write_out_raw(vhdr_file, folder_out=settings["out_path_folder"], test_LM=False, resampling=True, write_json=False):
+def write_out_raw(vhdr_file, folder_out, test_LM=False, resampling=True, write_json=False, normalize=True):
     """
     Multiprocessing "Pool" function to interpolate raw file from vhdr_file write to out_path
     :param vhdr_file: raw .vhdr file
@@ -259,22 +257,24 @@ def write_out_raw(vhdr_file, folder_out=settings["out_path_folder"], test_LM=Fal
 
     x_filtered = transform_channels(bv_raw[ind_dat, :], line_noise)
 
-    # proxy for offline data analysis
-    # it might be that there are NaN values due to no data stream...
-    x_filtered_zscored = np.nan_to_num(z_score_offline(x_filtered))
-    mov_label_zscored = np.nan_to_num(z_score_offline_label(mov_label))
-
-    x_filtered_zscored, mov_label_zscored = calc_running_var(x_filtered_zscored, mov_label_zscored)
-    x_filtered_zscored = np.clip(x_filtered_zscored, -2, 2)
+    if normalize is True:
+        # proxy for offline data analysis
+        # it might be that there are NaN values due to no data stream...
+        x_filtered_zscored = np.nan_to_num(z_score_offline(x_filtered))
+        mov_label_zscored = np.nan_to_num(z_score_offline_label(mov_label))
+        x_filtered_zscored, mov_label_zscored = calc_running_var(x_filtered_zscored, mov_label_zscored)
+        x_filtered_zscored = np.clip(x_filtered_zscored, -2, 2)
+    
+    else: 
+        x_filtered_zscored, mov_label_zscored = calc_running_var(x_filtered, mov_label)
 
     if test_LM is True:
         for ch in range(bv_raw[ind_dat, :].shape[0]):
             print(ch)
             print(np.mean(cross_val_score(linear_model.LinearRegression(), x_filtered_zscored[:,ch,3400:2033000].T, mov_label_zscored[0,3400:2033000], cv=5, scoring='r2')))
-
+ 
+        
     if resampling is True:
-        x_filtered_zscored_raw = x_filtered_zscored
-        mov_label_zscored_raw = mov_label_zscored
         x_filtered_zscored, mov_label_zscored = resample(vhdr_file, ch_names, x_filtered_zscored, mov_label_zscored)
     
     if write_json is True:
@@ -282,19 +282,16 @@ def write_out_raw(vhdr_file, folder_out=settings["out_path_folder"], test_LM=Fal
             "data": x_filtered_zscored.tolist(),
             "true_movements": mov_label_zscored.tolist(),
             "ch_names": ch_names,
-            "coords": BIDS_coord.get_coord_from_vhdr(settings["BIDS_path"], vhdr_file),
+            #"coords": BIDS_coord.get_coord_from_vhdr(settings["BIDS_path"], vhdr_file),
             "subject": subject,
             "run": run,
             "sess": sess
         }
-        outpath_file = os.path.join(folder_out, 'raw_sub_' + subject + '_run_' + run + '_sess_' + sess + '.json')
+        outpath_file = os.path.join(folder_out, 'xfzs_' + 'sub_' + subject + '_run_' + run + '_sess_' + sess + '.json')
         with open(outpath_file, 'w') as fp:
             json.dump(dict_, fp)
 
-    if resampling is True:
-        return x_filtered_zscored_raw, mov_label_zscored_raw, x_filtered_zscored, mov_label_zscored
-    else:
-        return x_filtered_zscored, mov_label_zscored
+    return x_filtered_zscored, mov_label_zscored
 
 #if __name__ == "__main__":
 #
