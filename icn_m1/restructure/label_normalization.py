@@ -1,6 +1,5 @@
 import filter
 import numpy as np
-import projection
 from scipy import sparse
 from scipy.sparse.linalg import spsolve
 import cvxpy as cp
