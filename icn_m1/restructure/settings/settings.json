@@ -1,0 +1,10 @@
+{
+    "BIDS_path": "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\BIDS Berlin", 
+    "out_path": "C:\\Users\\ICN_admin\\Documents\\icn\\icn_m1\\restructure\\BIDS_Berlin_M1", 
+    "resamplingrate": 10, 
+    "max_dist_cortex": 20, 
+    "max_dist_subcortex": 5, 
+    "normalization_time": 10, 
+    "frequencyranges": [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]], 
+    "seglengths": [1, 2, 2, 3, 3, 3, 10, 10, 10]
+}
