@@ -267,25 +267,27 @@ def get_active_grid_points(sess_right, ind_label, ch_names, proj_matrix_run, gri
 
     return arr_act_grid_points
 
-def get_sess_run_subject(vhdr_file):
-    """
-    Given a vhdr string return the including subject, run and session
+def get_subject_sess_task_run(vhdr_file):
+    """ Given a vhdr filename (as a string) return the including subject, session, task and run.
+    
     Args:
         vhdr_file (string): [description]
-
-    Returns:
-        subject, run, sess
+    Return:
+        subject, sess, task, run
     """
-
-    subject = vhdr_file[vhdr_file.find('sub-')+4:vhdr_file.find('sub-')+7]
-
-    str_run = vhdr_file[vhdr_file.find('run'):]
-    run = str_run[str_run.find('-')+1:str_run.find('_')]
+    
+    subject = vhdr_file[vhdr_file.find('sub-')+4:vhdr_file.find('ses')-1]
 
     str_sess = vhdr_file[vhdr_file.find('ses'):]
-    sess = str_sess[str_sess.find('-')+1:str_sess.find('ieeg')-1]
-
-    return subject, run, sess
+    sess = str_sess[str_sess.find('-')+1:str_sess.find('task')-1]
+      
+    str_task = vhdr_file[vhdr_file.find('task'):]
+    task = str_task[str_task.find('-')+1:str_task.find('run')-1]
+    
+    str_run = vhdr_file[vhdr_file.find('run'):]
+    run = str_run[str_run.find('-')+1:str_run.find('_')]
+  
+    return subject, sess, task, run
 
 def get_used_ch_idx(used_channels, ch_names_BV):
     """read from the provided list of used_channels the indices of channels in the channel names brainvision file
