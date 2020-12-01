@@ -5,6 +5,7 @@
     "max_dist_cortex": 20, 
     "max_dist_subcortex": 5, 
     "normalization_time": 10, 
-    "frequencyranges": [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]], 
+    "frequencyranges": [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]],
+    "featurelabels": ["theta", "alpha", "low beta", "high beta", "all beta", "low gamma", "HFA", "all gamma"],
     "seglengths": [1, 2, 2, 3, 3, 3, 10, 10, 10]
 }
