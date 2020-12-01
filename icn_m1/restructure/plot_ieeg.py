@@ -31,7 +31,7 @@ def get_epochs(dat_filtered, y_tr, epoch_len, sfreq, threshold=0):
         y_arr[idx,:] = y_tr[i-epoch_lim:i+epoch_lim]
     return filtered_epoch, y_arr
 
-def plot_feat(data, label_ar, chans, feats, sfreq, epoch_len, xlim_l, xlim_h, print_plot=False, outpath=None):
+def plot_feat(data, label_ar, subject, chans, feats, sfreq, epoch_len, xlim_l, xlim_h, print_plot=False, outpath=None):
     """Plot features for each channel, time-locked at onset of events and averaged over trials.
 
     Keyword arguments
