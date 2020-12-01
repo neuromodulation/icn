@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import stats
 from matplotlib import pyplot as plt
 
 def get_epochs(dat_filtered, y_tr, epoch_len, sfreq, threshold=0):
