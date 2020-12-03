@@ -32,13 +32,12 @@ def get_subfolders(subject_path, Verbose=True):
     return subfolders
 
 def get_address_ieeg_files(subject_path, subfolder, Verbose=True):
-    """
-    given an address to a subject folder and a list of subfolders, provides a list of all ieeg files
+    """Given an address to a subject folder and a list of subfolders, provide a list of all ieeg files
     recorded for that particular subject.
 
     To access to a particular vhdr_file please see 'read_BIDS_file'.
 
-    To get info from vhdr_file please see 'get_sess_run_subject'
+    To get info from vhdr_file please see 'get_subject_sess_task_run'
 
 
     Parameters
@@ -64,13 +63,12 @@ def get_address_ieeg_files(subject_path, subfolder, Verbose=True):
     return vhdr_files
 
 def get_files(subject_path, subfolder, endswith='.vhdr', Verbose=True):
-    """
-    given an address to a subject folder and a list of subfolders, provides a list of all vhdr files
+    """Given an address to a subject folder and a list of subfolders, provide a list of all vhdr files
     recorded for that particular subject.
 
     To access to a particular vhdr_file please see 'read_BIDS_file'.
 
-    To get info from vhdr_file please see 'get_sess_run_subject'
+    To get info from vhdr_file please see 'get_subject_sess_task_run'
 
 
     Parameters
@@ -96,9 +94,7 @@ def get_files(subject_path, subfolder, endswith='.vhdr', Verbose=True):
     return vhdr_files
 
 def get_all_ieeg_files(BIDS_path):
-    """
-
-    Given a BIDS path return all vhdr file paths without BIDS_Layout
+    """Given a BIDS path return all vhdr file paths without BIDS_Layout.
 
     Args:
         BIDS_path (string)
@@ -114,8 +110,8 @@ def get_all_ieeg_files(BIDS_path):
 
 
 def read_BIDS_file(file_path):
-    """
-    Read one run file from BIDS standard
+    """Read one run file from BIDS standard
+    
     :param file_path: .vhdr file
     :return: raw dataset array, channel name array
     """
@@ -125,10 +121,7 @@ def read_BIDS_file(file_path):
 
 def read_M1_channel_specs(run_string):
     # given a run in from, sub-000_ses-right_task-force_run-0, the M1 channel specs file is in form sub-000_ses-right_task-force_run-0_channels_M1.tsv
-    """
-
-    given a run file, read the respective M1 channel specification file in format ch_name, rereference, used, predictor and return a dict with "cortex", "subcortex" and "labels" channels
-    if no cortex/subcortex channels are used, they are None
+    """Given a run file, read the respective M1 channel specification file in format ch_name, rereference, used, predictor and return a dict with "cortex", "subcortex" and "labels" channels. If no cortex/subcortex channels are used, they are None.
 
     Args:
         run_string (string): run string without specific ending in form sub-000_ses-right_task-force_run-0
@@ -164,6 +157,10 @@ def read_M1_channel_specs(run_string):
 
 
 def read_grid():
+    """
+    
+    """
+    
     cortex_left = np.array(pd.read_csv('settings/cortex_left.tsv', sep="\t"))
     cortex_right = np.array(pd.read_csv('settings/cortex_right.tsv', sep="\t"))
     subcortex_left = np.array(pd.read_csv('settings/subcortex_left.tsv', sep="\t"))
@@ -171,11 +168,9 @@ def read_grid():
     return cortex_left.T, cortex_right.T, subcortex_left.T, subcortex_right.T
 
 def get_coords_df_from_vhdr(vhdr_file, BIDS_path):
+    """Given a vhdr file path and the BIDS path return a pandas dataframe of that session (important: not for the run; run channels might have only a subset of all channels in the coordinate file)
     """
-    given a vhdr file path and the BIDS path
-    :return a pandas dataframe of that session (important: not for the run; run channls might have only a s
-    subset of all channels in the coordinate file)
-    """
+    
     subject = vhdr_file[vhdr_file.find('sub-')+4:vhdr_file.find('sub-')+7]
 
     if vhdr_file.find('right') !=-1:
@@ -187,29 +182,28 @@ def get_coords_df_from_vhdr(vhdr_file, BIDS_path):
     return df
 
 def read_run_sampling_frequency(vhdr_file):
+    """Given a .eeg vhdr file, read the respective channel file and return the the sampling frequency for the first
+    index, since all channels are throughout the run recorded with the same sampling frequency.
     """
-    given a .eeg vhdr file, read the respective channel file and return the the sampling frequency for the first
-    index, since all channels are throughout the run recorded with the same sampling frequency
-    """
+    
     ch_file = vhdr_file[:-9]+'channels.tsv' # read out the channel
     df = pd.read_csv(ch_file, sep="\t")
     return df['sampling_frequency']
 
 def read_line_noise(BIDS_path, subject):
-    """
-    return the line noise for a given subject (in shape '000') from participants.tsv
+    """Return the line noise for a given subject (in shape '000') from participants.tsv
     """
     df = pd.read_csv(BIDS_path+'\\participants.tsv', sep="\t")
     row_ = np.where(df['participant_id'] == 'sub-'+str(subject))[0][0]
     return df.iloc[row_]['line_noise']
 
 def get_patient_coordinates(ch_names, ind_cortex, ind_subcortex, vhdr_file, BIDS_path):
-    """
-    for a given vhdr file, the respective BIDS path, and the used channel names of a BIDS run
+    """For a given vhdr file, the respective BIDS path, and the used channel names of a BIDS run
     :return the coordinate file of the used channels
         in shape (2): cortex; subcortex; fields might be empty (None if no cortex/subcortex channels are existent)
         appart from that the used fields are in numpy array field shape (num_coords, 3)
     """
+    
     df = get_coords_df_from_vhdr(vhdr_file, BIDS_path)  # this dataframe contains all coordinates in this session
     coord_patient = np.empty(2, dtype=object)
 
@@ -235,6 +229,7 @@ def get_active_grid_points(sess_right, ind_label, ch_names, proj_matrix_run, gri
     returns: array in shape num grids points cortex_LEFT + subcortex_LEFT + cortex_RIGHT + subcortex_RIGHT 0/1 indication for
         used interpolation or not
     """
+    
     arr_act_grid_points = np.zeros([grid_[0].shape[1] + grid_[1].shape[1] + grid_[2].shape[1]+ grid_[3].shape[1]])
     label_channel = np.array(ch_names)[ind_label]
     Con_label = False; Ips_label = False
@@ -279,7 +274,7 @@ def get_subject_sess_task_run(vhdr_file):
     subject = vhdr_file[vhdr_file.find('sub-')+4:vhdr_file.find('ses')-1]
 
     str_sess = vhdr_file[vhdr_file.find('ses'):]
-    sess = str_sess[str_sess.find('-')+1:str_sess.find('task')-1]
+    sess = str_sess[str_sess.find('-')+1:str_sess.find('_')]
       
     str_task = vhdr_file[vhdr_file.find('task'):]
     task = str_task[str_task.find('-')+1:str_task.find('run')-1]
