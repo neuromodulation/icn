@@ -8,6 +8,7 @@ import json
 import pandas as pd 
 import os
 import run_analysis
+import pickle
 
 #### INPUTS TO PIPELINE 
 # path of BIDS_run file to analyse 
