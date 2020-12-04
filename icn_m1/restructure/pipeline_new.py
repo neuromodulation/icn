@@ -5,6 +5,9 @@ import numpy as np
 import offline_analysis
 import time
 import json
+import pandas as pd 
+import os
+import run_analysis
 
 ### READ M1.tsv 
 PATH_M1 = "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\Datasets\\BIDS Berlin\\sub-002\\ses-20200131\\ieeg\\sub-002_ses-20200131_task-selfpacedrotation202001310001_run-4_channels_M1.tsv"
@@ -71,7 +74,7 @@ def ieeg_raw_generator(ieeg_raw, df_M1, settings, fs):
 gen_ = ieeg_raw_generator(ieeg_raw[:,:20000], df_M1, settings, fs) # clip for timing reasons
 
 ### CALL run function 
-data_features = run(gen_, settings, df_M1, fs, line_noise, filter_fun, usemean_=True, normalize=True)
+data_features = run_analysis.run(gen_, settings, df_M1, fs, line_noise, filter_fun, usemean_=True, normalize=True)
 
 # SAVE object
 # CALL plotting functions
