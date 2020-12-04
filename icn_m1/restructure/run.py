@@ -6,9 +6,14 @@ from scipy.sparse.linalg import spsolve
 #import cvxpy as cp
 from scipy import signal
 import preprocessing
+import IO
 
 def run(gen, seglengths, f_ranges, line_noise, fs, fs_new, filter_fun, num_channels, clip_low=-2, clip_high=2, usemean_=True, normalize=True,\
         normalize_time=30):
+
+def run(gen, settings, df_M1, line_noise, fs, fs_new, usemean_=True, normalize=True):
+
+    # read num_channels from df_M1, 
 
     num_features = 8 # later important to be distinguishible for different features
     feature_arr = np.zeros([1, num_channels, num_features])
