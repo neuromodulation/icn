@@ -1,9 +1,13 @@
+import json
+from collections import OrderedDict
+import os
+from pathlib import Path
+from shutil import SameFileError
+
+import mne
 import mne_bids
 import numpy as np
-import os
 import pandas as pd
-import json
-import IO
 
 
 def get_subfolders(subject_path, Verbose=True):
@@ -396,3 +400,120 @@ def write_all_M1_channel_files(settings, cortex_ref='average', subcortex_ref='-'
                 df.to_csv(ch_file[:-12]+'channels_M1.tsv', sep='\t')
 
                 BIDS_channel_tsv_files.append(ch_file)
+
+def write_bids(bids_root, filename, outpath, set_chtypes=True):
+    """Write or overwrite existing BIDS files from raw brainvision file, organized in BIDS structure.
+    
+    Keyword arguments
+    -----------------
+    bids_root (string): Path to folder of BIDS root (e.g. '/Users/johndoe/BIDS/')
+    filename (string): Name of file with BIDS-compliant filename (e.g. 'sub-1_ses-1_task-rest_run_1')
+    outpath (string): Path to folder of output BIDS files (e.g. '/Users/johndoe/BIDS_2')
+    set_chtypes (boolean): (Optional) If set to True, reset channel types (default: True)
+    electr_file (string): (Optional) Path to file which contains information about possible electrode localizations (default: None)
+    
+    Returns
+    -------
+    None
+    """
+    
+    subject, session, task, run = get_subject_sess_task_run(filename)
+    dataype = 'ieeg'
+    bids_in = mne_bids.BIDSPath(subject=subject, session=session, task=task, run=run, datatype=dataype, root=bids_root)
+    bids_out = mne_bids.BIDSPath(subject=subject, session=session, task=task, run=run, datatype=dataype, root=outpath)
+    
+    # If preload is set to TRUE, write_raw_bids might not work. Only load_data if necessary.
+    try:
+        raw = mne_bids.read_raw_bids(bids_path=bids_in, extra_params=dict(preload=False), verbose=False)
+    except:
+        print('Possible error in BIDS structure, try mne.io.read_raw_brainvision and .read_raw_edf to read in file...')
+        file = str(bids_in.fpath)
+        if file.endswith(".vhdr"):
+            raw =  mne_bids.read.io.brainvision.read_raw_brainvision(file, preload=False, verbose=False)
+        elif file.endswith(".edf"):
+            raw = mne.io.read_raw_edf(file, preload=False, verbose=False)
+        else:
+            print('File could not be treated: ', bids_in.basename)
+            return
+        for f_name in os.listdir(bids_in.directory):
+            if f_name.endswith('ieeg.json'):
+                bids_json = bids_in.directory / f_name
+        with open(bids_json, 'rb') as f:
+            settings = json.load(f)
+        raw.info['line_freq'] = settings['PowerLineFrequency']
+    
+    if set_chtypes:
+        print('Setting new channel types...')
+        remapping_dict = {}
+        for ch_name in raw.info['ch_names']:
+            if ch_name.startswith('ECOG'):
+                remapping_dict[ch_name] = 'ecog'
+            elif ch_name.startswith('LFP'):
+                remapping_dict[ch_name] = 'seeg'
+            elif ch_name.startswith('EMG'):
+                remapping_dict[ch_name] = 'emg'
+            # mne_bids cannot handle both eeg and ieeg channel types in the same data
+            elif ch_name.startswith('EEG'):
+                remapping_dict[ch_name] = 'misc'
+            elif ch_name.startswith('MOV') or ch_name.startswith('ANALOG') or ch_name.startswith('ROT') or ch_name.startswith('ACC') \
+            or ch_name.startswith('AUX'):
+                remapping_dict[ch_name] = 'misc'
+        raw.set_channel_types(remapping_dict, verbose=False)
+        
+    electr_file = None
+    for f_name in os.listdir(bids_in.directory):
+            if f_name.endswith('sub-'+ subject +'_electrodes.tsv') or f_name.endswith('ses-'+ session +'_electrodes.tsv'):
+                electr_file = bids_in.directory / f_name
+            
+    if electr_file is not None:
+        print('Electrodes file being used: ', electr_file.name)
+        data = np.loadtxt(electr_file, dtype=str, delimiter='\t', comments=None, encoding='utf-8')
+        column_names = data[0, :]
+        info = data[1:, :]
+
+        electrode_tsv = OrderedDict()
+        for i, name in enumerate(column_names):
+            electrode_tsv[name] = info[:, i].tolist()
+
+        # Load in channel names
+        ch_names = electrode_tsv['name']
+
+        # Load in the xyz coordinates as a float
+        elec = np.empty(shape=(len(ch_names), 3))
+        try:
+            for ind, axis in enumerate(['x', 'y', 'z']):
+                elec[:, ind] = list(map(float, electrode_tsv[axis]))
+        except:
+            try:
+                for ind, axis in enumerate(['x_MNI', 'y_MNI', 'z_MNI']):
+                    elec[:, ind] = list(map(float, electrode_tsv[axis]))
+            except:
+                print('No electrode coordinates found.')
+    try:
+        # Create mne montage
+        montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)), coord_frame='mni_tal')
+        # Set montage. Warning is issued if channels don't match. Consider getting locations for missing channels.
+        raw.set_montage(montage, on_missing='warn', verbose=False)
+    except:
+        print('Montage was not possible.')
+        
+    # Write out files in BIDS format
+    # Might issue SameFileError if no changes are made to raw. Can be ignored, since _ieeg files don't need to be overwritten.
+
+    # Workaround, if raw data has been loaded.
+    fname_fif = bids_out.directory / (bids_out.basename + 'raw.fif')
+    if raw.preload == True:
+        raw.save(fname_fif, proj=True, overwrite=True)
+        raw = mne.io.read_raw_fif(fname_fif, preload=False, verbose=False)
+
+    try:
+        mne_bids.write_raw_bids(raw, bids_out, overwrite=True, verbose=False)
+    except SameFileError:
+        print('SameFileError was ignored.')
+        pass
+    
+    # Erase file, if workaround was used
+    if os.path.exists(fname_fif):
+        os.remove(fname_fif)
+
+    return
