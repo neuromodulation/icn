@@ -489,7 +489,7 @@ def write_bids(bids_root, filename, outpath, set_chtypes=True):
                     elec[:, ind] = list(map(float, electrode_tsv[axis]))
             except:
                 print('No electrode coordinates found.')
-        elec = elec / 1000
+        elec = elec / 1000  # convert mm to mne meter standard
     try:
         # Create mne montage
         montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)), coord_frame='mni_tal')

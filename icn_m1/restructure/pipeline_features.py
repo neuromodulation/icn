@@ -9,6 +9,7 @@ import pandas as pd
 import os
 import run_analysis
 import pickle
+import mne_bids
 
 #### INPUTS TO PIPELINE 
 # path of BIDS_run file to analyse 
@@ -30,6 +31,12 @@ subject, sess, task, run = IO.get_subject_sess_task_run(os.path.basename(run_fil
 
 ### READ BIDS data
 ieeg_raw, ch_names = IO.read_BIDS_file(run_file_to_read)
+
+### BETTER: 
+bids_read_path = mne_bids.BIDSPath(subject=subject, session=sess, \
+                            task=task, run=run, datatype="ieeg", root=settings["BIDS_path"])
+raw_arr = mne_bids.read_raw_bids(bids_read_path)
+ieeg_raw = raw_arr.get_data()
 
 ### READ Coordinates
 df_coord = pd.read_csv(os.path.join(os.path.dirname(run_file_to_read), \
