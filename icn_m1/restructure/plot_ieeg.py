@@ -1,6 +1,9 @@
 import numpy as np
 from scipy import stats
 from matplotlib import pyplot as plt
+import os.path as od
+
+from IO import get_subject_sess_task_run
 
 def get_epochs(dat_filtered, y_tr, epoch_len, sfreq, threshold=0):
     """Return epoched data.
@@ -31,13 +34,14 @@ def get_epochs(dat_filtered, y_tr, epoch_len, sfreq, threshold=0):
         y_arr[idx,:] = y_tr[i-epoch_lim:i+epoch_lim]
     return filtered_epoch, y_arr
 
-def plot_feat(data, label_ar, subject, chans, feats, sfreq, epoch_len, xlim_l, xlim_h, print_plot=False, outpath=None):
+def plot_feat(data, label_ar, fname, chans, feats, sfreq, epoch_len, xlim_l, xlim_h, print_plot=False, outpath=None):
     """Plot features for each channel, time-locked at onset of events and averaged over trials.
 
     Keyword arguments
     -----------------
-    data (Numpy array) : data in the shape (samples,channels,features)
-    label_ar (Numpy array) : array containing labels for all samples (e.g. 1 is movement, 0 is no movement)
+    data (numpy array) : data in the shape (samples,channels,features)
+    label_ar (numpy array) : array containing labels for all samples (e.g. 1 is movement, 0 is no movement)
+    fname (string) : filename (not including directory!)
     chans (list) : list of channel names
     feats (list) : list of feature names
     sfreq (int) : sampling frequency of data
@@ -45,14 +49,15 @@ def plot_feat(data, label_ar, subject, chans, feats, sfreq, epoch_len, xlim_l, x
     xlim_l (int/float) : lower limit in seconds of epochs to be plotted
     xlim_h (int/float) : higher limit in seconds of epochs to be plotted
     print_plot (boolean) : save figure as .png (default=False)
-    outpath ('string') : folder path to save figure
+    outpath (string/path) : folder path to save figure
 
     Returns
     -------
     None
     """
-
-    feat_concat, mov_concat = get_epochs(data, label_ar, threshold=0, epoch_len=epoch_len, sfreq=sfreq)
+    
+    subject, session, task, run = IO.get_subject_sess_task_run(fname)
+    feat_concat, mov_concat = plot_ieeg.get_epochs(data, label_ar, threshold=0, epoch_len=epoch_len, sfreq=sfreq)
 
     mean_feat = feat_concat.mean(axis=0)
     for ch in range(mean_feat.shape[1]):
@@ -60,7 +65,8 @@ def plot_feat(data, label_ar, subject, chans, feats, sfreq, epoch_len, xlim_l, x
             mean_feat[:,ch,feat] = stats.zscore(mean_feat[:,ch,feat])
 
     plt.style.use('dark_background')
-    fig = plt.figure(dpi=300, figsize=(5,15))
+    fig = plt.figure(dpi=300,figsize=(5, len(chans)*1.5)) 
+    fig.suptitle('sub-' + subject + ': Features', y = 1, fontsize='medium')
     xlab = np.arange(-epoch_len, epoch_len+1, 1, dtype=int)
     xlim1, xlim2= (epoch_len+xlim_l)*sfreq, (epoch_len+xlim_h)*sfreq
 
@@ -75,9 +81,8 @@ def plot_feat(data, label_ar, subject, chans, feats, sfreq, epoch_len, xlim_l, x
         plt.xlim(xlim1, xlim2)
         plt.gca().invert_yaxis()
 
-    fig.suptitle('sub-' + subject + ': Features \n', fontsize='medium')
     plt.xlabel('Time [s]', fontsize='small')
-    fig.tight_layout()
+    plt.tight_layout()
     if print_plot == True:
-        fig.savefig(outpath + 'Features' + '.png')
+        fig.savefig(od.join(outpath, 'sub_' + subject +'_sess_' + session + '_task_' + task + '_run_' + run + '_features' + '.png'))
     plt.show()

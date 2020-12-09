@@ -501,11 +501,10 @@ def write_bids(bids_root, filename, outpath, set_chtypes=True):
     # Might issue SameFileError if no changes are made to raw. Can be ignored, since _ieeg files don't need to be overwritten.
 
     # Workaround, if raw data has been loaded.
-    fname_fif = bids_out.directory / (bids_out.basename + 'raw.fif')
+    fname_fif = bids_in.directory / (bids_in.basename + 'raw.fif')
     if raw.preload == True:
         raw.save(fname_fif, proj=True, overwrite=True)
         raw = mne.io.read_raw_fif(fname_fif, preload=False, verbose=False)
-
     try:
         mne_bids.write_raw_bids(raw, bids_out, overwrite=True, verbose=False)
     except SameFileError:
