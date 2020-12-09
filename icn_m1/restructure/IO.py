@@ -115,7 +115,7 @@ def get_all_ieeg_files(BIDS_path):
 
 def read_BIDS_file(file_path):
     """Read one run file from BIDS standard
-    
+
     :param file_path: .vhdr file
     :return: raw dataset array, channel name array
     """
@@ -162,9 +162,9 @@ def read_M1_channel_specs(run_string):
 
 def read_grid():
     """
-    
+
     """
-    
+
     cortex_left = np.array(pd.read_csv('settings/cortex_left.tsv', sep="\t"))
     cortex_right = np.array(pd.read_csv('settings/cortex_right.tsv', sep="\t"))
     subcortex_left = np.array(pd.read_csv('settings/subcortex_left.tsv', sep="\t"))
@@ -174,7 +174,7 @@ def read_grid():
 def get_coords_df_from_vhdr(vhdr_file, BIDS_path):
     """Given a vhdr file path and the BIDS path return a pandas dataframe of that session (important: not for the run; run channels might have only a subset of all channels in the coordinate file)
     """
-    
+
     subject = vhdr_file[vhdr_file.find('sub-')+4:vhdr_file.find('sub-')+7]
 
     if vhdr_file.find('right') !=-1:
@@ -189,7 +189,7 @@ def read_run_sampling_frequency(vhdr_file):
     """Given a .eeg vhdr file, read the respective channel file and return the the sampling frequency for the first
     index, since all channels are throughout the run recorded with the same sampling frequency.
     """
-    
+
     ch_file = vhdr_file[:-9]+'channels.tsv' # read out the channel
     df = pd.read_csv(ch_file, sep="\t")
     return df['sampling_frequency']
@@ -207,7 +207,7 @@ def get_patient_coordinates(ch_names, ind_cortex, ind_subcortex, vhdr_file, BIDS
         in shape (2): cortex; subcortex; fields might be empty (None if no cortex/subcortex channels are existent)
         appart from that the used fields are in numpy array field shape (num_coords, 3)
     """
-    
+
     df = get_coords_df_from_vhdr(vhdr_file, BIDS_path)  # this dataframe contains all coordinates in this session
     coord_patient = np.empty(2, dtype=object)
 
@@ -233,7 +233,7 @@ def get_active_grid_points(sess_right, ind_label, ch_names, proj_matrix_run, gri
     returns: array in shape num grids points cortex_LEFT + subcortex_LEFT + cortex_RIGHT + subcortex_RIGHT 0/1 indication for
         used interpolation or not
     """
-    
+
     arr_act_grid_points = np.zeros([grid_[0].shape[1] + grid_[1].shape[1] + grid_[2].shape[1]+ grid_[3].shape[1]])
     label_channel = np.array(ch_names)[ind_label]
     Con_label = False; Ips_label = False
@@ -268,24 +268,24 @@ def get_active_grid_points(sess_right, ind_label, ch_names, proj_matrix_run, gri
 
 def get_subject_sess_task_run(vhdr_file):
     """ Given a vhdr filename (as a string) return the including subject, session, task and run.
-    
+
     Args:
         vhdr_file (string): [description]
     Return:
         subject, sess, task, run
     """
-    
+
     subject = vhdr_file[vhdr_file.find('sub-')+4:vhdr_file.find('ses')-1]
 
     str_sess = vhdr_file[vhdr_file.find('ses'):]
     sess = str_sess[str_sess.find('-')+1:str_sess.find('_')]
-      
+
     str_task = vhdr_file[vhdr_file.find('task'):]
     task = str_task[str_task.find('-')+1:str_task.find('run')-1]
-    
+
     str_run = vhdr_file[vhdr_file.find('run'):]
     run = str_run[str_run.find('-')+1:str_run.find('_')]
-  
+
     return subject, sess, task, run
 
 def get_used_ch_idx(used_channels, ch_names_BV):
@@ -403,7 +403,7 @@ def write_all_M1_channel_files(settings, cortex_ref='average', subcortex_ref='-'
 
 def write_bids(bids_root, filename, outpath, set_chtypes=True):
     """Write or overwrite existing BIDS files from raw brainvision file, organized in BIDS structure.
-    
+
     Keyword arguments
     -----------------
     bids_root (string): Path to folder of BIDS root (e.g. '/Users/johndoe/BIDS/')
@@ -411,17 +411,17 @@ def write_bids(bids_root, filename, outpath, set_chtypes=True):
     outpath (string): Path to folder of output BIDS files (e.g. '/Users/johndoe/BIDS_2')
     set_chtypes (boolean): (Optional) If set to True, reset channel types (default: True)
     electr_file (string): (Optional) Path to file which contains information about possible electrode localizations (default: None)
-    
+
     Returns
     -------
     None
     """
-    
+
     subject, session, task, run = get_subject_sess_task_run(filename)
     dataype = 'ieeg'
     bids_in = mne_bids.BIDSPath(subject=subject, session=session, task=task, run=run, datatype=dataype, root=bids_root)
     bids_out = mne_bids.BIDSPath(subject=subject, session=session, task=task, run=run, datatype=dataype, root=outpath)
-    
+
     # If preload is set to TRUE, write_raw_bids might not work. Only load_data if necessary.
     try:
         raw = mne_bids.read_raw_bids(bids_path=bids_in, extra_params=dict(preload=False), verbose=False)
@@ -441,14 +441,14 @@ def write_bids(bids_root, filename, outpath, set_chtypes=True):
         with open(bids_json, 'rb') as f:
             settings = json.load(f)
         raw.info['line_freq'] = settings['PowerLineFrequency']
-    
+
     if set_chtypes:
         print('Setting new channel types...')
         remapping_dict = {}
         for ch_name in raw.info['ch_names']:
             if ch_name.startswith('ECOG'):
                 remapping_dict[ch_name] = 'ecog'
-            elif ch_name.startswith('LFP'):
+            elif ch_name.startswith('LFP') or ch_name.startswith('STN'):
                 remapping_dict[ch_name] = 'seeg'
             elif ch_name.startswith('EMG'):
                 remapping_dict[ch_name] = 'emg'
@@ -459,12 +459,12 @@ def write_bids(bids_root, filename, outpath, set_chtypes=True):
             or ch_name.startswith('AUX'):
                 remapping_dict[ch_name] = 'misc'
         raw.set_channel_types(remapping_dict, verbose=False)
-        
+
     electr_file = None
     for f_name in os.listdir(bids_in.directory):
             if f_name.endswith('sub-'+ subject +'_electrodes.tsv') or f_name.endswith('ses-'+ session +'_electrodes.tsv'):
                 electr_file = bids_in.directory / f_name
-            
+
     if electr_file is not None:
         print('Electrodes file being used: ', electr_file.name)
         data = np.loadtxt(electr_file, dtype=str, delimiter='\t', comments=None, encoding='utf-8')
@@ -496,7 +496,7 @@ def write_bids(bids_root, filename, outpath, set_chtypes=True):
         raw.set_montage(montage, on_missing='warn', verbose=False)
     except:
         print('Montage was not possible.')
-        
+
     # Write out files in BIDS format
     # Might issue SameFileError if no changes are made to raw. Can be ignored, since _ieeg files don't need to be overwritten.
 
@@ -510,7 +510,7 @@ def write_bids(bids_root, filename, outpath, set_chtypes=True):
     except SameFileError:
         print('SameFileError was ignored.')
         pass
-    
+
     # Erase file, if workaround was used
     if os.path.exists(fname_fif):
         os.remove(fname_fif)
