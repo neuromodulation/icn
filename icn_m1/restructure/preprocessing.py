@@ -38,7 +38,7 @@ def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
         for ii in index_channels:
             elec_channel = index_channels == ii
             ch = data_subcortex[elec_channel, :]
-            if df_M1['rereference'][ii] == '-':
+            if df_M1['rereference'][ii] == 'none':
                 continue
             if df_M1['rereference'][ii] == 'average':
                 av = np.mean(data_subcortex[index_channels != ii, :], axis=0)
@@ -53,7 +53,7 @@ def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
                                          ' are not part of the recording channels.')
                     index.append(channels_name.index(ref_channels[j]))
 
-                new_data_subcortex[idx] = ch - np.mean(data_subcortex[index,:], axis=0)
+                new_data_subcortex[idx] = ch - np.mean(ieeg_batch[index,:], axis=0)
             idx = idx + 1
         new_data[index_channels,:] = new_data_subcortex
     else:
@@ -70,7 +70,7 @@ def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
         for i in index_channels:
             elec_channel = index_channels == i
             ch = data_cortex[elec_channel,:]
-            if df_M1['rereference'][i] == '-':
+            if df_M1['rereference'][i] == 'none':
                 continue
             if df_M1['rereference'][i] == 'average':
                 av = np.mean(data_cortex[index_channels != i, :], axis=0)
@@ -85,7 +85,7 @@ def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
                         raise ValueError('You cannot rereference to the same channel.')
                     index.append(channels_name.index(ref_channels[j]))
                     
-                new_data_cortex[idx] = ch - np.mean(data_cortex[index, :],
+                new_data_cortex[idx] = ch - np.mean(ieeg_batch[index, :],
                                                     axis=0)
             idx = idx+1
         new_data[index_channels, :] = new_data_cortex
