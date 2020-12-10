@@ -7,6 +7,7 @@ import json
 import os
 import pandas as pd
 import mne
+from preprocessing import rereference
 
 def run(gen, settings, df_M1, fs, line_noise, filter_fun, usemean_=True, normalize=True):
 
@@ -31,7 +32,7 @@ def run(gen, settings, df_M1, fs, line_noise, filter_fun, usemean_=True, normali
                 return feature_arr
         
         ### call rereference ###
-        #ieeg_batch = reference(ieeg_batch, df_M1)
+        ieeg_batch = rereference(ieeg_batch, df_M1)
         
         # notch filter and feature estimation
         features_sample = np.zeros([num_channels,num_features])
