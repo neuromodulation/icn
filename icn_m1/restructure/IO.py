@@ -197,7 +197,7 @@ def read_run_sampling_frequency(vhdr_file):
 def read_line_noise(BIDS_path, subject):
     """Return the line noise for a given subject (in shape '000') from participants.tsv
     """
-    df = pd.read_csv(BIDS_path+'\\participants.tsv', sep="\t")
+    df = pd.read_csv(os.path.join(BIDS_path,'participants.tsv'), sep="\t")
     row_ = np.where(df['participant_id'] == 'sub-'+str(subject))[0][0]
     return df.iloc[row_]['line_noise']
 
