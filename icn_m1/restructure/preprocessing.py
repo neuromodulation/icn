@@ -4,7 +4,7 @@ import IO
 
 def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
     """
-    Reference data.
+    Rereference data.
 
     This function rereference data accordindly to the information given in the
     files "*_channels_MI.tsv". This file must be customized by the user before
@@ -12,11 +12,13 @@ def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
 
     Parameters
     ----------
-    run_string: string
-        run string without specific ending in form sub-000_ses-right_task-force_run-0
-
-    bv_raw : array, shape(n_channels, n_samples)
-        raw data 
+    ieeg_batch : array, shape(n_channels, n_samples)
+        the data to be rerefenced.
+    df_M1 : data frame
+        data frame with the channels configuration description.
+    get_cortex_subcortex : boolean, optional
+        if set to true, the rereferenced data will be returned as well as the
+        data splitted in cortex and subcortex. The default is False.
 
     Returns
     -------
@@ -57,7 +59,7 @@ def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
             idx = idx + 1
         new_data[index_channels,:] = new_data_subcortex
     else:
-        new_data_subcortex=None
+        new_data_subcortex = None
 
     cortex_exists = any(df_M1[(df_M1["used"] == 1) & (df_M1["target"] == 0)
                                  & (df_M1["ECOG"] == 1)].index)
