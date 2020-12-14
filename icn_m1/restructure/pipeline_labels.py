@@ -8,6 +8,9 @@ import json
 import pandas as pd 
 import os
 import run_analysis
+import label_normalization
+from scipy.signal import find_peaks
+import pybv
 
 # reads saved feature file by pipeline_features 
 # reads M1, settings, dat 
@@ -41,8 +44,42 @@ fs = int(np.ceil(fs))
 ### READ line noise (could be done by mne_bids.read_raw_bids)
 line_noise = IO.read_line_noise(settings['BIDS_path'], subject) # line noise is a column in the participants.tsv
 
-# estimate baseline correction 
+# estimate baseline correction
+label_clean = np.empty((sum(df_M1['target'] == 1), ieeg_raw.shape[1]),
+                       dtype=object)
+ch_names_new = ch_names.copy()
+ADD_CLEAN_LABEL_TOBIDS = False
+for i, m in enumerate(df_M1[df_M1['target'] == 1].index.tolist()):
+    # check if data should be flipped
+    print(i)
+    sign = 1
+    if abs(min(ieeg_raw[m])) > max(ieeg_raw[m]):
+        sign = -1
+    target_channel_corrected, onoff, raw_target_channel=label_normalization.baseline_correction(y=sign * ieeg_raw[m], param=1, thr=2e-1, normalize=False)
+    # check detected picks and true picks
+    true_picks, _ = find_peaks(raw_target_channel, height=0, distance=0.5 * fs)
+    predicted_picks, _ = find_peaks(onoff)
+    if len(true_picks) != len(predicted_picks):
+        Warning('Check the baseline parameters, it seems they should be optimized')
 
+    label_clean[i] = target_channel_corrected
+    # naming
+    label_name = df_M1[(df_M1["target"] == 1)]["name"][m]
+    # change channel info
+    ch_names_new.append(label_name+'_CLEAN')
+
+# when clean, stack to data
+data = np.vstack((ieeg_raw, label_clean))
+
+if ADD_CLEAN_LABEL_TOBIDS: # --> all this should be checked 
+    file_name = run_file_to_read[:-5]
+    out_path = settings['BIDS_path'] + 'sub-' + subject + '/ses-'+sess+'/ieeg'
+    pybv.write_brainvision(data, sfreq=fs, ch_names=ch_names_new,
+                           fname_base=file_name,
+                           folder_out=out_path,
+                           events=None, resolution=1e-7, scale_data=True,
+                           fmt='binary_float32', meas_date=None)
+    # modify channels info --> this part should be discussed 
 # READ feature file and write corrected baseline as additional key
 
 # call plot_ieeg --> save figure, maybe create new run folder 
