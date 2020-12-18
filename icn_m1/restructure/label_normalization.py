@@ -169,3 +169,82 @@ def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1,
     else:
         y_corrected = DeNormalizeData(y_corrected, minv, maxv)
     return y_corrected, onoff, y
+
+def generate_continous_label_array(raw_data, events):
+    """
+    given an array of events, this function returns sample-by-sample
+    label information of raw_date
+    Parameters
+    ----------
+    raw_data : array-like,
+        Corresponding signal to labelled with shape (n_samples).
+    events : array, shape(n_events,2)
+        Events that were found by the function 'create_events_array'.
+        The first column contains the event time in samples and the second column contains the event-id.
+
+    Returns
+    -------
+    labels : array (n_samples)
+        array of ones and zeros.
+    """
+    labels = np.zeros(raw_data.shape[0])
+
+    mask_start = events[:, 1] == 1
+    start_event_time = events[mask_start, 0]
+    mask_stop = events[:, 1] == -1
+    stop_event_time = events[mask_stop, 0]
+
+    for i in range(len(start_event_time)):
+        range_up = np.arange(int(np.round(start_event_time[i] * sf)), int(np.round(stop_event_time[i] * sf)))
+        labels[range_up] = 1
+    return labels
+
+def create_events_array(onoff, raw_data, sf=1):
+    """Create array indicating start and stop of events from squared signal of zeros and ones.
+
+    Parameters
+    ----------
+    onoff : array, shape(n_samples)
+        Squared signal of zeros and ones. When up it indicates the target task was being done.
+        Output of baseline_correction.
+    raw_target_data : array, shape(n_samples)
+        The raw signal which which contains the performed task. Needed to estimate time of the events.
+    sf : int/float (Optional)
+        The sampling frequency of input data. If not 1, events_array will be returned as time (s) and not sample.
+    Returns
+    -------
+    events : array, shape(n_events, 2)
+        All events that were found. The first column contains the event time in samples and the second column
+            contains the event-id. Event-id: 1 = task starts, -1 = task stops
+    """
+
+    # create time vector
+    T = len(raw_target_channel) / sf
+    Df = len(raw_target_channel) / len(onoff)
+    Af = round(T - Df / sf)
+
+    # time onoff_signal
+    t = np.arange(0.0, Af, Df / sf)
+
+    # diff to find up and down times
+    onoff_dif = np.diff(onoff)
+    # create time info
+    index_start = onoff_dif == 1
+    time_start = t[index_start]
+    index_stop = onoff_dif == -1
+    time_stop = t[index_stop]
+
+    if len(time_stop) > len(time_start):
+        if time_stop[0] < time_start[0]:
+            time_stop = time_stop[1:]
+    else:
+        if time_start[-1] > time_stop[-1]:
+            time_start = time_start[:-1]
+
+    time_event = np.hstack((time_start, time_stop))
+    time_event = np.sort(time_event)
+
+    id_event = np.asarray([1, -1] * len(time_start))
+
+    events = np.transpose(np.vstack((time_event, id_event))).astype(int)
+    return events

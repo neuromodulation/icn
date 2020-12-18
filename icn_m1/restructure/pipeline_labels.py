@@ -1,20 +1,18 @@
-import filter
-import IO
-import sys
-import numpy as np
-import offline_analysis
-import time
 import json
-import pandas as pd 
 import os
-import run_analysis
-import label_normalization
-from scipy.signal import find_peaks
+import sys
+import warnings
+
+import numpy as np
+import pandas as pd
 import pybv
+from scipy.signal import find_peaks
+
+import IO
+import label_normalization
 
 # reads saved feature file by pipeline_features 
 # reads M1, settings, dat 
-
 
 ### READ M1.tsv 
 PATH_M1 = "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\Datasets\\BIDS Berlin\\sub-002\\ses-20200131\\ieeg\\sub-002_ses-20200131_task-selfpacedrotation202001310001_run-4_channels_M1.tsv"
@@ -51,7 +49,6 @@ ch_names_new = ch_names.copy()
 ADD_CLEAN_LABEL_TOBIDS = False
 for i, m in enumerate(df_M1[df_M1['target'] == 1].index.tolist()):
     # check if data should be flipped
-    print(i)
     sign = 1
     if abs(min(ieeg_raw[m])) > max(ieeg_raw[m]):
         sign = -1
@@ -60,7 +57,7 @@ for i, m in enumerate(df_M1[df_M1['target'] == 1].index.tolist()):
     true_picks, _ = find_peaks(raw_target_channel, height=0, distance=0.5 * fs)
     predicted_picks, _ = find_peaks(onoff)
     if len(true_picks) != len(predicted_picks):
-        Warning('Check the baseline parameters, it seems they should be optimized')
+        warnings.warn('Check the baseline parameters, it seems they should be optimized')
 
     label_clean[i] = target_channel_corrected
     # naming
