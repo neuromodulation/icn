@@ -11,6 +11,11 @@
 *.o
 *.so
 
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+
 # Packages #
 ############
 # it's better to unpack these files and commit the raw source
@@ -39,3 +44,23 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+**/.history
+
+# notebooks
+/node_modules/
+/node_modules/
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+*/.ipynb_checkpoints/*
