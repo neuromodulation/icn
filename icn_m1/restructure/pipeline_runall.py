@@ -123,7 +123,7 @@ def run_vhdr_file(s):
         else: 
             Warning('Different sampling freq.')      
         #read data
-        bv_raw, ch_names = IO.read_BIDS_file(vhdr_file)
+        bv_raw, ch_names = IO.read_bids_file(vhdr_file)
         
         #check session
         sess_right = IO.sess_right(sess)
@@ -137,7 +137,7 @@ def run_vhdr_file(s):
         
         # extract used channels/labels from brainvision file, split up in cortex/subcortex/labels
         #dat_ is a dict
-        dat_ = IO.get_dat_cortex_subcortex(bv_raw, ch_names, used_channels)
+        dat_ = IO.get_dat_cortex_subcortex(bv_raw, used_channels)
         ind_cortex=dat_['ind_cortex']
         ind_subcortex=dat_['ind_subcortex']
         dat_ECOG=dat_['dat_cortex']

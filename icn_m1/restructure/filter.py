@@ -1,6 +1,7 @@
-import numpy as np 
-import mne 
+import mne
+import numpy as np
 import scipy
+
 
 def calc_band_filters(f_ranges, sample_rate, filter_len="1000ms", l_trans_bandwidth=4, h_trans_bandwidth=4):
     """"Calculate bandpass filters with adjustable length for given frequency ranges .
@@ -28,12 +29,13 @@ def calc_band_filters(f_ranges, sample_rate, filter_len="1000ms", l_trans_bandwi
     """
     filter_list = []
     for a, f_range in enumerate(f_ranges):
-        h = mne.filter.create_filter(None, sample_rate, l_freq=f_range[0], h_freq=f_range[1],
-                            fir_design='firwin', l_trans_bandwidth=l_trans_bandwidth, 
-                            h_trans_bandwidth=h_trans_bandwidth, filter_length=filter_len)
+        h = mne.filter.create_filter(None, sample_rate, l_freq=f_range[0], h_freq=f_range[1], fir_design='firwin',
+                                     l_trans_bandwidth=l_trans_bandwidth, h_trans_bandwidth=h_trans_bandwidth,
+                                     filter_length=filter_len)
         filter_list.append(h)
     filter_fun = np.vstack(filter_list)
     return filter_fun
+
 
 def apply_filter(dat_, sample_rate, filter_fun, line_noise, variance=True, seglengths=None):
     """For a given channel, apply 4 notch line filters and previously calculated (bandpass) filters.
@@ -64,15 +66,15 @@ def apply_filter(dat_, sample_rate, filter_fun, line_noise, variance=True, segle
         at each freq band, where nfb is the number of filter bands used to decompose the signal
     """    
     dat_notch_filtered = mne.filter.notch_filter(x=dat_, Fs=sample_rate, trans_bandwidth=7,
-            freqs=np.arange(line_noise, 4*line_noise, line_noise),
-            fir_design='firwin', verbose=False, notch_widths=1,filter_length=dat_.shape[0]-1)
+                                                 freqs=np.arange(line_noise, 4*line_noise, line_noise),
+                                                 fir_design='firwin', verbose=False, notch_widths=1,
+                                                 filter_length=dat_.shape[0]-1)
 
     filtered = []
     for filt in range(filter_fun.shape[0]):
         if variance:
-            filtered.append(np.var(scipy.signal.convolve(filter_fun[filt,:], 
-                                               dat_notch_filtered, mode='same')[-seglengths[filt]:]))
+            filtered.append(np.var(scipy.signal.convolve(filter_fun[filt, :], dat_notch_filtered,
+                                                         mode='same')[-seglengths[filt]:]))
         else:
-            filtered.append(scipy.signal.convolve(filter_fun[filt,:], 
-                                                dat_notch_filtered, mode='same'))
+            filtered.append(scipy.signal.convolve(filter_fun[filt, :], dat_notch_filtered, mode='same'))
     return np.array(filtered)

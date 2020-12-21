@@ -1,9 +1,12 @@
-import numpy as np
-from scipy import stats
-from matplotlib import pyplot as plt
 import os.path as od
 
+from matplotlib import pyplot as plt
+from mne_bids import BIDSPath, read_raw_bids
+import numpy as np
+from scipy import stats
+
 from IO import get_subject_sess_task_run
+
 
 def get_epochs(dat_filtered, y_tr, epoch_len, sfreq, threshold=0):
     """Return epoched data.
@@ -34,6 +37,7 @@ def get_epochs(dat_filtered, y_tr, epoch_len, sfreq, threshold=0):
         y_arr[idx,:] = y_tr[i-epoch_lim:i+epoch_lim]
     return filtered_epoch, y_arr
 
+
 def plot_feat(data, label_ar, fname, chans, feats, sfreq, epoch_len, xlim_l, xlim_h, print_plot=False, outpath=None):
     """Plot features for each channel, time-locked at onset of events and averaged over trials.
 
@@ -56,8 +60,8 @@ def plot_feat(data, label_ar, fname, chans, feats, sfreq, epoch_len, xlim_l, xli
     None
     """
     
-    subject, session, task, run = IO.get_subject_sess_task_run(fname)
-    feat_concat, mov_concat = plot_ieeg.get_epochs(data, label_ar, threshold=0, epoch_len=epoch_len, sfreq=sfreq)
+    subject, session, task, run = get_subject_sess_task_run(fname)
+    feat_concat, mov_concat = get_epochs(data, label_ar, threshold=0, epoch_len=epoch_len, sfreq=sfreq)
 
     mean_feat = feat_concat.mean(axis=0)
     for ch in range(mean_feat.shape[1]):
@@ -86,3 +90,23 @@ def plot_feat(data, label_ar, fname, chans, feats, sfreq, epoch_len, xlim_l, xli
     if print_plot == True:
         fig.savefig(od.join(outpath, 'sub_' + subject +'_sess_' + session + '_task_' + task + '_run_' + run + '_features' + '.png'))
     plt.show()
+
+def plot_raw_data(bids_root, files, highpass=0.1, lowpass=90, decim="auto"):
+    """Plot raw ieeg data of given files structured in BIDS compatible folder.
+
+    Args:
+        bids_root (str/path): Root of BIDS folder.
+        files (list of strings): List of files to be plotted. Data must be structured according to BIDS.
+        highpass (int/float): Value of highpass filter for plotting. Default=0.1.
+        lowpass (int/float): Value of highpass filter for plotting. Default=90.
+        decim: If decimation to enhance responsiveness is desired. Default="auto".
+    Returns:
+        None
+    """
+
+    for file in files:
+        subject, session, task, run = get_subject_sess_task_run(file)
+        bids_file = BIDSPath(subject=subject, session=session, task=task, run=run, datatype="ieeg",
+                             root=bids_root)
+        raw = read_raw_bids(bids_file, verbose=False)
+        raw.plot(block=True, highpass=highpass, lowpass=lowpass, decim=decim, scalings='auto', verbose=False)

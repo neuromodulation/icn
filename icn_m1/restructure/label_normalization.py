@@ -1,21 +1,19 @@
-import filter
-import numpy as np
-from scipy import sparse
-from scipy.sparse.linalg import spsolve
 import cvxpy as cp
-from scipy import signal
+import numpy as np
+from scipy import signal, sparse
+from scipy.sparse.linalg import spsolve
 
 
-def NormalizeData(data):
-    """Aux function of baseline_correction."""
+def normalize_data(data):
+    """Normalize input data. Aux function of baseline_correction."""
     minv = np.min(data)
     maxv = np.max(data)
     data_new = (data - np.min(data)) / (np.max(data) - np.min(data))
     return data_new, minv, maxv
 
 
-def DeNormalizeData(data, minv, maxv):
-    """Aux function of baseline_correction."""
+def de_normalize_data(data, minv, maxv):
+    """De-normalize input data. Aux function of baseline_correction."""
     data_new = (data + minv) * (maxv - minv)
     return data_new
 
@@ -48,14 +46,14 @@ def baseline_als(y, lam, p, niter=10):
     [1] P. H. C. Eilers, H. F. M. Boelens, Baseline correction with asymmetric
     least squares smoothing, Leiden University Medical Centre report, 2005.
     """
-    L = len(y)
-    D = sparse.diags([1, -2, 1], [0, -1, -2], shape=(L, L-2))
-    w = np.ones(L)
+    length = y.shape[0]
+    d = sparse.diags([1, -2, 1], [0, -1, -2], shape=(length, length - 2))
+    w = np.ones(length)
     for i in range(niter):
-        W = sparse.spdiags(w, 0, L, L)
-        Z = W + lam * D.dot(D.transpose())
-        z = spsolve(Z, w*y)
-        w = p * (y > z) + (1-p) * (y < z)
+        W = sparse.spdiags(w, 0, length, length)
+        Z = W + lam * d.dot(d.transpose())
+        z = spsolve(Z, w * y)
+        w = p * (y > z) + (1 - p) * (y < z)
     return z
 
 
@@ -84,7 +82,7 @@ def baseline_rope(y, lam=1):
     15(3), 036009.
     """
     b = cp.Variable(y.shape)
-    objective = cp.Minimize(cp.norm(y-b, 2)+lam*cp.sum_squares(cp.diff(b, 1)))
+    objective = cp.Minimize(cp.norm(y - b, 2) + lam * cp.sum_squares(cp.diff(b, 1)))
     constraints = [b <= y]
     problem = cp.Problem(objective, constraints)
     problem.solve(solver="SCS")
@@ -94,7 +92,7 @@ def baseline_rope(y, lam=1):
 
 
 def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1,
-                        normalize=True, Decimate=1, Verbose=True):
+                        normalize=True, decimate=1, verbose=True):
     """
     Baseline correction is applied to the label.
 
@@ -118,11 +116,11 @@ def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1,
     normalize : boolean, optional
         if normalize is True the original signal as well as the output
         corrected signal will be scalled between 0 and 1. The default is True.
-    Decimate: number, optinal
+    decimate: number, optinal
         before baseline correction it might be necessary to downsample the
         original raw signal. We recommend to do this step when long processing
         times are willing to be avoided. The default is 1, i.e. no decimation.
-    Verbose: boolean, optional
+    verbose: boolean, optional
         The default is True.
 
     Returns
@@ -131,10 +129,10 @@ def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1,
     onoff: squared signal useful for onset target evaluation.
     y: original signal
     """
-    if Decimate != 1:
-        if Verbose:
+    if decimate != 1:
+        if verbose:
             print('>>Signal decimation is being done')
-        y = signal.decimate(y, Decimate)
+        y = signal.decimate(y, decimate)
 
     if method == 'baseline_als' and np.size(param) != 2:
         raise ValueError("If baseline_als method is desired, param should be a"
@@ -144,19 +142,19 @@ def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1,
                          " a number")
 
     if method == 'baseline_als':
-        if Verbose:
+        if verbose:
             print('>>baseline_als is being used')
         z = baseline_als(y, lam=param[0], p=param[1])
     else:
-        if Verbose:
+        if verbose:
             print('>>baseline_rope is being used')
         z = baseline_rope(y, lam=param)
 
     # subtract baseline
-    y_corrected = y-z
+    y_corrected = y - z
 
     # aux step: normalize to eliminate interferation
-    y_corrected, minv, maxv = NormalizeData(y_corrected)
+    y_corrected, minv, maxv = normalize_data(y_corrected)
 
     # eliminate interferation
     y_corrected[y_corrected < thr] = 0
@@ -165,12 +163,13 @@ def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1,
     onoff[y_corrected > 0] = 1
 
     if normalize:
-        y, Nan, Nan = NormalizeData(y)
+        y, Nan, Nan = normalize_data(y)
     else:
-        y_corrected = DeNormalizeData(y_corrected, minv, maxv)
+        y_corrected = de_normalize_data(y_corrected, minv, maxv)
     return y_corrected, onoff, y
 
-def generate_continous_label_array(raw_data, events):
+
+def generate_continous_label_array(raw_data, events, sfreq=1):
     """
     given an array of events, this function returns sample-by-sample
     label information of raw_date
@@ -181,6 +180,8 @@ def generate_continous_label_array(raw_data, events):
     events : array, shape(n_events,2)
         Events that were found by the function 'create_events_array'.
         The first column contains the event time in samples and the second column contains the event-id.
+    sfreq : float/int
+        Sampling frequency. Optional, default=1
 
     Returns
     -------
@@ -195,11 +196,12 @@ def generate_continous_label_array(raw_data, events):
     stop_event_time = events[mask_stop, 0]
 
     for i in range(len(start_event_time)):
-        range_up = np.arange(int(np.round(start_event_time[i] * sf)), int(np.round(stop_event_time[i] * sf)))
+        range_up = np.arange(int(np.round(start_event_time[i] * sfreq)), int(np.round(stop_event_time[i] * sfreq)))
         labels[range_up] = 1
     return labels
 
-def create_events_array(onoff, raw_data, sf=1):
+
+def create_events_array(onoff, raw_target_data, sf=1):
     """Create array indicating start and stop of events from squared signal of zeros and ones.
 
     Parameters
@@ -219,12 +221,12 @@ def create_events_array(onoff, raw_data, sf=1):
     """
 
     # create time vector
-    T = len(raw_target_channel) / sf
-    Df = len(raw_target_channel) / len(onoff)
-    Af = round(T - Df / sf)
+    tf = len(raw_target_data) / sf
+    df = len(raw_target_data) / len(onoff)
+    af = round(tf - df / sf)
 
     # time onoff_signal
-    t = np.arange(0.0, Af, Df / sf)
+    t = np.arange(0.0, af, df / sf)
 
     # diff to find up and down times
     onoff_dif = np.diff(onoff)
