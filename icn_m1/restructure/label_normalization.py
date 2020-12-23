@@ -1,5 +1,10 @@
+import os
+import warnings
+
 import cvxpy as cp
+from mne_bids import read_raw_bids, BIDSPath
 import numpy as np
+import pandas as pd
 from scipy import signal, sparse
 from scipy.sparse.linalg import spsolve
 
@@ -92,7 +97,7 @@ def baseline_rope(y, lam=1):
 
 
 def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1,
-                        normalize=True, decimate=1, verbose=True):
+                        normalize=True, decimate=1, niter=10, verbose=True):
     """
     Baseline correction is applied to the label.
 
@@ -144,7 +149,7 @@ def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1,
     if method == 'baseline_als':
         if verbose:
             print('>>baseline_als is being used')
-        z = baseline_als(y, lam=param[0], p=param[1])
+        z = baseline_als(y, lam=param[0], p=param[1], niter=niter)
     else:
         if verbose:
             print('>>baseline_rope is being used')
@@ -169,6 +174,54 @@ def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1,
     return y_corrected, onoff, y
 
 
+def clean_labels(bids_file, decimate=10, method='baseline_rope', param=1e4, thr=2e-1, niter=10):
+    """Baseline correct label array and stack cleaned label array onto raw data.
+
+    """
+    raw = read_raw_bids(bids_file, verbose=False)
+    fs = int(np.ceil(raw.info['sfreq']))
+    ieeg_raw = raw.get_data()
+    path_M1 = bids_file.copy().update(root=os.path.join(bids_file.root, "derivatives"), suffix="channels")
+    df_M1 = pd.read_csv(path_M1, sep="\t")
+    label_clean_list = []
+    label_onoff_list = []
+    events_list = []
+    ch_names_new = raw.ch_names.copy()
+
+    for i, m in enumerate(df_M1[df_M1['target'] == 1].index.tolist()):
+        # check if data should be flipped
+        sign = 1
+        if abs(min(ieeg_raw[m])) > max(ieeg_raw[m]):
+            sign = -1
+        target_channel_corrected, onoff, raw_target_channel = baseline_correction(y=sign * ieeg_raw[m], method=method,
+                                                                                  param=param, thr=thr, normalize=True,
+                                                                                  decimate=decimate, niter=niter,
+                                                                                  verbose=False)
+        # check detected picks and true picks
+        true_peaks, _ = signal.find_peaks(raw_target_channel, height=0, distance=0.5 * fs)
+        predicted_peaks, _ = signal.find_peaks(onoff)
+        print('True peaks: ' + str(len(true_peaks)) + ', predicted peaks: ' + str(len(predicted_peaks)))
+        if len(true_peaks) != len(predicted_peaks):
+            warnings.warn('Check the baseline parameters and threshold, it seems they should be optimized.')
+
+        if decimate != 1:
+            events = create_events_array(onoff, ieeg_raw[m])
+            label = generate_continous_label_array(ieeg_raw[m], events)
+        else:
+            events = create_events_array(onoff, ieeg_raw[m], 1)
+            label = onoff
+        label_clean_list.append(target_channel_corrected)
+        label_onoff_list.append(label)
+        events_list.append(events)
+        # naming
+        label_name = df_M1[(df_M1["target"] == 1)]["name"][m]
+        # change channel info
+        ch_names_new.append(label_name + '_CLEAN')
+    label_clean = np.array(label_clean_list)
+    label_onoff = np.array(label_onoff_list)
+    return label_clean, label_onoff, ch_names_new, events_list
+
+
 def generate_continous_label_array(raw_data, events, sfreq=1):
     """
     given an array of events, this function returns sample-by-sample
@@ -190,9 +243,9 @@ def generate_continous_label_array(raw_data, events, sfreq=1):
     """
     labels = np.zeros(raw_data.shape[0])
 
-    mask_start = events[:, 1] == 1
+    mask_start = events[:, -1] == 1
     start_event_time = events[mask_start, 0]
-    mask_stop = events[:, 1] == -1
+    mask_stop = events[:, -1] == -1
     stop_event_time = events[mask_stop, 0]
 
     for i in range(len(start_event_time)):
@@ -248,5 +301,5 @@ def create_events_array(onoff, raw_target_data, sf=1):
 
     id_event = np.asarray([1, -1] * len(time_start))
 
-    events = np.transpose(np.vstack((time_event, id_event))).astype(int)
+    events = np.transpose(np.vstack((time_event, np.zeros(time_event.shape[0]), id_event))).astype(int)
     return events

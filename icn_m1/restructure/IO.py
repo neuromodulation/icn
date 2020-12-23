@@ -430,6 +430,60 @@ def sess_right(sess):
     return sess_right
 
 
+def write_m1(file, cortex_ref, subcortex_ref, return_dataframe=False):
+    """Write "***_channels_M1.tsv" channel_file.
+
+    :param file: BIDSPath object of ieeg data or of *_channels.tsv channel_file
+    :param cortex_ref: String of cortex (ECoG) reference to be used, e.g. "average"
+    :param subcortex_ref: String of subcortex (LFP) reference to be used
+    :param return_dataframe: If False, return None (default=False).
+    :return df: dataframe of channels_M1.tsv
+    :return outpath: Filepath of channels_M1.tsv
+    """
+    try:
+        channel_file = file.copy().update(suffix="channels")
+    except AttributeError:
+        print("Please pass a valid BIDSPath object.")
+        return
+    df_channel = pd.read_csv(channel_file.fpath, sep="\t")
+    df = pd.DataFrame(0, index=range(len(list(df_channel['name']))),
+                      columns=['name', 'rereference', 'used', 'target', 'ECOG'])
+    df['name'] = list(df_channel['name'].copy(deep=True))
+
+    ch_mov = [ch_idx for ch_idx, ch in enumerate(df_channel['name']) if ch.startswith(('ANALOG', 'MOV', 'ROTA'))]
+    target = np.zeros(len(list(df_channel['name'])))
+    target[ch_mov] = 1
+    df['target'] = target.astype(int)
+
+    ch_used = [idx for idx, type in enumerate(df_channel['type']) if type in ["ECOG", "SEEG"]]
+    used = np.zeros(len(list(df_channel['name'])))
+    used[ch_mov] = 1
+    used[ch_used] = 1
+    df['used'] = used.astype(int)
+
+    ch_ecog = [idx for idx, type in enumerate(df_channel['type']) if type in ["ECOG"]]
+    ecog = np.zeros(len(list(df_channel['name'])))
+    ecog[ch_ecog] = 1
+    df['ECOG'] = ecog.astype(int)
+
+    rereference = ["" for x in range(len(list(df_channel['name'])))]
+    for ch_idx, type in enumerate(df_channel['type']):
+        if type == "ECOG":
+            rereference[ch_idx] = cortex_ref
+        if type == "SEEG":
+            rereference[ch_idx] = subcortex_ref
+    df['rereference'] = rereference
+
+    channel_file.update(root=os.path.join(channel_file.root, "derivatives"))
+    outpath = str(channel_file.fpath) + '_M1.tsv'
+    df.to_csv(outpath, sep='\t')
+
+    if return_dataframe:
+        return df, outpath
+    else:
+        return
+
+
 def write_all_M1_channel_files(settings, cortex_ref='average', subcortex_ref='-'):
     """
 
@@ -453,7 +507,8 @@ def write_all_M1_channel_files(settings, cortex_ref='average', subcortex_ref='-'
                 df['used'] = 1
                 df['name'] = list(df_channel['name'].copy(deep=True))
 
-                ch_mov = [ch_idx for ch_idx, ch in enumerate(df_channel['name']) if ch.startswith('MOV')]
+                ch_mov = [ch_idx for ch_idx, ch in enumerate(df_channel['name'])
+                          if ch.startswith(('ANALOG', 'MOV', 'ROTA'))]
                 target = np.zeros(len(list(df_channel['name'])))
                 target[ch_mov] = 1
                 df['target'] = target.astype(int)
@@ -519,16 +574,14 @@ def write_bids(bids_root, filename, outpath, set_chtypes=True):
         for ch_name in raw.info['ch_names']:
             if ch_name.startswith('ECOG'):
                 remapping_dict[ch_name] = 'ecog'
-            elif ch_name.startswith('LFP') or ch_name.startswith('STN'):
+            elif ch_name.startswith(('LFP', 'STN')):
                 remapping_dict[ch_name] = 'seeg'
             elif ch_name.startswith('EMG'):
                 remapping_dict[ch_name] = 'emg'
             # mne_bids cannot handle both eeg and ieeg channel types in the same data
             elif ch_name.startswith('EEG'):
                 remapping_dict[ch_name] = 'misc'
-            elif ch_name.startswith('MOV') or ch_name.startswith('ANALOG') or ch_name.startswith('ROT') \
-                    or ch_name.startswith('ACC') or ch_name.startswith('AUX') or ch_name.startswith('X') \
-                    or ch_name.startswith('Y') or ch_name.startswith('Z'):
+            elif ch_name.startswith(('MOV', 'ANALOG', 'ROT', 'ACC', 'AUX', 'X', 'Y', 'Z')):
                 remapping_dict[ch_name] = 'misc'
         raw.set_channel_types(remapping_dict, verbose=False)
 

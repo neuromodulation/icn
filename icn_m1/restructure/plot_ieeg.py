@@ -96,7 +96,7 @@ def plot_raw_data(bids_root, files, highpass=0.1, lowpass=90, decim="auto"):
 
     Args:
         bids_root (str/path): Root of BIDS folder.
-        files (list of strings): List of files to be plotted. Data must be structured according to BIDS.
+        files (list of strings/BIDSPaths): List of files to be plotted. Data must be structured according to BIDS.
         highpass (int/float): Value of highpass filter for plotting. Default=0.1.
         lowpass (int/float): Value of highpass filter for plotting. Default=90.
         decim: If decimation to enhance responsiveness is desired. Default="auto".
@@ -105,8 +105,11 @@ def plot_raw_data(bids_root, files, highpass=0.1, lowpass=90, decim="auto"):
     """
 
     for file in files:
-        subject, session, task, run = get_subject_sess_task_run(file)
-        bids_file = BIDSPath(subject=subject, session=session, task=task, run=run, datatype="ieeg",
-                             root=bids_root)
-        raw = read_raw_bids(bids_file, verbose=False)
+        try:
+            raw = read_raw_bids(file, verbose=False)
+        except RuntimeError:
+            subject, session, task, run = get_subject_sess_task_run(file)
+            file = BIDSPath(subject=subject, session=session, task=task, run=run, datatype="ieeg",
+                                 root=bids_root)
+            raw = read_raw_bids(file, verbose=False)
         raw.plot(block=True, highpass=highpass, lowpass=lowpass, decim=decim, scalings='auto', verbose=False)
