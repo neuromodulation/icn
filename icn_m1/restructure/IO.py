@@ -108,7 +108,7 @@ def get_all_files(path, suffix, get_bids=False, prefix=None, bids_root=None):
 
     Args:
         path (string)
-        suffix (iterable): e.g. ["vhdr", "edf"] or [".json"]
+        suffix (iterable): e.g. ["vhdr", "edf"] or ".json"
         get_bids (boolean): True if BIDS_Path type should be returned instead of string. Default: False
         bids_root (string/path): Path of BIDS root folder. Only required if get_bids=True.
         prefix (iterable): e.g. ["SelfpacedRota", "ButtonPress] (optional)
@@ -116,6 +116,12 @@ def get_all_files(path, suffix, get_bids=False, prefix=None, bids_root=None):
     Returns:
         filepaths (list of strings or list of BIDS_Path)
     """
+
+    if isinstance(suffix, str):
+        suffix = [suffix]
+    if isinstance(prefix, str):
+        prefix = [prefix]
+
     filepaths = []
     for root, dirs, files in os.walk(path):
         for file in files:
