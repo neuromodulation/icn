@@ -16,7 +16,7 @@ import mne_bids
 # save as mat / p 
 
 ### READ M1.tsv 
-PATH_M1 = r"C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\derivatives\sub-001\ses-20171014\ieeg\sub-001_ses-20171014_task-selfpacedforcewheelON_run-0_channels_M1.tsv"
+PATH_M1 = r"C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\derivatives\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR+MedOn+StimOff_run-4_channels_M1.tsv"
 df_M1 = pd.read_csv(PATH_M1, sep="\t")
 
 ### READ settings
@@ -26,16 +26,21 @@ settings["BIDS_path"] = "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin B
 
 ### SPECIFY iEEG file to read (INPUT to pipeline.py)
 ieeg_files = IO.get_all_files(settings['BIDS_path'], suffix='vhdr') # all files...
-run_file_to_read = "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\Datasets\\BIDS_Berlin\\sub-002\\ses-20200131\\ieeg\\sub-002_ses-20200131_task-selfpacedrotation202001310001_run-4_ieeg.vhdr"
-subject, sess, task, run = IO.get_subject_sess_task_run(os.path.basename(run_file_to_read))
+run_file_to_read = r'C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR_acq-MedOn+StimOff_run-4_ieeg.vhdr'
+#run_file_to_read = r'C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-speechSTN8REF20200131T105546_run-9_ieeg.vhdr'
+#subject, sess, task, run = IO.get_subject_sess_task_run(os.path.basename(run_file_to_read)) # can be deleted
 
 ### READ BIDS data
 #ieeg_raw, ch_names = IO.read_BIDS_file(run_file_to_read)
 
 ### BETTER: 
-bids_read_path = mne_bids.BIDSPath(subject=subject, session=sess, \
-                            task=task, run=run, datatype="ieeg", root=settings["BIDS_path"])
-raw_arr = mne_bids.read_raw_bids(bids_read_path)
+entities = mne_bids.get_entities_from_fname(run_file_to_read)
+bids_path = mne_bids.BIDSPath(subject=entities["subject"], session=entities["session"], task=entities["task"], \
+    run=entities["run"], acquisition=entities["acquisition"], datatype="ieeg", root=settings["BIDS_path"])
+
+#bids_read_path = mne_bids.BIDSPath(subject=subject, session=sess, \
+#                            task=task, run=run, datatype="ieeg", root=settings["BIDS_path"], acquisition="MedOn+StimOff")
+raw_arr = mne_bids.read_raw_bids(bids_path)
 ieeg_raw = raw_arr.get_data()
 
 ### READ Coordinates
@@ -85,22 +90,22 @@ def ieeg_raw_generator(ieeg_raw, df_M1, settings, fs):
             yield ieeg_raw[used_idx,cnt-offset_start:cnt]
 
 ### INITIALIZE generator 
-gen_ = ieeg_raw_generator(ieeg_raw[:,:20000], df_M1, settings, fs) # clip for timing reasons
+gen_ = ieeg_raw_generator(ieeg_raw[:,:5000], df_M1, settings, fs) # clip for timing reasons
 
 ### CALL run function 
 data_features = run_analysis.run(gen_, settings, df_M1, fs, line_noise, filter_fun, usemean_=True, normalize=True)
 
 # SAVE object
-
 dict_out = {
     "data_features" : data_features, 
-    "coord" : df_coord, 
-    "fs" : fs, 
+    "info" : raw_arr.info, 
+    "fs" : raw_arr.info["line_freq"],
+    "sfreq" : raw_arr.info["sfreq"],
     "settings" : settings, 
     "df_M1" : df_M1, 
     "filters used" : filter_fun
 }
 
-out_path = os.path.join(settings['out_path'],'sub_' + subject + '_sess_' + sess + '_task_' + task + '_run_' + run + '.p')
+out_path = os.path.join(settings['out_path'], os.path.basename(run_file_to_read[:-10]), '.p') # :-10 cuts off _ieeg.vhdr from file name
 with open(out_path, 'wb') as handle:
     pickle.dump(dict_out, handle, protocol=pickle.HIGHEST_PROTOCOL)    
