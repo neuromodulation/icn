@@ -40,7 +40,7 @@ def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
         for ii in index_channels:
             elec_channel = index_channels == ii
             ch = data_subcortex[elec_channel, :]
-            if df_M1['rereference'][ii] == 'none':
+            if np.isnan(df_M1['rereference'][ii]):
                 continue
             if df_M1['rereference'][ii] == 'average':
                 av = np.mean(data_subcortex[index_channels != ii, :], axis=0)
