@@ -91,7 +91,7 @@ def plot_feat(data, label_ar, fname, chans, feats, sfreq, epoch_len, xlim_l, xli
         fig.savefig(od.join(outpath, 'sub_' + subject +'_sess_' + session + '_task_' + task + '_run_' + run + '_features' + '.png'))
     plt.show()
 
-def plot_raw_data(bids_root, files, highpass=0.1, lowpass=90, decim="auto"):
+def plot_raw_data(files, bids_root=None, highpass=0.1, lowpass=90, decim="auto"):
     """Plot raw ieeg data of given files structured in BIDS compatible folder.
 
     Args:

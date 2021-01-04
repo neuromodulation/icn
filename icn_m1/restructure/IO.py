@@ -132,8 +132,9 @@ def get_all_files(path, suffix, get_bids=False, prefix=None, bids_root=None):
     if get_bids:
         bids_paths = []
         for filepath in filepaths:
+            entities = mne_bids.get_entities_from_fname(filepath)
             subject, session, task, run = get_subject_sess_task_run(filepath)
-            bids_path = mne_bids.BIDSPath(subject=subject, session=session, task=task, run=run, datatype="ieeg",
+            bids_path = mne_bids.BIDSPath(subject=entities["subject"], session=entities["session"], task=entities["task"], run=entities["run"], acquisition=entities["acquisition"], datatype="ieeg",
                                           root=bids_root)
             bids_paths.append(bids_path)
         return bids_paths
