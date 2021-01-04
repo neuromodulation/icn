@@ -64,3 +64,6 @@ Thumbs.db
 # IPython
 profile_default/
 */.ipynb_checkpoints/*
+
+# intellij configs
+.idea/
