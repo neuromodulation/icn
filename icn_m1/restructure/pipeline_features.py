@@ -15,7 +15,7 @@ import mne_bids
 # path of BIDS_run file to analyse 
 # save as mat / p 
 
-### READ M1.tsv 
+### READ M1.tsv now from derivatives folder
 PATH_M1 = r"C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\derivatives\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR+MedOn+StimOff_run-4_channels_M1.tsv"
 df_M1 = pd.read_csv(PATH_M1, sep="\t")
 
@@ -27,34 +27,16 @@ settings["BIDS_path"] = "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin B
 ### SPECIFY iEEG file to read (INPUT to pipeline.py)
 ieeg_files = IO.get_all_files(settings['BIDS_path'], suffix='vhdr') # all files...
 run_file_to_read = r'C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR_acq-MedOn+StimOff_run-4_ieeg.vhdr'
-#run_file_to_read = r'C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-speechSTN8REF20200131T105546_run-9_ieeg.vhdr'
-#subject, sess, task, run = IO.get_subject_sess_task_run(os.path.basename(run_file_to_read)) # can be deleted
 
-### READ BIDS data
-#ieeg_raw, ch_names = IO.read_BIDS_file(run_file_to_read)
-
-### BETTER: 
 entities = mne_bids.get_entities_from_fname(run_file_to_read)
 bids_path = mne_bids.BIDSPath(subject=entities["subject"], session=entities["session"], task=entities["task"], \
     run=entities["run"], acquisition=entities["acquisition"], datatype="ieeg", root=settings["BIDS_path"])
 
-#bids_read_path = mne_bids.BIDSPath(subject=subject, session=sess, \
-#                            task=task, run=run, datatype="ieeg", root=settings["BIDS_path"], acquisition="MedOn+StimOff")
 raw_arr = mne_bids.read_raw_bids(bids_path)
 ieeg_raw = raw_arr.get_data()
 
-### READ Coordinates
-# EDIT: coordinates are read though the mne_bids read_raw_bids function
-#df_coord = pd.read_csv(os.path.join(os.path.dirname(run_file_to_read), \
-#                                    "sub-"+subject+"_electrodes.tsv"), sep="\t")
-
-### READ sampling frequency (could be done by mne_bids.read_raw_bids)
-fs=IO.read_run_sampling_frequency(run_file_to_read)[0] 
-fs = int(np.ceil(fs))
-
-### READ line noise (could be done by mne_bids.read_raw_bids)
+fs= int(np.ceil(raw_arr.info["sfreq"])) #IO.read_run_sampling_frequency(run_file_to_read)[0] 
 line_noise = int(raw_arr.info["line_freq"])
-#line_noise = IO.read_line_noise(settings['BIDS_path'], subject) # line noise is a column in the participants.tsv
 
 ### CALCULATE filter
 # well here I needed t add to the filter_len 1, need to recheck if that's every time neccessary!
