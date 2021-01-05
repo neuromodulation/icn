@@ -1,54 +1,48 @@
 import json
 import os
 import warnings
-
 import numpy as np
 import pandas as pd
 import pybv
 from scipy.signal import find_peaks
-
 import IO
 import label_normalization
+import mne_bids
 
 # reads saved feature file by pipeline_features 
-# reads M1, settings, dat 
+# reads M1 file and settings 
 
-# READ M1.tsv
-PATH_M1 = "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\Datasets\\BIDS Berlin\\sub-002\\ses-20200131\\ieeg\\sub-002_ses-20200131_task-selfpacedrotation202001310001_run-4_channels_M1.tsv"
+ADD_CLEAN_LABEL_TOBIDS = False
+Decimate = 10
+
+### READ M1.tsv now from derivatives folder
+PATH_M1 = r"C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\derivatives\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR+MedOn+StimOff_run-4_channels_M1.tsv"
 df_M1 = pd.read_csv(PATH_M1, sep="\t")
 
-# READ settings
-with open('settings/settings.json', 'rb') as f:
-    settings = json.load(f)
-settings[
-    "BIDS_path"] = "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\Datasets\\BIDS Berlin"
+### READ settings
+with open('settings\\settings.json', 'rb') as f:
+        settings = json.load(f)
 
 # SPECIFY iEEG file to read (INPUT to pipeline.py)
-ieeg_files = IO.get_all_files(settings['bids_path'], [".vhdr", ".edf"])  # all files...
-run_file_to_read = "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\Datasets\\BIDS Berlin\\sub-002\\ses-20200131\\ieeg\\sub-002_ses-20200131_task-selfpacedrotation202001310001_run-4_ieeg.vhdr"
-subject, sess, task, run = IO.get_subject_sess_task_run(os.path.basename(run_file_to_read))
+ieeg_files = IO.get_all_files(settings['BIDS_path'], [".vhdr", ".edf"])  # all files
+run_file_to_read = r'C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR_acq-MedOn+StimOff_run-4_ieeg.vhdr'
 
-# READ BIDS data
-ieeg_raw, ch_names = IO.read_bids_file(run_file_to_read)
+entities = mne_bids.get_entities_from_fname(run_file_to_read)
+bids_path = mne_bids.BIDSPath(subject=entities["subject"], session=entities["session"], task=entities["task"], \
+    run=entities["run"], acquisition=entities["acquisition"], datatype="ieeg", root=settings["BIDS_path"])
 
-# READ Coordinates
-df_coord = pd.read_csv(os.path.join(os.path.dirname(run_file_to_read), "sub-" + subject + "_electrodes.tsv"), sep="\t")
+raw_arr = mne_bids.read_raw_bids(bids_path)
+ieeg_raw = raw_arr.get_data()
 
-# READ sampling frequency (could be done by mne_bids.read_raw_bids)
-fs = IO.read_run_sampling_frequency(run_file_to_read)[0]
-fs = int(np.ceil(fs))
-
-# READ line noise (could be done by mne_bids.read_raw_bids)
-line_noise = IO.read_line_noise(settings['bids_path'], subject)  # line noise is a column in the participants.tsv
+fs= int(np.ceil(raw_arr.info["sfreq"]))
+line_noise = int(raw_arr.info["line_freq"])
 
 # ESTIMATE baseline correction
 label_clean = np.empty((sum(df_M1['target'] == 1), ieeg_raw.shape[1]),
                        dtype=object)
 label_onoff = np.empty((sum(df_M1['target'] == 1), ieeg_raw.shape[1]),
                        dtype=object)
-ch_names_new = ch_names.copy()
-ADD_CLEAN_LABEL_TOBIDS = False
-Decimate = 10
+ch_names_new = raw_arr.ch_names
 
 for i, m in enumerate(df_M1[df_M1['target'] == 1].index.tolist()):
     # check if data should be flipped
@@ -82,7 +76,7 @@ data = np.vstack((ieeg_raw, label_clean))
 
 if ADD_CLEAN_LABEL_TOBIDS:  # --> all this should be checked
     file_name = run_file_to_read[:-5]
-    out_path = settings['BIDS_path'] + 'sub-' + subject + '/ses-' + sess + '/ieeg'
+    out_path = settings['BIDS_path'] + 'sub-' + entities["subject"] + '/ses-' + entities["session"] + '/ieeg'
     pybv.write_brainvision(data=data, sfreq=fs, ch_names=ch_names_new,
                            fname_base=file_name,
                            folder_out=out_path,
