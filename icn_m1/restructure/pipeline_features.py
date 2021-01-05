@@ -11,9 +11,18 @@ import run_analysis
 import pickle
 import mne_bids
 
-#### INPUTS TO PIPELINE 
-# path of BIDS_run file to analyse 
-# save as mat / p 
+'''
+Inputs to pipeline
+ - run file 
+ - M1_derivative file 
+ - correct settings in settings/settings.json
+
+ the M1 file describes how data should be preprocessed 
+  - if a channel is used 
+  - which channel is a predictor 
+  - how data is rereferenced 
+  - specify which channel is ECOG 
+'''
 
 ### READ M1.tsv now from derivatives folder
 PATH_M1 = r"C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\derivatives\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR+MedOn+StimOff_run-4_channels_M1.tsv"
@@ -22,10 +31,9 @@ df_M1 = pd.read_csv(PATH_M1, sep="\t")
 ### READ settings
 with open('settings\\settings.json', 'rb') as f:
         settings = json.load(f)
-settings["BIDS_path"] = "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\Datasets\\BIDS_Berlin"
 
 ### SPECIFY iEEG file to read (INPUT to pipeline.py)
-ieeg_files = IO.get_all_files(settings['BIDS_path'], suffix='vhdr') # all files...
+ieeg_files = IO.get_all_files(settings['BIDS_path'], suffix='vhdr') # read all files
 run_file_to_read = r'C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR_acq-MedOn+StimOff_run-4_ieeg.vhdr'
 
 entities = mne_bids.get_entities_from_fname(run_file_to_read)
@@ -35,16 +43,19 @@ bids_path = mne_bids.BIDSPath(subject=entities["subject"], session=entities["ses
 raw_arr = mne_bids.read_raw_bids(bids_path)
 ieeg_raw = raw_arr.get_data()
 
-fs= int(np.ceil(raw_arr.info["sfreq"])) #IO.read_run_sampling_frequency(run_file_to_read)[0] 
+fs= int(np.ceil(raw_arr.info["sfreq"]))
 line_noise = int(raw_arr.info["line_freq"])
 
 ### CALCULATE filter
-# well here I needed t add to the filter_len 1, need to recheck if that's every time neccessary!
+# well here I needed to add to the filter_len 1, need to recheck if that's every time neccessary!
 filter_fun = filter.calc_band_filters(settings['frequencyranges'], sample_rate=fs, filter_len=fs+1)
 
 ### DEFINE generator
 def ieeg_raw_generator(ieeg_raw, df_M1, settings, fs):
-    """[summary]
+    """
+
+    This generator function mimics online data acquisition. 
+    The df_M1 selected raw channels are iteratively sampled with fs.  
 
     Args:
         ieeg_raw (np array): shape (channels, time)
@@ -88,6 +99,6 @@ dict_out = {
     "filters used" : filter_fun
 }
 
-out_path = os.path.join(settings['out_path'], os.path.basename(run_file_to_read[:-10]), '.p') # :-10 cuts off _ieeg.vhdr from file name
+out_path = os.path.join(settings['out_path'], os.path.basename(run_file_to_read[:-10])+'.p') # :-10 cuts off _ieeg.vhdr from file name
 with open(out_path, 'wb') as handle:
     pickle.dump(dict_out, handle, protocol=pickle.HIGHEST_PROTOCOL)    
