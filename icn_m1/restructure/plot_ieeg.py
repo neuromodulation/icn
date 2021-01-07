@@ -1,7 +1,7 @@
 import os.path as od
 
 from matplotlib import pyplot as plt
-from mne_bids import BIDSPath, read_raw_bids
+from mne_bids import BIDSPath, read_raw_bids, get_entities_from_fname
 import numpy as np
 from scipy import stats
 
@@ -111,8 +111,8 @@ def plot_raw_data(files, bids_root=None, highpass=0.1, lowpass=90, decim="auto")
         try:
             raw = read_raw_bids(file, verbose=False)
         except RuntimeError:
-            subject, session, task, run = get_subject_sess_task_run(file)
-            file = BIDSPath(subject=subject, session=session, task=task, run=run, datatype="ieeg",
-                                 root=bids_root)
+            entities = get_entities_from_fname(file)
+            file = BIDSPath(subject=entities["subject"], session=entities["session"], task=entities["task"],
+                            run=entities["run"], acquisition=entities["acquisition"], datatype="ieeg", root=bids_root)
             raw = read_raw_bids(file, verbose=False)
         raw.plot(block=True, highpass=highpass, lowpass=lowpass, decim=decim, scalings='auto', verbose=False)

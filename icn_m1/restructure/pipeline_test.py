@@ -29,6 +29,9 @@ with open(os.path.join('settings/settings-RK.json'), 'rb') as f:
 ieeg_files = IO.get_all_files(settings['bids_path'], suffix=[".vhdr", ".edf"], get_bids=True,
                               bids_root=settings['bids_path'], prefix=["SelfpacedRotation"], verbose=True)
 
+#### Plot iEEG files for inspeection
+plot_ieeg.plot_raw_data(ieeg_files, settings['bids_path'], lowpass=150)
+
 #### SPECIFY iEEG file to read (INPUT to pipeline.py)
 run_file_to_read = ieeg_files[1]
 
@@ -48,7 +51,7 @@ fs = int(np.ceil(sfreq))
 line_noise = raw.info['line_freq']
 
 ### READ Coordinates
-df_coord = pd.read_csv(os.path.join(os.path.dirname(run_file_to_read), "sub-"+subject+"_electrodes.tsv"), sep="\t")
+#df_coord = pd.read_csv(os.path.join(os.path.dirname(run_file_to_read), "sub-"+subject+"_electrodes.tsv"), sep="\t")
 
 ### CALCULATE filter
 filter_fun = features.calc_band_filters(settings['frequencyranges'], sample_rate=fs, filter_len='1000ms')
@@ -92,12 +95,13 @@ def ieeg_raw_generator(ieeg_raw, df_M1, settings, fs, include_label=False):
             yield ieeg_raw[used_idx, cnt - offset_start:cnt]
 
 ### INITIALIZE generator
-gen_ = ieeg_raw_generator(ieeg_raw[:,:], df_M1, settings, fs) # clip for timing reasons
+gen_ = ieeg_raw_generator(ieeg_raw[:,:], df_M1, settings, fs, include_label=True) # clip for timing reasons
 
 ### CALL run function
 start = time.time()
-data_features, label = run_analysis.run(gen_, settings, df_M1, fs, line_noise, filter_fun, use_mean=True,normalize=True,
-                                        methods=['bandpass', 'mobility', 'complexity'], include_label=True)
+data_features, label = run_analysis.run(gen_, settings, df_M1, fs, line_noise, filter_fun, use_mean=True,
+                                        normalize=True, methods=['bandpass', 'mobility', 'complexity'],
+                                        include_label=True)
 end = time.time()
 print(f'{round(end - start, 3)} seconds elapsed.')
 
@@ -129,3 +133,5 @@ dict_out = {
 out_path = os.path.join(settings['out_path'],'sub_' + subject + '_sess_' + sess + '_task_' + task + '_run_' + run + '.p')
 with open(out_path, 'wb') as handle:
     pickle.dump(dict_out, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+raw.plot()
