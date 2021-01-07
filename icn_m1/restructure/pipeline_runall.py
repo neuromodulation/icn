@@ -1,6 +1,6 @@
 import sys
 sys.path.insert(1, '/home/victoria/icn/icn_m1/')
-import filter
+import features
 import IO
 import settings
 import projection
@@ -181,7 +181,7 @@ def run_vhdr_file(s):
         
         # get filter coef?
         
-        filter_fun = filter.calc_band_filters(settings['frequencyranges'], sample_rate=sf, filter_len=filter_len)
+        filter_fun = features.calc_band_filters(settings['frequencyranges'], sample_rate=sf, filter_len=filter_len)
     
         offset_start = int((sf/seglengths[0]) / (sf/settings['resamplingrate']))
         

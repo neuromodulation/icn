@@ -1,6 +1,31 @@
+import mne
 import numpy as np
 import pandas as pd
-import IO
+
+
+def notch_filt(data, sfreq, filt_freq):
+    """Notch filter data at given freq and its 2 superior harmonics using mne's filter.notch_filter function.
+
+    Parameters
+    ----------
+    data : array
+        The Signal to be filtered. The last dimension is filtered.
+    sfreq : int/float
+        The sampling frequency of data.
+    filt_freq : int/float
+        The frequency the notch_filter is applied at.
+
+    Returns
+    -------
+    data_filtered : array, shape like input data
+        Notch-filtered signal.
+    """
+    data_filtered = mne.filter.notch_filter(x=data, Fs=sfreq, trans_bandwidth=7,
+                                            freqs=np.arange(filt_freq, 4 * filt_freq, filt_freq),
+                                            fir_design='firwin', verbose=False, notch_widths=1,
+                                            filter_length=data.shape[-1] - 1)
+    return data_filtered
+
 
 def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
     """
@@ -40,13 +65,13 @@ def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
         for ii in index_channels:
             elec_channel = index_channels == ii
             ch = data_subcortex[elec_channel, :]
-            if np.isnan(df_M1['rereference'][ii]):
+            if df_M1['rereference'][ii] == 'none' or pd.isnull(df_M1['rereference'][ii]):
                 continue
             if df_M1['rereference'][ii] == 'average':
                 av = np.mean(data_subcortex[index_channels != ii, :], axis=0)
                 new_data_subcortex[idx] = ch-av
             else:
-                index=[]
+                index = []
                 ref_channels = df_M1['rereference'][ii].split('+')
 
                 for j in range(len(ref_channels)):
@@ -55,14 +80,13 @@ def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
                                          ' are not part of the recording channels.')
                     index.append(channels_name.index(ref_channels[j]))
 
-                new_data_subcortex[idx] = ch - np.mean(ieeg_batch[index,:], axis=0)
+                new_data_subcortex[idx] = ch - np.mean(ieeg_batch[index, :], axis=0)
             idx = idx + 1
-        new_data[index_channels,:] = new_data_subcortex
+        new_data[index_channels, :] = new_data_subcortex
     else:
         new_data_subcortex = None
 
-    cortex_exists = any(df_M1[(df_M1["used"] == 1) & (df_M1["target"] == 0)
-                                 & (df_M1["ECOG"] == 1)].index)
+    cortex_exists = any(df_M1[(df_M1["used"] == 1) & (df_M1["target"] == 0) & (df_M1["ECOG"] == 1)].index)
     if cortex_exists:
         index_channels = df_M1[(df_M1["used"] == 1) & (df_M1["target"] == 0) &
                                (df_M1["ECOG"] == 1)].index
@@ -71,8 +95,8 @@ def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
         idx = 0
         for i in index_channels:
             elec_channel = index_channels == i
-            ch = data_cortex[elec_channel,:]
-            if df_M1['rereference'][i] == 'none':
+            ch = data_cortex[elec_channel, :]
+            if df_M1['rereference'][i] == 'none' or pd.isnull(df_M1['rereference'][i]):
                 continue
             if df_M1['rereference'][i] == 'average':
                 av = np.mean(data_cortex[index_channels != i, :], axis=0)
@@ -82,7 +106,7 @@ def rereference(ieeg_batch, df_M1, get_cortex_subcortex=False):
                 ref_channels = df_M1['rereference'][i].split('+')
                 for j in range(len(ref_channels)):
                     if ref_channels[j] not in channels_name:
-                        raise ValueError('One or maybe more of the ref_channels are not part of the recording channels.')
+                        raise ValueError('One or more of the ref_channels are not part of the recorded channels.')
                     if ref_channels[j] == channels_name[i]:
                         raise ValueError('You cannot rereference to the same channel.')
                     index.append(channels_name.index(ref_channels[j]))

@@ -1,4 +1,4 @@
-import filter
+import features
 import numpy as np
 
 def create_events_array(onoff, raw_target_channel, sf):
@@ -146,7 +146,7 @@ def create_continous_epochs(fs, fs_new, offset_start, f_ranges, downsample_idx,
 
         for ch in range(num_channels):    
             dat_ = data_[ch, downsample_idx[c-offset_start]:downsample_idx[c]]
-            dat_filt = filter.apply_filter(dat_, sample_rate=fs, filter_fun=filter_fun, line_noise=line_noise, variance=False)
+            dat_filt = features.apply_filter(dat_, sample_rate=fs, filter_fun=filter_fun, line_noise=line_noise, variance=False)
             rf_data[new_idx,ch,:,:] = dat_filt.T
 
         
