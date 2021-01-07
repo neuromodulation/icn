@@ -22,7 +22,7 @@ import run_analysis
 # save as mat / p 
 
 #### READ settings
-with open(os.path.join('settings/settings-Copy1.json'), 'rb') as f:
+with open(os.path.join('settings/settings-RK.json'), 'rb') as f:
     settings = json.load(f)
 
 #### Find all iEEG files in BIDS Path

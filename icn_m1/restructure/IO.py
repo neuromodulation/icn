@@ -103,7 +103,7 @@ def get_files(subject_path, subfolder, endswith=".vhdr", verbose=True):
     return vhdr_files
 
 
-def get_all_files(path, suffix, get_bids=False, prefix=None, bids_root=None):
+def get_all_files(path, suffix, get_bids=False, prefix=None, bids_root=None, verbose=False):
     """Return all files in all (sub-)directories of path with given suffixes and prefixes (case-insensitive).
 
     Args:
@@ -127,14 +127,21 @@ def get_all_files(path, suffix, get_bids=False, prefix=None, bids_root=None):
         for file in files:
             for suff in suffix:
                 if file.endswith(suff.lower()):
-                    if prefix is not None:
-                        for pref in list(prefix):
+                    if not prefix:
+                        filepaths.append(os.path.join(root, file))
+                    else:
+                        for pref in prefix:
                             if pref.lower() in file.lower():
                                 filepaths.append(os.path.join(root, file))
-                    else:
-                        filepaths.append(os.path.join(root, file))
-    if not filepaths:
-        print("No files found.")
+
+    if verbose:
+        if not filepaths:
+            print("No corresponding files found.")
+        else:
+            print('Corresponding files found:')
+            for idx, file in enumerate(filepaths):
+                print(idx, ':', os.path.basename(file))
+    bids_paths = filepaths
     if get_bids:
         bids_paths = []
         for filepath in filepaths:
@@ -142,9 +149,7 @@ def get_all_files(path, suffix, get_bids=False, prefix=None, bids_root=None):
             bids_path = mne_bids.BIDSPath(subject=entities["subject"], session=entities["session"], task=entities["task"], run=entities["run"], acquisition=entities["acquisition"], datatype="ieeg",
                                           root=bids_root)
             bids_paths.append(bids_path)
-        return bids_paths
-    else:
-        return filepaths
+    return bids_paths
 
 
 def get_all_bids_paths(path, suffix, prefix=None):
@@ -436,13 +441,14 @@ def sess_right(sess):
     return sess_right
 
 
-def write_m1(file, cortex_ref, subcortex_ref, return_dataframe=False):
+def write_m1(file, cortex_ref, subcortex_ref, return_dataframe=False, overwrite=False):
     """Write "***_channels_M1.tsv" channel_file.
 
     :param file: BIDSPath object of ieeg data or of *_channels.tsv channel_file
     :param cortex_ref: String of cortex (ECoG) reference to be used, e.g. "average"
     :param subcortex_ref: String of subcortex (LFP) reference to be used
-    :param return_dataframe: If False, return None (default=False).
+    :param return_dataframe: If False, return None (default is False).
+    :param overwrite: boolean. If True overwrite existing file. (default is False)
     :return df: dataframe of channels_M1.tsv
     :return outpath: Filepath of channels_M1.tsv
     """
@@ -481,8 +487,16 @@ def write_m1(file, cortex_ref, subcortex_ref, return_dataframe=False):
     df['rereference'] = rereference
 
     channel_file.update(root=os.path.join(channel_file.root, "derivatives"))
-    outpath = str(channel_file.fpath) + '_M1.tsv'
-    df.to_csv(outpath, sep='\t')
+    if os.path.exists(channel_file.fpath):
+        outpath = channel_file.fpath
+        if overwrite:
+            os.remove(outpath)
+            df.to_csv(outpath, sep='\t')
+        else:
+            print(f"The file already exists. Please set overwrite to True.\nFilepath: {outpath}")
+    else:
+        outpath = str(channel_file.fpath) + '_M1.tsv'
+        df.to_csv(outpath, sep='\t')
 
     if return_dataframe:
         return df, outpath

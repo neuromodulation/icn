@@ -1,0 +1,13 @@
+{
+    "bids_path": "/Users/richardkoehler/Charité - Universitätsmedizin Berlin/Interventional Cognitive Neuromodulation - Data/Datasets/BIDS_Berlin",
+    "out_path": "/Users/richardkoehler/OneDrive - Charité - Universitätsmedizin Berlin/BIDS Berlin derivatives/", 
+    "resamplingrate": 10, 
+    "max_dist_cortex": 20,
+    "max_dist_subcortex": 5,
+    "normalization_time": 10, 
+    "frequencyranges": [[4, 8], [8, 12], [13, 20], [20, 35], [60, 80], [90, 200]], 
+    "featurelabels": ["theta", "alpha", "low beta", "high beta", "low gamma", "HFA"],
+    "seglengths": [1, 2, 2, 3, 10, 10],
+    "clip_low" : -3,
+    "clip_high" : 3
+}
