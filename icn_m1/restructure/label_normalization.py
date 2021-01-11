@@ -106,11 +106,11 @@ def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1,
     y : array/np.array
         raw signal to be corrected
     method : string, optional
-        two possible method for baseline correction are allowed 'baseline_rope'
-        and 'baseline_als'. See documentation of each method. The default is
+        two possible methods for baseline correction are allowed 'baseline_rope'
+        and 'baseline_als'. See documentation of each methods. The default is
         'baseline_rope'.
     param : number or array of numbers, optional
-        parameters needed in each optimization method. If baseline_rope is
+        parameters needed in each optimization methods. If baseline_rope is
         being used, "param" refers to the regularization parameter.
         If baseline_als is being used  "param" should be a 2-lenght array where
         the first value is the regularization parameter and the second is the
@@ -140,10 +140,10 @@ def baseline_correction(y, method='baseline_rope', param=1e4, thr=2e-1,
         y = signal.decimate(y, decimate)
 
     if method == 'baseline_als' and np.size(param) != 2:
-        raise ValueError("If baseline_als method is desired, param should be a"
+        raise ValueError("If baseline_als methods is desired, param should be a"
                          "2 length object")
     if method == 'baseline_rope' and np.size(param) > 1:
-        raise ValueError("If baseline_rope method is desired, param should be"
+        raise ValueError("If baseline_rope methods is desired, param should be"
                          " a number")
 
     if method == 'baseline_als':

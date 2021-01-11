@@ -1,4 +1,4 @@
-import filter
+import features
 import numpy as np
 #import projection
 from scipy import sparse
@@ -32,7 +32,7 @@ def run(gen, seglengths, f_ranges, line_noise, fs, fs_new, filter_fun, num_chann
         # notch filter and feature estimation
         features_sample = np.zeros([num_channels,num_features])
         for ch_idx, ch in enumerate(np.arange(0,num_channels,1)):
-            dat_filt = filter.apply_filter(ieeg_batch[ch_idx,:], sample_rate=fs, filter_fun=filter_fun, line_noise=line_noise, seglengths=(fs/seglengths).astype(int))
+            dat_filt = features.apply_filter(ieeg_batch[ch_idx, :], sample_rate=fs, filter_fun=filter_fun, line_noise=line_noise, seglengths=(fs / seglengths).astype(int))
             features_sample[ch_idx,:] = dat_filt
         
         feature_arr = np.concatenate((feature_arr, np.expand_dims(features_sample, axis=0)), axis=0)

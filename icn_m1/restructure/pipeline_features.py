@@ -1,4 +1,4 @@
-import filter
+import features
 import IO
 import sys
 import numpy as np
@@ -48,7 +48,7 @@ line_noise = int(raw_arr.info["line_freq"])
 
 ### CALCULATE filter
 # well here I needed to add to the filter_len 1, need to recheck if that's every time neccessary!
-filter_fun = filter.calc_band_filters(settings['frequencyranges'], sample_rate=fs, filter_len=fs+1)
+filter_fun = features.calc_band_filters(settings['frequencyranges'], sample_rate=fs, filter_len=fs + 1)
 
 ### DEFINE generator
 def ieeg_raw_generator(ieeg_raw, df_M1, settings, fs):
