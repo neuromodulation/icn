@@ -1,6 +1,10 @@
+addpath C:\code\spm12
+spm('defaults','fmri')
+addpath C:\code\wjn_toolbox
+
 matlabbatch=[];
-matlabbatch{1}.spm.stats.factorial_design.dir = {'C:\tmp\connectomics_ROIs\SPM_random_effect'};
-matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.name = 'dMRI';
+matlabbatch{1}.spm.stats.factorial_design.dir = {'C:\tmp\connectomics_ROIs\SPM_random_effect_fMRI'};
+matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.name = 'fMRI';
 matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.dept = 0;
 matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.variance = 1;
 matlabbatch{1}.spm.stats.factorial_design.des.fblock.fac.gmsca = 0;
@@ -12,15 +16,20 @@ files = dir('C:\tmp\connectomics_ROIs\fMRI\*')
 
 folder = 'C:\tmp\connectomics_ROIs\fMRI\';
 %folder = 'C:\tmp\connectomics_ROIs\dMRI\';
+
+% sort files
+ffiles = sort({files(:).name}');
+files = sort_nat(ffiles);  % from https://de.mathworks.com/matlabcentral/fileexchange/10959-sort_nat-natural-order-sort
+
 cnt = 0;
 for sub = 0:14
     for sess = {'left', 'right'}
         file_cnt = 0;
         cellarr = [];
         for file = 1:size(files,1)
-            % f = files{file};
-            
-            f = files(file).name;
+            % f = files{file};    
+            f = files(file);
+            f = f{1};
             if size(f,2) < 3
                 continue
             end
@@ -59,3 +68,5 @@ matlabbatch{1}.spm.stats.factorial_design.globalm.glonorm = 1;
 spm('defaults', 'FMRI');
 spm_jobman('run', matlabbatch);
 
+% signficant clusters in sensorimotor, cerebellar, parietal and striatal
+% locations
