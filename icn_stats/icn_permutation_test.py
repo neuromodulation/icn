@@ -9,7 +9,7 @@ import pandas as pd
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
-### Write this as a function
+
 def permutationTestSpearmansRho(x, y, plot_=True, x_unit=None, p=5000):
     """
     Calculate permutation test for multiple repetitions of Spearmans Rho
@@ -145,3 +145,55 @@ def permutationTest_relative(x, y, plot_=True, x_unit=None, p=5000):
         plt.show()
 
     return gT, p_val
+
+def cluster_wise_p_val_correction(p_arr, p_sig=0.05, num_permutations=100):
+    """
+
+    Based on: https://github.com/neuromodulation/wjn_toolbox/blob/4745557040ad26f3b8498ca5d0c5d5dece2d3ba1/mypcluster.m
+    https://garstats.wordpress.com/2018/09/06/cluster/
+
+    Obtain cluster-wise corrected p values.
+
+    p_arr (np.array) : ndim, can be time series or image
+    p_sig (float) : significance level
+    num_permutations (int) : number of random permutations of cluster comparisons
+
+    returns:
+    p (float) : significance level of highest cluster
+    p_min_index : indices of significant samples
+    """
+    labels, num_clusters = measure.label(p_arr<p_sig, return_num=True)
+
+    # loop through clusters of p_val series or image
+    index_cluster = {}
+    p_cluster_sum = np.zeros(num_clusters)
+    for cluster_i in range(num_clusters):
+        index_cluster[cluster_i] = np.where(labels == cluster_i+1)[0] # first cluster is assigned to be 1 from measure.label
+        p_cluster_sum[cluster_i] = np.sum(np.array(1-p_arr)[index_cluster[cluster_i]])
+    p_min = np.max(p_cluster_sum) # p_min corresponds to the most unlikely cluster
+    p_min_index = index_cluster[np.argmax(p_cluster_sum)]
+
+    # loop through random permutation cycles
+    r_per_arr = np.zeros(num_permutations)
+    for r in range(num_permutations):
+        r_per = np.random.randint(low=0, high=p_arr.shape[0], size=p_arr.shape[0])
+
+        labels, num_clusters = measure.label(p_arr[r_per]<p_sig, return_num=True)
+
+        index_cluster = {}
+        p_cluster_sum = np.zeros(num_clusters)
+        for cluster_i in range(num_clusters):
+            index_cluster[cluster_i] = np.where(labels == cluster_i+1)[0] # first cluster is assigned to be 1 from measure.label
+            p_cluster_sum[cluster_i] = np.sum(np.array(1-p_arr[r_per])[index_cluster[cluster_i]])
+        r_per_arr[r] = np.max(p_cluster_sum) # corresponds to the most unlikely cluster
+
+        sorted_r =  np.sort(r_per_arr)
+
+    def find_arg_nearest(array, value):
+        array = np.asarray(array)
+        idx = (np.abs(array - value)).argmin()
+        return idx
+
+    p = 1 - find_arg_nearest(sorted_r, p_min) / num_permutations
+
+    return p, p_min_index
