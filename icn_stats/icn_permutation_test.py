@@ -146,7 +146,7 @@ def permutationTest_relative(x, y, plot_=True, x_unit=None, p=5000):
 
     return gT, p_val
 
-def cluster_wise_p_val_correction(p_arr, p_sig=0.05, num_permutations=100):
+def cluster_wise_p_val_correction(p_arr, p_sig=0.05, num_permutations=10000):
     """
 
     Based on: https://github.com/neuromodulation/wjn_toolbox/blob/4745557040ad26f3b8498ca5d0c5d5dece2d3ba1/mypcluster.m
