@@ -5,9 +5,35 @@
     "max_dist_cortex": 20, 
     "max_dist_subcortex": 5, 
     "normalization_time": 10, 
-    "frequencyranges": [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200]],
-    "featurelabels": ["theta", "alpha", "low beta", "high beta", "all beta", "low gamma", "HFA", "all gamma"],
-    "seglengths": [1, 2, 2, 3, 3, 3, 10, 10, 10], 
-    "clip_low" : -3,
-    "clip_high" : 3
+    "FrequencyRanges": [[4, 8], [8, 12], [13, 20], [20, 35], [13, 35], [60, 80], [90, 200], [60, 200], [200, 300]],
+    "FeatureLabels": ["theta", "alpha", "low beta", "high beta", "all beta", "low gamma", "HFA", "all gamma", "high HFA"],
+    "Seglengths": [1, 2, 2, 3, 3, 3, 10, 10, 10, 10], 
+    "BandpowerMethod" : {
+        "BandpassFilter" : True, 
+        "Wavelet" : False,
+    },
+    "BandpowerFeatures" : {
+        "Activity" : True, 
+        "Mobility" : True,
+        "Complexity" : True, 
+    },
+    "RawHjorthParams" : True,
+    "SharpwaveFilter": {
+        "bp_low_cutoff" : 5, 
+        "bp_high_cutoff" : 90
+    },
+    "Sharpwave" : {
+        "MaxTroughProminence" : True,
+        "MaxPeakProminence" : True,
+        "MaxTroughSharpness" : True, 
+        "MaxPeakSharpness" : True, 
+        "MeanTroughSharpness" : True,
+        "MeanPeakSharpness" : True,
+    }, 
+    "KalmanfilterParams" : {
+        "Tp" : 0.1, 
+        "sigma_w" : 0.7, 
+        "sigma_v" : 1
+    },
+    "KalmanfilterFrequencybands" : [False,False,False,True,True,True,True,True,True]
 }
