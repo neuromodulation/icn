@@ -134,21 +134,28 @@ def get_all_files(path, suffix, get_bids=False, prefix=None, bids_root=None, ver
                             if pref.lower() in file.lower():
                                 filepaths.append(os.path.join(root, file))
 
-    if verbose:
-        if not filepaths:
-            print("No corresponding files found.")
-        else:
-            print('Corresponding files found:')
-            for idx, file in enumerate(filepaths):
-                print(idx, ':', os.path.basename(file))
     bids_paths = filepaths
     if get_bids:
+        if not bids_root:
+            print("Warning: No root folder given. Please pass bids_root parameter to create a complete BIDS_Path object.")
         bids_paths = []
         for filepath in filepaths:
             entities = mne_bids.get_entities_from_fname(filepath)
-            bids_path = mne_bids.BIDSPath(subject=entities["subject"], session=entities["session"], task=entities["task"], run=entities["run"], acquisition=entities["acquisition"], datatype="ieeg",
-                                          root=bids_root)
-            bids_paths.append(bids_path)
+            try:
+                bids_path = mne_bids.BIDSPath(subject=entities["subject"], session=entities["session"], task=entities["task"], run=entities["run"], acquisition=entities["acquisition"], datatype="ieeg", root=bids_root)
+            except ValueError as err:
+                print(f"ValueError while creating BIDS_Path object for file {filepath}: {err}")
+            else:
+                bids_paths.append(bids_path)
+
+    if verbose:
+        if not bids_paths:
+            print("No corresponding files found.")
+        else:    
+            print('Corresponding files found:')
+            for idx, file in enumerate(bids_paths):
+                print(idx, ':', os.path.basename(file))
+                
     return bids_paths
 
 
