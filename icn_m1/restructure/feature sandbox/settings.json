@@ -1,5 +1,5 @@
 {
-    "BIDS_path":  "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\Datasets\\BIDS_Berlin",
+    "BIDS_path":  "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\Datasets\\BIDS_Berlin\\rawdata_Berlin\\",
     "out_path": "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\Datasets\\BIDS_Berlin\\derivatives\\prelim\\", 
     "resampling_rate": 10, 
     "max_dist_cortex": 20, 
