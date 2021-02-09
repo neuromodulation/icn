@@ -2,10 +2,10 @@
 this is a tool to relabel any file, filecontent or direcotry based on regular expressions
 made by Jonathan Vanhoecke for the Neumann ICN Lab
 01/01/2021
-
+update: 09/02/2021
 '''
-literal=False
-doyouwanttkinter=False
+literal=True
+doyouwanttkinter=True
 #get target folder
 path_target_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Tiantan\conversion_room\rawdata"
 #path_target_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Tiantan\conversion_room\electrodes"
@@ -79,7 +79,10 @@ def setgo1():
     window.destroy()
 
     if len(target_expression_list)!=len(change_into_list):
-        error("len target_expression must be equal to len change into")
+        if len(target_expression_list)==1:
+            change_into_list=[''] # which means you will remove the target expression
+        else:
+            error("len target_expression must be equal to len change into")
 
 
 
