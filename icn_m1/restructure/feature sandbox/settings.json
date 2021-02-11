@@ -11,7 +11,8 @@
         "notch_filter" : true,
         "bandpass_filter" : true, 
         "raw_hjorth" : true,
-        "sharpwave_analysis" : true
+        "sharpwave_analysis" : true, 
+        "return_raw" : true
     },
 
     "normalization_settings": {
