@@ -60,11 +60,14 @@ def run(gen, features, settings, df_M1):
             feature_series = features.estimate_features(raw_norm) # last normalized index
         else: 
             feature_series = features.estimate_features(ieeg_batch) # last normalized index
-        feature_series["time"] = cnt_samples + offset # ms
-         
+        
         if cnt_samples == 0:
-            feature_arr = pd.DataFrame([feature_series])
             cnt_samples += int(features.fs)
+            feature_series["time"] = offset # ms
+            feature_arr = pd.DataFrame([feature_series])
+            
         else:
-            feature_arr = feature_arr.append(feature_series, ignore_index=True)
             cnt_samples += int(features.fs / fs_new)
+            feature_series["time"] = cnt_samples*1000/features.fs # ms
+            feature_arr = feature_arr.append(feature_series, ignore_index=True)
+            

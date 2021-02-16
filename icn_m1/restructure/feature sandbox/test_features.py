@@ -9,7 +9,7 @@ import os
 
 if __name__ == "__main__":
 
-    PATH_VHDR = r'C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\rawdata_Berlin\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR_acq-MedOn+StimOff_run-4_ieeg.vhdr'
+    PATH_RUN = r'C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\rawdata_Berlin\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR_acq-MedOn+StimOff_run-4_ieeg.vhdr'
     PATH_M1 = r'C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\derivatives\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR_acq-MedOn+StimOff_run-4_channels_M1.tsv'
 
     df_M1 = pd.read_csv(PATH_M1, sep="\t")
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     with open('settings.json', encoding='utf-8') as json_file:
         settings = json.load(json_file)
 
-    entities = mne_bids.get_entities_from_fname(PATH_VHDR)
+    entities = mne_bids.get_entities_from_fname(PATH_RUN)
     bids_path = mne_bids.BIDSPath(subject=entities["subject"], session=entities["session"], task=entities["task"], \
         run=entities["run"], acquisition=entities["acquisition"], datatype="ieeg", root=settings["BIDS_path"])#root=settings["BIDS_path"])#
     raw_arr = mne_bids.read_raw_bids(bids_path)
@@ -27,7 +27,7 @@ if __name__ == "__main__":
     line_noise = int(raw_arr.info["line_freq"])
     ch_names = df_M1[(df_M1["used"] == 1) & (df_M1["target"] == 0)]["name"]
 
-    LIMIT_ = 30000
+    LIMIT_ = 100000
     gen = generator.ieeg_raw_generator(ieeg_raw[:,:LIMIT_], df_M1, settings, fs) # clip for timing reasons 
 
     features_ = features.Features(s=settings, fs=fs, line_noise=line_noise, channels=ch_names)
@@ -47,4 +47,9 @@ if __name__ == "__main__":
     else: 
         print("label dimensions don't match, saving downsampled label extra")
 
-    df_.to_pickle(os.path.join(settings["out_path"]))
+    df_.to_pickle(os.path.join(settings["out_path"], os.path.basename(PATH_RUN)+"_FEATURES.p"))
+    # save used settings and M1 df as well 
+    with open(os.path.join(settings["out_path"], os.path.basename(PATH_RUN)+'_SETTINGS.json'), 'w') as f:
+        json.dump(settings, f)
+
+    df_M1.to_pickle(settings["out_path"]+"df_M1.py")

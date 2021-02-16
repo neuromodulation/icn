@@ -1,18 +1,18 @@
 {
     "BIDS_path":  "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\Datasets\\BIDS_Berlin\\rawdata_Berlin\\",
-    "out_path": "C:\\Users\\ICN_admin\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - Data\\Datasets\\BIDS_Berlin\\derivatives\\prelim\\", 
+    "out_path": "C:\\Users\\ICN_admin\\Documents\\Decoding_Toolbox\\Präsi_1502\\write_out_bandpower\\", 
     "resampling_rate": 10, 
     "max_dist_cortex": 20, 
     "max_dist_subcortex": 5,
     "methods" : {
         "normalization" : true,
-        "kalman_filter" : false,
+        "kalman_filter" : true,
         "re_referencing" : true,
         "notch_filter" : true,
         "bandpass_filter" : true, 
-        "raw_hjorth" : true,
+        "raw_hjorth" : false,
         "sharpwave_analysis" : false, 
-        "return_raw" : true
+        "return_raw" : false
     },
 
     "normalization_settings": {
@@ -24,7 +24,7 @@
         "Tp" : 0.1, 
         "sigma_w" : 0.7, 
         "sigma_v" : 1,
-        "frequency_bands" : [false,false,false,true,true,true,true,true,true]
+        "frequency_bands" : [false,false,false,false,false,true,true,true,true]
     },
 
     "bandpass_filter_settings": {
@@ -33,8 +33,8 @@
             "segment_lengths": [1, 2, 2, 3, 3, 3, 10, 10, 10, 10],
             "bandpower_features": {
             "activity" : true, 
-            "mobility" : false,
-            "complexity" : false 
+            "mobility" : true,
+            "complexity" : true 
             }
     },
 
