@@ -26,7 +26,7 @@ def run(gen, features, settings, df_M1):
 
     fs_new = int(settings["resampling_rate"])
     normalize_time = int(settings["normalization_settings"]["normalization_time"])
-
+    offset = int(1000 * settings["bandpass_filter_settings"]["segment_lengths"][0]) # ms
     cnt_samples = 0
 
     if settings["methods"]["normalization"] is True:
@@ -60,7 +60,8 @@ def run(gen, features, settings, df_M1):
             feature_series = features.estimate_features(raw_norm) # last normalized index
         else: 
             feature_series = features.estimate_features(ieeg_batch) # last normalized index
-        
+        feature_series["time"] = cnt_samples + offset # ms
+         
         if cnt_samples == 0:
             feature_arr = pd.DataFrame([feature_series])
             cnt_samples += int(features.fs)

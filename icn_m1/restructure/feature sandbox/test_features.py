@@ -1,11 +1,11 @@
-import features
-import mne 
+import features 
 import numpy as np 
 import json
 import mne_bids
 import run_analysis
 import generator
 import pandas as pd
+import os
 
 if __name__ == "__main__":
 
@@ -27,10 +27,24 @@ if __name__ == "__main__":
     line_noise = int(raw_arr.info["line_freq"])
     ch_names = df_M1[(df_M1["used"] == 1) & (df_M1["target"] == 0)]["name"]
 
-    gen = generator.ieeg_raw_generator(ieeg_raw[:,:30000], df_M1, settings, fs) # clip for timing reasons 
+    LIMIT_ = 30000
+    gen = generator.ieeg_raw_generator(ieeg_raw[:,:LIMIT_], df_M1, settings, fs) # clip for timing reasons 
 
     features_ = features.Features(s=settings, fs=fs, line_noise=line_noise, channels=ch_names)
 
     # call now run_analysis.py 
     df_ = run_analysis.run(gen, features_, settings, df_M1)
 
+    #resample_label 
+    ind_label = np.where(df_M1["target"] == 1)[0]
+    dat_ = ieeg_raw[ind_label, int(fs*settings["bandpass_filter_settings"]["segment_lengths"][0]):LIMIT_]
+    label_downsampled = dat_[:, ::int(np.ceil(fs / settings["resampling_rate"]))]
+
+    # and add to df 
+    if df_.shape[0] == label_downsampled.shape[1]:
+        for idx, label_ch in enumerate(df_M1["name"][ind_label]):
+            df_[label_ch] = label_downsampled[idx, :]
+    else: 
+        print("label dimensions don't match, saving downsampled label extra")
+
+    df_.to_pickle(os.path.join(settings["out_path"]))

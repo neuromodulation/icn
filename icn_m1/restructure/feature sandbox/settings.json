@@ -6,12 +6,12 @@
     "max_dist_subcortex": 5,
     "methods" : {
         "normalization" : true,
-        "kalman_filter" : true,
+        "kalman_filter" : false,
         "re_referencing" : true,
         "notch_filter" : true,
         "bandpass_filter" : true, 
         "raw_hjorth" : true,
-        "sharpwave_analysis" : true, 
+        "sharpwave_analysis" : false, 
         "return_raw" : true
     },
 
@@ -33,8 +33,8 @@
             "segment_lengths": [1, 2, 2, 3, 3, 3, 10, 10, 10, 10],
             "bandpower_features": {
             "activity" : true, 
-            "mobility" : true,
-            "complexity" : true 
+            "mobility" : false,
+            "complexity" : false 
             }
     },
 
