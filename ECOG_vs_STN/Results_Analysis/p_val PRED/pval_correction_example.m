@@ -1,4 +1,5 @@
 %addpath C:\code\wjn_toolbox
+addpath ('C:\\Users\\ICN_admin\\Documents\\wjn_toolbox')
 fname = 'p_val_rho_ECOGSTN.csv';
 T=readtable(fname);
 

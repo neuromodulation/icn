@@ -1,5 +1,4 @@
 import numpy as np 
-import pandas as pd
  
 def realtime_normalization(raw_arr, cnt_samples, normalize_samples, settings, fs):
 

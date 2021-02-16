@@ -1,6 +1,5 @@
 import numpy as np
 import rereference
-import features
 import realtime_normalization
 import pandas as pd
 import time
@@ -34,6 +33,7 @@ def run(gen, features, settings, df_M1):
         normalize_samples = int(normalize_time * features.fs)  # normalization is here made for the raw signal
         feature_arr = pd.DataFrame()
     start_time = time.time()
+    
     while True:
         ieeg_batch = next(gen, None)
         

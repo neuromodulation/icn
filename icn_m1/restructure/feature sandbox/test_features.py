@@ -28,7 +28,6 @@ if __name__ == "__main__":
     ch_names = df_M1[(df_M1["used"] == 1) & (df_M1["target"] == 0)]["name"]
 
     gen = generator.ieeg_raw_generator(ieeg_raw[:,:30000], df_M1, settings, fs) # clip for timing reasons 
-    
 
     features_ = features.Features(s=settings, fs=fs, line_noise=line_noise, channels=ch_names)
 

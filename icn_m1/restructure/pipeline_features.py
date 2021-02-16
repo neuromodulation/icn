@@ -24,13 +24,15 @@ Inputs to pipeline
   - specify which channel is ECOG 
 '''
 
+### READ settings
+with open('settings\\settings.json', 'rb') as f:
+        settings = json.load(f)
+
+
 ### READ M1.tsv now from derivatives folder
 PATH_M1 = r"C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\derivatives\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR+MedOn+StimOff_run-4_channels_M1.tsv"
 df_M1 = pd.read_csv(PATH_M1, sep="\t")
 
-### READ settings
-with open('settings\\settings.json', 'rb') as f:
-        settings = json.load(f)
 
 ### SPECIFY iEEG file to read (INPUT to pipeline.py)
 ieeg_files = IO.get_all_files(settings['BIDS_path'], suffix='vhdr') # read all files

@@ -1,5 +1,3 @@
-# read here M1 file 
-# AND from BIDS 
 
 
 def ieeg_raw_generator(ieeg_raw, df_M1, settings, fs):
