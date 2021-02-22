@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import kalmanfilter, filter, sharpwaves, bandpower, hjorth_raw
 import pandas as pd
 from multiprocessing import Process, Manager
+from numba import jit
 
 class Features:
     
@@ -74,7 +75,9 @@ class Features:
         '''
 
         #sequential approach
-        for ch_idx, ch in enumerate(self.ch_names):
+        #for ch_idx, ch in enumerate(self.ch_names):
+        for ch_idx in range(len(self.ch_names)):
+            ch = self.ch_names[ch_idx]
             features_ = self.est_ch(features_, ch_idx, ch)
 
         #return dict(features_) # this is necessary for multiprocessing approach 
@@ -92,6 +95,7 @@ class Features:
             features_[ch+"_raw"] = self.data[ch_idx, -1] # this basically just subsamles raw data
         
         if self.s["methods"]["sharpwave_analysis"] is True: 
-            features_ = sharpwaves.get_sharpwave_features(features_, self.s, self.fs, self.data[ch_idx,:], ch)
+            features_ = sharpwaves.get_sharpwave_features(features_, self.s, self.fs, \
+                self.data[ch_idx,:-int(np.ceil(self.fs / self.s["resampling_rate"]))], ch)  # take only last chunk of resamplerate
 
         return features_
