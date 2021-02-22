@@ -51,17 +51,14 @@ def apply_filter(dat_, filter_fun):
             (n_chan, n_fbands, filter_len) array conatining the filtered signal
             at each freq band, where n_fbands is the number of filter bands used to decompose the signal
         """    
-        filter_len = max(filter_fun.shape[1], dat_.shape[-1])
         if dat_.ndim == 1:
-            filtered = np.zeros((1, filter_fun.shape[0], filter_len))
+            filtered = np.zeros((1, filter_fun.shape[0], fs))
             for filt in range(filter_fun.shape[0]):
-                filtered[0, filt, :] = scipy.signal.convolve(filter_fun[filt, :], dat_, mode='same')
+                filtered[0, filt, :] = np.convolve(filter_fun[filt,:], dat_)[int(fs-fs/2):int(fs+fs/2)]
         elif dat_.ndim == 2:
-            filtered = np.zeros((dat_.shape[0], filter_fun.shape[0], filter_len))
-            for chan in range(dat_.shape[0]):
+            filtered = np.zeros((dat_.shape[0], filter_fun.shape[0], fs))
+            for chan in range(dat_.shape[1]):
                 for filt in range(filter_fun.shape[0]):
-                    filtered[chan, filt, :] = scipy.signal.convolve(filter_fun[filt, :], dat_[chan, :], mode='same')
-        else:
-            raise ValueError('dat_ needs to have either 1 or 2 dimensions. dat_ had {0} dimensions'.format(dat_.ndim))
-
+                    filtered[chan, filt, :] = np.convolve(filter_fun[filt, :], \
+                                                        dat_[:, chan])[int(fs-fs/2):int(fs+fs/2)] # mode="full"
         return filtered
