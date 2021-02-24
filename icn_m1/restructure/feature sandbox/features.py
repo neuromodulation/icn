@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import kalmanfilter, filter, sharpwaves, bandpower, hjorth_raw
 import pandas as pd
 from multiprocessing import Process, Manager
-from numba import jit
+import time
 
 class Features:
     
@@ -31,7 +31,7 @@ class Features:
                         continue
                     for fband_idx, f_band in enumerate(s["bandpass_filter_settings"]["feature_labels"]): 
                         if s["kalman_filter_settings"]["frequency_bands"][fband_idx] is True: 
-                            self.KF_dict[channel+"_"+bp_feature+"_"+f_band] = \
+                            self.KF_dict['_'.join([channel, bp_feature, f_band])] = \
                                 kalmanfilter.define_KF(s["kalman_filter_settings"]["Tp"], \
                                             s["kalman_filter_settings"]["sigma_w"], \
                                             s["kalman_filter_settings"]["sigma_v"])
@@ -55,17 +55,15 @@ class Features:
         features_ = dict()
         
         # notch filter data before feature estimation 
-        data = mne.filter.notch_filter(x=data, Fs=self.fs, trans_bandwidth=7,
-            freqs=np.arange(self.line_noise, 4*self.line_noise, self.line_noise),
-            fir_design='firwin', verbose=False, notch_widths=3, filter_length=data.shape[1]-1)
+        if self.s["methods"]["notch_filter"]:
+            data = mne.filter.notch_filter(x=data, Fs=self.fs, trans_bandwidth=7,
+                freqs=np.arange(self.line_noise, 4*self.line_noise, self.line_noise),
+                fir_design='firwin', verbose=False, notch_widths=3, filter_length=data.shape[1]-1)
         
-        if self.s["methods"]["bandpass_filter"] is True:
-            dat_filtered = filter.apply_filter(data, self.filter_fun) # shape (bands, time)
+        if self.s["methods"]["bandpass_filter"]:
+            dat_filtered = filter.apply_filter(data.T, self.filter_fun, self.fs) # shape (bands, time)
         else:
             dat_filtered = None
-        
-        self.data = data
-        self.dat_filtered = dat_filtered
 
         # mutliprocessing approach
         '''
@@ -78,24 +76,26 @@ class Features:
         #for ch_idx, ch in enumerate(self.ch_names):
         for ch_idx in range(len(self.ch_names)):
             ch = self.ch_names[ch_idx]
-            features_ = self.est_ch(features_, ch_idx, ch)
+            features_ = self.est_ch(features_, ch_idx, ch, dat_filtered, data)
 
         #return dict(features_) # this is necessary for multiprocessing approach 
         return features_
                     
-    def est_ch(self, features_, ch_idx, ch):
+    def est_ch(self, features_, ch_idx, ch, dat_filtered, data):
             
-        if self.s["methods"]["bandpass_filter"] is True:
-            features_ = bandpower.get_bandpower_features(features_, self.s, self.seglengths, self.dat_filtered, self.KF_dict, ch, ch_idx)
+        if self.s["methods"]["bandpass_filter"]:
+            features_ = bandpower.get_bandpower_features(features_, self.s, self.seglengths, dat_filtered, self.KF_dict, ch, ch_idx)
         
-        if self.s["methods"]["raw_hjorth"] is True: 
-            hjorth_raw.get_hjorth_raw(features_, self.data[ch_idx,:], ch)
+        if self.s["methods"]["raw_hjorth"]: 
+            hjorth_raw.get_hjorth_raw(features_, data[ch_idx,:], ch)
         
-        if self.s["methods"]["return_raw"] is True:
-            features_[ch+"_raw"] = self.data[ch_idx, -1] # this basically just subsamles raw data
+        if self.s["methods"]["return_raw"]:
+            features_['_'.join([ch,'raw'])] = data[ch_idx, -1] # data subsampling
         
-        if self.s["methods"]["sharpwave_analysis"] is True: 
+        if self.s["methods"]["sharpwave_analysis"]: 
+            print('time taken for sharpwave estimation')
+            start = time.process_time()
             features_ = sharpwaves.get_sharpwave_features(features_, self.s, self.fs, \
-                self.data[ch_idx,:-int(np.ceil(self.fs / self.s["resampling_rate"]))], ch)  # take only last chunk of resamplerate
-
+                data[ch_idx,-int(np.ceil(self.fs / self.s["resampling_rate"])):], ch)  # take only last resampling_rate
+            print(time.process_time() - start)
         return features_

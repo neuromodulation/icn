@@ -37,9 +37,6 @@ def run(gen, features, settings, df_M1):
     
     while True:
         ieeg_batch = next(gen, None)
-        
-        print(f"{str(np.round(cnt_samples / 1000,2))} seconds of data processed.")
-        print("took: "+str(round(time.time() - start_time, 2))+" seconds")
         start_time = time.time()
         if ieeg_batch is None:
             return feature_arr
@@ -55,12 +52,13 @@ def run(gen, features, settings, df_M1):
             else:
                 raw_arr = np.concatenate((raw_arr, ieeg_batch), axis=1)
             
-            raw_norm = realtime_normalization.realtime_normalization(raw_arr, cnt_samples, normalize_samples, settings, features.fs)
+            raw_norm = realtime_normalization.realtime_normalization(raw_arr, cnt_samples, normalize_samples, features.fs, \
+                    settings["normalization_settings"]["normalization_method"])
 
             # calculate features
-            feature_series = features.estimate_features(raw_norm) # last normalized index
+            feature_series = features.estimate_features(raw_norm) 
         else: 
-            feature_series = features.estimate_features(ieeg_batch) # last normalized index
+            feature_series = features.estimate_features(ieeg_batch)
         
         if cnt_samples == 0:
             cnt_samples += int(features.fs)
@@ -71,4 +69,6 @@ def run(gen, features, settings, df_M1):
             cnt_samples += int(features.fs / fs_new)
             feature_series["time"] = cnt_samples*1000/features.fs # ms
             feature_arr = feature_arr.append(feature_series, ignore_index=True)
+        print(f"{str(np.round(cnt_samples / 1000,2))} seconds of data processed.")
+        print("took: "+str(round(time.time() - start_time, 2))+" seconds")
             

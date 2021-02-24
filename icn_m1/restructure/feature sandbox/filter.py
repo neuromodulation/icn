@@ -1,6 +1,5 @@
 import mne 
 import numpy as np 
-import scipy
 
 def calc_band_filters(f_ranges, sample_rate, filter_len="1000ms", l_trans_bandwidth=4, h_trans_bandwidth=4):
     """"Calculate bandpass filters with adjustable length for given frequency ranges.
@@ -35,7 +34,7 @@ def calc_band_filters(f_ranges, sample_rate, filter_len="1000ms", l_trans_bandwi
     filter_fun = np.vstack(filter_list)
     return filter_fun
 
-def apply_filter(dat_, filter_fun):
+def apply_filter(dat_, filter_fun, fs):
         """Apply previously calculated (bandpass) filters to data.
 
         Parameters
