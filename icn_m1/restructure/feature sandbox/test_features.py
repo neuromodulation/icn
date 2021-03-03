@@ -6,7 +6,6 @@ import run_analysis
 import generator
 import pandas as pd
 import os
-import numba
 
 if __name__ == "__main__":
 

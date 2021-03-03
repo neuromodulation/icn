@@ -120,11 +120,11 @@ def get_sharpwave_features(features_, s, fs, data_, ch):
             return #continue
 
         if s["sharpwave_analysis_settings"]["MaxTroughProminence"] is True:
-            features_[ch+"_Sharpwave_MaxTroughProminence"] = df_sw["prominence"].max()
+            features_['_'.join([ch,'Sharpwave_MaxTroughprominence'])] = df_sw["prominence"].max()
         if s["sharpwave_analysis_settings"]["MaxTroughSharpness"] is True:
-            features_[ch+"_Sharpwave_MaxTroughSharpness"] = df_sw["sharpness"].max()
+            features_['_'.join([ch,'Sharpwave_MaxTroughSharpness'])] = df_sw["sharpness"].max()
         if s["sharpwave_analysis_settings"]["MeanTroughSharpness"] is True:
-            features_[ch+"_Sharpwave_MeanTroughSharpness"] = df_sw["sharpness"].mean()
+            features_['_'.join([ch, 'Sharpwave_MeanTroughSharpness'])] = df_sw["sharpness"].mean()
     if s["sharpwave_analysis_settings"]["MaxPeakProminence"] is True or \
         s["sharpwave_analysis_settings"]["MaxPeakSharpness"] is True or \
         s["sharpwave_analysis_settings"]["MeanPeakSharpness"] is True:                  
@@ -136,11 +136,11 @@ def get_sharpwave_features(features_, s, fs, data_, ch):
             return #continue
             
         if s["sharpwave_analysis_settings"]["MaxPeakProminence"] is True:
-            features_[ch+"_Sharpwave_MaxPeakprominence"] = df_sw["prominence"].max()
+            features_['_'.join([ch,'Sharpwave_MaxPeakprominence'])] = df_sw["prominence"].max()
         if s["sharpwave_analysis_settings"]["MaxPeakSharpness"] is True:
-            features_[ch+"_Sharpwave_MaxPeakSharpness"] = df_sw["sharpness"].max()
+            features_['_'.join([ch,'Sharpwave_MaxPeakSharpness'])] = df_sw["sharpness"].max()
         if s["sharpwave_analysis_settings"]["MeanPeakSharpness"] is True:
-            features_[ch+"_Sharpwave_MeanPeakSharpness"] = df_sw["sharpness"].mean()
+            features_['_'.join([ch, 'Sharpwave_MeanPeakSharpness'])] = df_sw["sharpness"].mean()
         # the sharpness ration between troughs and peaks could be added as well
 
     return features_

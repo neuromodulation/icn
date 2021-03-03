@@ -6,12 +6,12 @@
     "max_dist_subcortex": 5,
     "methods" : {
         "normalization" : true,
-        "kalman_filter" : false,
+        "kalman_filter" : true,
         "re_referencing" : true,
         "notch_filter" : true,
         "bandpass_filter" : true, 
         "raw_hjorth" : true,
-        "sharpwave_analysis" : false, 
+        "sharpwave_analysis" : true, 
         "return_raw" : true
     },
 
@@ -42,9 +42,9 @@
         "filter_low_cutoff" : 5, 
         "filter_high_cutoff" : 90,
         "MaxTroughProminence" : true,
-        "MaxPeakProminence" : true,
+        "MaxPeakProminence" : false,
         "MaxTroughSharpness" : true, 
-        "MaxPeakSharpness" : true, 
+        "MaxPeakSharpness" : false, 
         "MeanTroughSharpness" : true,
         "MeanPeakSharpness" : false, 
         "sharpness" : false
