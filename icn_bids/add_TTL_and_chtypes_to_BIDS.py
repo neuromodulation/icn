@@ -2,6 +2,7 @@ import os
 import mne
 import mne_bids
 import numpy as np
+import pybv
 from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = "all"
 def set_chtypes(vhdr_raw):
@@ -60,8 +61,10 @@ def preprocess_mov(mov_dat):
 
 
 path = r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_conversionroom\BIDS_Pittsburgh_Gripforce\rawdata"
+line_freq=60
 path = r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_conversionroom\BIDS_Beijing\rawdata"
-#outputpath= r"C:\Users\Jonathan\Documents\DATA\output"
+line_freq=50
+root= r"C:\Users\Jonathan\Documents\DATA\output"
 bids_root=path
 
 my_path_files = get_all_paths(path, ".vhdr")
@@ -70,10 +73,10 @@ for my_path_file in my_path_files:
     entities = mne_bids.get_entities_from_fname(my_file)
 
     bids_path = mne_bids.BIDSPath(subject=entities["subject"], session=entities["session"], task=entities["task"],
-                                          run=entities["run"], acquisition=entities["acquisition"], datatype="ieeg",
+                                          run=entities["run"], acquisition=entities["acquisition"], datatype="ieeg", suffix=entities["suffix"],
                                          extension='.vhdr', root=bids_root)
     raw = mne.io.read_raw_brainvision(my_path_file, preload=True)
-
+    raw.info["line_freq"]=line_freq
     if "Button" in entities["task"]:
         print(my_path_file)
 
@@ -86,6 +89,7 @@ for my_path_file in my_path_files:
             print(TTL_channel_name)
             MISCBUTTONPRESS = preprocess_mov(raw.get_data()[np.where(np.array(raw.ch_names) == matching)[0][0], :]) # gives a channel as output
             info = mne.create_info(["MISCBUTTONPRESS"], raw.info["sfreq"], ch_types='emg')
+            info["line_freq"]=line_freq
             raw_clean = mne.io.RawArray(np.expand_dims(MISCBUTTONPRESS, axis=0), info)
             #raw.add_channels([raw_clean])
             #raw_clean.load_data()
@@ -108,6 +112,14 @@ for my_path_file in my_path_files:
         raw = set_chtypes(raw)
         print('after')
         print(raw.get_channel_types())
-    raw.save(my_path_file, overwrite=True)
-    raw = mne.io.read_raw_brainvision(my_path_file, preload=False)
+    data=raw.get_data()
+    pybv.write_brainvision(data=data, sfreq=raw.info["sfreq"], ch_names=raw.info["ch_names"], fname_base='dummy_write', folder_out=root)
+    raw = mne.io.read_raw_brainvision(root + os.sep + "dummy_write.vhdr", preload=False)
+    raw.get_channel_types()
+
+    #root=r"C:\Users\Jonathan\Documents\DATA\output\BIDS_test"
+    #bids_path.update(root=root)
     mne_bids.write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    os.remove(root + os.sep +'dummy_write.vhdr')
+    os.remove(root + os.sep +'dummy_write.eeg')
+    os.remove(root + os.sep +'dummy_write.vmrk')
