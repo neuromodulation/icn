@@ -8,6 +8,7 @@ import pandas as pd
 
 import mne
 from mne_bids import read_raw_bids
+from mne_bids.copyfiles import copyfile_brainvision
 from pybv import write_brainvision
 
 import icn_tb as tb
@@ -30,35 +31,81 @@ def bids_rewrite_file(raw, bids_path, return_raw=False):
     raw_new : raw MNE object or None
         The newly written raw object.
     """
-    # this is necessary to ensure to write the correct BrainVision files
     bids_path.update(suffix=bids_path.datatype)
 
     data = raw.get_data()
     sfreq = raw.info['sfreq']
     ch_names = raw.ch_names
-    fname_base = bids_path.basename
-    folder_out = os.path.join(bids_path.directory, 'dummy')
+    fname = bids_path.basename
+    folder = bids_path.directory
     events, event_id = mne.events_from_annotations(raw)
     events_new = np.vstack((events[:, 0], events[:, 2])).T
 
+    # rewrite datafile
     write_brainvision(data=data, sfreq=sfreq, ch_names=ch_names,
-                      fname_base=fname_base, folder_out=folder_out,
+                      fname_base='dummy', folder_out=folder,
                       events=events_new)
-    # now delete and move files
     suffixes = ['.eeg', '.vhdr', '.vmrk']
-    orig_files = [os.path.join(bids_path.directory, bids_path.basename + suffix)
+    orig_files = [os.path.join(folder, fname + suffix)
                   for suffix in suffixes]
     for orig_file in orig_files:
         os.remove(orig_file)
-    new_files = [
-        os.path.join(bids_path.directory, 'dummy', bids_path.basename + suffix)
-        for suffix in suffixes]
-    for new_file, orig_file in zip(new_files, orig_files):
-        os.rename(new_file, orig_file)
-    os.rmdir(os.path.join(bids_path.directory, 'dummy'))
+    source_path = os.path.join(folder, 'dummy' + '.vhdr')
+    dest_path = os.path.join(folder, fname + '.vhdr')
+    copyfile_brainvision(source_path, dest_path)
+    dummy_files = [os.path.join(folder, 'dummy' + suffix)
+                   for suffix in suffixes]
+    for dummy_file in dummy_files:
+        os.remove(dummy_file)
 
+    # rewrite events.tsv
+    channels_path = bids_path.copy().update(suffix='channels')
+    channels_tsv = channels_path.fpath
+    df = pd.read_csv(channels_tsv, sep='\t', index_col=0)
+    old_chs = df.index.tolist()
+    add_chs = [ch for ch in raw.ch_names if ch not in old_chs]
+    description = {'seeg': 'StereoEEG', 'ecog': 'Electrocorticography',
+                   'eeg': 'Electroencephalography', 'emg': 'Electromyography',
+                   'misc': 'Miscellaneous', 'dbs': 'Deep Brain Stimulation'}
+    add_list = []
+    for add_ch in add_chs:
+        add_dict = {}
+        ch_type = raw.get_channel_types(picks=add_ch)[0]
+        add_dict.update({'type': ch_type.upper()})
+        add_dict.update({df.columns[i]: df.iloc[0][i]
+                         for i in range(0, len(df.columns))})
+        add_dict.update({'description': description.get(ch_type)})
+        add_list.append(add_dict)
+    index = pd.Index(add_chs, name='name')
+    df_add = pd.DataFrame(add_list, index=index)
+    df = df.append(df_add, ignore_index=False)
+    df = df.reindex(raw.ch_names)
+    os.remove(channels_tsv)
+    df.to_csv(os.path.join(folder, channels_path.basename + '.tsv'),
+              sep='\t', index=True)
+    # rewrite **electrodes.tsv
+    elec_files = []
+    for file in os.listdir(folder):
+        if file.endswith('_electrodes.tsv') and '_space-' in file:
+            elec_files.append(os.path.join(folder, file))
+    for elec_file in elec_files:
+        df = pd.read_csv(elec_file, sep='\t', index_col=0)
+        old_chs = df.index.tolist()
+        add_chs = [ch for ch in raw.ch_names if ch not in old_chs]
+        add_list = []
+        add_dict = {column: 'n/a' for column in df.columns}
+        for add_ch in add_chs:
+            add_list.append(add_dict)
+        index = pd.Index(add_chs, name='name')
+        df_add = pd.DataFrame(add_list, index=index)
+        df = df.append(df_add, ignore_index=False)
+        df = df.reindex(raw.ch_names)
+        os.remove(elec_file)
+        df.to_csv(os.path.join(elec_file), sep='\t', na_rep='n/a',
+                  index=True)
+    # check for success
+    raw = read_raw_bids(bids_path, verbose=False)
     if return_raw is True:
-        raw = read_raw_bids(bids_path)
         return raw
 
 
