@@ -68,17 +68,21 @@ def bids_rewrite_file(raw, bids_path, return_raw=False):
                    'eeg': 'Electroencephalography', 'emg': 'Electromyography',
                    'misc': 'Miscellaneous', 'dbs': 'Deep Brain Stimulation'}
     add_list = []
-    for add_ch in add_chs:
+    ch_types = raw.get_channel_types(picks=add_chs)
+    print(add_chs)
+    print(ch_types)
+    for idx, add_ch in enumerate(add_chs):
         add_dict = {}
-        ch_type = raw.get_channel_types(picks=add_ch)[0]
-        add_dict.update({'type': ch_type.upper()})
         add_dict.update({df.columns[i]: df.iloc[0][i]
                          for i in range(0, len(df.columns))})
-        add_dict.update({'description': description.get(ch_type)})
+        add_dict.update({'type': ch_types[idx].upper()})
+        add_dict.update({'description': description.get(ch_types[idx])})
         add_list.append(add_dict)
     index = pd.Index(add_chs, name='name')
     df_add = pd.DataFrame(add_list, index=index)
     df = df.append(df_add, ignore_index=False)
+    remov_chs = [ch for ch in old_chs if ch not in raw.ch_names]
+    df = df.drop(remov_chs)
     df = df.reindex(raw.ch_names)
     os.remove(channels_tsv)
     df.to_csv(os.path.join(folder, channels_path.basename + '.tsv'),
@@ -93,12 +97,15 @@ def bids_rewrite_file(raw, bids_path, return_raw=False):
         old_chs = df.index.tolist()
         add_chs = [ch for ch in raw.ch_names if ch not in old_chs]
         add_list = []
-        add_dict = {column: 'n/a' for column in df.columns}
         for add_ch in add_chs:
+            add_dict = {}
+            add_dict.update({column: 'n/a' for column in df.columns})
             add_list.append(add_dict)
         index = pd.Index(add_chs, name='name')
         df_add = pd.DataFrame(add_list, index=index)
         df = df.append(df_add, ignore_index=False)
+        remov_chs = [ch for ch in old_chs if ch not in raw.ch_names]
+        df = df.drop(remov_chs)
         df = df.reindex(raw.ch_names)
         os.remove(elec_file)
         df.to_csv(os.path.join(elec_file), sep='\t', na_rep='n/a',
