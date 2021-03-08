@@ -15,7 +15,7 @@ from pybv import write_brainvision
 import icn_tb as tb
 
 
-def get_electrodes(sub, ch_type, space, bids_path):
+def get_electrodes(sub, ch_type, space, bids_path, layout):
     """Returns pandas dataframe of electrodes of a given subject in a BIDS root directory
 
     Args:
@@ -23,11 +23,14 @@ def get_electrodes(sub, ch_type, space, bids_path):
         ch_type (string): BIDS specific channel type in channels.tsv
         space (string) : BIDS specific electrode space
         bids_path (string): BIDS root directory
+        layout (pybids BIDSLayout) : can be previously allocated to save time in repetitive iteration
 
     Returns:
         pandas dataframe: run concatenated electrode tsv dataframe for given subject and channel type
     """
-    layout = BIDSLayout(bids_path)
+
+    if layout is None:
+        layout = BIDSLayout(bids_path)
 
     channels = layout.get(subject=sub, extension='.tsv', suffix='channels')
     electrodes = layout.get(subject=sub, space=space, extension='.tsv', suffix='electrodes')
