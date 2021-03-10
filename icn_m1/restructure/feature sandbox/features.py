@@ -93,9 +93,9 @@ class Features:
             features_['_'.join([ch,'raw'])] = data[ch_idx, -1] # data subsampling
         
         if self.s["methods"]["sharpwave_analysis"]: 
-            print('time taken for sharpwave estimation')
-            start = time.process_time()
+            #print('time taken for sharpwave estimation')
+            #start = time.process_time()
             features_ = sharpwaves.get_sharpwave_features(features_, self.s, self.fs, \
                 data[ch_idx,-int(np.ceil(self.fs / self.s["resampling_rate"])):], ch)  # take only last resampling_rate
-            print(time.process_time() - start)
+            #print(time.process_time() - start)
         return features_
