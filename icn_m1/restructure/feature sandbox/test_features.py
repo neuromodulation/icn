@@ -12,7 +12,9 @@ if __name__ == "__main__":
     PATH_RUN = r'C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\rawdata_Berlin\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR_acq-MedOn+StimOff_run-4_ieeg.vhdr'
     PATH_M1 = r'C:\Users\ICN_admin\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\Datasets\BIDS_Berlin\derivatives\sub-002\ses-20200131\ieeg\sub-002_ses-20200131_task-SelfpacedRotationR_acq-MedOn+StimOff_run-4_channels_M1.tsv'
 
-    df_M1 = pd.read_csv(PATH_M1, sep="\t")
+    # write a wrapper if the M1 is not available with the following params: 
+    # select all channels that have ECoG + STN inside 
+    # select MOV / Analog / Rot as label 
 
     # read settings 
     with open('settings.json', encoding='utf-8') as json_file:
@@ -25,6 +27,9 @@ if __name__ == "__main__":
     ieeg_raw = raw_arr.get_data()
     fs = int(np.ceil(raw_arr.info["sfreq"]))
     line_noise = int(raw_arr.info["line_freq"])
+
+    df_M1 = pd.read_csv(PATH_M1, sep="\t") if os.path.isfile(PATH_M1) else set_M1(raw_arr.ch_names)
+
     ch_names = df_M1[(df_M1["used"] == 1) & (df_M1["target"] == 0)]["name"]
 
     LIMIT_LOW = 80000

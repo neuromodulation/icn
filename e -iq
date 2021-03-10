@@ -1,0 +1,2903 @@
+[33mcommit def5bff4972ea8a47c19f98ab904ca09213e8f72[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: timonmerk <timon.merk@charite.de>
+Date:   Wed Mar 10 17:52:25 2021 +0100
+
+    write clean Beijing
+
+[33mcommit 044d2676ca6ac8432dc2b62f7823a058b4c2b429[m
+Author: timonmerk <timon.merk@charite.de>
+Date:   Mon Mar 8 19:43:33 2021 +0100
+
+    add option for preload BIDSLayout
+
+[33mcommit c3c39e19b4f8c3ea3b665c3e64a04adb1f18e538[m
+Merge: 2a0d848 148f69a
+Author: timonmerk <timon.merk@u-blox.com>
+Date:   Mon Mar 8 19:16:11 2021 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit 2a0d848f8f4c0fe3fbc2ad6787f601a312c4fc7a[m
+Author: timonmerk <timon.merk@u-blox.com>
+Date:   Mon Mar 8 19:15:57 2021 +0100
+
+    add function to retrieve electrode positions for channel type
+
+[33mcommit 148f69ae2459970fd37b852167ed3974320c1a61[m
+Author: Mousa <mousa.saeed.m@gmail.com>
+Date:   Mon Mar 8 13:36:14 2021 +0100
+
+    Add files via upload
+    
+    linear model notebook
+
+[33mcommit 2142222d2bf8a45b6f26c69caf79a2e15b59ed31[m
+Author: mousa-saeed <mousa.saeed.m@gmail.com>
+Date:   Fri Mar 5 22:50:51 2021 +0100
+
+    self attention needs adoptation
+
+[33mcommit d30862c75bdb3e0373789b3703c1ea5853e95aee[m
+Author: Richard Koehler <richard.koehler@outlook.de>
+Date:   Fri Mar 5 11:22:17 2021 +0100
+
+    Update icn_bids.py
+    
+    Add deleting/renaming channels
+
+[33mcommit bec5df9c39e064394ad0c9261e943e049744eac7[m
+Author: Richard Koehler <richard.koehler@outlook.de>
+Date:   Fri Mar 5 10:56:33 2021 +0100
+
+    Update icn_bids.py
+    
+    Add functionality: rewrite .tsv files
+
+[33mcommit c749e5f82dbf9d643b22c1a62700cdb9c4522826[m
+Author: Richard Koehler <richard.koehler@outlook.de>
+Date:   Thu Mar 4 19:30:02 2021 +0100
+
+    Add bids_rewrite_file + PEP-8 correction
+
+[33mcommit 04a0441ad2f68ee8e1a82ea6dff68456cd8aad2d[m
+Author: Jonathan Vanhoecke <72917013+JonathanVHoecke@users.noreply.github.com>
+Date:   Thu Mar 4 13:00:38 2021 +0100
+
+    Update add_TTL_and_chtypes_to_BIDS.py
+
+[33mcommit ed6f2b60852400780b07098240df526f5ef7171a[m
+Author: mousa-saeed <mousa.saeed.m@gmail.com>
+Date:   Thu Mar 4 01:54:13 2021 +0100
+
+    added Deeplearningarchs folder
+
+[33mcommit cf0bed375418753ae0ee66e0deebfb21962b2b53[m
+Merge: 7b70b5d b0b04f8
+Author: Jonathan Vanhoecke <72917013+JonathanVHoecke@users.noreply.github.com>
+Date:   Wed Mar 3 20:39:51 2021 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit 7b70b5d726af7a544d8c035cca020207304b9503[m
+Author: Jonathan Vanhoecke <72917013+JonathanVHoecke@users.noreply.github.com>
+Date:   Wed Mar 3 20:38:36 2021 +0100
+
+    Create add_TTL_and_chtypes_to_BIDS.py
+
+[33mcommit b0b04f8f21afb11671af1506456e1c6a44d748aa[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Feb 24 18:31:26 2021 +0100
+
+    speed up sharpwave estimation
+
+[33mcommit 78aea1f706140dc48f932ad94b638bbc3763294c[m[33m ([m[1;31morigin/improve_performance[m[33m, [m[1;32mimprove_performance[m[33m)[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Feb 22 08:00:20 2021 +0100
+
+    change convolve due to performance speed
+
+[33mcommit b573f9ff51a21b098a4f257e43d2642b835cd995[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Feb 22 07:56:58 2021 +0100
+
+    optimize
+
+[33mcommit 19d1f83a25edd0c995700c21294afc99af14e058[m
+Merge: 7657ad7 7e3b146
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Feb 20 11:42:42 2021 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit 7657ad78aba763b5433de66b6b878a7e178cd408[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Feb 20 11:41:23 2021 +0100
+
+    add interpolation
+
+[33mcommit 7e3b146267a23b2cdb88eea0f3d5e6eb760475e8[m
+Author: Jonathan Vanhoecke <72917013+JonathanVHoecke@users.noreply.github.com>
+Date:   Fri Feb 19 19:39:45 2021 +0100
+
+    Add files via upload
+
+[33mcommit f723afa6d4451738274c31cbeb15b64bb5dbd5b3[m
+Author: Richard Koehler <richard.koehler@outlook.de>
+Date:   Fri Feb 19 11:12:34 2021 +0100
+
+    Beijing classification code
+
+[33mcommit d5e8f7b60f5234ab20f466fb2fcbde9ed6487c9d[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Feb 16 22:49:47 2021 +0100
+
+    add time stamp feature
+
+[33mcommit e4d900c99322adeab76bc352cb70d3d7264865d1[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Feb 16 02:34:46 2021 +0100
+
+    bug fix TODO: time adapt in run_analysis.py
+
+[33mcommit 77616e3ef671614c9a1f250cf6b84ce63b820823[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Feb 16 01:52:39 2021 +0100
+
+    extract feature modules
+
+[33mcommit 45e6b92987f566408be2ec72ef7f090f3b73fb35[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Feb 11 21:12:07 2021 +0100
+
+    implement multiprocessing
+
+[33mcommit 2a10318122b5a018e0f712136bf2fcba1d3b0579[m
+Author: Jonathan Vanhoecke <72917013+JonathanVHoecke@users.noreply.github.com>
+Date:   Tue Feb 9 16:53:36 2021 +0100
+
+    Update v20_relabeltool_Neumann_Lab.py
+
+[33mcommit c05def63a27c239286e3c75cafb523ceab9e7d4a[m
+Author: Jonathan Vanhoecke <72917013+JonathanVHoecke@users.noreply.github.com>
+Date:   Tue Feb 9 16:52:55 2021 +0100
+
+    Update v20_relabeltool_Neumann_Lab.py
+
+[33mcommit bef47f360edd67504afa561b6424740cd6884244[m
+Author: Jonathan Vanhoecke <72917013+JonathanVHoecke@users.noreply.github.com>
+Date:   Tue Feb 9 16:03:11 2021 +0100
+
+    Add files via upload
+
+[33mcommit 213ed5ee013eaebff69fb4d8041fef5e68eb876f[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Feb 5 12:19:43 2021 +0100
+
+    Removed folder from repository
+
+[33mcommit e090baab166b14c8614294c438322963455a1539[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Feb 5 12:17:47 2021 +0100
+
+    modularize feature estimation
+
+[33mcommit c085d461de0803dd1dbb691a44e10076f23f3e0d[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Feb 4 13:20:49 2021 +0100
+
+    add sandbox
+
+[33mcommit a28592a42bb69f05dac2e95ad09e4865201e9d83[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Tue Feb 2 19:24:33 2021 +0100
+
+    Add write_coordsystem
+
+[33mcommit a637db0dcd1e82f04e0feca053eaeddfd9c8ac0d[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Jan 29 14:12:59 2021 +0100
+
+    new settings structure
+
+[33mcommit 54d616ef835e86f55fc1657536bb0f7e5ff68aec[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Jan 29 14:09:23 2021 +0100
+
+    add adapted features
+
+[33mcommit be3270af64910709064f4ba2e02a3915a2aed320[m
+Author: Jonathan Vanhoecke <72917013+JonathanVHoecke@users.noreply.github.com>
+Date:   Tue Jan 26 11:07:38 2021 +0100
+
+    Add files via upload
+
+[33mcommit 77354038f86ef3e8ed753b1d58ebde219754dd39[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Jan 25 21:00:44 2021 +0100
+
+    example read write Peking
+
+[33mcommit 74268ac761ca7d6a7242fba4ab1386d7f3db6b99[m
+Author: Jonathan Vanhoecke <72917013+JonathanVHoecke@users.noreply.github.com>
+Date:   Mon Jan 25 20:58:19 2021 +0100
+
+    Add files via upload
+
+[33mcommit a3b81b22d01511f937d8339826193d96b13b8441[m
+Author: Jonathan Vanhoecke <72917013+JonathanVHoecke@users.noreply.github.com>
+Date:   Mon Jan 25 20:36:18 2021 +0100
+
+    Add files via upload
+
+[33mcommit 40645b34430b64f05701975a2b173c7f1bcb5065[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sun Jan 24 17:17:58 2021 +0100
+
+    clean stats folder
+
+[33mcommit 8cded528fbaff8a17cb045cfb6b9609dfc758b5a[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sun Jan 24 17:10:26 2021 +0100
+
+    adapt num rand rep
+
+[33mcommit 5f22e43ebd918864302e08ec91ac6746650abf29[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sun Jan 24 17:07:52 2021 +0100
+
+    append cluster wise pval correction
+
+[33mcommit 9f9ab954fda2a530970244d6b254cdaabf086e59[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Jan 22 14:50:28 2021 +0100
+
+    add Kalman Filter exploration
+
+[33mcommit 90e1d7b074648043ea4ad04b74467cd87a748baf[m
+Author: timonmerk <julian.neumann@charite.de>
+Date:   Wed Jan 20 14:25:22 2021 +0100
+
+    adapt connectomic fix
+
+[33mcommit ef2aea907fe59121a3a83d8a98d6495f2f2090fc[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Jan 19 10:41:46 2021 +0100
+
+    add random effect analysis
+
+[33mcommit 566cc3cface29273408fd710f33bfab1faff6080[m
+Author: timonmerk <julian.neumann@charite.de>
+Date:   Mon Jan 18 14:09:30 2021 +0100
+
+    add SPM Random Effect Analysis fMRI
+
+[33mcommit c5b8b83eba1637043d254ac3f971e81ed899cc03[m
+Author: Mousa <mousa.saeed.m@gmail.com>
+Date:   Fri Jan 15 01:00:50 2021 +0100
+
+    Add files via upload
+
+[33mcommit 9e1b1c0e0c2d7c5a70f80b24fa044d65cfa585ba[m
+Author: Mousa <mousa.saeed.m@gmail.com>
+Date:   Fri Jan 15 00:48:43 2021 +0100
+
+    Create .gitkeep
+
+[33mcommit 7bd925d106e69a484822cacf9ecfc1d7e4bfb851[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Jan 12 13:47:22 2021 +0100
+
+    update demo file
+
+[33mcommit 7c789505464254136a6cae0311d395d250d32ef3[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Jan 12 13:44:10 2021 +0100
+
+    change p val est
+
+[33mcommit c0699871eeb608b775fc2ffd2fd748150d204035[m
+Merge: 5878c4b 0464e9f
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Jan 11 20:18:02 2021 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit 5878c4bff59abb4d0b118d7ff136753832778e50[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Jan 11 20:17:32 2021 +0100
+
+    add BIDS MNE workflow example
+
+[33mcommit 0464e9fb4ed0744458b6a135fd96e24be1590e2a[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Thu Jan 7 18:50:01 2021 +0100
+
+    quick bugfix
+
+[33mcommit 21557161e6a20da0290f3f9168fd52762ae8e055[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Thu Jan 7 14:38:16 2021 +0100
+
+    Update IO + small changes
+
+[33mcommit f499bd68b9766f0442095730e40736918ad70468[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Thu Jan 7 14:36:26 2021 +0100
+
+    Restructur run_analysis and introduce new features
+
+[33mcommit 064bfcb73b19e9009c4bf13d02c1afd646dc0796[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Jan 5 18:07:22 2021 +0100
+
+    add pyrem
+
+[33mcommit 9743b8c7993bf2c950925a40bf6688d714c4b98f[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Jan 5 12:01:49 2021 +0100
+
+    adapt new BIDS read to pipeline_label
+
+[33mcommit 21b8f1d8e3436f4c9a9dd87f2ffd6fe28950fefa[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Jan 5 11:44:55 2021 +0100
+
+    improve comments
+
+[33mcommit d37b39c3cd72187b19a93cecaef794f2e7d62baa[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Jan 4 22:09:15 2021 +0100
+
+    read fs through raw + cleanup
+
+[33mcommit 4fde0efd8d0e195608d9856c366864771283375d[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Jan 4 22:02:18 2021 +0100
+
+    change coord output to MNE Array info
+
+[33mcommit ce361ed4db9b537df5a51ee58a197a2dee417ce3[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Jan 4 22:01:26 2021 +0100
+
+    change 'none' to python float('nan') check
+
+[33mcommit 7a5dbb04a31e1e3ad7cba2adf233fe165bd922fe[m
+Merge: a87c3a8 e782008
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Mon Jan 4 21:03:55 2021 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit a87c3a8815ccaab3b0939a029953c390aca5a2ff[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Mon Jan 4 21:03:38 2021 +0100
+
+    Update IO.py
+
+[33mcommit 8104ec28e77c1c29c1937c3cad3409e89cc8d88c[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Mon Jan 4 21:03:19 2021 +0100
+
+    delete files for merging
+
+[33mcommit e78200833f604fbedb355e8f5067b5db4dc71c58[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Jan 4 20:52:40 2021 +0100
+
+    delete vscode folder
+
+[33mcommit 70042832327f911432e533a0acc46b5ec7e010e0[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Jan 4 20:46:40 2021 +0100
+
+    allow suffix and prefix param to be str
+
+[33mcommit d202f68659cec883ebef9723ee4ffc8e9c7c5b77[m
+Author: Richard Koehler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Mon Jan 4 20:34:12 2021 +0100
+
+    Update .gitignore
+    
+    added # intellij configs
+
+[33mcommit 43d76a11623b132318eca80c7402df8aa9532e1f[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Mon Jan 4 19:23:43 2021 +0100
+
+    small updates
+
+[33mcommit f206ed6ce7668041cedfbe080e776ced26bfd8c1[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Wed Dec 23 15:42:22 2020 +0100
+
+    Create demo_events.ipynb
+
+[33mcommit 098135810d74d37b753fadd01ca4ea2d3272d6e4[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Wed Dec 23 15:08:17 2020 +0100
+
+    small function updates
+
+[33mcommit 9d7a7efbf800b51b67470aa5ba088655d118a809[m
+Merge: da0d286 eda6b25
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Mon Dec 21 22:42:22 2020 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit da0d286f017c315bd7751194f1949137e6800195[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Mon Dec 21 22:42:20 2020 +0100
+
+    small updates
+
+[33mcommit eda6b254497136fbeb41d5cc031901b08895eff6[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sun Dec 20 15:37:34 2020 +0100
+
+    delete gitignore folders
+
+[33mcommit a41ec0b34c6bfa028843b5fe99101187985a8c61[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sun Dec 20 15:30:53 2020 +0100
+
+    clean gitignore
+
+[33mcommit 4e9c7575ea71b2cf71f2c3d2ab60a228dc773086[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Fri Dec 18 18:44:25 2020 +0100
+
+    Small bugfixes, added functions
+
+[33mcommit 0933339d1e68bc1d977af9a91c619423e2f2ed7f[m
+Merge: a6c1577 96ca3da
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Mon Dec 14 16:48:41 2020 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit a6c1577c1040f31296be0dd4206a9f6d4dbcfaeb[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Mon Dec 14 16:48:06 2020 +0100
+
+    Update IO.py
+
+[33mcommit 96ca3da0092f2142cf444dc44013370173b94c86[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Dec 14 12:43:32 2020 -0300
+
+    add baseline correction to pipeline. Still missing saving to bids
+
+[33mcommit 66f5e78e231a07acfc4f131980d9d5f4d7cd6822[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Dec 14 12:40:57 2020 -0300
+
+    no rerefenrence is None
+
+[33mcommit 042ddab825c62ca9b5359df18893275d387935fc[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Dec 14 12:39:39 2020 -0300
+
+    change double forward slash to back slash for SO compatibility
+
+[33mcommit 4242d2c95bc4e13c7b7c39826d98f48b43e1ba01[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Dec 10 11:35:02 2020 -0300
+
+    fix bug when filtering user defined channels
+
+[33mcommit 830a26750ed724f0a918c300f4e55d1acd049660[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Dec 10 10:41:27 2020 -0300
+
+    rereference based on df_m1 for online implementations
+
+[33mcommit fc3bd1b3857e1b6afb5133144cdca5eeebcadc8c[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Dec 9 17:58:52 2020 +0100
+
+    add read for mne arr
+
+[33mcommit 09e6d3846f3599dfdd4af01e53634b5b2e904dea[m
+Merge: 3f6e4fc f436f2a
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Dec 9 17:48:27 2020 +0100
+
+    change mm to m
+
+[33mcommit 3f6e4fcd5951fda7989d6c29821ac34c173fdd0c[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Dec 9 17:47:13 2020 +0100
+
+    change mm to m
+
+[33mcommit f436f2a78adab3521ad6e5bf417dbfd0d4c21d5e[m
+Merge: 6136115 fc3eb23
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Wed Dec 9 17:04:56 2020 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit 6136115e59f00c7068709b9b96535556fa8f19c1[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Wed Dec 9 17:04:41 2020 +0100
+
+    Notebook with functions for movement classification
+
+[33mcommit fc3eb2352ff1b484295ab77a0da57fff726496d7[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Dec 9 16:51:08 2020 +0100
+
+    add STN to write_BIDS
+
+[33mcommit 4bb734f228d5b9d78789f073211f2f5832d100f2[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Wed Dec 9 15:45:37 2020 +0100
+
+    small update
+
+[33mcommit f90ac9f32c637ce26a4e5736d4787de64f54c45f[m
+Merge: 954400b cef5ca6
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Mon Dec 7 16:42:13 2020 +0100
+
+    Update write_coordsystem.ipynb
+
+[33mcommit 954400bd9b886a083bea3e55e98201f8a749ce25[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Mon Dec 7 16:40:40 2020 +0100
+
+    add write_bids function to IO.py
+
+[33mcommit cef5ca61231652d41d4601d17b27b773bf25b998[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Dec 7 09:00:08 2020 +0100
+
+    add write Pittsburgh coord
+
+[33mcommit e11de439231072cc000e479a191d1284a7472af5[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Fri Dec 4 15:52:59 2020 +0100
+
+    Create write_coordsystem.ipynb
+    
+    Write coordsystem.json in BIDS format using electrode localization file
+
+[33mcommit d8461b9d98e32acafa477ffe7c7c2653ec83572c[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Dec 4 13:36:14 2020 +0100
+
+    exclude nb checkpoints new
+
+[33mcommit f4c1fecdbcf579f17e1a57b2fad4c7e87c21844b[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Dec 4 13:35:44 2020 +0100
+
+    exclude nb checkpoints new
+
+[33mcommit 20a10a2e69666ae6a13d01419544c77fa6ec35ba[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Dec 4 13:03:44 2020 +0100
+
+    exclude nb checkpoints
+
+[33mcommit 075dea497717e128761c1e5a8dffd0f9ba259c71[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Dec 4 11:20:03 2020 +0100
+
+    adapt pipeline
+
+[33mcommit a73dabe59b15e857121135fe3854a7efffe67f4d[m
+Merge: 107bc8e b363237
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Thu Dec 3 17:41:04 2020 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit b3632370d1adb4148eff701d05baba9acbd9e289[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Dec 3 12:08:36 2020 -0300
+
+    create a new script for function related to data epoching
+
+[33mcommit 3fc0169631f5e63988c931b48a4d2e6b3c297432[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Dec 3 12:08:09 2020 -0300
+
+    improve function docstrings and remove non-related functions
+
+[33mcommit 107bc8ef92c702c4f537e2ae5302a05d6ff55aee[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Thu Dec 3 14:25:01 2020 +0100
+
+    Update IO.py
+
+[33mcommit 0c5ccc77eef816ff2fe921c258d5b4905cf402cd[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Tue Dec 1 19:58:51 2020 +0100
+
+    Update plot_ieeg.py
+    
+    quick update
+
+[33mcommit 778d4c8c27643500ea1fd3edec9f882779d79bc0[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Tue Dec 1 16:48:29 2020 +0100
+
+    Update plot_ieeg.py
+    
+    updated dependency
+
+[33mcommit 9b648c7e1bd9f14ed1a58f2069cc9c93266b9ad7[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Tue Dec 1 11:00:18 2020 +0100
+
+    Update settings.json
+    
+    added "featurelabels" for plotting purposes
+
+[33mcommit 1dfd9450b5fb238d351cbe1ced8976850c02fbdd[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Tue Dec 1 10:50:08 2020 +0100
+
+    Create plot_ieeg.py
+    
+    module for plotting ieeg data (e.g. features or time-frequency)
+
+[33mcommit a5410cf608615fb58658021b47165055beca44e6[m
+Merge: d3cab34 913a63e
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Tue Dec 1 09:20:16 2020 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit d3cab346a1a87287b70defd0de99fe4815b423d4[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Tue Dec 1 09:19:55 2020 +0100
+
+    Update IO.py
+    
+    get_sess_run_subject updated to inclued task
+
+[33mcommit 913a63ed0633b778d91860a5607ef864e3b82edd[m
+Author: neumann-wj <julian.neumann@charite.de>
+Date:   Mon Nov 30 18:40:48 2020 +0100
+
+    adapt pipeline
+
+[33mcommit 1042f9278c1317767caba72655a265f9fabb72e2[m
+Author: neumann-wj <julian.neumann@charite.de>
+Date:   Mon Nov 30 18:13:37 2020 +0100
+
+    adapt run
+
+[33mcommit a6991af80bb59af074283c0701629421bbcba2d9[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Nov 30 12:08:44 2020 +0100
+
+    start rewrite M1
+
+[33mcommit 6e86b15125bebb1bf3a401420546c8e8bbc437db[m
+Merge: a5ddb41 7ec10a4
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Nov 27 16:45:54 2020 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit a5ddb4147a77764813038b291129a3f6e573947f[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Nov 27 16:45:37 2020 +0100
+
+    segmented CV
+
+[33mcommit 7ec10a4fe6d9685c7a4a2652228641ac541f65fa[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Tue Nov 24 16:45:11 2020 +0100
+
+    Updated versions
+
+[33mcommit c5342711d5ada9fb9ec118eb11a60a5d19c5efe7[m
+Merge: 346194a abdd72a
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Tue Nov 24 16:42:22 2020 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit abdd72a7d2f9f2ea0d1989c986ad0ebb07f0e986[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Nov 24 00:38:24 2020 +0100
+
+    add label generator py
+
+[33mcommit a3f123507768faeba67f0901a27fee86149e4381[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Nov 23 23:10:30 2020 +0100
+
+    add label generator
+
+[33mcommit bf80ca0b3a41774f09cd35e2cf54ad9bb32259f9[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Nov 17 22:15:03 2020 +0100
+
+    CV non shuffle
+
+[33mcommit 625011b0be510f72aaab09e0cdbc58165f10b71b[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Nov 12 23:20:12 2020 +0100
+
+    Paper adapt
+
+[33mcommit d0d4be61ae5e80ef01f774346119601d10e17afc[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Nov 10 21:26:28 2020 +0100
+
+    adapt paper figures
+
+[33mcommit b7d5b3791586c99e720f19be230ffda8362a5138[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Nov 10 16:06:14 2020 +0100
+
+    add distance analysis
+
+[33mcommit 062fc05f3615f54e24292c9541d11b841f612790[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Nov 9 20:15:03 2020 +0100
+
+    adapt paper Figures
+
+[33mcommit c025b2839f40c9175fc3f04c2eb141b693fe72af[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Nov 4 20:38:48 2020 +0100
+
+    added TTL clean signal dataset Peking
+
+[33mcommit dc9ae7a5294f9857354206f55e2962e8f11aed9d[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Nov 4 19:50:45 2020 +0100
+
+    adapt ECOGSTN plot
+
+[33mcommit f71486fc74b31ec5775d963c311f2ffa30c2ef93[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Nov 4 16:17:04 2020 +0100
+
+    adapt permutation test relative
+
+[33mcommit f628358c1cf35e3b1ca2688e0ea843bdae190aa7[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Nov 4 15:28:03 2020 +0100
+
+    check total UPDRS corr with all ch combined
+
+[33mcommit 3aa2e0f07afbd292fa8aea45d9f6511d9b0c02ac[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Nov 4 14:35:30 2020 +0100
+
+    add corr. analysis
+
+[33mcommit 51ffe43ac26830621a8bbdf2466f2e22a5404c3a[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Nov 2 19:16:19 2020 +0100
+
+    add EDA pekin
+
+[33mcommit 405ae57209d28a621038741522ece5885b4bd15f[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Nov 2 15:57:32 2020 +0100
+
+    add EDA peking
+
+[33mcommit 4d5474c244af29cde45face9b8728e3e08152de5[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Nov 2 13:21:37 2020 +0100
+
+    start SW rest detection
+
+[33mcommit 51f76d41618c567dbf02dd4716dac0996d261219[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Oct 30 15:08:13 2020 +0100
+
+    add TF
+
+[33mcommit 346194aea47e979a5463b124145c2317b6080200[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Thu Oct 29 15:46:25 2020 +0100
+
+    Small update
+
+[33mcommit 0911c5b5145ea197b0b257b904e6e2e67a2de6c2[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Thu Oct 29 12:29:32 2020 +0100
+
+    Removed sys.path.append
+
+[33mcommit d57640722018f0397756c3f35170ce531273402a[m
+Merge: a76532b 0857628
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Thu Oct 29 12:12:41 2020 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit a76532b07c7959dc644dd67e2134796be886a056[m
+Author: Richard Köhler <70506259+richardkoehler@users.noreply.github.com>
+Date:   Thu Oct 29 12:12:01 2020 +0100
+
+    First test runs for preprocessing + LDA pipeline BIDS Berlin
+
+[33mcommit 0857628d5139ed63564724c3796555c5a92b5542[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Oct 28 14:35:16 2020 +0100
+
+    adapt paper Fig
+
+[33mcommit 2359f7b9e364e5576733e55bf57d7400f5012f7c[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Oct 26 21:27:51 2020 +0100
+
+    all beta all gamma test
+
+[33mcommit b2ea39962f3bbb03f39d2148f65bc7a105b33b10[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Oct 26 13:48:01 2020 +0100
+
+    reorganize new
+
+[33mcommit ade2a342b1d42429a2d355a9b1eedf4ed3007f76[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Oct 26 13:45:07 2020 +0100
+
+    reorganize
+
+[33mcommit 2f81a43ba9a1f3e8a58086c401e2f93801ff1fe6[m
+Author: Mousa <mousa.saeed.m@gmail.com>
+Date:   Mon Oct 26 13:36:48 2020 +0100
+
+    Delete Ecog model (rnn, cnn, ae, attn).ipynb
+
+[33mcommit 7af901026fdd658ae1da8e1ed0240137a6662d87[m
+Author: Mousa <mousa.saeed.m@gmail.com>
+Date:   Mon Oct 26 13:35:07 2020 +0100
+
+    Add files via upload
+
+[33mcommit 5d9c7e1f2a66f7db9fe74bd0351d7e4420de0851[m
+Author: Mousa <mousa.saeed.m@gmail.com>
+Date:   Mon Oct 26 13:34:50 2020 +0100
+
+    Add files via upload
+
+[33mcommit dc294f6a33c76a3c59cba20c815e314d4065ae4f[m
+Author: Mousa <mousa.saeed.m@gmail.com>
+Date:   Mon Oct 26 13:31:23 2020 +0100
+
+    Create .gitkeep
+
+[33mcommit 6c4e6381e1da5bad4bde0a493c3ef68baccf7b61[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Oct 26 12:53:43 2020 +0100
+
+    add best ECOG STN ch
+
+[33mcommit 7c1173e7d3dc8fd45f3a894b963fab014a9edcef[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Oct 26 08:01:18 2020 +0100
+
+    analyze beta gamma
+
+[33mcommit 501279f30c0c138ef382a89075073d81f7c315fd[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sun Oct 25 22:14:38 2020 +0100
+
+    add test for using beta and gamma only
+
+[33mcommit 403fd66fcb3f1b90641edeab2f1c9e81cc362ddd[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sun Oct 25 14:42:26 2020 +0100
+
+    write sub004
+
+[33mcommit ce33162b96154806dfae3edc755fcf873c8cf95a[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sun Oct 25 13:51:28 2020 +0100
+
+    adapt to new BIDS standard
+
+[33mcommit b4f4231d1918e2820878162e5267a202fb0fdf65[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Oct 23 23:08:46 2020 +0200
+
+    paper Figures adapt
+
+[33mcommit bbc2dc414d9461655a1fa00b403bbc4f0471bfeb[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Oct 23 12:45:02 2020 +0200
+
+    stat permutation fix rho
+
+[33mcommit e78de1921ac479ecb2d762f0380c0d5942cd1f15[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Oct 23 11:31:05 2020 +0200
+
+    stat permutation fix
+
+[33mcommit f844acfdcaf032c4d9c2efe346e3fe8e053f3955[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Oct 23 11:27:22 2020 +0200
+
+    add stat permutation test
+
+[33mcommit 9c3e5c4b3116cece35777837b2ac703d2ca6e1d5[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Oct 23 11:10:48 2020 +0200
+
+    stat work paper
+
+[33mcommit 8831bbf29e7d2fe9ba99649dfb6bab8de9a73422[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Oct 21 10:36:16 2020 +0200
+
+    added template movement onset
+
+[33mcommit 08131e5bee399e09cd697e9649523fa162d6c139[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Oct 21 10:34:03 2020 +0200
+
+    changes
+
+[33mcommit 55d266e39329b0ca0ebfc6594f1a1db7ded67b6f[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Oct 16 09:29:05 2020 +0200
+
+    add sb plot
+
+[33mcommit 01c6b3dd86cb7417b3639881aaa01e295b18a9bb[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Oct 16 09:27:22 2020 +0200
+
+    add sb plots
+
+[33mcommit d59093884d328b278b2f33a625054dc8ff45ef27[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Oct 5 09:03:25 2020 +0200
+
+    notebook SW whole cohort
+
+[33mcommit a1c61e39e9debab782960e828168a6202eb70adc[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Oct 3 16:58:21 2020 +0200
+
+    Pool working for Mov SW
+
+[33mcommit b53072d0289796f141c7d5f3edf4d77e771422f3[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Oct 3 16:31:19 2020 +0200
+
+    media split analysis
+
+[33mcommit 14fbf689d0d9ed5c4e10f704dd1472f373c56554[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Oct 2 19:02:31 2020 +0200
+
+    reorganize ECOGSTN
+
+[33mcommit a6b7a39888bb3d2367a4484ebf479be2a48764c7[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Sep 29 08:26:10 2020 +0200
+
+    clean up
+
+[33mcommit fca3b09e021d90b9ef6fcc5487a1ff041ead5c68[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Sep 28 15:14:18 2020 +0200
+
+    write BIDS
+
+[33mcommit 0e1359d55acd959f8029dcaba4e28153d2f9b6e6[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Sep 28 14:55:06 2020 +0200
+
+    BIDS read
+
+[33mcommit ededd4436e7e3a2ef80152aec01464b0fc12576b[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Sep 28 09:20:08 2020 +0200
+
+    adapt read TMSi
+
+[33mcommit 52d6d306a143508b2423949dd25f4c01cbbe728f[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sun Sep 27 20:42:18 2020 +0200
+
+    BIDS convert
+
+[33mcommit dd4d69881bbaceeff2448344bfeeaad4280b6276[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Sep 24 13:02:08 2020 +0200
+
+    change
+
+[33mcommit a8530303606b5ea8c65b450600224fb777ebe946[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Sep 24 12:45:16 2020 +0200
+
+    add ECOG plot fct
+
+[33mcommit 98edf64a56db4acd4efcfa92e1ae7f51f1263bfe[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Sep 24 12:44:30 2020 +0200
+
+    SW movement notebooks
+
+[33mcommit 67ec05f4bf6adf7c21049cf49fd8ee22a93731b5[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Sep 24 12:43:23 2020 +0200
+
+    read notebook eegnet
+
+[33mcommit c28d42df180ae3880d1c76cbdbbfbe38d2329319[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Sep 24 12:41:09 2020 +0200
+
+    add EEGnet implementation
+
+[33mcommit 194d7dcc25b086b6979b63ad435885306c380c54[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Sep 24 12:39:15 2020 +0200
+
+    NN train test split
+
+[33mcommit 675113a0834f6c0b11d160db3559223ebf495e31[m
+Author: neumann-wj <julian.neumann@charite.de>
+Date:   Tue Sep 22 17:41:02 2020 +0200
+
+    Corrected MNI coordinates of subject 1
+
+[33mcommit 07b9edaff5fb0e8de3311f5b8b612622eb4d9d9a[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Sep 21 23:38:14 2020 +0200
+
+    TF analysis dataset Peking
+
+[33mcommit 683c8b870fd161c70b763fd8cde332975e632211[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Sep 17 14:55:00 2020 +0200
+
+    catch hp5 exception
+
+[33mcommit 1a985e644f9d601aabadba4bd91eab4cf13d2de7[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Sep 17 12:40:43 2020 +0200
+
+    generator pool ver
+
+[33mcommit 6b360b3aea74b45344032758fe575ec35b9936b1[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Sep 17 12:36:42 2020 +0200
+
+    generator pool version
+
+[33mcommit 1b82bf3e227f70486b8b398ed7b8b4f97a7224cd[m
+Merge: d020d51 505aaed
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Sep 16 07:30:29 2020 +0200
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit d020d51b78d8465cd0f1a5e7da9bd4f917e91b6e[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Sep 16 07:30:17 2020 +0200
+
+    add multiprocessing version
+
+[33mcommit 505aaedce3cd5ede3f1a3268a9ff3c37deaca864[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Sep 15 11:05:51 2020 -0300
+
+    delete comment
+
+[33mcommit 5d494d75bb790fb8a4674adbad5da1d98a457d62[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Sep 15 14:26:44 2020 +0200
+
+    try thread implementation
+
+[33mcommit badaa39c03d385b030b72b60f9437984bbbaf21f[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Sep 14 16:09:44 2020 +0200
+
+    bug fix deep NN 3
+
+[33mcommit f2de9a3b819ad5a8b8b51cb937a4762bc1943d7c[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Sep 14 15:01:44 2020 +0200
+
+    bug fix deep NN 2
+
+[33mcommit 545544f0adb0af6bac0548e94c23fd4ffd0b9ba1[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Sep 14 14:37:03 2020 +0200
+
+    bug fix deep NN
+
+[33mcommit c8ce5cf924da697fbe8347c7e0c9e7b7ef740c59[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Sep 14 10:23:43 2020 +0200
+
+    EEG pipeline
+
+[33mcommit c75188098797aebb6a5b7fb282835157b8d9d3a4[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Sep 10 19:04:53 2020 -0300
+
+    added boolean for filtered outout
+
+[33mcommit c496c50a685990806bef3a87a556deac549ee73c[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Sep 8 11:34:01 2020 -0300
+
+    small changes
+
+[33mcommit 54a84944b8bdcbb0232c1d37bf9a12f060a82318[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Sep 8 11:32:37 2020 -0300
+
+    delete old files
+
+[33mcommit 7184612964e0c2bfc797c3bf343f60ff06b79b8f[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Sep 8 11:31:20 2020 -0300
+
+    delete old files
+
+[33mcommit 7a9719adb4ac09f3e06bacd55bfa38d4223c52d3[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Sep 8 11:27:37 2020 -0300
+
+    adding SSD analysis
+
+[33mcommit 7100d33c9edfc38c33fefad8bd3750aaa9fd341f[m
+Merge: 28a6601 e43fce1
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Sep 8 11:23:42 2020 -0300
+
+    small changes
+
+[33mcommit 28a6601c6f9cf156141d91326d830e869d0305c2[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Sep 8 11:17:40 2020 -0300
+
+    small data changes
+
+[33mcommit e43fce1212f79d1f29a55f399f151dea8802e700[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Sep 7 16:13:50 2020 +0200
+
+    fix nntest
+
+[33mcommit 26131708137971c004656df464d947ef077c2626[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Sep 7 11:46:45 2020 +0200
+
+    add deep convnet
+
+[33mcommit 9debf27f3c1d9c23fcfee2f3e0430e9094a177f8[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Sep 7 11:24:06 2020 +0200
+
+    implement eegnet
+
+[33mcommit fe18d79d2578a7db23d609612cc56b73b4670280[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Sep 5 16:21:35 2020 +0200
+
+    add eegnet analysis
+
+[33mcommit c8c5b3fc3e0a4df28789603cf6be13910c4ffaaa[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Aug 26 10:19:13 2020 +0200
+
+    Revert "plotting new results"
+    
+    This reverts commit 84c8fceecac233a3ec73953c490a0050c6d03e7f.
+
+[33mcommit cebd803702280c022a477b681872789f77b386bb[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Aug 26 10:14:47 2020 +0200
+
+    update dist plot
+
+[33mcommit a15bf27a1c0cca1b5397fc95978595b70349a6dc[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Aug 25 08:06:19 2020 +0200
+
+    new res Waveform
+
+[33mcommit 7c8fdc08a72a4bd63732e937d4b65da97a743771[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Aug 25 08:05:11 2020 +0200
+
+    redo Waveform analysis
+
+[33mcommit 84c8fceecac233a3ec73953c490a0050c6d03e7f[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 24 08:43:57 2020 -0300
+
+    plotting new results
+
+[33mcommit 7e86850092e6e3d80ceeb112901046723a7b451b[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 24 08:42:50 2020 -0300
+
+    add rereferences into the pipeline
+
+[33mcommit e60ff1d6888559c779299257331ef5859e5c6c53[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 24 08:36:43 2020 -0300
+
+    updated for the last presentation
+
+[33mcommit bdda33f6f9e3fca9fa9c168b16528f4a21cea39f[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 24 08:33:59 2020 -0300
+
+    change to add rereference in ppipeline
+
+[33mcommit b66f04dc9429caf163b400bd7360bd3a16843adb[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Aug 24 12:26:03 2020 +0200
+
+    delete peak file
+
+[33mcommit 1e79a5d0729b354698622a046de7ffe61d5eab1b[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Aug 24 12:24:38 2020 +0200
+
+    fix peak detection
+
+[33mcommit 5915b93752a0a0d86cdf0f29e61b9a353139749f[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Aug 24 12:07:15 2020 +0200
+
+    updated tables with CAR
+
+[33mcommit 6a5218b10b5995aef658e90cf6ad0b16d92605be[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Aug 24 11:56:29 2020 +0200
+
+    updated Figure 3/4
+
+[33mcommit d96944a5c0c4cd6ad54163ecd4fd9c832167cb6f[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 18 11:25:27 2020 -0300
+
+    saved cortex_grid information on processed run
+
+[33mcommit 792d6fa3b0056c27b4dcf9382b93201beb589a9b[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 18:32:35 2020 -0300
+
+    change script to work with current changes
+
+[33mcommit d52412dec1cf78357e28ac7ef00c24062771a7fd[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 18:32:03 2020 -0300
+
+    add boolean if projected output is desired
+
+[33mcommit 91a271d79744498cc4387f9b33691b50f8963927[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 18:31:34 2020 -0300
+
+    add a fuction for raw feature extraction without projected data
+
+[33mcommit 292b1fb853f10ff71cdaa59d5af9f3edd04f8d76[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 17:50:39 2020 -0300
+
+    change name to preprocessing
+
+[33mcommit ee250fb967800d4addb65d96578b4b70bc4be175[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 17:49:48 2020 -0300
+
+    change name of the function to something more general
+
+[33mcommit ee19ff918fd657367bfaff594c3cef8886ebd6e2[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 17:48:07 2020 -0300
+
+    adding function to plot spoc results
+
+[33mcommit 8b27e574939c6d55e7f65ed460a7b394effe9b4c[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 10:15:25 2020 -0300
+
+    added function to see prediction outputs
+
+[33mcommit 500241e55f1c2a34250ee3e6f0823b99ecbb5e58[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 10:10:36 2020 -0300
+
+    change folder
+
+[33mcommit e1527cf71311335f368b8980a6e616b320f00385[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 10:09:42 2020 -0300
+
+    added a folder where script for viz results are saved
+
+[33mcommit 153155628fa45bd8bdaecb52561af9142138625b[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 10:06:32 2020 -0300
+
+    run it with bayes opt
+
+[33mcommit 45b1c9be4627f087351e2ae163eaafac1bf388f6[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 10:06:12 2020 -0300
+
+    run with n-1 components
+
+[33mcommit 09fce17f7e0838885a959c957440e3ccd85aae48[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 10:04:15 2020 -0300
+
+    check implementation
+
+[33mcommit 384cb16083f3477b0ad4edd4dd97181bcee63dbd[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 10:02:47 2020 -0300
+
+    trying to add segmentlength to filtering, but no possible yet
+
+[33mcommit 1b842b8220794ffd40776a39d4d5343ae4539fbf[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 10:01:59 2020 -0300
+
+    check
+
+[33mcommit 3e1606387ff470143f1d42c20cc855adf4e52537[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 17 10:00:15 2020 -0300
+
+    fixed data storage mistake
+
+[33mcommit 17598118a67b341d4bf82b850526c87d164f6677[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri Aug 14 12:07:43 2020 -0300
+
+    old version eliminated
+
+[33mcommit a906c9c45c5f1a65babe1b124879c6a9c10b6a85[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Aug 13 20:25:44 2020 -0300
+
+    solve saving issues
+
+[33mcommit 07cc3c50e9eb1ead5810adda61564d883d5a1590[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Aug 13 20:21:23 2020 -0300
+
+    aggregate xgb option
+
+[33mcommit be5134af3e456c142f77c7b4b5a5bca2b8550c47[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Aug 13 18:11:24 2020 -0300
+
+    change array generator for Filterbank usage
+
+[33mcommit e2e3a88d1c0131b495f827173fb3b2818756d51a[m
+Merge: cdc3f4e c5f64d5
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Aug 13 10:07:23 2020 -0300
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+    merge
+
+[33mcommit cdc3f4e8944560b1b940a25439cf4b57e9be89f8[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Aug 13 10:06:43 2020 -0300
+
+    change data storage in filtered data
+
+[33mcommit c5f64d59b4aa2f52706b4d263e72d3c213ab83f1[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Aug 13 14:57:32 2020 +0200
+
+    add regr plots
+
+[33mcommit 8086dfc7dbace7eeff744789fbc8b4e3e33b7fef[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Aug 13 13:58:58 2020 +0200
+
+    file update UPDRS
+
+[33mcommit 7145e160bb22ff68f4332e512863c44a3760dff7[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Aug 12 14:14:03 2020 +0200
+
+    ECOG vs STN XGB stat test
+
+[33mcommit 30f0a9ce7f1c374547b779ec3f24958aecfb9711[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Aug 12 13:59:18 2020 +0200
+
+    new paper notebooks
+
+[33mcommit 5028cd007437477d98675423c607bb075b4a446a[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Aug 12 11:15:01 2020 +0200
+
+    Analysis XGB SPOC LM Res
+
+[33mcommit 97a09fcb44f6f7862c4fdfd340a6250274d635ea[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Aug 12 11:00:43 2020 +0200
+
+    Analysis XGB SPOC LM Res
+
+[33mcommit 2af582de3bdf0699f6b0fbf3b16ba653967cc504[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 11 20:49:51 2020 -0300
+
+    change files for the new epoching function
+
+[33mcommit 222237c6a29695a6b761954a91b780493d1e069d[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 11 20:45:15 2020 -0300
+
+    changes for working with ecog or stn data
+
+[33mcommit 875ee86c72f5df8b0d38b1c2e531db7d3a984647[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 11 20:43:53 2020 -0300
+
+    fix lenght error in notch filter
+
+[33mcommit d864eadc5ed2d3bce7f8811179dd8173dc541dee[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 11 20:08:38 2020 -0300
+
+    updated
+
+[33mcommit 4b86476d79f4a61fe049f296b99c3f1359d050a5[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 11 19:23:33 2020 -0300
+
+    update pipeline to get rereference data
+
+[33mcommit 815eece32ab2e259407892c36c57b616d7bb6c46[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 11 19:22:47 2020 -0300
+
+    delete old files
+
+[33mcommit ab2c284f181a58bf6706c74b7270512f6795e1d7[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 11 19:22:01 2020 -0300
+
+    add a new function to epoched data continously
+
+[33mcommit 091283ae4053aa56027188626fc14118d5a8cbc5[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 11 19:21:27 2020 -0300
+
+    change write_all_M1_channel_files function to custimized rereferences values
+
+[33mcommit d616212487e7d3a6eb44136f894d267a2185c358[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 11 19:19:47 2020 -0300
+
+    add option to get raw data filtered
+
+[33mcommit bee763a057e4d24861252e741d8ba58c46e7b1e6[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 11 19:16:03 2020 -0300
+
+    add the option for no making any king of rereference
+
+[33mcommit 15398511d757ae63247b06ff1fe2117bd5dfdfc7[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 11 16:02:50 2020 -0300
+
+    create_epochs_continous
+
+[33mcommit bb85e9b7dd2a694765895400e18b790331d56fc3[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 11 15:30:08 2020 -0300
+
+    creating continous epoching function
+
+[33mcommit 24f68d5f4e9d63d8a008ff430f0f63907fd7f66f[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 10 18:59:37 2020 -0300
+
+    adapt function to return either filtered signal or variance of the filtered signal
+
+[33mcommit 8c435880f3418d80416d5be886e51d725de8e146[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Aug 10 19:46:17 2020 +0200
+
+    sw plots
+
+[33mcommit c34c888483b7320a8320906bd6fb2c3740b1146f[m
+Merge: 4c17547 fbdcc80
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Aug 10 18:45:21 2020 +0200
+
+    detect sw
+
+[33mcommit 4c175470118af6c59e9da748d0704e3ff9d0ef87[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Aug 10 18:44:33 2020 +0200
+
+    detect sw
+
+[33mcommit fbdcc8087a7fab3f01f708bd7f0a0ab72512ecbc[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Aug 10 18:40:43 2020 +0200
+
+    waveform notebook2
+
+[33mcommit 236edbba6ae0afae6dbd1a59db213417aeb39e06[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Aug 10 18:39:27 2020 +0200
+
+    waveform notebook
+
+[33mcommit 19c3edac003bb8b69d6f9dd39ae94520f1dca2e8[m
+Merge: e1a2527 f05fd24
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Aug 7 19:47:27 2020 +0200
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit e1a2527570485d08f46fecd33de2c84641a1c1de[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Aug 7 19:47:23 2020 +0200
+
+    detect peaks
+
+[33mcommit f05fd24902cef52299f75ce3446e8ebc7728aeb9[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Aug 7 18:38:31 2020 +0200
+
+    compare all
+
+[33mcommit c051edde9377cb313dc9cf4d2cec16a6c68ff012[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Aug 7 18:24:15 2020 +0200
+
+    SharpWave Dkl
+
+[33mcommit dc112652139b87b1638aa8e1f09d0ee0b91a9dab[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Aug 7 13:26:05 2020 +0200
+
+    add model coeff
+
+[33mcommit 747942d88ae3913ad4327259ffd67457beea9788[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Aug 7 13:02:11 2020 +0200
+
+    eval XGB nested CV
+
+[33mcommit de0e017572f941ae8fe290e9d8f6d5033a15988b[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Aug 6 17:44:57 2020 -0300
+
+    description
+
+[33mcommit 1ee343b3e5ae8a9ea28edf4d651e34c310289382[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Aug 6 17:41:40 2020 -0300
+
+    Update optimizer_example.ipynb
+
+[33mcommit eedcb11c87e7758167b59fe113363d5667d98001[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Aug 6 17:40:07 2020 -0300
+
+    check with other library
+
+[33mcommit 3ad77485a7d3b668487878bde97b8864a5c6ba9f[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Aug 6 14:37:37 2020 +0200
+
+    explore skopt
+
+[33mcommit e18e6f9d3b9f84f3bf0e3e65617e9ac807cc4a23[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Aug 6 14:08:54 2020 +0200
+
+    xgb new
+
+[33mcommit ced0d6b0528602998be509a5390b0577dfc61fef[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Aug 6 07:58:28 2020 +0200
+
+    xgb v3
+
+[33mcommit e4af34bbc6fa5c9760f316ca826b998be78739e8[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Aug 6 07:36:47 2020 +0200
+
+    xgb v2
+
+[33mcommit 710dd8e5a9f6725f92e461c5b9d259d18db02f0d[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Aug 6 07:28:15 2020 +0200
+
+    adapt for xgb v1
+
+[33mcommit 4f3a4b56674fb1ac52eddd46401c603e7b2008ae[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Aug 6 06:16:07 2020 +0200
+
+    adapt for xgb
+
+[33mcommit 9331e54920df8d1cb5cfc70256c8b13b608b9780[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Wed Aug 5 17:53:14 2020 -0300
+
+    clean script
+
+[33mcommit 592fd4a33cd0c0028a3173b0c88739e4ccd40b94[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Wed Aug 5 17:52:06 2020 -0300
+
+    add script description
+
+[33mcommit a45816e213bbc225d4a0933ef10661945bc2e3ef[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Aug 5 12:27:00 2020 +0200
+
+    add backup
+
+[33mcommit 8e7d07e501b78bc2da0223d407dd4291fac6cd5e[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Aug 5 11:45:19 2020 +0200
+
+    add pool starmap for sharpwave
+
+[33mcommit 37f27aab588bc00f5315e6e5758db54cd7a412b1[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 4 19:54:00 2020 -0300
+
+    this is the ssd+spoc implementation
+
+[33mcommit e4f9e0420d8afb4f9fd30619288b02607d54664f[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 4 19:08:32 2020 -0300
+
+    this is the spoc implementation as a dimentionality reduction method
+
+[33mcommit 16a0e7c19f96308a59d3eec265b20216f92a6dcb[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 4 19:07:28 2020 -0300
+
+    this is the old implementation with out the FilterBank Class
+
+[33mcommit 68a85898a5abe990e25067f374a3dd42c6c669e4[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 4 17:34:11 2020 -0300
+
+    Update Example_offline_pipeline.ipynb
+
+[33mcommit 26b25503df11907706119539a28f4f69bd191b48[m
+Merge: 9bbcc5a 9471cd1
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 4 13:51:01 2020 -0300
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit 9bbcc5ab7634bfd7607a5f457a13b788f2cf8428[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 4 13:50:29 2020 -0300
+
+    update version for avoiding memory issues
+
+[33mcommit 9471cd14ba97dd4b9c1c9b7507fa1d1ea4c8b4ca[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Aug 4 18:46:02 2020 +0200
+
+    fix bug, add multiprocessing
+
+[33mcommit f2321b40067303b99a6a659ac55b873cf01bda3e[m
+Merge: c45c6d4 1426db0
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Aug 4 18:16:16 2020 +0200
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit c45c6d419ac855adbaba3b522931e0250463708d[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Aug 4 18:15:53 2020 +0200
+
+    add run combination
+
+[33mcommit 1426db0ae67a5ffe6aecfebbc083abef4dfc34b9[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 4 12:40:36 2020 -0300
+
+    spoc implemented with non-nested CV
+
+[33mcommit fa58af40797e278225238922436e6fa1b499aacd[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 4 12:03:46 2020 -0300
+
+    run for all subjects
+
+[33mcommit d25b900c5768372ccb1fb4fdfe80ccf434f96d46[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Aug 4 10:42:04 2020 -0300
+
+    add function for data filtering and epoching
+
+[33mcommit 504d571b24031fa7c2f41e41f155aa835a2f3955[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Aug 3 21:36:14 2020 -0300
+
+    sdd implementation on python
+
+[33mcommit 4fa9a62264b898c16a974f0156a636d4d8db2dfd[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Aug 3 17:33:20 2020 +0200
+
+    EDA Sharp Waves
+
+[33mcommit 980260fc21b6dd63b880c5282641ad3581c703f2[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Aug 3 17:05:01 2020 +0200
+
+    EDA sharp waves
+
+[33mcommit e04eadd0946cfa405969f4619107c95773d45f60[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Aug 3 10:13:50 2020 +0200
+
+    add working notebook sharp waves
+
+[33mcommit dd99900eb67ed4bc04922e4000cb1430a9ed9882[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Wed Jul 29 18:34:31 2020 -0300
+
+    SPoC with time lags implemented as a pipeline
+
+[33mcommit d617f647584016ea17f2343a055121d7a663deba[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Wed Jul 29 18:30:57 2020 -0300
+
+    change baseline correction for non normalized mov target output
+
+[33mcommit e2ee3351b82b9d56488a7a16c35e7083b57f4185[m
+Merge: b85b15e f8b7caa
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Jul 23 15:33:24 2020 +0200
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit b85b15e6b12fb16ea3e4ad6310a1376fad7f253a[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Jul 23 15:32:58 2020 +0200
+
+    bycycle test implementation
+
+[33mcommit f8b7caa538c5edc7b0bc491c92daad2626936a8a[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Jul 23 09:28:02 2020 -0300
+
+    implementation of the T-F band analysis
+
+[33mcommit 27bf0e06ec2c41ac26fd4c48528ec345c53ffda7[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Jul 23 09:27:04 2020 -0300
+
+    test implementation
+
+[33mcommit 80377ab5f046589207088a73585196f159cf8122[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Wed Jul 22 18:01:03 2020 -0300
+
+    clean the code
+
+[33mcommit 35816b51a9fd1e839dae5809fce5fa3d0012d531[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Wed Jul 22 16:34:13 2020 -0300
+
+    filter bank class implemented
+
+[33mcommit 13895190ad750a1654297d0c46d6ad404f455b98[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Wed Jul 22 14:41:47 2020 -0300
+
+    version with non-nested cv
+
+[33mcommit 75449a32e9d38be3922cbea6b703f2d2e27ee1fd[m
+Merge: 9727d56 2820d9e
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Wed Jul 22 14:39:45 2020 -0300
+
+     update
+
+[33mcommit 9727d56fb96926d521b78cb9aaab68909eb342df[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Wed Jul 22 14:36:48 2020 -0300
+
+    uploaded generate filter banck epoched data
+
+[33mcommit 2820d9e7ad06a072cf345d051386126b0a62b902[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Jul 21 18:01:36 2020 +0200
+
+    updated md
+
+[33mcommit 850fee3b49dc6fcf8872e113cbb9138d9cb3767b[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Jul 20 23:43:12 2020 +0200
+
+    added Figure Files
+
+[33mcommit 9bfc68522bf2ece8ebd0ccc524a592d8fba1ec0e[m
+Merge: e39fce2 cb8b10e
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Jul 20 18:41:31 2020 -0300
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit e39fce2d2ba7eff2834f0d689e99ec2e14ac5363[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Jul 20 18:41:07 2020 -0300
+
+    run the whole pipeline with nested CV
+
+[33mcommit cb8b10e9d6a26a9a6d517fec320fdacc2cc654ae[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Jul 20 23:37:13 2020 +0200
+
+    added Figure Files
+
+[33mcommit ef9d582b55a9ea16726fda354a03a7d6d28f57ab[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Jul 20 11:24:48 2020 -0300
+
+    added Filterbank class implementation and spoc pipeline
+
+[33mcommit b2c8e6c8a2a689edac8d482619f0569675ff5b20[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Jul 20 11:21:29 2020 -0300
+
+    best ch regression with 3 fold cv and test data
+
+[33mcommit 6cfaa12c4717f3567d3c31ac04e8d54e030a5fe1[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sun Jul 19 20:36:49 2020 +0200
+
+    clean up
+
+[33mcommit 9fe91709003bdd5ca75f7b6eccc66161691770d9[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri Jul 17 11:55:49 2020 -0300
+
+    nested CV with testing and training data split
+
+[33mcommit 2d0d4084d105dba430e72d0a6fe7cd5e31cb97f6[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Jul 16 18:21:09 2020 -0300
+
+    uploaded my script for best chn prediction
+
+[33mcommit bb9adc1dd7ba373cf801b199666c416383b03421[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Jul 16 12:03:11 2020 +0200
+
+    leave out grid points of subcortex
+
+[33mcommit 909f81c84dc209498b0149f05d277b615a941857[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Jul 16 11:59:17 2020 +0200
+
+    add CNN for CV RAM
+
+[33mcommit d5c6ff763e8276edee3b0d32b4546907ac58f4ce[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Jul 11 14:08:48 2020 +0200
+
+    remove checkpoints
+
+[33mcommit af58ca74a6d94a9539c02c2771e1b048aa95c81c[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Jul 11 14:07:11 2020 +0200
+
+    added preprocessing
+
+[33mcommit fffda6544b66cb7d9260d74488d10cf3c11d74df[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Jul 11 14:04:01 2020 +0200
+
+    paper notebooks
+
+[33mcommit fdbe9be2859a6e4c27b831744c1206eb68631b88[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Jul 11 13:54:22 2020 +0200
+
+    add paper notebooks
+
+[33mcommit 51084c09679e74feac658fa42110585e3378e5e2[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Jul 3 12:24:38 2020 +0200
+
+    pipeline multiprocessing
+
+[33mcommit a4dbc01519f87804187c44e2879c0cb807949fd0[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Fri Jul 3 12:08:08 2020 +0200
+
+    updated 5 Hz pipeline
+
+[33mcommit 81e5d39e11c35c4ae7e1e506e8013cd2b835ffea[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Jul 2 10:02:00 2020 -0300
+
+    adapt to general variables downsampling
+
+[33mcommit 5532eccebb3d559b6caddf2cea995b0c45ac60ca[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu Jul 2 08:38:46 2020 -0300
+
+    change to new label corrected
+
+[33mcommit fef5b074a52a3d83659dd1d93feb25ea7bd503b9[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Jun 30 16:44:23 2020 -0300
+
+    .
+
+[33mcommit 0663b5cf2f5adcbee558faea59dd4cfe60877f30[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Jun 29 17:29:37 2020 -0300
+
+    change channels.tsv files
+
+[33mcommit 00176d484c023c51f66c273668aa019c440593dd[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon Jun 29 17:28:19 2020 -0300
+
+    change it to write BIDS foler
+
+[33mcommit 3a8e249c490ea1719a82ee66ae52c6108a773ea1[m
+Merge: 62ff985 b267b96
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Wed Jun 24 11:18:36 2020 -0300
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit 62ff98547d3c82b440f63182f26b58194ee561d5[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Wed Jun 24 11:18:13 2020 -0300
+
+    Update offline_analysis.cpython-37.pyc
+
+[33mcommit b267b96e92d07cd3cdcf2438dab97bc05a1ce835[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Mon Jun 22 11:10:03 2020 +0200
+
+    implement RAM CV
+
+[33mcommit 2fd93a90781561e946d9b80f750fe584f3fc32f5[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Sun Jun 21 18:52:28 2020 -0300
+
+    add clean target data to raw BIDS
+
+[33mcommit 9adee34d40665f8c92d8125f253d82d0df737a04[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Sun Jun 21 18:51:03 2020 -0300
+
+    add more  files to ignore in the list
+
+[33mcommit f2831949579f1e699a706420d75468ffc96a9be1[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Sun Jun 21 18:49:18 2020 -0300
+
+    located now in write_BIDS folder
+
+[33mcommit 28c5358cce1fffc5aefe2a73b43b9f84b4a8f957[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Sun Jun 21 18:46:05 2020 -0300
+
+    gitignore created
+
+[33mcommit 6127638fc93531f2ce1311f95cd78c8dc8d834be[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Sun Jun 21 18:34:42 2020 -0300
+
+    baseline correction visual check of each output
+
+[33mcommit ac3877022154b42b70aff22ce9b33bee529881fd[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri Jun 19 15:34:07 2020 -0300
+
+    function which add the clean target signals to the bv raw data
+
+[33mcommit 43264aecc5fe7b4c9c49b56da34c73922710f6f9[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri Jun 19 10:12:42 2020 -0300
+
+    change default values on baseline correction
+
+[33mcommit 8d221774fa0a6dfa6d5d3d74a0a5bd0d9fcce40a[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Sat Jun 13 21:58:11 2020 -0300
+
+    changes for 25_10
+
+[33mcommit 2aa7c8a130239ef317353a476c14b6900af16432[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Wed Jun 10 13:31:44 2020 -0300
+
+    for Vpeterson use
+
+[33mcommit c6fe68cd48e7aeb1c9dbe2ba0f49d36ecd3cb03d[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Wed Jun 10 09:08:10 2020 +0200
+
+    implement mean usage offline analysis
+
+[33mcommit 4ce99b5ab24790e17179b13c13217d5cb6d5bcc7[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Jun 9 18:59:34 2020 -0300
+
+    updated with the corrected baseline correction
+
+[33mcommit c899edc5320563c6bd68ba17021cc5835a111886[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Tue Jun 9 21:10:02 2020 +0200
+
+    fix act_ load
+
+[33mcommit f715afe9a412fcf46ec700aba499e468ffee33ca[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Tue Jun 9 21:05:30 2020 +0200
+
+    adapt CV for arrbitrary grid
+
+[33mcommit bc0f7c73ec2138425a84e03012aeeead98c56248[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Jun 9 08:55:59 2020 -0300
+
+    change the baseline_correction to match the original sf
+
+[33mcommit a79a20743aec92e0fcd23bd24c491e616703d557[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Mon Jun 8 13:28:47 2020 +0200
+
+    adapt subcortex grid
+
+[33mcommit 48de515ad2588fe66460c620c1829e6b030ecc81[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Mon Jun 8 12:57:39 2020 +0200
+
+    fix write subcortex
+
+[33mcommit 329bf6572b1f966ee2fb854efb3647a45393479e[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Mon Jun 8 12:38:41 2020 +0200
+
+    adapt grid point for subcortex
+
+[33mcommit d3eee401005f7bdfb925e7deb9680248e1c4e0dd[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Mon Jun 8 11:59:46 2020 +0200
+
+    change setting write
+
+[33mcommit cddb920de2258ff9730430e2d9b5c6c9969961c1[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Fri Jun 5 17:42:11 2020 +0200
+
+    added subcortex FIle
+
+[33mcommit 8d92a57d8ee7145b81d080635e67061b369ed363[m
+Merge: a930944 cc7a81a
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Jun 2 18:25:00 2020 -0300
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit a9309449a0978e9df4d66495515d93a9e04ac3d2[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Jun 2 18:23:39 2020 -0300
+
+    delete old pipeliine_runall and rename the new one
+
+[33mcommit cc7a81ad124ed44b1236abb015d4d8e3636ab76b[m
+Merge: aee84e7 f16cdac
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Jun 2 15:02:08 2020 -0300
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit aee84e76c24d03b4dce896942fac5551e9c1843f[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Jun 2 14:58:56 2020 -0300
+
+    add clip
+
+[33mcommit f16cdac561a60d66aea3cf39a9989f2d01926805[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Tue Jun 2 18:45:14 2020 +0200
+
+    add clipping
+
+[33mcommit a0f51496aaed6a6ce614f0067536eaa8f91c9f4f[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri May 29 17:46:32 2020 -0300
+
+    update
+
+[33mcommit da5978b59b97271e6c72c99b89f43d5c9666aeef[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri May 29 16:35:52 2020 -0300
+
+    updated to new derivates
+
+[33mcommit ff98429d3e18375ec171bacd582cd7ef5cb63312[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 15:13:46 2020 -0300
+
+    Create pipeline_runallv2.py
+
+[33mcommit 6f7c164fa7480cb81525c207167095978811857e[m
+Merge: e4c2866 108902c
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 15:08:27 2020 -0300
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit e4c286628b028666798b5a1515012e8b00685b80[m
+Merge: 387bec7 fc7a63c
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 15:08:05 2020 -0300
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit 108902c7d5e7aec2e5caa2965e0d0d2a847cb0f4[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Thu May 28 20:04:25 2020 +0200
+
+    typo again
+
+[33mcommit fc7a63cafbe2f5e99351a768e29afff0012e84ba[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Thu May 28 20:02:15 2020 +0200
+
+    typo fix
+
+[33mcommit 387bec7d289c354a77f3724fcc58f429ca0a170a[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 15:00:13 2020 -0300
+
+    -
+
+[33mcommit b5b905368ea82aaf31b275dfc5385eb031a819fd[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Thu May 28 19:44:05 2020 +0200
+
+    implement multrprocessing for run_all
+
+[33mcommit 4dafe7376d69c52f3d9212a968b1421459790fce[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 12:30:33 2020 -0300
+
+    add the function with create the derivates files
+
+[33mcommit 3136db2490cc543adba03e41c44e5bc181d12615[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 12:22:47 2020 -0300
+
+    added _ in the string
+
+[33mcommit 03dde2f5d780cd13e8409a88a4a2f2405709229f[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 12:20:34 2020 -0300
+
+    -
+
+[33mcommit bf882f795192576cbfad013caae472a87378512e[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 11:43:47 2020 -0300
+
+    pdf ready
+
+[33mcommit 0ac72f752fcbd7b3f201ddf904cf53163ef6e5b8[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 11:37:24 2020 -0300
+
+    more_general_pipeline
+
+[33mcommit dd59bef484f1ea9ca7bd37fa73e742a318c8084a[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 11:31:20 2020 -0300
+
+    update
+
+[33mcommit 4bae9c03019593ef414a5edee0e00990b473f90a[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 11:04:36 2020 -0300
+
+    updated
+
+[33mcommit 127648f9ac048732c2c10d0c00e9f2169fed40a4[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 10:32:47 2020 -0300
+
+    added check_label_gen
+
+[33mcommit d04b463491247fd380b3e14b17631747a75cc901[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 10:21:51 2020 -0300
+
+    improve Df detector
+
+[33mcommit 9c1600c679dac6b11c484f9c987a8809954b88a2[m
+Merge: dc15e14 0b7806a
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 10:14:59 2020 -0300
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit dc15e143e8617dec17f596d52012dc6daacbddc6[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 28 10:14:54 2020 -0300
+
+    -
+
+[33mcommit 0b7806a0c3ef57c409cf836e88dcdceea783dd5e[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu May 28 13:13:02 2020 +0200
+
+    adapt fs vatiable in downsample_idx init
+
+[33mcommit 58f3781c37435dd133530f787aeaea68a50b77d8[m
+Merge: e573ce2 7d7f125
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue May 19 12:00:03 2020 -0300
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit e573ce2df440568985c059db5866125919b7902e[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue May 19 11:59:57 2020 -0300
+
+    small changes
+
+[33mcommit 7d7f12506b81338b9066f45c83130fbaf86f859e[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue May 19 08:45:32 2020 -0300
+
+    Update offline_analysis.py
+
+[33mcommit b1f92ee8e172a50021b745e0c685621cbe984b6d[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue May 19 00:06:56 2020 -0300
+
+    -
+
+[33mcommit 3bd37bb3edbc12f50a5e0e2da1f762ae05db71d7[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon May 18 23:57:06 2020 -0300
+
+    minnors changes
+
+[33mcommit d21c600c3a316a63077ef46f9e4d9470bb8fe24b[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon May 18 20:47:12 2020 -0300
+
+    added save run
+
+[33mcommit d35b4ff68b7ff98a11699b43d9b52a62afc7b61f[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon May 18 20:43:05 2020 -0300
+
+    -
+
+[33mcommit 2ad51670b76ef4082f6e9a6daa3d8c79976e25b2[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon May 18 20:42:49 2020 -0300
+
+    offline_analysis.generate_continous_label_array
+
+[33mcommit fabb135e293c714a49218a5ea8c9ee5652b95294[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon May 18 20:42:30 2020 -0300
+
+    change offline_analysis.generate_continous_label_array
+
+[33mcommit e351aa226def9add1705ec0637eb35ed567be4fb[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon May 18 19:47:18 2020 -0300
+
+    setting file to a generic name
+
+[33mcommit c839beeea89484eaf60bbe1392df1eb8a77ce29a[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 18 12:01:04 2020 +0200
+
+    added option for command line usage
+
+[33mcommit 843b739e01298993df72f88af5aece89bd8c9560[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 18 11:19:16 2020 +0200
+
+    add sys dependency
+
+[33mcommit a5c9accd5fe8cc2c34aad6e78fb3d00379812941[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 14 19:40:04 2020 -0300
+
+    bug in rereference for subcortex data fixed
+
+[33mcommit ddc732cbd2ec3620639c33198dc86a7c2149084d[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 14 15:22:26 2020 -0300
+
+    change epoch_rawdata to epoch_data
+
+[33mcommit fad2ef03c9d6b91fd44b4228cd5f932c562ee6b7[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 14 08:47:04 2020 -0300
+
+    add verbose boolean variable
+
+[33mcommit 4bbe086d7740c56321f8e41c4df8cc9d1e05bc9e[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue May 12 20:36:09 2020 -0300
+
+    -
+
+[33mcommit 1f24aa818741687ac45a8a7b26b34d76ba2c9dde[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue May 12 15:50:09 2020 -0300
+
+    rereference data_cortex and data_subcortex and the same time
+
+[33mcommit edd89a123614dae953bc7a5dc77d794b99f163d6[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue May 12 15:39:08 2020 -0300
+
+    change at line 139 read_M1_channel_specs "_channels_M1.tsv"to "channels_M1.tsv"
+
+[33mcommit 2371660d3155a110bee3f4edebf1adb037d932dd[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue May 12 11:02:04 2020 +0200
+
+    adapt M1 channel write to pipeline
+
+[33mcommit 941bd40b9d37de32a330abc8dcff4db6ac2a260c[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue May 12 10:57:47 2020 +0200
+
+    adapted eeg to ieeg changes
+
+[33mcommit 085eccfe786fa1b7e0ca76269ecd992722120c0e[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue May 12 10:30:32 2020 +0200
+
+    changed preprcoessing to run
+
+[33mcommit 9e029a6ddf44a23aebfe0f18bc697600d3f00a0e[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue May 12 10:18:17 2020 +0200
+
+    delete plot filter bug
+
+[33mcommit bb76ad0eb84ff15d551636ec91b5398ec3bf361b[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon May 11 16:12:46 2020 -0300
+
+    update function description
+
+[33mcommit 694e3b8ceeb02e69f6747249130f85086a4d97b4[m
+Merge: d5ec58b a7df1ea
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon May 11 15:53:09 2020 -0300
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit d5ec58b27b4447dfc36afdbc0ff365400b1cd895[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Mon May 11 15:53:03 2020 -0300
+
+    bug error fixed
+
+[33mcommit a7df1eae8aebf29098c99b4c6613ea1917503633[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 11 10:38:26 2020 +0200
+
+    add write M1_channel.tsv file
+
+[33mcommit 559559dce318fb458e509b381ebed94e629bad14[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 11 07:43:38 2020 +0200
+
+    implement rereferencing
+
+[33mcommit bc00593bad2f56d8494b26f28e8ba3f746c9070d[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 11 07:33:27 2020 +0200
+
+    fixed issues for accessing M1_channel used column
+
+[33mcommit 4f826c7cf09cb8ea33b5477d68759c01f07ffda4[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 11 06:01:28 2020 +0200
+
+    fix
+
+[33mcommit 5c2d9e1c3a7be32ce6e6f1ba153d3c9759440bc4[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Sat May 9 11:35:11 2020 +0200
+
+    fixed TF BIDS
+
+[33mcommit d88d45bef8f41cd8a3dd2515f53b1e6e51fd1bfb[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri May 8 12:24:23 2020 -0300
+
+    delete obsolete function read_used_channel
+
+[33mcommit 4e13a007f5c18d175a79e998bfe2f86684ddf9f5[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri May 8 12:23:54 2020 -0300
+
+    read vhdr_file and get rereference info
+
+[33mcommit f8d19d86e8c57b09b9e7fc5fe99e9b5d24d1e3c4[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri May 8 11:51:32 2020 -0300
+
+    updated rereference given dataframe
+
+[33mcommit 53bb115b7baa1f6ef66dea767128ac365e82ae29[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri May 8 10:43:44 2020 -0300
+
+    change preditor to target in read_MI_channel_specs
+
+[33mcommit aa1b843e02e44e906fc3487d4db251f3b2f3534c[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri May 8 10:18:18 2020 -0300
+
+    add get_files function
+
+[33mcommit 3cfe8e02142433f4c5fa3f580b99c8acf1f0f138[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri May 8 09:39:57 2020 -0300
+
+    Update offline_analysis.py
+
+[33mcommit c786bc3c9e9c78965a5bfb0dad668c4dd1c87d23[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Fri May 8 09:39:38 2020 -0300
+
+    add rereference function
+
+[33mcommit 747f70e4336fa3f26c5c09664b275b81fcdd2f19[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 7 20:02:52 2020 -0300
+
+    Update offline_analysis.py
+
+[33mcommit 5dbf0948cf4770558828b36ffd847789ff0238b2[m
+Merge: b25dfa5 7664302
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 7 19:56:05 2020 -0300
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit b25dfa5c5bc7c21ca53cfec650994eeca9dbe72b[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Thu May 7 19:56:00 2020 -0300
+
+    add  rereference function and epoching
+
+[33mcommit 7664302aab4edd349f06c4acfcde569cd8742918[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed May 6 20:07:03 2020 +0200
+
+    add time frequency transform from BIDS file
+
+[33mcommit 863debb578ac7c20d4b6f455383d8d2f46499844[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue May 5 09:11:03 2020 +0200
+
+    add BIDS from FIeldtrip function
+
+[33mcommit 28b44190b4172f6e4c7c607738ff2994e2c4eb37[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 4 16:27:23 2020 +0200
+
+    rewrite data in struct format
+
+[33mcommit d1235317a43f66add17923a762304b5436acf82c[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 4 14:21:02 2020 +0200
+
+    added cvxpy dependency
+
+[33mcommit 1fe96b686862a0147d3887a148c4fc8d4fff8e69[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 4 14:08:44 2020 +0200
+
+    add channel read
+
+[33mcommit c8bdc7c504aa39a47e28ca69b14265b91d3c0e69[m
+Merge: 7d4ca91 d8a0aff
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 4 14:04:01 2020 +0200
+
+    Merge branch 'master' into new_master
+
+[33mcommit 7d4ca91e9c147388cb5b6967d3d710306cb2d65b[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 4 13:59:06 2020 +0200
+
+    Revert "Revert "read M1 channel specs""
+    
+    This reverts commit 8f26a6b6ab3562a88d792ca2d0ec631fe0e9ac3e.
+
+[33mcommit d8a0affe9ae740f4bf8637864bc93af87b83ba3a[m
+Merge: a8bd898 8f26a6b
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 4 13:57:26 2020 +0200
+
+    Merge branch 'new_master'
+
+[33mcommit 8f26a6b6ab3562a88d792ca2d0ec631fe0e9ac3e[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 4 13:55:00 2020 +0200
+
+    Revert "read M1 channel specs"
+    
+    This reverts commit 75954bfce8d4b3fa26ca382c0ed77f964b758f00.
+
+[33mcommit a8bd89897cf95c2d7519bf07bc18746250346cfe[m
+Merge: 9fcbdfe 75954bf
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 4 13:51:09 2020 +0200
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit 75954bfce8d4b3fa26ca382c0ed77f964b758f00[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 4 12:53:35 2020 +0200
+
+    read M1 channel specs
+
+[33mcommit 9fcbdfe2a98435121d8dab53b9fb9c029ead6b08[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon May 4 11:42:41 2020 +0200
+
+    add read M1_channel_specs functions
+
+[33mcommit c640c54a48d1878c4d5952271a63e5399669acbe[m
+Author: Wolf-Julian Neumann <50333569+neumann-wj@users.noreply.github.com>
+Date:   Wed Apr 29 18:04:56 2020 +0200
+
+    added seglengths
+
+[33mcommit e4e58216ad9368763748f6281ae85e2abd1d650b[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Apr 28 14:37:34 2020 -0300
+
+    added get_subfolders and get_address_vhdr_files
+
+[33mcommit 4dcefaff8e0f1f0c82f69093a8e189f9a8c926c8[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Apr 28 14:01:34 2020 -0300
+
+    Update offline_analysis.py
+    
+    baseline_correction added
+
+[33mcommit 6ff5f757bd7c301d542daefb75119b434e1278e0[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Apr 28 10:49:05 2020 -0300
+
+    Update offline_analysis.py
+
+[33mcommit 02480696c623fbbf545f25460ff5cf373e0acc16[m
+Author: vpeterson <victoriapeterson09@gmail.com>
+Date:   Tue Apr 28 09:43:55 2020 -0300
+
+    Update offline_analysis.py
+
+[33mcommit f26634aa2be248059d089d2a44af142d084214e5[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Apr 25 14:15:52 2020 +0200
+
+    restructure files
+
+[33mcommit 3791cc579905b0dacab0133847ab7b5394663a78[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Apr 25 14:13:17 2020 +0200
+
+    restructure
+
+[33mcommit 40e33d36d883f73c00166b043747e1f602c83484[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Apr 25 12:47:07 2020 +0200
+
+    restructure filea
+
+[33mcommit b88d4cf82a2ad2e901e66ce9704495d065fb9693[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Apr 24 13:46:13 2020 +0200
+
+    read used channels
+
+[33mcommit 8991247d904fe6ca25b236bf5ab0eb22beeff0b0[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Apr 23 15:02:01 2020 +0200
+
+    fixed environment.yml
+
+[33mcommit a8911c24ab598fee7486fccb62ddad388b1d9ea2[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sun Apr 19 23:16:20 2020 +0200
+
+    add real time simulation
+
+[33mcommit 7a078aa83e8ba06a41eb993acfb940e12853a2b4[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Apr 16 21:54:18 2020 +0200
+
+    restructure M1 real time processing
+
+[33mcommit b66ced45cef6020c4bb6ae7802a1fc36cd766b74[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Apr 2 10:31:37 2020 +0200
+
+    fixed STN number problem
+
+[33mcommit e6e4324380b050199d072557002b6ecef243d18a[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Mar 28 23:00:40 2020 +0100
+
+    changed CV
+
+[33mcommit 1e1055f2e9d307de018edd35231b23325847e6c9[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Mar 23 13:59:52 2020 +0100
+
+    added ipynb file for plot visualization
+
+[33mcommit 728c436b1eec00d46ec3003d88a1a3affb9180fd[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Mar 23 09:54:08 2020 +0100
+
+    added CV implementation
+
+[33mcommit a2a4db91e946e9b67ba0ba59b08858602c0988b2[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Mar 21 12:40:45 2020 +0100
+
+    added CV estimation function
+
+[33mcommit 0ef410d1a0bba3866e7528dec2fba81b19ae9946[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Mar 20 10:12:06 2020 +0100
+
+    add UNIX support
+
+[33mcommit 4671364d88e80189cd28a7b31195b3d6339c84bd[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Mar 20 09:51:59 2020 +0100
+
+    added preprocessing
+
+[33mcommit 4affb3842004790266bba85625bf8ae8754226c6[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Mar 19 11:41:03 2020 +0100
+
+    add preprocessing.py
+
+[33mcommit 0fc52d4ab1aea6ec2e8ada0d2daaebd78a352f88[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Mar 19 11:40:08 2020 +0100
+
+    added raw channel tf transform
+
+[33mcommit 81fa5f21818674ff2afc3f7f05896bbfa1372a4f[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Mar 17 14:48:13 2020 +0100
+
+    add
+
+[33mcommit 3729c9717111fa88d5bcaf9fbd265663c1e528b5[m
+Merge: a3069ef 4837a8a
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Mar 17 14:47:12 2020 +0100
+
+    Merge branch 'master' of https://github.com/neuromodulation/icn
+
+[33mcommit a3069ef35cdeb1ea1ee43b326aace963a0a7db7c[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Mar 17 14:45:25 2020 +0100
+
+    vs project
+
+[33mcommit 4837a8aff4035e7bcec06bb84baefbee6534a0bf[m
+Merge: 950e479 3908443
+Author: timonmerk <38216460+timonmerk@users.noreply.github.com>
+Date:   Tue Mar 17 12:42:37 2020 +0100
+
+    Merge pull request #4 from timonmerk/master
+    
+    removed icn_interpolation
+
+[33mcommit 390844381678d34e973c6c9b7715e78c96bb61f5[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Mar 17 12:41:48 2020 +0100
+
+    removed icn_interpolation
+
+[33mcommit 950e4799cc75b0d75109c9146c57ecda49156acc[m
+Merge: 61aa130 b39fb65
+Author: timonmerk <38216460+timonmerk@users.noreply.github.com>
+Date:   Tue Mar 17 12:36:46 2020 +0100
+
+    Merge pull request #3 from timonmerk/master
+    
+    changed depency file
+
+[33mcommit b39fb65edbefb521475b99840bb34cb2fd81d0ab[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Mar 17 12:35:26 2020 +0100
+
+    added m1 dependencies
+
+[33mcommit e78f7737a7cc27cc067fcf1afab36549767ac81b[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Mar 17 12:28:21 2020 +0100
+
+    changed file structure
+
+[33mcommit 61aa1300563de6b736d4d88f95d1307744792721[m
+Merge: 52209e9 fb37704
+Author: Wolf-Julian Neumann <50333569+neumann-wj@users.noreply.github.com>
+Date:   Mon Mar 9 13:27:26 2020 +0100
+
+    Merge pull request #2 from timonmerk/master
+    
+    Error fixed for Time-Frequency calculation
+
+[33mcommit fb37704ff4bb44e26a18a21c2aa0f1ea147aab26[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Sat Mar 7 06:43:58 2020 +0100
+
+    adapted ipynb documentation report and implemented final CV
+
+[33mcommit 3c908a7dad4cafc7d750714b4d5b3c16c1641eba[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Mar 6 15:00:26 2020 +0100
+
+    added train label estimation for CV output, added time concat
+
+[33mcommit 0212ca8a4992a5c8036c33a22cb783af8a5be6ab[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Fri Mar 6 06:59:32 2020 +0100
+
+    added os path support, usaable in Mac and windows; fix for grid points which only occur in one or no patient
+
+[33mcommit 082917d30ff910e5b914cb7ede1218bc59c6dc26[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Mar 5 14:12:37 2020 +0100
+
+    fixed error in variance and calculation and implemented mne_filter function
+
+[33mcommit 52209e926fba21de25c01f24a1f2e92f717bae4a[m
+Author: Wolf-Julian Neumann <50333569+neumann-wj@users.noreply.github.com>
+Date:   Sun Mar 1 23:59:18 2020 +0100
+
+    update
+
+[33mcommit e1c62f510a090e5bb7a8d3b56cebb6c40a202378[m
+Merge: 1a47802 b7da026
+Author: Wolf-Julian Neumann <50333569+neumann-wj@users.noreply.github.com>
+Date:   Sat Feb 29 15:38:44 2020 +0100
+
+    Merge pull request #1 from timonmerk/master
+    
+    added preliminary toolbox implementation
+
+[33mcommit b7da026f0abf37f8a048921215123f666e9a12d1[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Thu Feb 27 11:57:33 2020 +0100
+
+    added files for CrossValidation and ipynb for usage explanation
+
+[33mcommit 47d737b672860a4d896ed23993db0256c43b6081[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Wed Feb 26 13:58:33 2020 +0100
+
+    added rewrite int_data which enables functionality to downsample interpolated run files, includes also function to rewrite files for one patient struct - turned out to be space consuming
+    added leave_one_out_CV.py - read in data from interpolated run files patient and grid point respectively
+    for a CrossValidation data can be read from all patients sharing that grid point for train and test purposes
+    lightweight RandomForest CV implementation added, which writes out test data prediction crossvalidated
+    not tested, due to data size dimension
+
+[33mcommit c8235ce00f885552f8e6176dc60e28ad37e92d30[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Feb 25 21:44:26 2020 +0100
+
+    added support for merging interpolation files
+    added function to write BIDS format from mat raw files
+
+[33mcommit e3f3022ed71c1450d492894557557ea6456807a7[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Tue Feb 25 15:29:45 2020 +0100
+
+    added functionality to interpolate runs with different number of electrode channels
+
+[33mcommit 799c8c24aec6bc5820c700009e9a0506edc96a7f[m
+Author: timonmerk <timon.merk95@gmail.com>
+Date:   Mon Feb 24 14:24:23 2020 +0100
+
+    added preliminary toolbox implementation
+
+[33mcommit 1a478025aa66ef79c163e83fa581da4444950f25[m
+Author: unknown <julian.neumann@charite.de>
+Date:   Sat Feb 15 11:28:02 2020 +0100
+
+    change env
+
+[33mcommit 9f61fc707a9f5be52f154daf011bf7d26dae9d03[m
+Author: neumann-wj <julian.neumann@charite.de>
+Date:   Wed Feb 5 15:59:19 2020 +0100
+
+    added filetree
+
+[33mcommit 8f33fa7961a0ed3bf55ed134f2e47553db979d8b[m
+Author: neumann-wj <julian.neumann@charite.de>
+Date:   Wed Feb 5 15:27:18 2020 +0100
+
+    Add example for perceive
+
+[33mcommit d75e2f1b6f015b21abf2126e027caa7cf8528416[m
+Author: neumann-wj <julian.neumann@charite.de>
+Date:   Wed Feb 5 15:24:36 2020 +0100
+
+    Remove unnecessary files and updated README
+
+[33mcommit 21277b5e657e153d8d5b33cc327c4915f096de3f[m
+Author: neumann-wj <julian.neumann@charite.de>
+Date:   Wed Feb 5 15:18:35 2020 +0100
+
+    Anonymize function added to icn_perceive
+
+[33mcommit 1d357ca8ee303cddf9111d1f35f8f2e0b17721dd[m
+Author: Wolf-Julian Neumann <50333569+neumann-wj@users.noreply.github.com>
+Date:   Fri Jan 31 17:52:33 2020 +0100
+
+    Add files via upload
+
+[33mcommit 0a6b67129cb0e19788e33ae5072e5c0c3048e24a[m
+Author: Wolf-Julian Neumann <50333569+neumann-wj@users.noreply.github.com>
+Date:   Fri Jan 31 16:21:55 2020 +0100
+
+    Delete icn_percept.py
+
+[33mcommit 910bf7fa024ecd9ed33c125fb6041f6a4b967595[m
+Author: Wolf-Julian Neumann <50333569+neumann-wj@users.noreply.github.com>
+Date:   Fri Jan 31 16:16:34 2020 +0100
+
+    First commit
+
+[33mcommit 5357e89b76c33895dada7959a71f7481d236b492[m
+Author: Wolf-Julian Neumann <50333569+neumann-wj@users.noreply.github.com>
+Date:   Fri Jan 31 16:14:54 2020 +0100
+
+    Initial commit
