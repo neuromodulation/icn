@@ -1,3 +1,9 @@
+import numpy
+import scipy
+from plotly import express
+from pandas import DataFrame
+from scipy.signal import decimate, detrend
+
 def rms(data, axis=-1):
     """
     returns the Root Mean Square (RMS) value of data along the given axis
