@@ -60,3 +60,17 @@ def generator_regression(features, labels, batch_size, epoch_size, rebalance=Fal
                 yield batch_features_, batch_labels_
             else:
                 yield batch_features, batch_labels
+
+
+
+def get_label_from_gen(gen_, X_, batch_size):
+    """
+    well this function is necessary to get the respective training and validation labels which
+        had been provided by the generator
+    """
+    for i in range(int(X_.shape[0] / batch_size)):
+        if i == 0:
+            arr = np.array(next(gen_)[1])
+        else:
+            arr = np.concatenate((arr, next(gen_)[1]), axis=0)
+    return arr

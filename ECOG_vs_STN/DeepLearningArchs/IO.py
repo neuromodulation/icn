@@ -399,3 +399,46 @@ def write_all_M1_channel_files(settings, cortex_ref='average', subcortex_ref='-'
                 df.to_csv(ch_file[:-12]+'channels_M1.tsv', sep='\t')
 
                 BIDS_channel_tsv_files.append(ch_file)
+
+
+def get_data_raw_combined(sub, sess, loc, f_, PATH):
+    start = 0
+    for f in f_:
+        dat, chs = read_BIDS_file(os.path.join(PATH, f))
+        if loc == "ECOG":
+            idx__ = [idx for idx, ch in enumerate(chs) if ch.startswith("E") or ch.startswith("M")]
+        else:
+            if len([idx for idx, ch in enumerate(chs) if ch.startswith("S")]) == 0:
+                continue
+            idx__ = [idx for idx, ch in enumerate(chs) if ch.startswith("S") or ch.startswith("M")]
+        if start == 0:
+            start = 1
+            dat_ = dat[idx__, :]
+            chs_ = chs  # chs might change in other runs
+        else:
+            if dat[idx__].shape[0] == dat_.shape[0]:
+                dat_ = np.concatenate((dat_, dat[idx__, :]), axis=1)
+
+    print(chs)
+    if chs[-2] == "MOV_RIGHT_CLEAN":
+        if sess == "right":
+            y_ips = dat_[-2, :]
+        elif sess == "left":
+            y_con = dat_[-2, :]
+    if chs[-2] == "MOV_LEFT_CLEAN":
+        if sess == "right":
+            y_con = dat_[-2, :]
+        elif sess == "left":
+            y_ips = dat_[-2, :]
+    if chs[-1] == "MOV_RIGHT_CLEAN":
+        if sess == "right":
+            y_ips = dat_[-1, :]
+        elif sess == "left":
+            y_con = dat_[-1, :]
+    if chs[-1] == "MOV_LEFT_CLEAN":
+        if sess == "right":
+            y_con = dat_[-1, :]
+        elif sess == "left":
+            y_ips = dat_[-1, :]
+    return dat_[:-4, :], y_con, y_ips
+
