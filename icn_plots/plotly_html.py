@@ -1,7 +1,7 @@
 import numpy
 from plotly import express
 from pandas import DataFrame
-from scipy.signal import decimate
+from scipy.signal import decimate, detrend
 
 
 def rms(data, axis=-1):
@@ -16,9 +16,10 @@ def rms(data, axis=-1):
 
 
 def sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name,
-               do_decimate=True, do_normalize=True, do_demean=True):
+               do_decimate=True, do_normalize=True, do_detrend="linear"):
     """
     Creates (exports) the signals as an HTML plotly plot
+
     Arguments:
         time_array: numpy array of time stamps (seconds)
         signals_array: a 2D-array of signals with shape (#channels, #samples)
@@ -29,36 +30,39 @@ def sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name,
             (default and recommended value is True)
         do_normalize: dividing the signal by the root mean square value for normalization
             (default and recommended value is True)
-        do_demean: removing the mean of the signals (not necessary for filtered signals)
-            (default and recommended value is True)
+        do_detrend: The type of detrending.
+            If do_detrend == 'linear' (default), the result of a linear least-squares fit to data is subtracted from data.
+            If do_detrend == 'constant', only the mean of data is subtracted.
+            else, no detrending
     
     returns nothing
     """
-    
-    assert signals_array.shape[0] != channels_array.squeeze().shape[0], \
-            "signals_array ! channels_array Dimension mismatch!"
-    assert signals_array.shape[1] != time_array.squeeze().shape[0], \
+
+    assert signals_array.shape[0] == channels_array.squeeze().shape[0], \
+        "signals_array ! channels_array Dimension mismatch!"
+    assert signals_array.shape[1] == time_array.squeeze().shape[0], \
         "signals_array ! time_array Dimension mismatch!"
-    
+
     if do_decimate:
         signals_array = decimate(signals_array, int(samp_freq / 200))
         time_array = decimate(time_array, int(samp_freq / 200))
-    if do_demean:
-        signals_array = signals_array - signals_array.mean(axis=1).reshape(-1, 1)
+    if do_detrend == "linear" or do_detrend == "constant":
+        signals_array = detrend(signals_array, axis= 1, type=do_detrend, overwrite_data=True)
     if do_normalize:
         signals_array = signals_array / rms(signals_array, axis=1).reshape(-1, 1)
-    
+
     offset_value = 2 * rms(signals_array)  # RMS value
     signals_array = signals_array + offset_value * (numpy.arange(len(channels_array)).reshape(-1, 1))
-    
+
     signals_df = DataFrame(data=signals_array.T, index=time_array, columns=channels_array)
+
     fig = express.line(signals_df, x=signals_df.index, y=signals_df.columns,
-            line_shape="spline", render_mode="svg",
-            labels=dict(index="Time (s)",
-                        value="(a.u.)",
-                        variable="Channel"))
-    fig.update_layout(yaxis = dict(tickmode = 'array',
-                         tickvals = offset_value * numpy.arange(len(channels_array)),
-                         ticktext = channels_array))
-    
+                       line_shape="spline", render_mode="svg",
+                       labels=dict(index="Time (s)",
+                                   value="(a.u.)",
+                                   variable="Channel"))
+    fig.update_layout(yaxis=dict(tickmode='array',
+                                 tickvals=offset_value * numpy.arange(len(channels_array)),
+                                 ticktext=channels_array))
+
     fig.write_html(str(file_name) + ".html")
