@@ -98,4 +98,5 @@ def raw_plotly(mne_raw, file_name, t_slice=(), plot_title=None,
         signals_array, time_array = mne_raw[:, :]
 
     sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name,
-               do_decimate, do_normalize, do_detrend)
+               plot_title, do_decimate, do_normalize, do_detrend)
+
