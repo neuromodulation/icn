@@ -38,10 +38,16 @@ def sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name,
     
     returns nothing
     """
-
-    assert signals_array.shape[0] == channels_array.squeeze().shape[0], \
+    
+    time_array = numpy.squeeze(time_array)
+    signals_array = numpy.squeeze(signals_array)
+    channels_array = numpy.squeeze(channels_array)
+    if signals_array.ndim == 1:
+        signals_array = signals_array.reshape(1, -1)
+    
+    assert signals_array.shape[0] == channels_array.shape[0], \
         "signals_array ! channels_array Dimension mismatch!"
-    assert signals_array.shape[1] == time_array.squeeze().shape[0], \
+    assert signals_array.shape[1] == time_array.shape[0], \
         "signals_array ! time_array Dimension mismatch!"
 
     if do_decimate:
@@ -50,7 +56,8 @@ def sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name,
     if do_detrend == "linear" or do_detrend == "constant":
         signals_array = detrend(signals_array, axis= 1, type=do_detrend, overwrite_data=True)
     if do_normalize:
-        signals_array = signals_array / rms(signals_array, axis=1).reshape(-1, 1)
+        eps_ = numpy.finfo(float).eps
+        signals_array = signals_array / (rms(signals_array, axis=1).reshape(-1, 1) + eps_)
 
     offset_value = 2 * rms(signals_array)  # RMS value
     signals_array = signals_array + offset_value * (numpy.arange(len(channels_array)).reshape(-1, 1))
@@ -77,7 +84,8 @@ def raw_plotly(mne_raw, file_name, t_slice=(), plot_title=None,
     Arguments:
         mne_raw: MNE raw object (output of mne.io.read_raw_...)
         file_name: name (and directory) for the exported html file
-        t_slice: tuple of start and end slice (seconds)
+        t_slice: tuple of `start` and `end` slice (seconds)
+            example: `t_slice = (1, 5)` returns the 1s-5s slice
         plot_title: Plot title (default is None)
         do_decimate: down-sampling (decimating) the signal to 200Hz sampling rate
             (default and recommended value is True)
@@ -87,7 +95,7 @@ def raw_plotly(mne_raw, file_name, t_slice=(), plot_title=None,
             If do_detrend == 'linear' (default), the result of a linear least-squares fit to data is subtracted from data.
             If do_detrend == 'constant', only the mean of data is subtracted.
             else, no detrending
-    
+
     returns nothing
     """
     samp_freq = int(mne_raw.info["sfreq"])
