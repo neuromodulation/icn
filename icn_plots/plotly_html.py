@@ -61,9 +61,17 @@ def sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name, 
     if do_normalize:
         eps_ = numpy.finfo(float).eps
         signals_array = signals_array / (rms(signals_array, axis=1).reshape(-1, 1) + eps_)
+    else:
+        print("We strongly recommend using normalization (setting do_normalize to True)!")
 
-    offset_value = padding * rms(signals_array)  # RMS value
+    # # single offset
+    offset_value = padding * rms(signals_array)
     signals_array = signals_array + offset_value * (numpy.arange(len(channels_array)).reshape(-1, 1))
+    # # individual offset
+    # rms_value = rms(signals_array, axis=1)
+    # offset_value = numpy.zeros(len(rms_value)).reshape(-1, 1)
+    # offset_value[1:, 0] = numpy.cumsum(rms_value)[1:]
+    # signals_array = signals_array + (padding * offset_value)
 
     signals_df = DataFrame(data=signals_array.T, index=time_array, columns=channels_array)
 
