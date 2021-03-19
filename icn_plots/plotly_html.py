@@ -15,8 +15,8 @@ def rms(data, axis=-1):
         return numpy.sqrt(numpy.mean(numpy.square(data), axis=axis))
 
 
-def sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name,
-              plot_title=None, do_decimate=True, do_normalize=True, do_detrend="linear"):
+def sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name, plot_title=None,
+               do_decimate=True, do_normalize=True, do_detrend="linear", padding=2):
     """
     Creates (exports) the signals as an HTML plotly plot
 
@@ -35,6 +35,8 @@ def sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name,
             If do_detrend == 'linear' (default), the result of a linear least-squares fit to data is subtracted from data.
             If do_detrend == 'constant', only the mean of data is subtracted.
             else, no detrending
+        padding: multiplication factor for spacing between signals on the y-axis
+            For highly variant data, use higher values. default is 2 
     
     returns nothing
     """
@@ -51,15 +53,16 @@ def sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name,
         "signals_array ! time_array Dimension mismatch!"
 
     if do_decimate:
-        signals_array = decimate(signals_array, int(samp_freq / 200))
-        time_array = decimate(time_array, int(samp_freq / 200))
+        decimate_factor = min(10, int(samp_freq / 200))
+        signals_array = decimate(signals_array, decimate_factor)
+        time_array = decimate(time_array, decimate_factor)
     if do_detrend == "linear" or do_detrend == "constant":
         signals_array = detrend(signals_array, axis= 1, type=do_detrend, overwrite_data=True)
     if do_normalize:
         eps_ = numpy.finfo(float).eps
         signals_array = signals_array / (rms(signals_array, axis=1).reshape(-1, 1) + eps_)
 
-    offset_value = 2 * rms(signals_array)  # RMS value
+    offset_value = padding * rms(signals_array)  # RMS value
     signals_array = signals_array + offset_value * (numpy.arange(len(channels_array)).reshape(-1, 1))
 
     signals_df = DataFrame(data=signals_array.T, index=time_array, columns=channels_array)
@@ -77,7 +80,7 @@ def sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name,
 
 
 def raw_plotly(mne_raw, file_name, t_slice=(), plot_title=None,
-               do_decimate=True, do_normalize=True, do_detrend="linear"):
+               do_decimate=True, do_normalize=True, do_detrend="linear", padding=2):
     """
     Creates (exports) the (sliced) MNE raw signal as an HTML plotly plot
 
@@ -95,6 +98,8 @@ def raw_plotly(mne_raw, file_name, t_slice=(), plot_title=None,
             If do_detrend == 'linear' (default), the result of a linear least-squares fit to data is subtracted from data.
             If do_detrend == 'constant', only the mean of data is subtracted.
             else, no detrending
+        padding: multiplication factor for spacing between signals on the y-axis
+            For highly variant data, use higher values. default is 2 
 
     returns nothing
     """
@@ -105,6 +110,5 @@ def raw_plotly(mne_raw, file_name, t_slice=(), plot_title=None,
     else:
         signals_array, time_array = mne_raw[:, :]
 
-    sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name,
-               plot_title, do_decimate, do_normalize, do_detrend)
-
+    sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name, plot_title=plot_title,
+               do_decimate=do_decimate, do_normalize=do_normalize, do_detrend=do_detrend, padding=padding)
