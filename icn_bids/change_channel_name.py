@@ -52,7 +52,7 @@ for my_path_file in my_path_files:
 
         # raw_arr.set_channel_types(mapping_channeltypes)
         mne.rename_channels(raw.info, mapping=mapping_channelnames)
-        mne.set_channeltype(raw.info, mapping=mapping_channelnames)
+        mne.set_channel_types(raw.info, mapping=mapping_channeltypes)
 
         write_raw_bids(raw=raw, bids_path=bids_path, overwrite=True)
 
