@@ -19,7 +19,7 @@ def rms(data, axis=-1):
 def sig_plot(time_array, signals_array, channels_array, samp_freq, plot_title=None,
              do_decimate=True, do_normalize=True, do_detrend="linear", padding=2):
     """
-    Creates (exports) the signals as a matplotlib plot but does not show or save!
+    Creates the signals as a matplotlib plot but does not show or save the plot!
 
     Arguments:
         time_array: numpy array of time stamps (seconds)
