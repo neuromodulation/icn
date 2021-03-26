@@ -1,5 +1,6 @@
 import numpy
 import scipy
+import matplotlib.pyplot
 from plotly import express
 from pandas import DataFrame
 from scipy.signal import decimate, detrend
@@ -14,7 +15,65 @@ def rms(data, axis=-1):
     else:
         return numpy.sqrt(numpy.mean(numpy.square(data), axis=axis))
 
+    
+def sig_plot(time_array, signals_array, channels_array, samp_freq, plot_title=None,
+             do_decimate=True, do_normalize=True, do_detrend="linear", padding=2):
+    """
+    Creates (exports) the signals as a matplotlib plot but does not show or save!
 
+    Arguments:
+        time_array: numpy array of time stamps (seconds)
+        signals_array: a 2D-array of signals with shape (#channels, #samples)
+        channels_array: numpy array (or list) of channel names
+        samp_freq: sampling frequency (Hz)
+        plot_title: Plot title (default is None)
+        do_decimate: down-sampling (decimating) the signal to 200Hz sampling rate
+            (default and recommended value is True)
+        do_normalize: dividing the signal by the root mean square value for normalization
+            (default and recommended value is True)
+        do_detrend: The type of detrending.
+            If do_detrend == 'linear' (default), the result of a linear least-squares fit to data is subtracted from data.
+            If do_detrend == 'constant', only the mean of data is subtracted.
+            else, no detrending
+        padding: multiplication factor for spacing between signals on the y-axis
+            For highly variant data, use higher values. default is 2 
+    
+    returns nothing
+    
+    Example:
+        ```python
+        times = numpy.linspace(0, 10, 2000)
+        channels = numpy.array(["a", "b", "c"])
+        signals = numpy.random.normal(size=(3, 2000))
+        fsample = 200
+        matplotlib.pyplot.figure(figsize=(16, 9))
+        sig_plot(times, signals, channels, fsample, plot_title="Detrended raw signals",
+                 do_decimate=True, do_normalize=True, do_detrend="linear", padding=6)
+        matplotlib.pyplot.savefig("SignalsPlot.svg")
+        matplotlib.pyplot.show()
+        ```
+    """
+    if do_decimate:
+        decimate_factor = min(10, int(samp_freq / 200))
+        signals_array = decimate(signals_array, decimate_factor)
+        time_array = decimate(time_array, decimate_factor)
+    if do_detrend == "linear" or do_detrend == "constant":
+        signals_array = detrend(signals_array, axis= 1, type=do_detrend, overwrite_data=True)
+    if do_normalize:
+        eps_ = numpy.finfo(float).eps
+        signals_array = signals_array / (rms(signals_array, axis=1).reshape(-1, 1) + eps_)
+
+    offset_point = padding * numpy.std(signals_array, axis=1)
+
+    matplotlib.pyplot.title(plot_title)
+    ax = matplotlib.pyplot.gca()
+    for i, ch_label in enumerate(channels_array):
+        matplotlib.pyplot.plot(time_array, signals_array[i] + i*offset_point[i], label=ch_label)
+    matplotlib.pyplot.yticks(numpy.linspace(0, i*offset_point[i], i+1, endpoint=True), channels_array)
+    matplotlib.pyplot.xlabel("time (s)")
+    matplotlib.pyplot.ylabel("channels")
+
+    
 def sig_plotly(time_array, signals_array, channels_array, samp_freq, file_name, plot_title=None,
                do_decimate=True, do_normalize=True, do_detrend="linear", padding=2):
     """
