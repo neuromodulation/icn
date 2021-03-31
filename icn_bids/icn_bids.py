@@ -9,9 +9,42 @@ import pandas as pd
 import mne
 from mne_bids import read_raw_bids
 from mne_bids.copyfiles import copyfile_brainvision
+from bids import BIDSLayout
 from pybv import write_brainvision
 
 import icn_tb as tb
+
+
+def get_electrodes(sub, ch_type, space, bids_path, layout):
+    """Returns pandas dataframe of electrodes of a given subject in a BIDS root directory
+
+    Args:
+        sub (string): BIDS subject
+        ch_type (string): BIDS specific channel type in channels.tsv
+        space (string) : BIDS specific electrode space
+        bids_path (string): BIDS root directory
+        layout (pybids BIDSLayout) : can be previously allocated to save time in repetitive iteration
+
+    Returns:
+        pandas dataframe: run concatenated electrode tsv dataframe for given subject and channel type
+    """
+
+    if layout is None:
+        layout = BIDSLayout(bids_path)
+
+    channels = layout.get(subject=sub, extension='.tsv', suffix='channels')
+    electrodes = layout.get(subject=sub, space=space, extension='.tsv', suffix='electrodes')
+
+    if len(channels) != len(electrodes):
+        assert False, "channel.tsv length and electrodes.tsv does not match"
+
+    df_electrodes = pd.DataFrame()
+
+    for channel_file, electrode_file in zip(channels, electrodes):
+        df_run = electrode_file.get_df()[np.array(channel_file.get_df()["type"] == ch_type)]
+        df_electrodes = pd.concat([df_electrodes,df_run]).drop_duplicates().reset_index(drop=True)    
+        
+    return df_electrodes
 
 
 def bids_rewrite_file(raw, bids_path, return_raw=False):
