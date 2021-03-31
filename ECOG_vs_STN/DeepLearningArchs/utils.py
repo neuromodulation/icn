@@ -3,7 +3,7 @@ import tensorflow as tf
 from sklearn import metrics
 import matplotlib.pyplot as plt
 
-
+epsilon = 1e-10
 
 def scheduler(epoch, lr, DECAY_EVERY = 100,DECAY_RATE = 0.95):
     if epoch % DECAY_EVERY == 0:
@@ -18,7 +18,7 @@ def correlation__(x, y):
     xm, ym = x - mx, y - my
     r_num = tf.math.reduce_mean(tf.multiply(xm, ym))
     r_den = tf.math.reduce_std(xm) * tf.math.reduce_std(ym)
-    return r_num / r_den
+    return r_num / (r_den + epsilon)
 
 def plot_prediction(model, x,y, batch_size):
     preds = model.predict(x,batch_size=batch_size, verbose = 1)
