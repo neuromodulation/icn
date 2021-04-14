@@ -24,9 +24,13 @@ def icn_plot_raw_signals(times_or_fsample, raw_signals, channel_names=None,html_
     
     Example: 
         1) plot 20 seconds of random data with a putative sampling rate of 50 Hz
-            icn_plot_raw_signals(50, numpy.random.sample(1000))
-        2) plot 10 seconds of random data from 10 putative channels and a sampling rate of 1000 Hz
-            icn_plot_raw_signals(1000, numpy.random.sample((10,20000)))
+            fsample = 50
+            raw_signals = numpy.random.sample(1000)
+            icn_plot_raw_signals(fsample, raw_signals) 
+            OR you can plug inputs directly: icn_plot_raw_signals(50,numpy.random.sample(1000))
+        2) plot 10 seconds of random data from 10 putative channels and a sampling rate of 1000 Hz using an available times vector
+            times = numpy.linspace(5,15,20000)        
+            icn_plot_raw_signals(times, numpy.random.sample((10,20000)))
         3) add channel names to three raw signals sampled at 100 Hz
             icn_plot_raw_signals(100, numpy.random.sample((3,20000)),['ECoGL1','ECoGL2','STNL01'])
         4) save the last version as a plotly html file
