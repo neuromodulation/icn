@@ -5,6 +5,77 @@ from plotly import express
 from pandas import DataFrame
 from scipy.signal import decimate, detrend
 
+
+def icn_plot_raw_signals(times_or_fsample, raw_signals, channel_names=None,html_filename=False):
+    
+    """
+    Creates a matplotlib figure with option to save as html file with plotly
+
+    Arguments:
+        time_or_fsample: input can be a times vector (in seconds) or the sampling rate (e.g. 250 Hz)
+        raw_signals: a 2D-array of signals
+        channels_names (optional): numpy array (or list) of channel names
+        html_filename (optional): title and filename of the plot to save it as plotly html
+
+    raw_signals = numpy.asarray(numpy.random.sample([5,1000]))
+    times_or_fsample = 50
+
+    returns nothing
+    
+    Example: 
+        1) plot 20 seconds of random data with a putative sampling rate of 50 Hz
+            icn_plot_raw_signals(50, numpy.random.sample(1000))
+        2) plot 10 seconds of random data from 10 putative channels and a sampling rate of 1000 Hz
+            icn_plot_raw_signals(1000, numpy.random.sample((10,20000)))
+        3) add channel names to three raw signals sampled at 100 Hz
+            icn_plot_raw_signals(100, numpy.random.sample((3,20000)),['ECoGL1','ECoGL2','STNL01'])
+        4) save the last version as a plotly html file
+            icn_plot_raw_signals(100, numpy.random.sample((3,20000)),['ECoGL1','ECoGL2','STNL01'],"Combined_LFP_ECoG_plot")
+    """
+
+    if len(raw_signals.shape) == 1:
+        raw_signals = numpy.array(raw_signals,ndmin=2)
+        
+    if raw_signals.shape[1] > raw_signals.shape[0]:
+        raw_signals = raw_signals.transpose()
+   
+    if isinstance(times_or_fsample,int) or len(times_or_fsample) == 1:
+        times_or_fsample = numpy.linspace(0,raw_signals.shape[0]/times_or_fsample,raw_signals.shape[0])
+
+    for i in range(0,raw_signals.shape[1]):
+        raw_signals[:,i] = scipy.stats.zscore(raw_signals[:,i])/10+i
+    
+    if not channel_names:
+        channel_names = list()
+        for i in range(0,raw_signals.shape[1]):
+            channel_names.append('channel_' + str(i))
+
+
+
+    matplotlib.pyplot.plot(times_or_fsample, raw_signals)
+    matplotlib.pyplot.yticks(range(0,raw_signals.shape[1]),channel_names,rotation=45)
+    matplotlib.pyplot.xlim((times_or_fsample[0], times_or_fsample[-1]))
+    matplotlib.pyplot.ylim((-1,raw_signals.shape[1]))
+    matplotlib.pyplot.xlabel('Time [s]')
+    matplotlib.pyplot.ylabel('Channels')
+    
+    if html_filename: 
+        matplotlib.pyplot.title(html_filename)
+        signals_df = DataFrame(raw_signals, times_or_fsample, columns=channel_names)
+
+        fig = express.line(signals_df, x=signals_df.index, y=signals_df.columns,
+                       line_shape="spline", render_mode="svg",
+                       labels=dict(index="Time [s]",
+                                   value="Z",
+                                   variable="Channel"), title=html_filename)
+        fig.update_layout(yaxis=dict(tickmode='array',
+                                 tickvals=list(range(0,raw_signals.shape[1])),
+                                 ticktext=channel_names))
+        fig.write_html(str(html_filename + ".html"))
+    
+
+
+
 def rms(data, axis=-1):
     """
     returns the Root Mean Square (RMS) value of data along the given axis
