@@ -17,9 +17,6 @@ def icn_plot_raw_signals(times_or_fsample, raw_signals, channel_names=None,html_
         channels_names (optional): numpy array (or list) of channel names
         html_filename (optional): title and filename of the plot to save it as plotly html
 
-    raw_signals = numpy.asarray(numpy.random.sample([5,1000]))
-    times_or_fsample = 50
-
     returns nothing
     
     Example: 
