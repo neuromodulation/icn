@@ -7,3 +7,5 @@ Small mistakes in dataset description and participants.json file
 
 rawdata_new is now just rawdata
 the other data went to "to be removed" folder
+
+remaining issue: the date-time update for scan.tsv file
