@@ -1,5 +1,6 @@
 2021.04.20 - Jonathan
 made a backup of the Berlin dataset into the backup channel
 
-How do I know when BD is actually
-Boston Directional SenSight? -> update sidecars
+sidecars are updated:
+exception: Sensight
+Small mistakes in dataset description and participants.json file
