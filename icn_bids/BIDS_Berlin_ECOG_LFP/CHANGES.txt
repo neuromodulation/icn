@@ -1,2 +1,5 @@
 2021.04.20 - Jonathan
 made a backup of the Berlin dataset into the backup channel
+
+How do I know when BD is actually
+Boston Directional SenSight? -> update sidecars
