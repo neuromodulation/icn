@@ -1,0 +1,19 @@
+Revision history for BIDS_Berlin_ECOG_LFP dataset
+
+0.02 2021-04-20
+
+ - Added subject 005
+ - Updated sidecar files
+   - **ieeg.json
+   - **scans.json
+   - **scans.tsv
+   - participants.json
+   - participants.tsv
+   - dataset_description.json
+ - Updated channel names for all subjects
+ - Updated channel types for all subjects
+ - Added empty reference channels when missing
+
+0.01 2021-02-10
+
+ - Initial release
