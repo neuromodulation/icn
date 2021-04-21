@@ -1,11 +1,34 @@
+Revision history for BIDS_Berlin_ECOG_LFP dataset
+2021.04.21 - Jonathan
+
+-updated the acquisition times in the scans -> code can be found in the repository
+-changed the dictionaries of participants.json files
+-changed the \ in / for subject 5 json files
+
 2021.04.20 - Jonathan
-made a backup of the Berlin dataset into the backup channel
-
-sidecars are updated:
-exception: Sensight
-Small mistakes in dataset description and participants.json file
-
-rawdata_new is now just rawdata
+- made a backup of the Berlin dataset into the backup channel
+- sidecars are updated:
+   - **ieeg.json
+   - **scans.json
+   - **scans.tsv
+   - participants.json
+   - participants.tsv
+   - dataset_description.json
+- exception: Sensight
+- Small mistakes in dataset description and participants.json file
+-rawdata_new is now just rawdata
 the other data went to "to be removed" folder
+-remaining issue: the date-time update for scan.tsv file
 
-remaining issue: the date-time update for scan.tsv file
+ - Added subject 005 and changed the name
+
+
+0.02 2021-04-20 -Richard
+
+ - Updated channel names for all subjects
+ - Updated channel types for all subjects
+ - Added empty reference channels when missing
+
+0.01 2021-02-10
+
+ - Initial release
