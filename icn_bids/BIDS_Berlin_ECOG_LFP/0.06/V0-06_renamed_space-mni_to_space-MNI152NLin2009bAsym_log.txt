@@ -1,0 +1,69 @@
+log for C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata_new\names_changed_at_23-04-2021_time_11-03-42
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-001\ses-EphysMedOff01\ieeg\sub-001_ses-EphysMedOff01_space-mni_coordsystem.json 
+ into sub-001_ses-EphysMedOff01_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-001\ses-EphysMedOff01\ieeg\sub-001_ses-EphysMedOff01_space-mni_electrodes.tsv 
+ into sub-001_ses-EphysMedOff01_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-001\ses-EphysMedOn01\ieeg\sub-001_ses-EphysMedOn01_space-mni_coordsystem.json 
+ into sub-001_ses-EphysMedOn01_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-001\ses-EphysMedOn01\ieeg\sub-001_ses-EphysMedOn01_space-mni_electrodes.tsv 
+ into sub-001_ses-EphysMedOn01_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-001\ses-EphysMedOn02\ieeg\sub-001_ses-EphysMedOn02_space-mni_coordsystem.json 
+ into sub-001_ses-EphysMedOn02_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-001\ses-EphysMedOn02\ieeg\sub-001_ses-EphysMedOn02_space-mni_electrodes.tsv 
+ into sub-001_ses-EphysMedOn02_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-002\ses-EphysMedOff01\ieeg\sub-002_ses-EphysMedOff01_space-mni_coordsystem.json 
+ into sub-002_ses-EphysMedOff01_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-002\ses-EphysMedOff01\ieeg\sub-002_ses-EphysMedOff01_space-mni_electrodes.tsv 
+ into sub-002_ses-EphysMedOff01_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-002\ses-EphysMedOff02\ieeg\sub-002_ses-EphysMedOff02_space-mni_coordsystem.json 
+ into sub-002_ses-EphysMedOff02_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-002\ses-EphysMedOff02\ieeg\sub-002_ses-EphysMedOff02_space-mni_electrodes.tsv 
+ into sub-002_ses-EphysMedOff02_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-002\ses-EphysMedOff03\ieeg\sub-002_ses-EphysMedOff03_space-mni_coordsystem.json 
+ into sub-002_ses-EphysMedOff03_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-002\ses-EphysMedOff03\ieeg\sub-002_ses-EphysMedOff03_space-mni_electrodes.tsv 
+ into sub-002_ses-EphysMedOff03_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-003\ses-EphysMedOff01\ieeg\sub-003_ses-EphysMedOff01_space-mni_coordsystem.json 
+ into sub-003_ses-EphysMedOff01_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-003\ses-EphysMedOff01\ieeg\sub-003_ses-EphysMedOff01_space-mni_electrodes.tsv 
+ into sub-003_ses-EphysMedOff01_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-003\ses-EphysMedOn01\ieeg\sub-003_ses-EphysMedOn01_space-mni_coordsystem.json 
+ into sub-003_ses-EphysMedOn01_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-003\ses-EphysMedOn01\ieeg\sub-003_ses-EphysMedOn01_space-mni_electrodes.tsv 
+ into sub-003_ses-EphysMedOn01_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-003\ses-EphysMedOn02\ieeg\sub-003_ses-EphysMedOn02_space-mni_coordsystem.json 
+ into sub-003_ses-EphysMedOn02_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-003\ses-EphysMedOn02\ieeg\sub-003_ses-EphysMedOn02_space-mni_electrodes.tsv 
+ into sub-003_ses-EphysMedOn02_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-003\ses-EphysMedOn03\ieeg\sub-003_ses-EphysMedOn03_space-mni_coordsystem.json 
+ into sub-003_ses-EphysMedOn03_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-003\ses-EphysMedOn03\ieeg\sub-003_ses-EphysMedOn03_space-mni_electrodes.tsv 
+ into sub-003_ses-EphysMedOn03_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_space-mni_coordsystem.json 
+ into sub-004_ses-EphysMedOff01_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_space-mni_electrodes.tsv 
+ into sub-004_ses-EphysMedOff01_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOn01\ieeg\sub-004_ses-EphysMedOn01_space-mni_coordsystem.json 
+ into sub-004_ses-EphysMedOn01_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOn01\ieeg\sub-004_ses-EphysMedOn01_space-mni_electrodes.tsv 
+ into sub-004_ses-EphysMedOn01_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOn02\ieeg\sub-004_ses-EphysMedOn02_space-mni_coordsystem.json 
+ into sub-004_ses-EphysMedOn02_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOn02\ieeg\sub-004_ses-EphysMedOn02_space-mni_electrodes.tsv 
+ into sub-004_ses-EphysMedOn02_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOff01\ieeg\sub-005_ses-EphysMedOff01_space-mni_coordsystem.json 
+ into sub-005_ses-EphysMedOff01_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOff01\ieeg\sub-005_ses-EphysMedOff01_space-mni_electrodes.tsv 
+ into sub-005_ses-EphysMedOff01_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOff02\ieeg\sub-005_ses-EphysMedOff02_space-mni_coordsystem.json 
+ into sub-005_ses-EphysMedOff02_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOff02\ieeg\sub-005_ses-EphysMedOff02_space-mni_electrodes.tsv 
+ into sub-005_ses-EphysMedOff02_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_space-mni_coordsystem.json 
+ into sub-005_ses-EphysMedOn01_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_space-mni_electrodes.tsv 
+ into sub-005_ses-EphysMedOn01_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_space-mni_coordsystem.json 
+ into sub-005_ses-EphysMedOn02_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_space-mni_electrodes.tsv 
+ into sub-005_ses-EphysMedOn02_space-MNI152NLin2009bAsym_electrodes.tsv 

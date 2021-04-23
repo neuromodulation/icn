@@ -65,15 +65,29 @@ new_chans = {
         'ACC_L_Z_D2_TM'
         'ANALOG_L_ROTA_C'
         };
+for k=1:length(new_chans)
+    if length(new_chans{k}) > 15
+        disp(['Cropping the following channel to 15 chars: ' new_chans{k}])
+        new_chans{k}=new_chans{k}(1:15);
+    end
+end
 data2.label = new_chans;
 data2.hdr.nChans = length(new_chans);
 data2.hdr.label = data2.label;
 chantype = cell(length(new_chans),1);
-chantype(1:8) = {'SEEG'};
-chantype(9:14) = {'ECOG'};
-chantype(15:16) = {'EEG'};
-chantype(17:18) = {'EMG'};
-chantype(19:end) = {'MISC'};
+for k=1:length(new_chans)
+    if contains(new_chans{k}, 'LFP')
+        chantype(k) = {'SEEG'};
+    elseif contains(new_chans{k}, 'ECOG')
+        chantype(k) = {'ECOG'};
+    elseif contains(new_chans{k}, 'EEG')
+        chantype(k) = {'EEG'};
+    elseif contains(new_chans{k}, 'EMG')
+        chantype(k) = {'EMG'}; 
+    else
+        chantype(k) = {'MISC'};
+    end
+end
 data2.hdr.chantype = chantype;
 chanunit = cell(length(new_chans),1);
 chanunit(:) = {'uV'};
@@ -219,12 +233,12 @@ cfg.channels.units              = chanunit;
 %cfg.channels.description        = ft_getopt(cfg.channels, 'description'        , nan);  % OPTIONAL. Brief free-text description of the channel, or other information of interest. See examples below.
 sf = cell(length(new_chans),1);
 sf(:) = {data2.fsample};
-cfg.channels.sampling_frequency = sf;
 cfg.channels.low_cutoff         = n_a;
 cfg.channels.high_cutoff        = n_a;
-cfg.channels.notch              = n_a;
 cfg.channels.reference          = n_a;
 cfg.channels.group              = n_a;
+cfg.channels.sampling_frequency = sf;
+cfg.channels.notch              = n_a;
 cfg.channels.status             = bads;
 cfg.channels.status_description = bads_descr;
 

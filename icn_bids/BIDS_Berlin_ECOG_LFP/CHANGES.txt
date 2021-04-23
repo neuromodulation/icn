@@ -1,33 +1,44 @@
 Revision history for BIDS_Berlin_ECOG_LFP dataset
-2021.04.21 - Jonathan
+
+0.06 2021-04-23
+ - converted all 'iEEGElectrodeGroups' in ieeg.json files to string by Richard Koehler
+ - cropped channel names (>15 chars: 'ANALOG_R_ROTA_CH' to 'ANALOG_R_ROTA_C') by Richard Koehler 
+   using regex tool (v20_relabeltool_Neumann_Lab.py) by Richard Koehler
+ - for certain tasks added missing space in 'TaskName' in ieeg.json files by Richard Koehler
+ - changed "space-mni" to "space-MNI152NLin2009bAsym" by Richard Koehler
+ - sorted columns in **channels.tsv according to BIDS standard by Richard Koehler
+
+0.05 2021-04-22
+ - electrode locations added for all subjects
+
+0.04 2021-04-22
+
+ - subject 005 converted from sourcedata
+ - subject 005 info added to participants.tsv
+ - changed the \ in / for subject 5 json files
+
+0.03 2021-04-21 - Jonathan
 
 -updated the acquisition times in the scans -> code can be found in the repository
 -changed the dictionaries of participants.json files
--changed the \ in / for subject 5 json files
 
-2021.04.20 - Jonathan
-- made a backup of the Berlin dataset into the backup channel
-- sidecars are updated:
+0.02 2021-04-20 - Jonathan
+
+ - Updated and rewrote sidecar files
    - **ieeg.json
    - **scans.json
    - **scans.tsv
    - participants.json
    - participants.tsv
    - dataset_description.json
-- exception: Sensight
-- Small mistakes in dataset description and participants.json file
--rawdata_new is now just rawdata
-the other data went to "to be removed" folder
--remaining issue: the date-time update for scan.tsv file
-
- - Added subject 005 and changed the name
-
 
 0.02 2021-04-20 -Richard
 
- - Updated channel names for all subjects
- - Updated channel types for all subjects
- - Added empty reference channels when missing
+
+ - Updated dataset using MNE-BIDS:
+   - Updated channel names for all subjects
+   - Updated channel types for all subjects
+   - Added empty reference channels when missing
 
 0.01 2021-02-10
 

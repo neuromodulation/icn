@@ -119,7 +119,7 @@ def bids_rewrite_file(raw, bids_path, return_raw=False):
     df = df.reindex(raw.ch_names)
     os.remove(channels_tsv)
     df.to_csv(os.path.join(folder, channels_path.basename + '.tsv'),
-              sep='\t', index=True)
+              sep='\t', na_rep='n/a', index=True)
     # rewrite **electrodes.tsv
     elec_files = []
     for file in os.listdir(folder):
