@@ -1,0 +1,1087 @@
+log for C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\backup\names_changed_at_26-04-2021_time_10-37-06
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_space-MNI152NLin2009bAsym_electrodes.tsv 
+ into sub-005_ses-EphysMedOn01_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed on line 2 
+ ECOG_L_1_SMC_AT	18	-70.5	65	3mm
+ 
+ ECOG_R_1_SMC_AT	18	-70.5	65	3mm
+Changed on line 3 
+ ECOG_L_2_SMC_AT	22	-60.5	70.5	3mm
+ 
+ ECOG_R_2_SMC_AT	22	-60.5	70.5	3mm
+Changed on line 4 
+ ECOG_L_3_SMC_AT	35	-50.5	73	3mm
+ 
+ ECOG_R_3_SMC_AT	35	-50.5	73	3mm
+Changed on line 5 
+ ECOG_L_4_SMC_AT	27.5	-39.6	73.5	3mm
+ 
+ ECOG_R_4_SMC_AT	27.5	-39.6	73.5	3mm
+Changed on line 6 
+ ECOG_L_5_SMC_AT	28	-27	72.5	3mm
+ 
+ ECOG_R_5_SMC_AT	28	-27	72.5	3mm
+Changed on line 7 
+ ECOG_L_6_SMC_AT	28	-17.5	71	3mm
+ 
+ ECOG_R_6_SMC_AT	28	-17.5	71	3mm
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationL_acq-StimOff_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn01_task-BlockRotationL_acq-StimOff_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationL_acq-StimOff_run-01_channels.tsv 
+Changed on line 10 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 11 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 12 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 13 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 14 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationL_acq-StimOff_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn01_task-BlockRotationL_acq-StimOff_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationL_acq-StimOff_run-01_ieeg.vhdr 
+Changed on line 24 
+ Ch9=ECOG_L_1_SMC_AT,,1
+ 
+ Ch9=ECOG_R_1_SMC_AT,,1
+Changed on line 25 
+ Ch10=ECOG_L_2_SMC_AT,,1
+ 
+ Ch10=ECOG_R_2_SMC_AT,,1
+Changed on line 26 
+ Ch11=ECOG_L_3_SMC_AT,,1
+ 
+ Ch11=ECOG_R_3_SMC_AT,,1
+Changed on line 27 
+ Ch12=ECOG_L_4_SMC_AT,,1
+ 
+ Ch12=ECOG_R_4_SMC_AT,,1
+Changed on line 28 
+ Ch13=ECOG_L_5_SMC_AT,,1
+ 
+ Ch13=ECOG_R_5_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_6_SMC_AT,,1
+ 
+ Ch14=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationR_acq-StimOff_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn01_task-BlockRotationR_acq-StimOff_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationR_acq-StimOff_run-01_channels.tsv 
+Changed on line 10 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 11 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 12 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 13 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 14 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationR_acq-StimOff_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn01_task-BlockRotationR_acq-StimOff_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationR_acq-StimOff_run-01_ieeg.vhdr 
+Changed on line 24 
+ Ch9=ECOG_L_1_SMC_AT,,1
+ 
+ Ch9=ECOG_R_1_SMC_AT,,1
+Changed on line 25 
+ Ch10=ECOG_L_2_SMC_AT,,1
+ 
+ Ch10=ECOG_R_2_SMC_AT,,1
+Changed on line 26 
+ Ch11=ECOG_L_3_SMC_AT,,1
+ 
+ Ch11=ECOG_R_3_SMC_AT,,1
+Changed on line 27 
+ Ch12=ECOG_L_4_SMC_AT,,1
+ 
+ Ch12=ECOG_R_4_SMC_AT,,1
+Changed on line 28 
+ Ch13=ECOG_L_5_SMC_AT,,1
+ 
+ Ch13=ECOG_R_5_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_6_SMC_AT,,1
+ 
+ Ch14=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Rest_acq-StimOff_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn01_task-Rest_acq-StimOff_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Rest_acq-StimOff_run-01_channels.tsv 
+Changed on line 10 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 11 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 12 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 13 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 14 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Rest_acq-StimOff_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn01_task-Rest_acq-StimOff_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Rest_acq-StimOff_run-01_ieeg.vhdr 
+Changed on line 24 
+ Ch9=ECOG_L_1_SMC_AT,,1
+ 
+ Ch9=ECOG_R_1_SMC_AT,,1
+Changed on line 25 
+ Ch10=ECOG_L_2_SMC_AT,,1
+ 
+ Ch10=ECOG_R_2_SMC_AT,,1
+Changed on line 26 
+ Ch11=ECOG_L_3_SMC_AT,,1
+ 
+ Ch11=ECOG_R_3_SMC_AT,,1
+Changed on line 27 
+ Ch12=ECOG_L_4_SMC_AT,,1
+ 
+ Ch12=ECOG_R_4_SMC_AT,,1
+Changed on line 28 
+ Ch13=ECOG_L_5_SMC_AT,,1
+ 
+ Ch13=ECOG_R_5_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_6_SMC_AT,,1
+ 
+ Ch14=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationL_acq-StimOff_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedRotationL_acq-StimOff_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationL_acq-StimOff_run-01_channels.tsv 
+Changed on line 10 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 11 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 12 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 13 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 14 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationL_acq-StimOff_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedRotationL_acq-StimOff_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationL_acq-StimOff_run-01_ieeg.vhdr 
+Changed on line 24 
+ Ch9=ECOG_L_1_SMC_AT,,1
+ 
+ Ch9=ECOG_R_1_SMC_AT,,1
+Changed on line 25 
+ Ch10=ECOG_L_2_SMC_AT,,1
+ 
+ Ch10=ECOG_R_2_SMC_AT,,1
+Changed on line 26 
+ Ch11=ECOG_L_3_SMC_AT,,1
+ 
+ Ch11=ECOG_R_3_SMC_AT,,1
+Changed on line 27 
+ Ch12=ECOG_L_4_SMC_AT,,1
+ 
+ Ch12=ECOG_R_4_SMC_AT,,1
+Changed on line 28 
+ Ch13=ECOG_L_5_SMC_AT,,1
+ 
+ Ch13=ECOG_R_5_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_6_SMC_AT,,1
+ 
+ Ch14=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationR_acq-StimOff_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedRotationR_acq-StimOff_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationR_acq-StimOff_run-01_channels.tsv 
+Changed on line 10 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 11 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 12 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 13 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 14 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationR_acq-StimOff_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedRotationR_acq-StimOff_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationR_acq-StimOff_run-01_ieeg.vhdr 
+Changed on line 24 
+ Ch9=ECOG_L_1_SMC_AT,,1
+ 
+ Ch9=ECOG_R_1_SMC_AT,,1
+Changed on line 25 
+ Ch10=ECOG_L_2_SMC_AT,,1
+ 
+ Ch10=ECOG_R_2_SMC_AT,,1
+Changed on line 26 
+ Ch11=ECOG_L_3_SMC_AT,,1
+ 
+ Ch11=ECOG_R_3_SMC_AT,,1
+Changed on line 27 
+ Ch12=ECOG_L_4_SMC_AT,,1
+ 
+ Ch12=ECOG_R_4_SMC_AT,,1
+Changed on line 28 
+ Ch13=ECOG_L_5_SMC_AT,,1
+ 
+ Ch13=ECOG_R_5_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_6_SMC_AT,,1
+ 
+ Ch14=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedSpeech_acq-StimOff_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedSpeech_acq-StimOff_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedSpeech_acq-StimOff_run-01_channels.tsv 
+Changed on line 10 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 11 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 12 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 13 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 14 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedSpeech_acq-StimOff_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedSpeech_acq-StimOff_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedSpeech_acq-StimOff_run-01_ieeg.vhdr 
+Changed on line 24 
+ Ch9=ECOG_L_1_SMC_AT,,1
+ 
+ Ch9=ECOG_R_1_SMC_AT,,1
+Changed on line 25 
+ Ch10=ECOG_L_2_SMC_AT,,1
+ 
+ Ch10=ECOG_R_2_SMC_AT,,1
+Changed on line 26 
+ Ch11=ECOG_L_3_SMC_AT,,1
+ 
+ Ch11=ECOG_R_3_SMC_AT,,1
+Changed on line 27 
+ Ch12=ECOG_L_4_SMC_AT,,1
+ 
+ Ch12=ECOG_R_4_SMC_AT,,1
+Changed on line 28 
+ Ch13=ECOG_L_5_SMC_AT,,1
+ 
+ Ch13=ECOG_R_5_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_6_SMC_AT,,1
+ 
+ Ch14=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Transition_acq-StimOff_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn01_task-Transition_acq-StimOff_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Transition_acq-StimOff_run-01_channels.tsv 
+Changed on line 10 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 11 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 12 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 13 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 14 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Transition_acq-StimOff_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn01_task-Transition_acq-StimOff_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Transition_acq-StimOff_run-01_ieeg.vhdr 
+Changed on line 24 
+ Ch9=ECOG_L_1_SMC_AT,,1
+ 
+ Ch9=ECOG_R_1_SMC_AT,,1
+Changed on line 25 
+ Ch10=ECOG_L_2_SMC_AT,,1
+ 
+ Ch10=ECOG_R_2_SMC_AT,,1
+Changed on line 26 
+ Ch11=ECOG_L_3_SMC_AT,,1
+ 
+ Ch11=ECOG_R_3_SMC_AT,,1
+Changed on line 27 
+ Ch12=ECOG_L_4_SMC_AT,,1
+ 
+ Ch12=ECOG_R_4_SMC_AT,,1
+Changed on line 28 
+ Ch13=ECOG_L_5_SMC_AT,,1
+ 
+ Ch13=ECOG_R_5_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_6_SMC_AT,,1
+ 
+ Ch14=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-UPDRSIII_acq-StimOff_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn01_task-UPDRSIII_acq-StimOff_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-UPDRSIII_acq-StimOff_run-01_channels.tsv 
+Changed on line 10 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 11 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 12 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 13 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 14 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-UPDRSIII_acq-StimOff_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn01_task-UPDRSIII_acq-StimOff_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-UPDRSIII_acq-StimOff_run-01_ieeg.vhdr 
+Changed on line 24 
+ Ch9=ECOG_L_1_SMC_AT,,1
+ 
+ Ch9=ECOG_R_1_SMC_AT,,1
+Changed on line 25 
+ Ch10=ECOG_L_2_SMC_AT,,1
+ 
+ Ch10=ECOG_R_2_SMC_AT,,1
+Changed on line 26 
+ Ch11=ECOG_L_3_SMC_AT,,1
+ 
+ Ch11=ECOG_R_3_SMC_AT,,1
+Changed on line 27 
+ Ch12=ECOG_L_4_SMC_AT,,1
+ 
+ Ch12=ECOG_R_4_SMC_AT,,1
+Changed on line 28 
+ Ch13=ECOG_L_5_SMC_AT,,1
+ 
+ Ch13=ECOG_R_5_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_6_SMC_AT,,1
+ 
+ Ch14=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_space-MNI152NLin2009bAsym_electrodes.tsv 
+ into sub-005_ses-EphysMedOn02_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_space-MNI152NLin2009bAsym_electrodes.tsv 
+Changed on line 2 
+ ECOG_L_1_SMC_AT	18	-70.5	65	3mm
+ 
+ ECOG_R_1_SMC_AT	18	-70.5	65	3mm
+Changed on line 3 
+ ECOG_L_2_SMC_AT	22	-60.5	70.5	3mm
+ 
+ ECOG_R_2_SMC_AT	22	-60.5	70.5	3mm
+Changed on line 4 
+ ECOG_L_3_SMC_AT	35	-50.5	73	3mm
+ 
+ ECOG_R_3_SMC_AT	35	-50.5	73	3mm
+Changed on line 5 
+ ECOG_L_4_SMC_AT	27.5	-39.6	73.5	3mm
+ 
+ ECOG_R_4_SMC_AT	27.5	-39.6	73.5	3mm
+Changed on line 6 
+ ECOG_L_5_SMC_AT	28	-27	72.5	3mm
+ 
+ ECOG_R_5_SMC_AT	28	-27	72.5	3mm
+Changed on line 7 
+ ECOG_L_6_SMC_AT	28	-17.5	71	3mm
+ 
+ ECOG_R_6_SMC_AT	28	-17.5	71	3mm
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationL_acq-StimOn_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn02_task-BlockRotationL_acq-StimOn_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationL_acq-StimOn_run-01_channels.tsv 
+Changed on line 14 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 16 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 17 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 18 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 19 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationL_acq-StimOn_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn02_task-BlockRotationL_acq-StimOn_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationL_acq-StimOn_run-01_ieeg.vhdr 
+Changed on line 28 
+ Ch13=ECOG_L_1_SMC_AT,,1
+ 
+ Ch13=ECOG_R_1_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_2_SMC_AT,,1
+ 
+ Ch14=ECOG_R_2_SMC_AT,,1
+Changed on line 30 
+ Ch15=ECOG_L_3_SMC_AT,,1
+ 
+ Ch15=ECOG_R_3_SMC_AT,,1
+Changed on line 31 
+ Ch16=ECOG_L_4_SMC_AT,,1
+ 
+ Ch16=ECOG_R_4_SMC_AT,,1
+Changed on line 32 
+ Ch17=ECOG_L_5_SMC_AT,,1
+ 
+ Ch17=ECOG_R_5_SMC_AT,,1
+Changed on line 33 
+ Ch18=ECOG_L_6_SMC_AT,,1
+ 
+ Ch18=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationR_acq-StimOn_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn02_task-BlockRotationR_acq-StimOn_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationR_acq-StimOn_run-01_channels.tsv 
+Changed on line 14 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 16 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 17 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 18 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 19 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationR_acq-StimOn_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn02_task-BlockRotationR_acq-StimOn_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationR_acq-StimOn_run-01_ieeg.vhdr 
+Changed on line 28 
+ Ch13=ECOG_L_1_SMC_AT,,1
+ 
+ Ch13=ECOG_R_1_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_2_SMC_AT,,1
+ 
+ Ch14=ECOG_R_2_SMC_AT,,1
+Changed on line 30 
+ Ch15=ECOG_L_3_SMC_AT,,1
+ 
+ Ch15=ECOG_R_3_SMC_AT,,1
+Changed on line 31 
+ Ch16=ECOG_L_4_SMC_AT,,1
+ 
+ Ch16=ECOG_R_4_SMC_AT,,1
+Changed on line 32 
+ Ch17=ECOG_L_5_SMC_AT,,1
+ 
+ Ch17=ECOG_R_5_SMC_AT,,1
+Changed on line 33 
+ Ch18=ECOG_L_6_SMC_AT,,1
+ 
+ Ch18=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Evoked_acq-StimOn_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn02_task-Evoked_acq-StimOn_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Evoked_acq-StimOn_run-01_channels.tsv 
+Changed on line 10 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 11 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 12 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 13 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 14 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Evoked_acq-StimOn_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn02_task-Evoked_acq-StimOn_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Evoked_acq-StimOn_run-01_ieeg.vhdr 
+Changed on line 24 
+ Ch9=ECOG_L_1_SMC_AT,,1
+ 
+ Ch9=ECOG_R_1_SMC_AT,,1
+Changed on line 25 
+ Ch10=ECOG_L_2_SMC_AT,,1
+ 
+ Ch10=ECOG_R_2_SMC_AT,,1
+Changed on line 26 
+ Ch11=ECOG_L_3_SMC_AT,,1
+ 
+ Ch11=ECOG_R_3_SMC_AT,,1
+Changed on line 27 
+ Ch12=ECOG_L_4_SMC_AT,,1
+ 
+ Ch12=ECOG_R_4_SMC_AT,,1
+Changed on line 28 
+ Ch13=ECOG_L_5_SMC_AT,,1
+ 
+ Ch13=ECOG_R_5_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_6_SMC_AT,,1
+ 
+ Ch14=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-ReadRelaxMoveL_acq-StimOff_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn02_task-ReadRelaxMoveL_acq-StimOff_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-ReadRelaxMoveL_acq-StimOff_run-01_channels.tsv 
+Changed on line 10 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 11 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 12 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 13 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 14 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-ReadRelaxMoveL_acq-StimOff_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn02_task-ReadRelaxMoveL_acq-StimOff_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-ReadRelaxMoveL_acq-StimOff_run-01_ieeg.vhdr 
+Changed on line 24 
+ Ch9=ECOG_L_1_SMC_AT,,1
+ 
+ Ch9=ECOG_R_1_SMC_AT,,1
+Changed on line 25 
+ Ch10=ECOG_L_2_SMC_AT,,1
+ 
+ Ch10=ECOG_R_2_SMC_AT,,1
+Changed on line 26 
+ Ch11=ECOG_L_3_SMC_AT,,1
+ 
+ Ch11=ECOG_R_3_SMC_AT,,1
+Changed on line 27 
+ Ch12=ECOG_L_4_SMC_AT,,1
+ 
+ Ch12=ECOG_R_4_SMC_AT,,1
+Changed on line 28 
+ Ch13=ECOG_L_5_SMC_AT,,1
+ 
+ Ch13=ECOG_R_5_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_6_SMC_AT,,1
+ 
+ Ch14=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOff_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOff_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOff_run-01_channels.tsv 
+Changed on line 10 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 11 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 12 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 13 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 14 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOff_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOff_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOff_run-01_ieeg.vhdr 
+Changed on line 24 
+ Ch9=ECOG_L_1_SMC_AT,,1
+ 
+ Ch9=ECOG_R_1_SMC_AT,,1
+Changed on line 25 
+ Ch10=ECOG_L_2_SMC_AT,,1
+ 
+ Ch10=ECOG_R_2_SMC_AT,,1
+Changed on line 26 
+ Ch11=ECOG_L_3_SMC_AT,,1
+ 
+ Ch11=ECOG_R_3_SMC_AT,,1
+Changed on line 27 
+ Ch12=ECOG_L_4_SMC_AT,,1
+ 
+ Ch12=ECOG_R_4_SMC_AT,,1
+Changed on line 28 
+ Ch13=ECOG_L_5_SMC_AT,,1
+ 
+ Ch13=ECOG_R_5_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_6_SMC_AT,,1
+ 
+ Ch14=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-01_channels.tsv 
+Changed on line 14 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 16 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 17 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 18 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 19 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-01_ieeg.vhdr 
+Changed on line 28 
+ Ch13=ECOG_L_1_SMC_AT,,1
+ 
+ Ch13=ECOG_R_1_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_2_SMC_AT,,1
+ 
+ Ch14=ECOG_R_2_SMC_AT,,1
+Changed on line 30 
+ Ch15=ECOG_L_3_SMC_AT,,1
+ 
+ Ch15=ECOG_R_3_SMC_AT,,1
+Changed on line 31 
+ Ch16=ECOG_L_4_SMC_AT,,1
+ 
+ Ch16=ECOG_R_4_SMC_AT,,1
+Changed on line 32 
+ Ch17=ECOG_L_5_SMC_AT,,1
+ 
+ Ch17=ECOG_R_5_SMC_AT,,1
+Changed on line 33 
+ Ch18=ECOG_L_6_SMC_AT,,1
+ 
+ Ch18=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-02_channels.tsv 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-02_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-02_channels.tsv 
+Changed on line 14 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 16 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 17 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 18 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 19 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-02_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-02_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-02_ieeg.vhdr 
+Changed on line 28 
+ Ch13=ECOG_L_1_SMC_AT,,1
+ 
+ Ch13=ECOG_R_1_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_2_SMC_AT,,1
+ 
+ Ch14=ECOG_R_2_SMC_AT,,1
+Changed on line 30 
+ Ch15=ECOG_L_3_SMC_AT,,1
+ 
+ Ch15=ECOG_R_3_SMC_AT,,1
+Changed on line 31 
+ Ch16=ECOG_L_4_SMC_AT,,1
+ 
+ Ch16=ECOG_R_4_SMC_AT,,1
+Changed on line 32 
+ Ch17=ECOG_L_5_SMC_AT,,1
+ 
+ Ch17=ECOG_R_5_SMC_AT,,1
+Changed on line 33 
+ Ch18=ECOG_L_6_SMC_AT,,1
+ 
+ Ch18=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationL_acq-StimOn_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn02_task-SelfpacedRotationL_acq-StimOn_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationL_acq-StimOn_run-01_channels.tsv 
+Changed on line 14 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 16 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 17 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 18 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 19 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationL_acq-StimOn_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn02_task-SelfpacedRotationL_acq-StimOn_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationL_acq-StimOn_run-01_ieeg.vhdr 
+Changed on line 28 
+ Ch13=ECOG_L_1_SMC_AT,,1
+ 
+ Ch13=ECOG_R_1_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_2_SMC_AT,,1
+ 
+ Ch14=ECOG_R_2_SMC_AT,,1
+Changed on line 30 
+ Ch15=ECOG_L_3_SMC_AT,,1
+ 
+ Ch15=ECOG_R_3_SMC_AT,,1
+Changed on line 31 
+ Ch16=ECOG_L_4_SMC_AT,,1
+ 
+ Ch16=ECOG_R_4_SMC_AT,,1
+Changed on line 32 
+ Ch17=ECOG_L_5_SMC_AT,,1
+ 
+ Ch17=ECOG_R_5_SMC_AT,,1
+Changed on line 33 
+ Ch18=ECOG_L_6_SMC_AT,,1
+ 
+ Ch18=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationR_acq-StimOn_run-01_channels.tsv 
+ into sub-005_ses-EphysMedOn02_task-SelfpacedRotationR_acq-StimOn_run-01_channels.tsv 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationR_acq-StimOn_run-01_channels.tsv 
+Changed on line 14 
+ ECOG_L_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_1_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 15 
+ ECOG_L_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_2_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 16 
+ ECOG_L_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_3_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 17 
+ ECOG_L_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_4_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 18 
+ ECOG_L_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_5_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed on line 19 
+ ECOG_L_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+ 
+ ECOG_R_6_SMC_AT	ECOG	uV	n/a	n/a	n/a	n/a	4000	n/a	good	n/a
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationR_acq-StimOn_run-01_ieeg.vhdr 
+ into sub-005_ses-EphysMedOn02_task-SelfpacedRotationR_acq-StimOn_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationR_acq-StimOn_run-01_ieeg.vhdr 
+Changed on line 28 
+ Ch13=ECOG_L_1_SMC_AT,,1
+ 
+ Ch13=ECOG_R_1_SMC_AT,,1
+Changed on line 29 
+ Ch14=ECOG_L_2_SMC_AT,,1
+ 
+ Ch14=ECOG_R_2_SMC_AT,,1
+Changed on line 30 
+ Ch15=ECOG_L_3_SMC_AT,,1
+ 
+ Ch15=ECOG_R_3_SMC_AT,,1
+Changed on line 31 
+ Ch16=ECOG_L_4_SMC_AT,,1
+ 
+ Ch16=ECOG_R_4_SMC_AT,,1
+Changed on line 32 
+ Ch17=ECOG_L_5_SMC_AT,,1
+ 
+ Ch17=ECOG_R_5_SMC_AT,,1
+Changed on line 33 
+ Ch18=ECOG_L_6_SMC_AT,,1
+ 
+ Ch18=ECOG_R_6_SMC_AT,,1
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\sub-005_ses-EphysMedOn01_scans.json 
+ into sub-005_ses-EphysMedOn01_scans.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\sub-005_ses-EphysMedOn01_scans.tsv 
+ into sub-005_ses-EphysMedOn01_scans.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_space-MNI152NLin2009bAsym_coordsystem.json 
+ into sub-005_ses-EphysMedOn01_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationL_acq-StimOff_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn01_task-BlockRotationL_acq-StimOff_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationL_acq-StimOff_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn01_task-BlockRotationL_acq-StimOff_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationL_acq-StimOff_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn01_task-BlockRotationL_acq-StimOff_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationR_acq-StimOff_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn01_task-BlockRotationR_acq-StimOff_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationR_acq-StimOff_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn01_task-BlockRotationR_acq-StimOff_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-BlockRotationR_acq-StimOff_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn01_task-BlockRotationR_acq-StimOff_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Rest_acq-StimOff_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn01_task-Rest_acq-StimOff_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Rest_acq-StimOff_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn01_task-Rest_acq-StimOff_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Rest_acq-StimOff_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn01_task-Rest_acq-StimOff_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationL_acq-StimOff_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedRotationL_acq-StimOff_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationL_acq-StimOff_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedRotationL_acq-StimOff_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationL_acq-StimOff_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedRotationL_acq-StimOff_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationR_acq-StimOff_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedRotationR_acq-StimOff_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationR_acq-StimOff_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedRotationR_acq-StimOff_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedRotationR_acq-StimOff_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedRotationR_acq-StimOff_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedSpeech_acq-StimOff_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedSpeech_acq-StimOff_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedSpeech_acq-StimOff_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedSpeech_acq-StimOff_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-SelfpacedSpeech_acq-StimOff_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn01_task-SelfpacedSpeech_acq-StimOff_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Transition_acq-StimOff_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn01_task-Transition_acq-StimOff_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Transition_acq-StimOff_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn01_task-Transition_acq-StimOff_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-Transition_acq-StimOff_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn01_task-Transition_acq-StimOff_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-UPDRSIII_acq-StimOff_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn01_task-UPDRSIII_acq-StimOff_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-UPDRSIII_acq-StimOff_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn01_task-UPDRSIII_acq-StimOff_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn01\ieeg\sub-005_ses-EphysMedOn01_task-UPDRSIII_acq-StimOff_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn01_task-UPDRSIII_acq-StimOff_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\sub-005_ses-EphysMedOn02_scans.json 
+ into sub-005_ses-EphysMedOn02_scans.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\sub-005_ses-EphysMedOn02_scans.tsv 
+ into sub-005_ses-EphysMedOn02_scans.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_space-MNI152NLin2009bAsym_coordsystem.json 
+ into sub-005_ses-EphysMedOn02_space-MNI152NLin2009bAsym_coordsystem.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationL_acq-StimOn_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn02_task-BlockRotationL_acq-StimOn_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationL_acq-StimOn_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn02_task-BlockRotationL_acq-StimOn_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationL_acq-StimOn_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn02_task-BlockRotationL_acq-StimOn_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationR_acq-StimOn_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn02_task-BlockRotationR_acq-StimOn_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationR_acq-StimOn_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn02_task-BlockRotationR_acq-StimOn_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-BlockRotationR_acq-StimOn_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn02_task-BlockRotationR_acq-StimOn_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Evoked_acq-StimOn_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn02_task-Evoked_acq-StimOn_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Evoked_acq-StimOn_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn02_task-Evoked_acq-StimOn_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Evoked_acq-StimOn_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn02_task-Evoked_acq-StimOn_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-ReadRelaxMoveL_acq-StimOff_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn02_task-ReadRelaxMoveL_acq-StimOff_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-ReadRelaxMoveL_acq-StimOff_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn02_task-ReadRelaxMoveL_acq-StimOff_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-ReadRelaxMoveL_acq-StimOff_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn02_task-ReadRelaxMoveL_acq-StimOff_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOff_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOff_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOff_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOff_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOff_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOff_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-02_ieeg.eeg 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-02_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-02_ieeg.json 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-02_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-02_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn02_task-Rest_acq-StimOn_run-02_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationL_acq-StimOn_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn02_task-SelfpacedRotationL_acq-StimOn_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationL_acq-StimOn_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn02_task-SelfpacedRotationL_acq-StimOn_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationL_acq-StimOn_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn02_task-SelfpacedRotationL_acq-StimOn_run-01_ieeg.vmrk 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationR_acq-StimOn_run-01_ieeg.eeg 
+ into sub-005_ses-EphysMedOn02_task-SelfpacedRotationR_acq-StimOn_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationR_acq-StimOn_run-01_ieeg.json 
+ into sub-005_ses-EphysMedOn02_task-SelfpacedRotationR_acq-StimOn_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-005\ses-EphysMedOn02\ieeg\sub-005_ses-EphysMedOn02_task-SelfpacedRotationR_acq-StimOn_run-01_ieeg.vmrk 
+ into sub-005_ses-EphysMedOn02_task-SelfpacedRotationR_acq-StimOn_run-01_ieeg.vmrk 
