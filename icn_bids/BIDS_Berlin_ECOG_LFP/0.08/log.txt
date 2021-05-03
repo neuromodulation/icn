@@ -1,0 +1,11 @@
+log for C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\names_changed_at_30-04-2021_time_15-01-51
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.json 
+Changed on line 2 
+     "TaskName": "Rest Transition",
+ 
+     "TaskName": "Transition",
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.json 
+Changed on line 2 
+     "TaskName": "Rest Transition",
+ 
+     "TaskName": "Transition",

@@ -1,0 +1,71 @@
+log for C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\names_changed_at_30-04-2021_time_15-02-21
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\names_changed_at_30-04-2021_time_15-01-51\log.txt 
+Changed on line 2 
+ Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-01_ieeg.json 
+ 
+ Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.json 
+Changed on line 7 
+ Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-02_ieeg.json 
+ 
+ Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.json 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\sub-004_ses-EphysMedOff01_scans.tsv 
+Changed on line 4 
+ ieeg/sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-01_ieeg.vhdr	2020-07-30T10:22:07
+ 
+ ieeg/sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.vhdr	2020-07-30T10:22:07
+Changed on line 5 
+ ieeg/sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-02_ieeg.vhdr	2020-07-30T10:25:56
+ 
+ ieeg/sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.vhdr	2020-07-30T10:25:56
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-01_ieeg.vhdr 
+ into sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.vhdr 
+Changed on line 6 
+ DataFile=sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-01_ieeg.eeg
+ 
+ DataFile=sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.eeg
+Changed on line 7 
+ MarkerFile=sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-01_ieeg.vmrk
+ 
+ MarkerFile=sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.vmrk
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-01_ieeg.vmrk 
+ into sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.vmrk 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.vmrk 
+Changed on line 6 
+ DataFile=sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-01_ieeg.eeg
+ 
+ DataFile=sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.eeg
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-02_ieeg.vhdr 
+ into sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.vhdr 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.vhdr 
+Changed on line 6 
+ DataFile=sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-02_ieeg.eeg
+ 
+ DataFile=sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.eeg
+Changed on line 7 
+ MarkerFile=sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-02_ieeg.vmrk
+ 
+ MarkerFile=sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.vmrk
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-02_ieeg.vmrk 
+ into sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.vmrk 
+Changed content in file C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.vmrk 
+Changed on line 6 
+ DataFile=sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-02_ieeg.eeg
+ 
+ DataFile=sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.eeg
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\names_changed_at_30-04-2021_time_15-01-51\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-01_ieeg.json 
+ into sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\names_changed_at_30-04-2021_time_15-01-51\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-02_ieeg.json 
+ into sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-01_channels.tsv 
+ into sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_channels.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-01_ieeg.eeg 
+ into sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-01_ieeg.json 
+ into sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-01_ieeg.json 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-02_channels.tsv 
+ into sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_channels.tsv 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-02_ieeg.eeg 
+ into sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.eeg 
+Changed filename C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-004\ses-EphysMedOff01\ieeg\sub-004_ses-EphysMedOff01_task-RestTransition_acq-StimOff_run-02_ieeg.json 
+ into sub-004_ses-EphysMedOff01_task-Transition_acq-StimOff_run-02_ieeg.json 

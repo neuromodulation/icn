@@ -92,7 +92,6 @@ if no_further_processing == 0
         D.AO.STIM_EVENT_OFF = strrep(strcat({'STIM_OFF_'},num2str(D.AO.STIM_FREQ'),{'Hz_'},D.AO.STIM_CHANNEL',{'_'},num2str(D.AO.STIM_AMP'),{'uA'}),' ','');
 
     end
-    
     D=chantype(D,':',wjn_chantype(D.chanlabels));
     save(D);
 end
