@@ -1,5 +1,10 @@
 Revision history for BIDS_Berlin_ECOG_LFP dataset
 
+0.08 2021-05-04
+ - updated task names by Richard Koehler
+ - updated channel type from "SEEG" to "DBS" for all recordings by Richard Koehler
+ - updated channel names (channel length restriction <15 chars lifted by MNE) by Richard Koehler
+
 0.07 2021-04-26
  - added DBS electrode localizations by Richard Koehler
  - changed channel names in sub-005 from ECOG_L_* to ECOG_R_* by Richard Koehler
