@@ -1,0 +1,8 @@
+01.06.2021
+
+Discussion with Tiantan:
+  ECoG coordinates appear inverted to powerpoint
+	Unit of the data
+	Were instructions changed during task performance of sub-FOG011.
+	DBS electrode localizations (we can perform them ourselves with Lead-DBS)
+	UPDRS scores
