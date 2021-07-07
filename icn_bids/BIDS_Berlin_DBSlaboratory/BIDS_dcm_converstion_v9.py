@@ -18,6 +18,8 @@ InteractiveShell.ast_node_interactivity = "all"
 #root.withdraw()
 #folder_selected = filedialog.askdirectory()
 #file=filedialog.askopenfilename()
+
+### This is a data dictionary with the order in which the fixed entities need to be stored
 BIDS_DICTS_Mapping = {0: 'sub-',
                       1: '_ses-',
                       2: '_task',
@@ -33,6 +35,7 @@ BIDS_DICTS_Mapping = {0: 'sub-',
                       12: '_',
                       13: '_sbref'}
 
+### reading in the maping excel sheet
 BIDS_DICTS_Scanlabel = pd.read_excel(
     r'C:\\Users\\Jonathan\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive Neuromodulation - '
     r'Data\\BIDS_conversionroom\\BIDS_Berlin_DBSlaboratory'
@@ -48,7 +51,7 @@ BIDS_DICTS_Scanlabel = {k.lower(): v
 #location of the microGL location
 DCM2NII='C:\\Users\\Jonathan\\Documents\\TOOLS\\MRIcroGL\\Resources\\dcm2niix.exe'
 
-#location of the source folder
+#location of the source folder with the dicom files
 
 location_sourcedata= "C:\\Users\\Jonathan\\Documents\\DATA\\PROJECT_Berlin_DBSlaboratory"
 #location_sourcedata= "C:\\Users\\Jonathan\\Charité - Universitätsmedizin Berlin\\Interventional Cognitive
@@ -78,6 +81,7 @@ not_in_dictionary=set()
 Subjectdirs = glob.glob(location_sourcedata + os.sep + "*" + os.sep)
 print("Dirs of subjects\n", *Subjectdirs, sep = "\n")
 
+# iterate over the subjects
 for Subjectdir in Subjectdirs:
     Subjectdir = os.path.basename(os.path.normpath(Subjectdir))
     #
@@ -125,7 +129,8 @@ for Subjectdir in Subjectdirs:
 
 
             Scandirfullname = Scandir[:-1]
-
+            
+            ### this is the MAIN operation. Convertion of Dicom to Nifti using the commandline dcm2niix.exe
             NIFTIcmd = DCM2NII + ' -f ' + '\"' + Subject + '_' + Session + '__%p' + '\"' + ' -p y -z n -o ' + '\"' + \
                        BIDS_Subjectdir + '\" \"' + Scandirfullname
             NIFTIcmd
@@ -138,7 +143,8 @@ for Subjectdir in Subjectdirs:
             #look for how many files were created
             Niftiscreated = glob.glob(BIDS_Subjectdir + os.sep + "*.nii")
             print("Nifties created:\n", *Niftiscreated, sep="\n")
-
+            
+            # the protocoll name is written out, now we want to change the file names into the different BIDS labels using the dictionary.
             #read the files created
             for Nifti in Niftiscreated:
                 #save the full name
@@ -191,7 +197,7 @@ for Subjectdir in Subjectdirs:
 
                     # ii = 0 is the subject
                     # ii = 1 is the session
-                    # ii = 2-12 are the other labels stored in BIDS_DICTS_mapping
+                    # ii = 2-12 are the other labels stored in BIDS_DICTS_mapping, see line 23 of this code
 
 
                     ### determine the anat dwi swi or spine folder
@@ -200,7 +206,7 @@ for Subjectdir in Subjectdirs:
                         BIDS_Scandir = BIDS_Sessiondir + os.sep + 'dwi'  # change to DWI only if label is present
                     elif BIDS_DICTS_Scanlabel[protocolname_to_be_matched][9] == 'swi':
                         BIDS_Scandir = BIDS_Sessiondir + os.sep + 'swi'  # change to SWI only if label is present
-                    elif BIDS_DICTS_Scanlabel[protocolname_to_be_matched][9] == 'spine':
+                    elif BIDS_DICTS_Scanlabel[protocolname_to_be_matched][9] == 'spine': ### spine is not a BIDS standard
                         BIDS_Scandir = BIDS_Sessiondir + os.sep + 'spine'  # change to SWI only if label is present
                     else:
                         BIDS_Scandir = BIDS_Sessiondir + os.sep + 'anat'  # change to DWI only if label is present
