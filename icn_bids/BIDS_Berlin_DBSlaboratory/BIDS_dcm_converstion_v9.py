@@ -5,7 +5,7 @@ import os
 import re
 import pandas as pd
 import numpy
-#import dcm2bids
+#you can import this if you are making use of the dcm2bids module: import dcm2bids
 import pydicom # ds = dcmread(file) if you want to obtain the dcm header
 import shutil
 from tkinter import filedialog
