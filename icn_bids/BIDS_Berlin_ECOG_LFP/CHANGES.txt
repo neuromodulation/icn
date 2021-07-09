@@ -1,5 +1,8 @@
 Revision history for BIDS_Berlin_ECOG_LFP dataset
-
+0.09 2021-07-08 - Jonathan
+ - added conversion file in the derivates data_conversion folder
+ - changed the ref field into that
+ - still need update of the IEEGreferences across trials, using the labbook under source/protocol
 0.08 2021-05-04
  - updated task names by Richard Koehler
  - updated channel type from "SEEG" to "DBS" for all recordings by Richard Koehler
