@@ -7,9 +7,10 @@ update: 09/02/2021
 literal=True
 doyouwanttkinter=True
 #get target folder
-#path_target_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Tiantan\conversion_room\rawdata"
+path_target_folder=r"C:\Users\richa\OneDrive - Charité - Universitätsmedizin Berlin\Berlin_ECOG_LFP_derivatives\pipeline_emg_rotation_2021_04_26\sub-002"
 #path_target_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Tiantan\conversion_room\electrodes"
 #back_up_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Tiantan"
+back_up_folder = path_target_folder
 
 from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = "all"
