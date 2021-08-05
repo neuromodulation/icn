@@ -1,14 +1,19 @@
-import numpy as np
-import pandas as pd
-import statsmodels.api as sm
-import statsmodels.formula.api as smf
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import KFold
-import scipy.stats as stats
-import matplotlib.pyplot as plt
-import seaborn as sns
 import random
 import copy
+
+import matplotlib.pyplot as plt
+from numba import njit
+import numpy as np
+import pandas as pd
+import scipy.stats as stats
+import seaborn as sns
+
+
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import KFold
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
 
 def fitlm(x, y):
     return sm.OLS(y, sm.add_constant(x)).fit()
@@ -43,7 +48,8 @@ def permutationTestSpearmansRho(x, y, plot_=True, x_unit=None, p=5000):
 
     x (np array) : first distibution e.g. R^2
     y (np array) : second distribution e.g. UPDRS
-    plot_ (boolean) : if True: permutation histplot and ground truth will be potted
+    plot_ (boolean) : if True: permutation histplot and ground truth will be
+    plotted
     x_unit (str) : histplot xlabel
     p (int): number of permutations
 
@@ -55,33 +61,35 @@ def permutationTestSpearmansRho(x, y, plot_=True, x_unit=None, p=5000):
     # compute ground truth difference
     gT = stats.spearmanr(x, y)[0]
     #
-    pV = np.array((x,y))
-    #Initialize permutation:
+    pV = np.array((x, y))
+    # Initialize permutation:
     pD = []
     # Permutation loop:
-    args_order = np.arange(0,pV.shape[1],1)
-    args_order_2 = np.arange(0,pV.shape[1],1)
-    for i in range(0,p):
-      # Shuffle the data:
+    args_order = np.arange(0, pV.shape[1], 1)
+    args_order_2 = np.arange(0, pV.shape[1], 1)
+    for i in range(0, p):
+        # Shuffle the data:
         random.shuffle(args_order)
         random.shuffle(args_order_2)
-        # Compute permuted absolute difference of your two sampled distributions and store it in pD:
-        pD.append(stats.spearmanr(pV[0,args_order], pV[1,args_order_2])[0])
+        # Compute permuted absolute difference of your two sampled
+        # distributions and store it in pD:
+        pD.append(stats.spearmanr(pV[0, args_order], pV[1, args_order_2])[0])
 
     # calculate p value
     if gT < 0:
-        p_val = len(np.where(pD<=gT)[0])/p
+        p_val = len(np.where(pD <= gT)[0])/p
     else:
-        p_val = len(np.where(pD>=gT)[0])/p
+        p_val = len(np.where(pD >= gT)[0])/p
 
     if plot_ is True:
-        plt.hist(pD, bins=30,label="permutation results")
+        plt.hist(pD, bins=30, label="permutation results")
         plt.axvline(gT, color="orange", label="ground truth")
-        plt.title("ground truth "+x_unit+"="+str(gT)+" p="+str(p_val))
+        plt.title("ground truth " + x_unit + "="+str(gT) + " p=" + str(p_val))
         plt.xlabel(x_unit)
         plt.legend()
         plt.show()
     return gT, p_val
+
 
 def permutationTest(x, y, plot_=True, x_unit=None, p=5000):
     """
@@ -90,46 +98,47 @@ def permutationTest(x, y, plot_=True, x_unit=None, p=5000):
 
     x (np array) : first distr.
     y (np array) : first distr.
-    plot_ (boolean) : if True: permutation histplot and ground truth will be potted
+    plot_ (boolean) : if True: plot permutation histplot and ground truth
     x_unit (str) : histplot xlabel
     p (int): number of permutations
 
     returns:
-    gT (float) : estimated ground truth, here abs difference of distribution means
+    gT (float) : estimated ground truth, here absolute difference of
+    distribution means
     p (float) : p value of permutation test
 
     """
-
-
-    # compute ground truth difference
+    # Compute ground truth difference
     gT = np.abs(np.average(x) - np.average(y))
 
-
-    pV = np.concatenate((x,y), axis=0)
+    pV = np.concatenate((x, y), axis=0)
     pS = copy.copy(pV)
-    #Initialize permutation:
+    # Initialize permutation:
     pD = []
     # Permutation loop:
-    for i in range(0,p):
-      # Shuffle the data:
+    for i in range(0, p):
+        # Shuffle the data:
         random.shuffle(pS)
-        # Compute permuted absolute difference of your two sampled distributions and store it in pD:
-        pD.append(np.abs(np.average(pS[0:int(len(pS)/2)]) - np.average(pS[int(len(pS)/2):])))
+        # Compute permuted absolute difference of your two sampled
+        # distributions and store it in pD:
+        pD.append(np.abs(np.average(pS[0:int(len(pS)/2)]) - np.average(
+            pS[int(len(pS)/2):])))
 
-    # calculate p value
+    # Calculate p-value
     if gT < 0:
-        p_val = len(np.where(pD<=gT)[0])/p
+        p_val = len(np.where(pD <= gT)[0])/p
     else:
-        p_val = len(np.where(pD>=gT)[0])/p
+        p_val = len(np.where(pD >= gT)[0])/p
 
     if plot_ is True:
-        plt.hist(pD, bins=30,label="permutation results")
+        plt.hist(pD, bins=30, label="permutation results")
         plt.axvline(gT, color="orange", label="ground truth")
         plt.title("ground truth "+x_unit+"="+str(gT)+" p="+str(p_val))
         plt.xlabel(x_unit)
         plt.legend()
         plt.show()
     return gT, p_val
+
 
 def permutationTest_relative(x, y, plot_=True, x_unit=None, p=5000):
     """
@@ -138,32 +147,34 @@ def permutationTest_relative(x, y, plot_=True, x_unit=None, p=5000):
 
     x (np array) : first distr.
     y (np array) : first distr.
-    plot_ (boolean) : if True: permutation histplot and ground truth will be potted
+    plot_ (boolean) : if True: plot permutation histplot and ground truth
     x_unit (str) : histplot xlabel
     p (int): number of permutations
 
     returns:
-    gT (float) : estimated ground truth, here abs difference of distribution means
+    gT (float) : estimated ground truth, here absolute difference of
+    distribution means
     p (float) : p value of permutation test
 
     """
     gT = np.abs(np.average(x) - np.average(y))
     pD = []
-    for i in range(0,p):
+    for i in range(0, p):
         l_ = []
         for i in range(x.shape[0]):
-            if random.randint(0,1) == 1:
+            if random.randint(0, 1) == 1:
                 l_.append((x[i], y[i]))
             else:
                 l_.append((y[i], x[i]))
-        pD.append(np.abs(np.average(np.array(l_)[:,0])- np.average(np.array(l_)[:,1])))
+        pD.append(np.abs(np.average(np.array(l_)[:, 0]) - np.average(
+            np.array(l_)[:, 1])))
     if gT < 0:
-        p_val = len(np.where(pD<=gT)[0])/p
+        p_val = len(np.where(pD <= gT)[0])/p
     else:
-        p_val = len(np.where(pD>=gT)[0])/p
+        p_val = len(np.where(pD >= gT)[0])/p
 
     if plot_ is True:
-        plt.hist(pD, bins=30,label="permutation results")
+        plt.hist(pD, bins=30, label="permutation results")
         plt.axvline(gT, color="orange", label="ground truth")
         plt.title("ground truth "+x_unit+"="+str(gT)+" p="+str(p_val))
         plt.xlabel(x_unit)
@@ -171,6 +182,109 @@ def permutationTest_relative(x, y, plot_=True, x_unit=None, p=5000):
         plt.show()
 
     return gT, p_val
+
+
+@njit
+def permutation_numba_onesample(x, y, n_perm, two_tailed=True):
+    """Perform permutation test with one-sample distribution.
+
+    Parameters
+    ----------
+    x : array_like
+        First distribution
+    y : int or float
+        Baseline against which to check for statistical significane
+    n_perm : int
+        Number of permutations
+    two_tailed : bool, default: True
+        Set to False if you would like to perform a one-sampled permutation
+        test, else True
+    two_tailed : bool, default: True
+        Set to False if you would like to perform a one-tailed permutation
+        test, else True
+
+    Returns
+    -------
+    float
+        Estimated difference of distribution from baseline
+    float
+        P-value of permutation test
+    """
+    if two_tailed is True:
+        zeroed = x - y
+        print(zeroed)
+        z = np.abs(np.mean(zeroed))
+        p = np.empty(n_perm)
+        # Run the simulation n_perm times
+        for i in np.arange(n_perm):
+            sign = np.random.choice(
+                a=np.array([-1., 1.]), size=len(x), replace=True)
+            p[i] = np.abs(np.mean(zeroed * sign))
+    else:
+        zeroed = x - y
+        z = np.mean(zeroed)
+        p = np.empty(n_perm)
+        # Run the simulation n_perm times
+        for i in np.arange(n_perm):
+            sign = np.random.choice(
+                a=np.array([-1., 1.]), size=len(x), replace=True)
+            p[i] = np.mean(zeroed * sign)
+        # Return p-value
+    return z, (np.sum(p >= z)) / n_perm
+
+
+@njit
+def permutation_numba_twosample(x, y, n_perm, two_tailed=True):
+    """Perform permutation test.
+
+    Parameters
+    ----------
+    x : array_like
+        First distribution
+    y : array_like
+        Second distribution
+    n_perm : int
+        Number of permutations
+    two_tailed : bool, default: True
+        Set to False if you would like to perform a one-sampled permutation
+        test, else True
+    two_tailed : bool, default: True
+        Set to False if you would like to perform a one-tailed permutation
+        test, else True
+
+    Returns
+    -------
+    float
+        Estimated difference of distribution means
+    float
+        P-value of permutation test
+    """
+    if two_tailed is True:
+        z = np.abs(np.mean(x) - np.mean(y))
+        pS = np.concatenate((x, y), axis=0)
+        half = int(len(pS) / 2)
+        p = np.empty(n_perm)
+        # Run the simulation n_perm times
+        for i in np.arange(0, n_perm):
+            # Shuffle the data
+            np.random.shuffle(pS)
+            # Compute permuted absolute difference of the two sampled
+            # distributions
+            p[i] = np.abs(np.mean(pS[:half]) - np.mean(pS[half:]))
+    else:
+        z = np.mean(x) - np.mean(y)
+        pS = np.concatenate((x, y), axis=0)
+        half = int(len(pS) / 2)
+        p = np.empty(n_perm)
+        # Run the simulation n_perm times
+        for i in np.arange(0, n_perm):
+            # Shuffle the data
+            np.random.shuffle(pS)
+            # Compute permuted absolute difference of the two sampled
+            # distributions
+            p[i] = np.mean(pS[:half]) - np.mean(pS[half:])
+    return z, (np.sum(p >= z)) / n_perm
+
 
 def cluster_wise_p_val_correction(p_arr, p_sig=0.05, num_permutations=10000):
     """
@@ -182,21 +296,21 @@ def cluster_wise_p_val_correction(p_arr, p_sig=0.05, num_permutations=10000):
 
     p_arr (np.array) : ndim, can be time series or image
     p_sig (float) : significance level
-    num_permutations (int) : number of random permutations of cluster comparisons
+    num_permutations (int) : no. of random permutations of cluster comparisons
 
     returns:
     p (float) : significance level of highest cluster
     p_min_index : indices of significant samples
     """
-    labels, num_clusters = measure.label(p_arr<p_sig, return_num=True)
+    labels, num_clusters = measure.label(p_arr < p_sig, return_num=True)
 
     # loop through clusters of p_val series or image
     index_cluster = {}
     p_cluster_sum = np.zeros(num_clusters)
     for cluster_i in range(num_clusters):
-        index_cluster[cluster_i] = np.where(labels == cluster_i+1)[0] # first cluster is assigned to be 1 from measure.label
+        index_cluster[cluster_i] = np.where(labels == cluster_i+1)[0]  # first cluster is assigned to be 1 from measure.label
         p_cluster_sum[cluster_i] = np.sum(np.array(1-p_arr)[index_cluster[cluster_i]])
-    p_min = np.max(p_cluster_sum) # p_min corresponds to the most unlikely cluster
+    p_min = np.max(p_cluster_sum)  # p_min corresponds to the most unlikely cluster
     p_min_index = index_cluster[np.argmax(p_cluster_sum)]
 
     # loop through random permutation cycles
@@ -204,16 +318,17 @@ def cluster_wise_p_val_correction(p_arr, p_sig=0.05, num_permutations=10000):
     for r in range(num_permutations):
         r_per = np.random.randint(low=0, high=p_arr.shape[0], size=p_arr.shape[0])
 
-        labels, num_clusters = measure.label(p_arr[r_per]<p_sig, return_num=True)
+        labels, num_clusters = measure.label(p_arr[r_per] < p_sig, return_num=True)
 
         index_cluster = {}
         p_cluster_sum = np.zeros(num_clusters)
         for cluster_i in range(num_clusters):
-            index_cluster[cluster_i] = np.where(labels == cluster_i+1)[0] # first cluster is assigned to be 1 from measure.label
-            p_cluster_sum[cluster_i] = np.sum(np.array(1-p_arr[r_per])[index_cluster[cluster_i]])
-        r_per_arr[r] = np.max(p_cluster_sum) # corresponds to the most unlikely cluster
+            index_cluster[cluster_i] = np.where(labels == cluster_i+1)[0]  # first cluster is assigned to be 1 from measure.label
+            p_cluster_sum[cluster_i] = np.sum(
+                np.array(1-p_arr[r_per])[index_cluster[cluster_i]])
+        r_per_arr[r] = np.max(p_cluster_sum)  # corresponds to the most unlikely cluster
 
-        sorted_r =  np.sort(r_per_arr)
+        sorted_r = np.sort(r_per_arr)
 
     def find_arg_nearest(array, value):
         array = np.asarray(array)
