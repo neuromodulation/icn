@@ -461,7 +461,6 @@ def cluster_wise_p_val_correction_numba(p_arr, p_sig, n_perm):
         index_cluster = np.where(labels == cluster_i + 1)[0]
         p_cluster_sum = np.sum(np.asarray(1 - p_arr)[index_cluster])
         p_val = 1 - np.sum(p_cluster_sum >= null_distr) / n_perm
-        print(np.sum(p_cluster_sum >= null_distr))
         if p_val <= p_sig:
             clusters.append(index_cluster)
             p_vals.append(p_val)
