@@ -1,4 +1,4 @@
-#Jonathan Vanhoecke at ICN lab
+#Jonathan Vanhoecke and Richard Koehler at ICN lab
 import IO
 import os
 import mne_bids
