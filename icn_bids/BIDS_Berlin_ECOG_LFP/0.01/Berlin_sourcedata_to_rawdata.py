@@ -1,3 +1,4 @@
+#Jonathan Vanhoecke at ICN lab
 import IO
 import os
 import mne_bids
