@@ -1,5 +1,5 @@
 29.09.2021 - Jonathan
-nr 12, 14, 16, 20, 21
+nr 12, 14, 16, 21, 22
 	converted edf to brainvision using edf_to_brainvision_v3.py
 	changed the subject naming with v21_relabeltool
 	updated channel types 
@@ -16,9 +16,9 @@ nr 6, 8, 10 11 13, C001
 For all togehter
 	created new participants.tsv
 	created new dataset.description
-	moved the coord and electrode.tsv files into new rawdata for subject 6-13
+	moved the coord and electrode.tsv files into new rawdata for subject 1+6-13
 	changed channel naming for the electrode.tsv files
-	created new template for electrode.tsv files for the 12-21
+	created new template for electrode.tsv files for the 12-22
 	standardized the imaging sessions
 	
 	moved ECOG localization of Meera of source data to derivatives
