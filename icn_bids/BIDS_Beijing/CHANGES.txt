@@ -15,7 +15,8 @@ nr 6, 8, 10 11 13, C001
 	
 	
 For all together
-	created phenotype folder and matched the clinical data of the subjects (subject 1-13 are missing some fields)
+	created phenotype folder and matched the clinical data of the subjects (subject 1-13 are missing some fields!)
+	moved the old electrode visualizations to the derivatives
 	created new participants.tsv
 	created new dataset.description
 	moved the coord and electrode.tsv files into new rawdata for subject 1+6-13
@@ -29,7 +30,7 @@ For all together
 	changed subject naming in the source data
 	!!! removed the electrodes coord files made by Beijing team in the rawdata (kept only those in sourcedata)
 	!!! merged the json files of sourcedata to rawdata where possible e.g. only FOGC001 had json for rest task
-	
+
 	
 
 21.09.2021 - Jonathan
