@@ -1,8 +1,14 @@
 Revision history for BIDS_Berlin_ECOG_LFP dataset
+
+0.1 2021-29-09 - Timon
+ - adapt back slash to forward slash for sub006 and sub007 '_scan.tsv' files
+ - added derivative folder for MovRelaxSpeech for sub005, sub006, sub007
+
 0.09 2021-07-08 - Jonathan
  - added conversion file in the derivates data_conversion folder
  - changed the ref field into that
  - still need update of the IEEGreferences across trials, using the labbook under source/protocol
+
 0.08 2021-05-04
  - updated task names by Richard Koehler
  - updated channel type from "SEEG" to "DBS" for all recordings by Richard Koehler

@@ -4,6 +4,12 @@ nr 12, 14, 16, 20, 21
 	took backup in Backup channel
 	unzipped in source data
 
+20.09.2021 - Timon
+ - subjects: 6, 8, 10, 11, 13, C001
+ - adapted channel types
+ - rewrite coordinates.tsv files
+ - added clean TTL signal for button press task
+ - code: icn_bids/general_BIDS_codes/write_Beijing_TTLclean_typesclean_coordclean.ipynb
 
 01.06.2021
 
