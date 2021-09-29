@@ -21,7 +21,7 @@ For all together
 	moved the coord and electrode.tsv files into new rawdata for subject 1+6-13
 	changed channel naming for the electrode.tsv files
 	created new template for electrode.tsv files for the 12-22
-	standardized the imaging sessions
+	standardized the imaging sessions -> but not the anat images itself
 	changed naming to ButtonPressL (left index finger)
 	added acq StimOff everywhere
 	
