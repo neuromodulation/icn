@@ -12,6 +12,7 @@ nr 6, 8, 10 11 13, C001
 	updated channel types to dbs
 	updated channel names to swap type number and side to type side and number
 	changed session naming
+	!!! removed the electrodes coord files made by Beijing team in the rawdata (kept only those in sourcedata)
 	
 For all togehter
 	created new participants.tsv
