@@ -14,13 +14,14 @@ nr 6, 8, 10 11 13, C001
 	changed session naming
 	!!! removed the electrodes coord files made by Beijing team in the rawdata (kept only those in sourcedata)
 	
-For all togehter
+For all together
 	created new participants.tsv
 	created new dataset.description
 	moved the coord and electrode.tsv files into new rawdata for subject 1+6-13
 	changed channel naming for the electrode.tsv files
 	created new template for electrode.tsv files for the 12-22
 	standardized the imaging sessions
+	changed naming to ButtonPressL (left index finger)
 	
 	moved ECOG localization of Meera of source data to derivatives
 	changed subject naming in the source data
