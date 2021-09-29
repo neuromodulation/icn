@@ -1,8 +1,37 @@
+29.09.2021 - Jonathan
+nr 12, 14, 16, 20, 21
+	converted edf to brainvision using edf_to_brainvision_v3.py
+	changed the subject naming with v21_relabeltool
+	updated channel types 
+	updated channel names with change_channel_names_v3.py
+	tested the dataset with mne_bids read_raw_BIDS_test_dataset.py
+	=> error for CapTrak https://github.com/mne-tools/mne-bids/issues/723#issuecomment-799307076
+	changed session naming
+nr 6, 8, 10 11 13, C001
+	took from raw data set locally stored at Timon's PC
+	updated channel types to dbs
+	updated channel names to swap type number and side to type side and number
+	changed session naming
+	
+For all togehter
+	created new participants.tsv
+	created new dataset.description
+	moved the coord and electrode.tsv files into new rawdata for subject 6-13
+	changed channel naming for the electrode.tsv files
+	created new template for electrode.tsv files for the 12-21
+	standardized the imaging sessions
+	
+	moved ECOG localization of Meera of source data to derivatives
+	changed subject naming in the source data
+	
+	
+
 21.09.2021 - Jonathan
 Extra subjects of Beijing
 nr 12, 14, 16, 20, 21
 	took backup in Backup channel
 	unzipped in source data
+	created new BIDS folders
 
 20.09.2021 - Timon
  - subjects: 6, 8, 10, 11, 13, C001
