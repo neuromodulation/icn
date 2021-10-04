@@ -1,3 +1,7 @@
+04.10.2021 - Jonathan
+nr 12, 14, 16, 21, 22
+	added the coord and electrode.tsv file templates using https://github.com/neuromodulation/icn/blob/master/icn_bids/BIDS_Beijing/change_channel_names_v6.py
+
 29.09.2021 - Jonathan
 nr 12, 14, 16, 21, 22
 	converted edf to brainvision using edf_to_brainvision_v3.py
