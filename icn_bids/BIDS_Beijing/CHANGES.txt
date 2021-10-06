@@ -1,3 +1,9 @@
+06.10.2021 - Timon 
+	Fix JSON Format in all '_ieeg.json' files
+	Replace 'ID NUMBER' with 'participants_id' in participants.tsv file
+	Add 'Name' field in dataset_description.json
+	Fix "Authors" JSON Format in dataset_description.json
+
 04.10.2021 - Jonathan
 nr 12, 14, 16, 21, 22
 	added the coord and electrode.tsv file templates using https://github.com/neuromodulation/icn/blob/master/icn_bids/BIDS_Beijing/change_channel_names_v6.py
