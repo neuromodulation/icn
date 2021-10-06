@@ -1,4 +1,5 @@
-06.10.2021 - Timon 
+06.10.2021 - Timon
+	Fix Session name in electrode.tsv and coordsystem.json
 	Fix JSON Format in all '_ieeg.json' files
 	Replace 'ID NUMBER' with 'participants_id' in participants.tsv file
 	Add 'Name' field in dataset_description.json
