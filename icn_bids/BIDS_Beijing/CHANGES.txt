@@ -3,7 +3,7 @@
 	replace TTL channels with wider plateau for FOG 16 and FOG 22 with change_channel_names_v7.py
 	
 
-08.10.2021
+08.10.2021 - Jonathan
 	add TTL_1_clean channels
 	replace the eeg, vhmrk, vhdr files of subjects 12-14-16-21-22
 
