@@ -1,3 +1,6 @@
+25.10.2021 - Timon
+	Fix electrodes.tsv files, deleting non filled fields and columns
+
 11.10.2021 - Jonathan
 	update the channels.tsv files of ButtonPressL with the TTL_1_clean
 	replace TTL channels with wider plateau for FOG 16 and FOG 22 with change_channel_names_v7.py
