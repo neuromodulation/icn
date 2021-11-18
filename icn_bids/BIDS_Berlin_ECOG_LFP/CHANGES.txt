@@ -3,6 +3,9 @@ Revision history for BIDS_Berlin_ECOG_LFP dataset
  - manually adapted the scans.tsv files
  --- added the column variables filename	acq_time	medication_state  UPDRS-III
  --- updated the UPDRS-III scores of those partipants that are mentioned in the phenotype folder
+ --- added a n/a column where there are no UPDRS scores
+ 
+ - added a scans.json file for sub-008
 
 0.1 2021-29-09 - Timon
  - adapt back slash to forward slash for sub006 and sub007 '_scan.tsv' files
