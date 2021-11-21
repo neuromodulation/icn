@@ -1,3 +1,6 @@
+21.11.2021 - Timon
+	Add SQUARED_EMG and SQUARED_ARTIFACT button press runs
+
 25.10.2021 - Timon
 	Fix electrodes.tsv files, deleting non filled fields and columns
 
