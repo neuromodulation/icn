@@ -1,4 +1,7 @@
 Revision history for BIDS_Berlin_ECOG_LFP dataset
+0.11 2022-01-26 Jonathan
+ - uploaded subject 9 in rawdata, first recording
+ 
 0.1 2021-11-18 Jonathan (same version)
  - manually adapted the scans.tsv files
  --- added the column variables filename	acq_time	medication_state  UPDRS-III
