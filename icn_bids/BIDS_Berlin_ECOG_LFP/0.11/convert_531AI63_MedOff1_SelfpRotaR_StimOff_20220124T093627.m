@@ -276,7 +276,7 @@ cfg.InstitutionAddress                      = 'Chariteplatz 1, 10117 Berlin, Ger
 cfg.dataset_description.Name                = 'BIDS_Berlin_LFP_ECOG_PD';
 cfg.dataset_description.BIDSVersion         = '1.5.0';
 cfg.dataset_description.License             = 'n/a';
-cfg.dataset_description.Funding             = [['Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) - Project-ID 424778381 - TRR 295']];
+cfg.dataset_description.Funding             = {'Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) - Project-ID 424778381 - TRR 295'};
 cfg.dataset_description.Authors             = {'Johannes Busch', 'Meera Chikermane', 'Katharina Faust', 'Lucia Feldmann', 'Richard Koehler', 'Andrea Kuehn', 'Roxanne Lofredi', 'Timon Merk', 'Wolf-Julian Neumann', 'Gerd-Helge Schneider', 'Ulrike Uhlig','Jonathan Vanhoecke'};
 cfg.dataset_description.Acknowledgements    = 'Special thanks to Ulrike Uhlig for their help in recording the data.';
 
