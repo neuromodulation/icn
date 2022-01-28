@@ -1,4 +1,7 @@
 Revision history for BIDS_Berlin_ECOG_LFP dataset
+0.11 2022-01-28 Richard
+ - added a so-called BIDS validator config JSON file, to manage the BIDS validator settings
+
 0.11 2022-01-26 Jonathan
  - uploaded subject 9 in rawdata, first recording
  
