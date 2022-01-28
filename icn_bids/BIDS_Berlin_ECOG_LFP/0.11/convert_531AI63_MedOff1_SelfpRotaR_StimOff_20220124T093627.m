@@ -273,12 +273,12 @@ cfg.scans.UPDRS_III             = 'n/a'; % need to be calcuated.
 % Specify some general information
 cfg.InstitutionName                         = 'Charite - Universitaetsmedizin Berlin, corporate member of Freie Universitaet Berlin and Humboldt-Universitaet zu Berlin, Department of Neurology with Experimental Neurology/BNIC, Movement Disorders and Neuromodulation Unit';
 cfg.InstitutionAddress                      = 'Chariteplatz 1, 10117 Berlin, Germany';
-cfg.dataset_description.Name                = 'BIDS_Berlin_LFP_ECOG_PD';
-cfg.dataset_description.BIDSVersion         = '1.5.0';
+cfg.dataset_description.Name                = 'BIDS_Berlin_ECOG_LFP';
+cfg.dataset_description.BIDSVersion         = '1.6.0';
 cfg.dataset_description.License             = 'n/a';
 cfg.dataset_description.Funding             = {'Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) - Project-ID 424778381 - TRR 295'};
-cfg.dataset_description.Authors             = {'Johannes Busch', 'Meera Chikermane', 'Katharina Faust', 'Lucia Feldmann', 'Richard Koehler', 'Andrea Kuehn', 'Roxanne Lofredi', 'Timon Merk', 'Wolf-Julian Neumann', 'Gerd-Helge Schneider', 'Ulrike Uhlig','Jonathan Vanhoecke'};
-cfg.dataset_description.Acknowledgements    = 'Special thanks to Ulrike Uhlig for their help in recording the data.';
+cfg.dataset_description.Authors             = {'Johannes Busch', 'Meera Chikermane', 'Katharina Faust', 'Lucia Feldmann', 'Jeroen Habets', 'Richard Koehler', 'Andrea Kuehn', 'Roxanne Lofredi', 'Timon Merk', 'Wolf-Julian Neumann', 'Gerd-Helge Schneider', 'Ulrike Uhlig', 'Jonathan Vanhoecke'};
+cfg.dataset_description.Acknowledgements    = 'Special thanks to all other people involved in acquiring the data.';
 
 % Provide the long description of the task and participant instructions
 cfg.TaskName                = cfg.task;
