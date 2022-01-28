@@ -249,8 +249,8 @@ instructionSet = {'Do not move or speak and keep your eyes open.',...
     'Keep both hands resting on your legs, and rotate your right hand 180 degrees and back every 10 seconds. Do not count in between rotations.',...
     'Free period, without instructions or restrictions, of rest between Rest-measurement and Task-measurements'...
     };
-task_descr = containers.Map(keySet,descrSet)
-task_instr = containers.Map(keySet,instructionSet)
+task_descr = containers.Map(keySet,descrSet);
+task_instr = containers.Map(keySet,instructionSet);
 
 %% Now write data to BIDS
 % data2bids function is only found in original fieldtrip toolbox
