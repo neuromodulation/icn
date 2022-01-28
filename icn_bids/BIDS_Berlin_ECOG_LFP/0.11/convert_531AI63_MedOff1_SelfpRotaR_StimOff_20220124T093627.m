@@ -50,48 +50,31 @@ data = ft_preprocessing(outputfig);
 % To Do Jonathan: need to check the manufacturer to know the abbreviation and the number of
 % channels
 
-DBS_model = 'SenSight';
+DBS_target = "STN";
+%DBS_target = "VIM";
+%DBS_target = "GPI";
+DBS_hemispheres = ["R", "L"];
+
+DBS_model = 'SenSight Short';
+%DBS_model = 'SenSight Long';
 %DBS_model = 'Vercise Cartesia X';
+%DBS_model = 'Vercise Cartesia';
+%DBS_model = 'Vercise Standard';
+%DBS_model = 'Abbott Directed Long';
+%DBS_model = 'Abbott Directed Short';
 %DBS_model = 'Other';
 
-ECOG_model = 'TS06R-AP10X-0W6'; %this model has 6 contacts
-n_ECOG_contacts = 6;
+ECOG_target = "SMC"; % Sensorimotor Cortex
+%ECOG_hemisphere = "R";
+ECOG_hemisphere = "L";
 
-%ECOG_model ='DS12A-SP10X-000'; % this has 12 contacts
-%n_ECOG_contacts = 12;
+ECOG_model = 'TS06R-AP10X-0W6'; % manufacturer: Ad-Tech
+%ECOG_model ='DS12A-SP10X-000'; % manufacturer: Ad-Tech
 
-%ECOG_hemisphere = 'right';
-ECOG_hemisphere = 'left';
+iEEGRef = 'LFP_L_8_STN_BS'; % what is the reference contact?
 
-iEEGRef = 'LFP_L_8_STN_BS'; % what is the reference?
-
-if strcmp(DBS_model, 'SenSight')
-    n_DBS_contacts = 8;
-    new_chans = {
-        'LFP_R_1_STN_MT'
-        'LFP_R_2_STN_MT'
-        'LFP_R_3_STN_MT'
-        'LFP_R_4_STN_MT'
-        'LFP_R_5_STN_MT'
-        'LFP_R_6_STN_MT'
-        'LFP_R_7_STN_MT'
-        'LFP_R_8_STN_MT'
-        
-        'LFP_L_1_STN_MT'
-        'LFP_L_2_STN_MT'
-        'LFP_L_3_STN_MT'
-        'LFP_L_4_STN_MT'
-        'LFP_L_5_STN_MT'
-        'LFP_L_6_STN_MT'
-        'LFP_L_7_STN_MT'
-        'LFP_L_8_STN_MT'
-        
-        'ECOG_L_1_SMC_AT'
-        'ECOG_L_2_SMC_AT'
-        'ECOG_L_3_SMC_AT'
-        'ECOG_L_4_SMC_AT'
-        'ECOG_L_5_SMC_AT'
-        'ECOG_L_6_SMC_AT'
+% specify channels used other than DBS and ECOG
+chs_other = {
         'EEG_Cz_TM'
         'EEG_Fz_TM'
         'EMG_R_BR_TM'
@@ -104,83 +87,104 @@ if strcmp(DBS_model, 'SenSight')
         'ACC_L_Y_D2_TM'
         'ACC_L_Z_D2_TM'
         'ANALOG_R_ROTA_CH'
-        } 
+        };
+
+% Handle DBS lead model
+if strcmp(DBS_model, 'SenSight Short')
+    DBS_contacts           = 8;
+    DBS_manufacturer       = 'Medtronic';
+    DBS_manufacturer_short = "MT";
+    DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
+elseif strcmp(DBS_model, 'SenSight Long')
+    DBS_contacts           = 8;
+    DBS_manufacturer       = 'Medtronic';
+    DBS_manufacturer_short = "MT";
+    DBS_description        = '8-contact, 4-level, directional DBS lead. 1.5 mm spacing.';
 elseif strcmp(DBS_model, 'Vercise Cartesia X')
-    n_DBS_contacts = 16;
-    new_chans = {
-        'LFP_R_1_STN_BS'
-        'LFP_R_2_STN_BS'
-        'LFP_R_3_STN_BB'
-        'LFP_R_4_STN_BS'
-        'LFP_R_5_STN_BS'
-        'LFP_R_6_STN_BS'
-        'LFP_R_7_STN_BS'
-        'LFP_R_8_STN_BS'
-        'LFP_R_9_STN_BS'
-        'LFP_R_10_STN_BS'
-        'LFP_R_11_STN_BB'
-        'LFP_R_12_STN_BS'
-        'LFP_R_13_STN_BS'
-        'LFP_R_14_STN_BS'
-        'LFP_R_15_STN_BS'
-        'LFP_R_16_STN_BS'
-        'LFP_L_1_STN_BS'
-        'LFP_L_2_STN_BS'
-        'LFP_L_3_STN_BS'
-        'LFP_L_4_STN_BS'
-        'LFP_L_5_STN_BS'
-        'LFP_L_6_STN_BS'
-        'LFP_L_7_STN_BS'
-        'LFP_L_8_STN_BS'
-        'LFP_L_9_STN_BS'
-        'LFP_L_10_STN_BS'
-        'LFP_L_11_STN_BB'
-        'LFP_L_12_STN_BS'
-        'LFP_L_13_STN_BS'
-        'LFP_L_14_STN_BS'
-        'LFP_L_15_STN_BS'
-        'LFP_L_16_STN_BS'
-        'ECOG_L_1_SMC_AT'
-        'ECOG_L_2_SMC_AT'
-        'ECOG_L_3_SMC_AT'
-        'ECOG_L_4_SMC_AT'
-        'ECOG_L_5_SMC_AT'
-        'ECOG_L_6_SMC_AT'
-        'EEG_Cz_TM'
-        'EEG_Fz_TM'
-        'EMG_R_BR_TM'
-        'EMG_L_BR_TM'
-        'ECG'
-        'ACC_R_X_D2_TM'
-        'ACC_R_Y_D2_TM'
-        'ACC_R_Z_D2_TM'
-        'ACC_L_X_D2_TM'
-        'ACC_L_Y_D2_TM'
-        'ACC_L_Z_D2_TM'
-        %'ANALOG_R_ROTA_CH'
-        }
+    DBS_contacts           = 16;
+    DBS_manufacturer       = 'Boston Scientific';
+    DBS_manufacturer_short = "BS";
+    DBS_description        = '16-contact, 5-level, directional DBS lead. 0.5 mm spacing.';
+elseif strcmp(DBS_model, 'Vercise Cartesia')
+    DBS_contacts           = 8;
+    DBS_manufacturer       = 'Boston Scientific';
+    DBS_manufacturer_short = "BS";
+    DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
+elseif strcmp(DBS_model, 'Vercise Standard')
+    DBS_contacts           = 8;
+    DBS_manufacturer       = 'Boston Scientific';
+    DBS_manufacturer_short = "BS";
+    DBS_description        = '8-contact, 8-level, non-directional DBS lead. 0.5 mm spacing.';
+elseif strcmp(DBS_model, 'Abbott Directed Long')
+    DBS_contacts           = 8;
+    DBS_manufacturer       = 'Abbott/St Jude';
+    DBS_manufacturer_short = "AB";
+    DBS_description        = '8-contact, 4-level, directional DBS lead. 1.5 mm spacing.';
+elseif strcmp(DBS_model, 'Abbott Directed Short')
+    DBS_contacts           = 8;
+    DBS_manufacturer       = 'Abbott/St Jude';
+    DBS_manufacturer_short = "AB";
+    DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
 else
-    error('please, specify the DBS model')
+    error('DBS model not found, please specify a valid DBS lead.')
 end
 
+chs_DBS = cell(DBS_contacts,1);
+for i = 1:length(DBS_hemispheres(1))
+    hemisphere = DBS_hemispheres{i, 1};
+    for ind = 1:DBS_contacts
+        items = ["LFP", hemisphere, string(ind), DBS_target, DBS_manufacturer_short];
+        ch_name = join(items, '_');
+        chs_DBS{ind} = ch_name{1};
+    end
+end
 
+% Handle ECOG electrode model
+if strcmp(ECOG_model, 'TS06R-AP10X-0W6')
+    ECOG_contacts              = 6;
+    ECOG_manufacturer_short    = "AT";
+    ECOG_manufacturer          = 'Ad-Tech';
+    ECOG_location              = 'subdural';
+    ECOG_material              = 'platinum';
+    ECOG_description           = '6-contact, 1x6 narrow-body long term monitoring strip. Platinum contacts, 10mm spacing, contact size 4.0 mm diameter/1.8 mm exposure.';
+elseif strcmp(ECOG_model, 'DS12A-SP10X-000')
+    ECOG_contacts              = 12;
+    ECOG_manufacturer_short    = "AT";
+    ECOG_manufacturer          = 'Ad-Tech';
+    ECOG_location              = 'subdural';
+    ECOG_material              = 'platinum';
+    ECOG_description           = '12-contact, 1x6 dual sided long term monitoring strip. Platinum contacts, 10mm spacing, contact size 4.0 mm diameter/2.3 mm exposure. Platinum marker.';
 
+else
+    error('ECOG model not found, please specify a valid ECOG electrode.')
+end
 
-data.label          = new_chans;
-data.hdr.nChans     = length(new_chans);
+chs_ECOG = cell(ECOG_contacts,1);
+for ind = 1:ECOG_contacts
+    items = ["ECOG", ECOG_hemisphere, string(ind), ECOG_target, ECOG_manufacturer_short];
+    ch_name = join(items, '_');
+    chs_ECOG{ind} = ch_name{1};
+end
+
+chs_final = [chs_DBS; chs_ECOG; chs_other];
+
+%% Now assign channel types
+
+data.label          = chs_final;
+data.hdr.nChans     = length(chs_final);
 data.hdr.label      = data.label;
 % Set channel types and channel units
 chantype            = cell(data.hdr.nChans,1);
-for ch=1: data.hdr.nChans
-    if contains(new_chans{ch},'LFP')
+for ch = 1:data.hdr.nChans
+    if contains(chs_final{ch},'LFP')
         chantype(ch) = {'DBS'};
-    elseif contains(new_chans{ch},'ECOG')
+    elseif contains(chs_final{ch},'ECOG')
         chantype(ch) = {'ECOG'};
-    elseif contains(new_chans{ch},'EEG')
+    elseif contains(chs_final{ch},'EEG')
         chantype(ch) = {'EEG'};
-    elseif contains(new_chans{ch},'EMG')
+    elseif contains(chs_final{ch},'EMG')
         chantype(ch) = {'EMG'};    
-    elseif contains(new_chans{ch},'ECG')
+    elseif contains(chs_final{ch},'ECG')
         chantype(ch) = {'ECG'};   
     else
         chantype(ch) = {'MISC'};   
@@ -202,10 +206,10 @@ why = {'Reference electrode'};
 
 bads = repmat({'good'},data.hdr.nChans,1);
 bads_descr = repmat({'n/a'},data.hdr.nChans,1);
-for k=1:length(new_chans)
-    if ismember(new_chans{k}, bad)
+for k=1:length(chs_final)
+    if ismember(chs_final{k}, bad)
         bads{k} = 'bad';
-        bads_descr{k} = why{find(strcmp(bad,new_chans{k}))};
+        bads_descr{k} = why{find(strcmp(bad,chs_final{k}))};
     end
 end
 
@@ -294,7 +298,7 @@ if strcmp(manufacturer,'TMSi')
     cfg.DeviceSerialNumber          = '1005190056';
     cfg.channels.low_cutoff         = repmat({'0.0'},data.hdr.nChans,1);
     cfg.channels.high_cutoff        = repmat({'2100.0'},data.hdr.nChans,1); 
-    cfg.channels.high_cutoff(contains(string(new_chans),["LFP", "ECOG","EEG"])) = {'1600.0'}
+    cfg.channels.high_cutoff(contains(string(chs_final),["LFP", "ECOG","EEG"])) = {'1600.0'};
 %else manufacturer == 'Ripple'
 %else manufacturer == 'AlphaOmega'
 %else manufacturer == 'Neuronica'
@@ -305,58 +309,45 @@ end
 % need to check in the LFP excel sheet on the S-drive
 % Provide info about the participant	
 % cfg.participants.sex                    = 'male'; -> where is this written down?
- cfg.participants.handedness             = 'right';
- cfg.participants.age                    = 59;
- cfg.participants.date_of_implantation   = '2022-01-20T00:00:00';
+cfg.participants.handedness             = 'right';
+cfg.participants.age                    = 59;
+cfg.participants.date_of_implantation   = '2022-01-20T00:00:00';
 % cfg.participants.UPDRS_III_preop_OFF    = 'n/a';-> how to calculate?
 % cfg.participants.UPDRS_III_preop_ON     = 'n/a';-> how to calculate?
- cfg.participants.disease_duration       = 7;
-% cfg.participants.PD_subtype             = 'akinetic-rigid';-> where to find this?
- cfg.participants.symptom_dominant_side  = 'right';
-% cfg.participants.LEDD                   = 'n/a';-> where to find this?
+cfg.participants.disease_duration       = 7;
+cfg.participants.PD_subtype             = 'akinetic-rigid';
+cfg.participants.symptom_dominant_side  = 'right';
+cfg.participants.LEDD                   = 1600;
 
 
 % TO DO:  provide a dictionary for the DBS manufacturer
 % Provide info about the DBS lead
 
-cfg.participants.DBS_target                 = 'STN';
-if strcmp(DBS_model, 'SenSight')    
-    cfg.participants.DBS_manufacturer           = 'Medtronic';
-    cfg.participants.DBS_model                  = 'SenSight';
-    cfg.participants.DBS_directional            = 'yes';
-    cfg.participants.DBS_contacts               = n_DBS_contacts;
-    cfg.participants.DBS_description            = '8-contact, directional DBS lead.';
-elseif strcmp(DBS_model, 'Vercise Cartesia X')    
-    cfg.participants.DBS_manufacturer           = 'Boston Scientific';
-    cfg.participants.DBS_model                  = 'Vercise Cartesia X';
-    cfg.participants.DBS_directional            = 'yes';
-    cfg.participants.DBS_contacts               = n_DBS_contacts;
-    cfg.participants.DBS_description            = '16-contact, directional DBS lead.';
-else
-    error('please, specify the DBS model')
-end
+cfg.participants.DBS_target                 = DBS_target;
+cfg.participants.DBS_model                  = DBS_model;
+cfg.participants.DBS_contacts               = DBS_contacts;
+cfg.participants.DBS_manufacturer           = DBS_manufacturer;
+cfg.participants.DBS_directional            = DBS_directional;
+cfg.participants.DBS_description            = DBS_description;
     
-% Provide info about the ECOG electrode
-cfg.participants.ECOG_target                = 'sensorimotor cortex';
-cfg.participants.ECOG_hemisphere            = ECOG_hemisphere
-if strcmp(ECOG_model, 'TS06R-AP10X-0W6')
-    cfg.participants.ECOG_manufacturer          = 'Ad-Tech';
-    cfg.participants.ECOG_model                 = 'TS06R-AP10X-0W6';
-    cfg.participants.ECOG_location              = 'subdural';
-    cfg.participants.ECOG_material              = 'platinum';
-    cfg.participants.ECOG_contacts              = n_ECOG_contacts;
-    cfg.participants.ECOG_description           = '6-contact, 1x6 narrow-body long term monitoring strip. Platinum contacts, 10mm spacing, contact size 4.0 mm diameter/1.8 mm exposure.';
-elseif strcmp(ECOG_model, 'DS12A-SP10X-000')
-    cfg.participants.ECOG_manufacturer          = 'Ad-Tech';
-    cfg.participants.ECOG_model                 = 'DS12A-SP10X-000';
-    cfg.participants.ECOG_location              = 'subdural';
-    cfg.participants.ECOG_material              = 'platinum';
-    cfg.participants.ECOG_contacts              = n_ECOG_contacts;
-    cfg.participants.ECOG_description           = '12-contact, 1x6 dual sided long term monitoring strip. Platinum contacts, 10mm spacing, contact size 4.0 mm diameter/2.3 mm exposure. Platinum marker.';
-else
-    error('Please specify the ECOG model')
-end
+% Info about the ECOG electrode
+cfg.participants.ECOG_manufacturer          = ECOG_manufacturer;
+cfg.participants.ECOG_model                 = ECOG_model;
+cfg.participants.ECOG_location              = ECOG_location;
+cfg.participants.ECOG_material              = ECOG_material;
+cfg.participants.ECOG_contacts              = ECOG_contacts;
+cfg.participants.ECOG_description           = ECOG_description;
 
+if strcmp("SMC", ECOG_target)
+    cfg.participants.ECOG_target                = 'sensorimotor cortex';
+else
+    error('ECOG target not found, please specify a valid target.')
+end
+if strcmp('R', ECOG_hemisphere)
+    cfg.participants.ECOG_hemisphere            = 'right';
+else
+    cfg.participants.ECOG_hemisphere            = 'left';
+end
 
 
 % Provide info for the coordsystem.json file
@@ -377,7 +368,7 @@ cfg.coordsystem.iEEGCoordinateProcessingReference	= "Horn, A., Li, N., Dembek, T
 
 
 % extract the channel names that contain LFP or ECOG
-sens.label = new_chans(contains(string(new_chans),["LFP", "ECOG"]))
+sens.label = chs_final(contains(string(chs_final),["LFP", "ECOG"]))
 
 % Electrode positions are imported from external files (e.g. Lead-DBS
 % ea_reconstruction.mat) and a sens FieldTrip struct is created 
@@ -387,9 +378,9 @@ sens.label = new_chans(contains(string(new_chans),["LFP", "ECOG"]))
 % if else statement for the manufacturer and per model
 % this is the channel position for medtronic
 sens.chanpos = [
-    zeros(n_DBS_contacts, 3); ...
-    zeros(n_DBS_contacts, 3); ...
-    zeros(n_ECOG_contacts, 3)]; %what is this 12 refering to? I replaced it with n_ECOG_contact 
+    zeros(DBS_contacts, 3); ...
+    zeros(DBS_contacts, 3); ...
+    zeros(ECOG_contacts, 3)]; %what is this 12 refering to? I replaced it with n_ECOG_contact 
 % this is for medtronic
 % cfg.electrodes.size         = {
 %     6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
@@ -408,8 +399,8 @@ cfg.electrodes.size         = {
 %     4.15 4.15 4.15 4.15 4.15 4.15 ...
 %     }; => what are these values?
 % sens.chanpos = [
-%     zeros(n_DBS_contacts, 3); ...
-%     zeros(n_DBS_contacts, 3); ...
+%     zeros(DBS_contacts, 3); ...
+%     zeros(DBS_contacts, 3); ...
 %     zeros(6, 3)]; %what is this 6 refering to?
 sens.elecpos = sens.chanpos;
 cfg.elec     = sens;
@@ -418,36 +409,36 @@ cfg.electrodes.name = sens.label;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % RECOMMENDED. Material of the electrode, e.g., Tin, Ag/AgCl, Gold
 cfg.electrodes.material     = [
-    repmat({'platinum/iridium'},n_DBS_contacts*2,1); 
-    repmat({'platinum'}, n_ECOG_contacts ,1)];
+    repmat({'platinum/iridium'},DBS_contacts*2,1); 
+    repmat({'platinum'}, ECOG_contacts ,1)];
 cfg.electrodes.manufacturer = [
-    repmat({cfg.participants.DBS_manufacturer},n_DBS_contacts*2,1);
+    repmat({cfg.participants.DBS_manufacturer},DBS_contacts*2,1);
     repmat({cfg.participants.ECOG_manufacturer},6,1)];
 cfg.electrodes.group        = [
-    repmat({'DBS_right'},n_DBS_contacts,1);
-    repmat({'DBS_left'},n_DBS_contacts,1);
-    repmat({'ECOG_strip'},n_ECOG_contacts,1)];
+    repmat({'DBS_right'},DBS_contacts,1);
+    repmat({'DBS_left'},DBS_contacts,1);
+    repmat({'ECOG_strip'},ECOG_contacts,1)];
 cfg.electrodes.hemisphere   = [
-    repmat({'R'},n_DBS_contacts,1);
-    repmat({'L'},n_DBS_contacts,1);
-    repmat({upper(ECOG_hemisphere(1))},n_ECOG_contacts,1)];
+    repmat({'R'},DBS_contacts,1);
+    repmat({'L'},DBS_contacts,1);
+    repmat({upper(ECOG_hemisphere(1))},ECOG_contacts,1)];
 % RECOMMENDED. Type of the electrode (e.g., cup, ring, clip-on, wire, needle)
 cfg.electrodes.type         = [  
-    repmat({'depth'},n_DBS_contacts*2,1); %=> this is DBS
-    repmat({'strip'},n_ECOG_contacts,1)]; %=> this is the ECOG
+    repmat({'depth'},DBS_contacts*2,1); %=> this is DBS
+    repmat({'strip'},ECOG_contacts,1)]; %=> this is the ECOG
 
 % RECOMMENDED. Impedance of the electrode in kOhm
 cfg.electrodes.impedance    = repmat({'n/a'},length(sens.label),1);  
 cfg.electrodes.dimension    = [  
-    repmat({sprintf('[1x%d]',n_DBS_contacts)},n_DBS_contacts*2,1);
-    repmat({sprintf('[1x%d]',n_ECOG_contacts)},n_ECOG_contacts,1)];
+    repmat({sprintf('[1x%d]',DBS_contacts)},DBS_contacts*2,1);
+    repmat({sprintf('[1x%d]',ECOG_contacts)},ECOG_contacts,1)];
 
 % Provide special channel info
-cfg.channels.name               = new_chans;
+cfg.channels.name               = chs_final;
 cfg.channels.type               = chantype;
 cfg.channels.units              = data.hdr.chanunit;
 %cfg.channels.description       = ft_getopt(cfg.channels, 'description'        , nan);  % OPTIONAL. Brief free-text description of the channel, or other information of interest. See examples below.
-sf = cell(length(new_chans),1);
+sf = cell(length(chs_final),1);
 sf(:) = {data.fsample};
 cfg.channels.sampling_frequency = sf;
 
