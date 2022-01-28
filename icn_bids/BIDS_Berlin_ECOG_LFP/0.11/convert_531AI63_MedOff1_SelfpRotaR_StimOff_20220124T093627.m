@@ -13,7 +13,7 @@ sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\'
 current_recording_folder = '531AI63_MedOff1_SelfpRotaR_StimOff_1 - 20220124T093627'
 input_recording = '531AI63_MedOff1_SelfpRotaR_StimOff_1-20220124T093627.DATA.Poly5'
 % Go to folder containing measurement data
-cd([sourcedata_root current_recording_folder]);
+cd(fullfile(sourcedata_root, current_recording_folder));
 
 %% Select input_recording, read data with Fieldtrip and inspect data with WJN Toolbox
 
@@ -46,14 +46,16 @@ outputfig.continuous = 'yes';
 outputfig.channel    = chans;
 data = ft_preprocessing(outputfig);
 
+wjn_plot_raw_signals(data.time{1},data.trial{1},data.label);
+
 %% Rename channels and fix header
 % To Do Jonathan: need to check the manufacturer to know the abbreviation and the number of
 % channels
 
-DBS_target = "STN";
+DBS_target = 'STN';
 %DBS_target = "VIM";
 %DBS_target = "GPI";
-DBS_hemispheres = ["R", "L"];
+DBS_hemispheres = {'R', 'L'};
 
 DBS_model = 'SenSight Short'; %Medtronic
 %DBS_model = 'SenSight Long'; %Medtronic
@@ -64,9 +66,9 @@ DBS_model = 'SenSight Short'; %Medtronic
 %DBS_model = 'Abbott Directed Short'; %Abbott
 
 
-ECOG_target = "SMC"; % Sensorimotor Cortex
-%ECOG_hemisphere = "R";
-ECOG_hemisphere = "L";
+ECOG_target = 'SMC'; % Sensorimotor Cortex
+%ECOG_hemisphere = 'R';
+ECOG_hemisphere = 'L';
 
 ECOG_model = 'TS06R-AP10X-0W6'; % manufacturer: Ad-Tech
 %ECOG_model ='DS12A-SP10X-000'; % manufacturer: Ad-Tech
@@ -97,54 +99,56 @@ if strcmp(DBS_model, 'SenSight Short')
     DBS_manufacturer       = 'Medtronic';
     DBS_manufacturer_short = "MT";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
-    Hardware_Filters        =  {"Anti-alias filter": {"Low-pass (Hz)": {"Unipolar channels": 1600, "Bipolar channels": 2100, "Auxiliary channels": 2100}}};
+    DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'SenSight Long')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Medtronic';
     DBS_manufacturer_short = "MT";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 1.5 mm spacing.';
-    Hardware_Filters        =  {"Anti-alias filter": {"Low-pass (Hz)": {"Unipolar channels": 1600, "Bipolar channels": 2100, "Auxiliary channels": 2100}}};
+    DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'Vercise Cartesia X')
     DBS_contacts           = 16;
     DBS_manufacturer       = 'Boston Scientific';
     DBS_manufacturer_short = "BS";
     DBS_description        = '16-contact, 5-level, directional DBS lead. 0.5 mm spacing.';
-    Hardware_Filters =  "n/a";
+    DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'Vercise Cartesia')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Boston Scientific';
     DBS_manufacturer_short = "BS";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
-    Hardware_Filters =  "n/a";
+    DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'Vercise Standard')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Boston Scientific';
     DBS_manufacturer_short = "BS";
     DBS_description        = '8-contact, 8-level, non-directional DBS lead. 0.5 mm spacing.';
-    Hardware_Filters =  "n/a";
+    DBS_directional        = "no";
 elseif strcmp(DBS_model, 'Abbott Directed Long')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Abbott/St Jude';
     DBS_manufacturer_short = "AB";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 1.5 mm spacing.';
-    Hardware_Filters =  "n/a";
+    DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'Abbott Directed Short')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Abbott/St Jude';
     DBS_manufacturer_short = "AB";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
-    Hardware_Filters =  "n/a";
+    DBS_directional        = 'yes';
 else
     error('DBS model not found, please specify a valid DBS lead.')
 end
 
 chs_DBS = cell(DBS_contacts,1);
-for i = 1:length(DBS_hemispheres(1))
-    hemisphere = DBS_hemispheres{i, 1};
+count = 1;
+for i = 1:length(DBS_hemispheres)
+    hemisphere = DBS_hemispheres{i};
     for ind = 1:DBS_contacts
         items = ["LFP", hemisphere, string(ind), DBS_target, DBS_manufacturer_short];
         ch_name = join(items, '_');
-        chs_DBS{ind} = ch_name{1};
+        chs_DBS{count} = ch_name{1};
+        count = count + 1;
     end
 end
 
@@ -262,11 +266,8 @@ task_descr = containers.Map(keySet,descrSet);
 task_instr = containers.Map(keySet,instructionSet);
 
 %% Now write data to BIDS
-% data2bids function is only found in original fieldtrip toolbox
-% restoredefaultpath;
-% addpath(fullfile('C:\Users\richa\GitHub\fieldtrip\'));
 
-% Initialize a 'n/a' variable for practicality
+% Initialize a cell array of 'n/a' for practicality
 n_a = repmat({'n/a'},data.hdr.nChans,1);
 
 % adept for each different recording
@@ -314,14 +315,14 @@ if strcmp(hardware_manufacturer,'TMSi')
     cfg.ManufacturersModelName      = 'Saga 64+';
     cfg.SoftwareVersions            = 'TMSi Polybench - QRA for SAGA - REV1.1.0';
     cfg.DeviceSerialNumber          = '1005190056';
-    cfg.channels.low_cutoff         = repmat({'0.0'},data.hdr.nChans,1);
-    cfg.channels.high_cutoff        = repmat({'2100.0'},data.hdr.nChans,1); 
-    cfg.channels.high_cutoff(contains(string(chs_final),["LFP", "ECOG","EEG"])) = {'1600.0'};
-%else manufacturer == 'Ripple'
-%else manufacturer == 'AlphaOmega'
-%else manufacturer == 'Neuronica'
+    cfg.channels.low_cutoff         = repmat({'0'},data.hdr.nChans,1);
+    cfg.channels.high_cutoff        = repmat({'2100'},data.hdr.nChans,1); 
+    cfg.channels.high_cutoff(contains(string(chs_final),["LFP", "ECOG","EEG"])) = {'1600'};
+    Hardware_Filters                =  {"Anti-alias filter": {"Low-pass (Hz)": {"Unipolar channels": 1600, "Bipolar channels": 2100, "Auxiliary channels": 2100}}};
+%elseif strcmp(hardware_manufacturer,'Alpha Omega')
+%elseif strcmp(hardware_manufacturer,'Newronika')
 else
-    error('Please define the Hardware manufacturer')
+    error('Please define a valid hardware manufacturer')
 end
 
 % need to check in the LFP excel sheet on the S-drive
@@ -460,7 +461,7 @@ sf = cell(length(chs_final),1);
 sf(:) = {data.fsample};
 cfg.channels.sampling_frequency = sf;
 
-%% Reference channels
+% Reference channels
 
 cfg.ieeg.iEEGReference = iEEGRef;
 typeSet = {'EEG', 'ECOG', 'DBS', 'SEEG', 'EMG', 'ECG', 'MISC'};
@@ -470,7 +471,7 @@ cfg.channels.reference = arrayfun(@(ch_type) {ref_map(ch_type{1})}, chantype);
 % always notch filter on n/a
 cfg.channels.notch              = n_a;
 
-%% TO DO Jonathan
+%%% TO DO Jonathan %%%
 cfg.channels.group              = n_a; % => need to check with BIDS
 
 %
@@ -499,7 +500,7 @@ if cfg.ieeg.ElectricalStimulation
     % Enter EXPERIMENTAL stimulation settings
     % these need to be written in the lab book
     exp.DateOfSetting           = "2021-11-11";
-    exp.StimulationTarget       = "STN";
+    exp.StimulationTarget       = DBS_target;
     exp.StimulationMode         = "continuous";
     exp.StimulationParadigm     = "continuous stimulation";
     exp.SimulationMontage       = "monopolar";
@@ -540,7 +541,7 @@ if cfg.ieeg.ElectricalStimulation
     
     % Enter CLINICAL stimulation settings
     clin.DateOfSetting           = "2021-08-30";
-    clin.StimulationTarget       = "STN";
+    clin.StimulationTarget       = DBS_target;
     clin.StimulationMode         = "continuous";
     clin.StimulationParadigm     = "continuous stimulation";
     clin.SimulationMontage       = "monopolar";
