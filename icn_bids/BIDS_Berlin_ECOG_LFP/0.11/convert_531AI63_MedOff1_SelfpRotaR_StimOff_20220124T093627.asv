@@ -92,12 +92,20 @@ chs_other = {
         };
 
 % Handle DBS lead model
+
+DBS_directional = "yes"; %could you check this Richard? this is always yes for all models?
+DBS_material = "platinum/iridium"; %could you check this Richard? this is always for all models?
 if strcmp(DBS_model, 'SenSight Short')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Medtronic';
     DBS_manufacturer_short = "MT";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
-    Hardware_Filters        =  {"Anti-alias filter": {"Low-pass (Hz)": {"Unipolar channels": 1600, "Bipolar channels": 2100, "Auxiliary channels": 2100}}};
+    %s = struct();
+    %s.("Anti-alias filter").("Low-pass (Hz)").("Unipolar channels") = 1600
+    %s.Width
+    Hardware_Filters       =  jsonencode(struct('a',struct('b','value')));
+    
+    
 elseif strcmp(DBS_model, 'SenSight Long')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Medtronic';
@@ -139,12 +147,12 @@ else
 end
 
 chs_DBS = cell(DBS_contacts,1);
-for i = 1:length(DBS_hemispheres(1))
-    hemisphere = DBS_hemispheres{i, 1};
+for i = 1:length(DBS_hemispheres)
+    hemisphere = DBS_hemispheres{i};
     for ind = 1:DBS_contacts
         items = ["LFP", hemisphere, string(ind), DBS_target, DBS_manufacturer_short];
         ch_name = join(items, '_');
-        chs_DBS{ind} = ch_name{1};
+        chs_DBS{ind+DBS_contacts*(i-1)} = ch_name{1};
     end
 end
 
@@ -386,7 +394,7 @@ cfg.coordsystem.iEEGCoordinateProcessingReference	= "Horn, A., Li, N., Dembek, T
 
 
 % extract the channel names that contain LFP or ECOG
-sens.label = chs_final(contains(string(chs_final),["LFP", "ECOG"]))
+sens.label = chs_final(contains(string(chs_final),["LFP", "ECOG"]));
 
 % Electrode positions are imported from external files (e.g. Lead-DBS
 % ea_reconstruction.mat) and a sens FieldTrip struct is created 
@@ -439,7 +447,7 @@ cfg.electrodes.group        = [
 cfg.electrodes.hemisphere   = [
     repmat({'R'},DBS_contacts,1);
     repmat({'L'},DBS_contacts,1);
-    repmat({upper(ECOG_hemisphere(1))},ECOG_contacts,1)];
+    repmat({upper(ECOG_hemisphere{1})},ECOG_contacts,1)];
 % RECOMMENDED. Type of the electrode (e.g., cup, ring, clip-on, wire, needle)
 cfg.electrodes.type         = [  
     repmat({'depth'},DBS_contacts*2,1); %=> this is DBS
