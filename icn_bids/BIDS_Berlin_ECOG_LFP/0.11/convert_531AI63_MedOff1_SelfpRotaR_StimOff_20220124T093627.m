@@ -3,7 +3,7 @@ clear all, close all, clc
 restoredefaultpath
 
 addpath(fullfile('C:\Users\Jonathan\Documents\MATLAB\add_on_Matlab\wjn_toolbox'));
-addpath(fullfile('C:\Users\Jonathan\Documents\MATLAB\add_on_Matlab\Fieldtrip_Toolbox'));
+addpath(fullfile('C:\Users\Jonathan\Documents\CODE\fieldtrip'));
 ft_defaults
 
 % [ftver, ftpath] = ft_version;
@@ -480,10 +480,10 @@ cfg.electrodes.dimension    = [
 cfg.channels.name               = chs_final;
 cfg.channels.type               = chantype;
 cfg.channels.units              = data.hdr.chanunit;
-%cfg.channels.description       = ft_getopt(cfg.channels, 'description'        , nan);  % OPTIONAL. Brief free-text description of the channel, or other information of interest. See examples below.
 sf = cell(length(chs_final),1);
 sf(:) = {data.fsample};
 cfg.channels.sampling_frequency = sf;
+%cfg.channels.description       = ft_getopt(cfg.channels, 'description'        , nan);  % OPTIONAL. Brief free-text description of the channel, or other information of interest. See examples below.
 
 % Reference channels
 
