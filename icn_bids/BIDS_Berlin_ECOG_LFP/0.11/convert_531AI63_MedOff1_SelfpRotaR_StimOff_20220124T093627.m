@@ -95,55 +95,55 @@ chs_other = {
 
 % Handle DBS lead model
 
-DBS_directional = 'yes'; %could you check this Richard? this is always yes for all models?
-DBS_material = 'platinum/iridium'; %could you check this Richard? this is always for all models?
+
 if strcmp(DBS_model, 'SenSight Short')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Medtronic';
     DBS_manufacturer_short = "MT";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
-    %s = struct();
-    %s.("Anti-alias filter").("Low-pass (Hz)").("Unipolar channels") = 1600
-    %s.Width
-    Hardware_Filters       =  jsonencode(struct('a',struct('b','value')));
-    
-    
+    DBS_material = 'platinum/iridium';    
     DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'SenSight Long')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Medtronic';
     DBS_manufacturer_short = "MT";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 1.5 mm spacing.';
+    DBS_material = 'platinum/iridium';
     DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'Vercise Cartesia X')
     DBS_contacts           = 16;
     DBS_manufacturer       = 'Boston Scientific';
     DBS_manufacturer_short = "BS";
     DBS_description        = '16-contact, 5-level, directional DBS lead. 0.5 mm spacing.';
+    DBS_material = 'platinum/iridium';
     DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'Vercise Cartesia')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Boston Scientific';
     DBS_manufacturer_short = "BS";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
+    DBS_material = 'platinum/iridium';
     DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'Vercise Standard')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Boston Scientific';
     DBS_manufacturer_short = "BS";
     DBS_description        = '8-contact, 8-level, non-directional DBS lead. 0.5 mm spacing.';
-    DBS_directional        = "no";
+    DBS_material = 'platinum/iridium';
+    DBS_directional        = 'no';
 elseif strcmp(DBS_model, 'Abbott Directed Long')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Abbott/St Jude';
     DBS_manufacturer_short = "AB";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 1.5 mm spacing.';
+    DBS_material = 'platinum/iridium';
     DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'Abbott Directed Short')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Abbott/St Jude';
     DBS_manufacturer_short = "AB";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
+    DBS_material = 'platinum/iridium';
     DBS_directional        = 'yes';
 else
     error('DBS model not found, please specify a valid DBS lead.')
@@ -326,7 +326,11 @@ if strcmp(hardware_manufacturer,'TMSi')
     cfg.channels.high_cutoff        = repmat({'2100'},data.hdr.nChans,1); 
     cfg.channels.high_cutoff(contains(string(chs_final),["LFP", "ECOG","EEG"])) = {'1600'};
     Hardware_Filters                =  {"Anti-alias filter": {"Low-pass (Hz)": {"Unipolar channels": 1600, "Bipolar channels": 2100, "Auxiliary channels": 2100}}};
-%elseif strcmp(hardware_manufacturer,'Alpha Omega')
+    %s = struct();
+    %s.("Anti-alias filter").("Low-pass (Hz)").("Unipolar channels") = 1600
+    %s.Width
+    Hardware_Filters       =  jsonencode(struct('a',struct('b','value')));
+    %elseif strcmp(hardware_manufacturer,'Alpha Omega')
 %elseif strcmp(hardware_manufacturer,'Newronika')
 else
     error('Please define a valid hardware manufacturer')
