@@ -6,6 +6,13 @@ addpath(fullfile('C:\Users\Jonathan\Documents\MATLAB\add_on_Matlab\wjn_toolbox')
 addpath(fullfile('C:\Users\Jonathan\Documents\MATLAB\add_on_Matlab\Fieldtrip_Toolbox'));
 ft_defaults
 
+% [ftver, ftpath] = ft_version;
+% fprintf('FieldTrip path is at: %s\n', ftpath);
+% fprintf('FieldTrip version is: %s\n', ftver);
+% change in FieldTrip 
+
+
+
 % This is the output root folder for our BIDS-dataset
 rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\rawdata'
 % This is the input root folder for our BIDS-dataset
@@ -14,6 +21,7 @@ current_recording_folder = '531AI63_MedOff1_SelfpRotaR_StimOff_1 - 20220124T0936
 input_recording = '531AI63_MedOff1_SelfpRotaR_StimOff_1-20220124T093627.DATA.Poly5'
 % Go to folder containing measurement data
 cd(fullfile(sourcedata_root, current_recording_folder));
+draw_figures = false;
 
 %% Select input_recording, read data with Fieldtrip and inspect data with WJN Toolbox
 
@@ -22,7 +30,9 @@ inputfig.dataset    = [input_recording];
 inputfig.continuous = 'yes';
 data = ft_preprocessing(inputfig);
 
-wjn_plot_raw_signals(data.time{1},data.trial{1},data.label);
+if draw_figures
+    wjn_plot_raw_signals(data.time{1},data.trial{1},data.label);
+end
 
 %% Pick only channels to keep and re-read data
 % channel to keep are:
@@ -46,7 +56,9 @@ outputfig.continuous = 'yes';
 outputfig.channel    = chans;
 data = ft_preprocessing(outputfig);
 
-wjn_plot_raw_signals(data.time{1},data.trial{1},data.label);
+if draw_figures
+    wjn_plot_raw_signals(data.time{1},data.trial{1},data.label);
+end
 
 %% Rename channels and fix header
 % To Do Jonathan: need to check the manufacturer to know the abbreviation and the number of
@@ -215,8 +227,10 @@ data.hdr.chantype   = chantype;
 data.hdr.chanunit   = repmat({'uV'},data.hdr.nChans,1);
 
 %% Plot data with WJN viewer to double-check
-figure
-wjn_plot_raw_signals(data.time{1},data.trial{1},data.label);
+if draw_figures
+    figure
+    wjn_plot_raw_signals(data.time{1},data.trial{1},data.label);
+end
 
 %% Note which channels were bad and why
 %bad = {'LFP_L_7_STN_MT' 'LFP_L_8_STN_MT' 'LFP_L_9_STN_MT' 'LFP_L_16_STN_MT' 'LFP_R_7_STN_MT' 'LFP_R_8_STN_MT' 'LFP_R_9_STN_MT'};
@@ -287,6 +301,7 @@ cfg.ses                     = 'EcogLfpMedOff01';
 cfg.task                    = 'SelfpacedRotationR';
 cfg.acq                     = 'StimOff01';  % add here 'Dopa00' for dyskinesia (MedOn3) recording: e.g. 'StimOff01Dopa30')
 cfg.run                     = '01';
+cfg.space                   = 'MNI152NLin2009bAsym';
 
 % Provide info for the scans.tsv file
 % the acquisition time could be found in the folder name of the recording
@@ -325,12 +340,10 @@ if strcmp(hardware_manufacturer,'TMSi')
     cfg.channels.low_cutoff         = repmat({'0'},data.hdr.nChans,1);
     cfg.channels.high_cutoff        = repmat({'2100'},data.hdr.nChans,1); 
     cfg.channels.high_cutoff(contains(string(chs_final),["LFP", "ECOG","EEG"])) = {'1600'};
-    Hardware_Filters                =  {"Anti-alias filter": {"Low-pass (Hz)": {"Unipolar channels": 1600, "Bipolar channels": 2100, "Auxiliary channels": 2100}}};
-    %s = struct();
-    %s.("Anti-alias filter").("Low-pass (Hz)").("Unipolar channels") = 1600
-    %s.Width
-    Hardware_Filters       =  jsonencode(struct('a',struct('b','value')));
-    %elseif strcmp(hardware_manufacturer,'Alpha Omega')
+    Hardware_Filters.Anti_AliasFilter.Low_Pass.UnipolarChannels     = 1600;
+    Hardware_Filters.Anti_AliasFilter.Low_Pass.BipolarChannels      = 2100;
+    Hardware_Filters.Anti_AliasFilter.Low_Pass.AuxiliaryChannels    = 2100;
+%elseif strcmp(hardware_manufacturer,'Alpha Omega')
 %elseif strcmp(hardware_manufacturer,'Newronika')
 else
     error('Please define a valid hardware manufacturer')
@@ -383,7 +396,7 @@ end
 % Provide info for the coordsystem.json file
 % remains always the same in berlin
 cfg.coordsystem.IntendedFor                         = "n/a"; % OPTIONAL. Path or list of path relative to the subject subfolder pointing to the structural MRI, possibly of different types if a list is specified, to be used with the MEG recording. The path(s) need(s) to use forward slashes instead of backward slashes (e.g. "ses-<label>/anat/sub-01_T1w.nii.gz").
-cfg.coordsystem.iEEGCoordinateSystem                = "MNI152NLin2009bAsym"; % REQUIRED. Defines the coordinate system for the iEEG electrodes. See Appendix VIII for a list of restricted keywords. If positions correspond to pixel indices in a 2D image (of either a volume-rendering, surface-rendering, operative photo, or operative drawing), this must be "Pixels". For more information, see the section on 2D coordinate systems
+cfg.coordsystem.iEEGCoordinateSystem                = cfg.space; % REQUIRED. Defines the coordinate system for the iEEG electrodes. See Appendix VIII for a list of restricted keywords. If positions correspond to pixel indices in a 2D image (of either a volume-rendering, surface-rendering, operative photo, or operative drawing), this must be "Pixels". For more information, see the section on 2D coordinate systems
 cfg.coordsystem.iEEGCoordinateUnits	                = "mm"; % REQUIRED. Units of the _electrodes.tsv, MUST be "m", "mm", "cm" or "pixels".
 cfg.coordsystem.iEEGCoordinateSystemDescription	    = "MNI152 2009b NLIN asymmetric T2 template"; % RECOMMENDED. Freeform text description or link to document describing the iEEG coordinate system system in detail (e.g., "Coordinate system with the origin at anterior commissure (AC), negative y-axis going through the posterior commissure (PC), z-axis going to a mid-hemisperic point which lies superior to the AC-PC line, x-axis going to the right").
 cfg.coordsystem.iEEGCoordinateProcessingDescription = "Co-registration, normalization and electrode localization done with Lead-DBS"; % RECOMMENDED. Has any post-processing (such as projection) been done on the electrode positions (e.g., "surface_projection", "none").
@@ -451,7 +464,7 @@ cfg.electrodes.group        = [
 cfg.electrodes.hemisphere   = [
     repmat({'R'},DBS_contacts,1);
     repmat({'L'},DBS_contacts,1);
-    repmat({upper(ECOG_hemisphere{1})},ECOG_contacts,1)];
+    repmat({ECOG_hemisphere},ECOG_contacts,1)];
 % RECOMMENDED. Type of the electrode (e.g., cup, ring, clip-on, wire, needle)
 cfg.electrodes.type         = [  
     repmat({'depth'},DBS_contacts*2,1); %=> this is DBS
@@ -484,8 +497,6 @@ cfg.channels.notch              = n_a;
 
 %%% TO DO Jonathan %%%
 cfg.channels.group              = n_a; % => need to check with BIDS
-
-%
 cfg.channels.status             = bads;
 cfg.channels.status_description = bads_descr;
 
@@ -498,8 +509,6 @@ cfg.ieeg.iEEGElectrodeGroups    = 'ECOG_strip: 6-contact, 1x6 dual sided long te
 % To Do: Software filters => need to check which were used
 % eg. {"Anti-aliasing filter": {"half-amplitude cutoff (Hz)": 500, "Roll-off": "6dB/Octave"}}.
 cfg.ieeg.SoftwareFilters        = 'n/a'; %MUST
-% To Do: Hardware filters => need to check which were used
-% eg. {"Highpass RC filter": {"Half amplitude cutoff (Hz)": 0.0159, "Roll-off": "6dB/Octave"}}.
 cfg.ieeg.HardwareFilters        = Hardware_Filters; %Recommended
 cfg.ieeg.RecordingType          = 'continuous';
 if contains(cfg.acq, 'On')
