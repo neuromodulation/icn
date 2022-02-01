@@ -113,49 +113,49 @@ if strcmp(DBS_model, 'SenSight Short')
     DBS_manufacturer       = 'Medtronic';
     DBS_manufacturer_short = "MT";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
-    DBS_material = 'platinum/iridium';    
+    DBS_material           = 'platinum/iridium';    
     DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'SenSight Long')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Medtronic';
     DBS_manufacturer_short = "MT";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 1.5 mm spacing.';
-    DBS_material = 'platinum/iridium';
+    DBS_material           = 'platinum/iridium';
     DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'Vercise Cartesia X')
     DBS_contacts           = 16;
     DBS_manufacturer       = 'Boston Scientific';
     DBS_manufacturer_short = "BS";
     DBS_description        = '16-contact, 5-level, directional DBS lead. 0.5 mm spacing.';
-    DBS_material = 'platinum/iridium';
+    DBS_material           = 'platinum/iridium';
     DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'Vercise Cartesia')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Boston Scientific';
     DBS_manufacturer_short = "BS";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
-    DBS_material = 'platinum/iridium';
+    DBS_material           = 'platinum/iridium';
     DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'Vercise Standard')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Boston Scientific';
     DBS_manufacturer_short = "BS";
     DBS_description        = '8-contact, 8-level, non-directional DBS lead. 0.5 mm spacing.';
-    DBS_material = 'platinum/iridium';
+    DBS_material           = 'platinum/iridium';
     DBS_directional        = 'no';
 elseif strcmp(DBS_model, 'Abbott Directed Long')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Abbott/St Jude';
     DBS_manufacturer_short = "AB";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 1.5 mm spacing.';
-    DBS_material = 'platinum/iridium';
+    DBS_material           = 'platinum/iridium';
     DBS_directional        = 'yes';
 elseif strcmp(DBS_model, 'Abbott Directed Short')
     DBS_contacts           = 8;
     DBS_manufacturer       = 'Abbott/St Jude';
     DBS_manufacturer_short = "AB";
     DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
-    DBS_material = 'platinum/iridium';
+    DBS_material           = 'platinum/iridium';
     DBS_directional        = 'yes';
 else
     error('DBS model not found, please specify a valid DBS lead.')
