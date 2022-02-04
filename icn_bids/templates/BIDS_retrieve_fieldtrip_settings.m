@@ -1,17 +1,23 @@
-function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg)
-    % To Do Jonathan: need to check the manufacturer to know the abbreviation and the number of
+function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, method)
+    arguments
+        cfg struct
+        intern_cfg struct
+        method (1,:) char {mustBeMember(method,{'readjson','update_channels','convert'})} = 'convert'
+    end    
+
+% To Do Jonathan: need to check the manufacturer to know the abbreviation and the number of
     % channels
-    if ~isfield(intern_cfg,'filechooser')
+    if strcmp(method , 'readjson')
         %% retrieve variables of the json file
         fname = intern_cfg.jsonfile; 
         fid = fopen(fname); 
         raw = fread(fid,inf); 
         str = char(raw'); 
-        fclose(fid); 
-        intern_cfg = jsondecode(str);
-        json_names=fieldnames(intern_cfg);
+        fclose(fid);
+        temp = jsondecode(str);
+        json_names=fieldnames(jsondecode(str));
         for k=1:length(json_names)
-        eval([json_names{k} '=intern_cfg.' json_names{k}])
+            eval(['intern_cfg.' json_names{k} '=temp.' json_names{k}]);            
         end
         return
     end
@@ -183,7 +189,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg)
     intern_cfg.data.hdr.chanunit   = repmat({'uV'}, intern_cfg.data.hdr.nChans,1);
         
         
-    if ~isfield(intern_cfg,'chs_final')
+    if strcmp(method , 'update_channels')
         intern_cfg.chs_final = chs_final;
         return
     end
@@ -269,13 +275,13 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg)
     % Provide info for the scans.tsv file
     % the acquisition time could be found in the folder name of the recording
 
-    cfg.scans.acq_time              =  intern_cfg.time_of_acquisition%'2022-01-24T09:36:27';
+    cfg.scans.acq_time              =  intern_cfg.time_of_acquisition;%'2022-01-24T09:36:27';
     if contains(cfg.ses, 'Off')
         cfg.scans.medication_state  = 'OFF';
     else
         cfg.scans.medication_state  = 'ON';
     end
-    cfg.scans.UPDRS_III             =  intern_cfg.UPDRS_session%'n/a'; % need to be calcuated.
+    cfg.scans.UPDRS_III             =  intern_cfg.UPDRS_session;%'n/a'; % need to be calcuated.
 
     % Specify some general information
     cfg.InstitutionName                         = 'Charite - Universitaetsmedizin Berlin, corporate member of Freie Universitaet Berlin and Humboldt-Universitaet zu Berlin, Department of Neurology with Experimental Neurology/BNIC, Movement Disorders and Neuromodulation Unit';
@@ -290,8 +296,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg)
 
     % Provide the long description of the task and participant instructions
     cfg.TaskName                = cfg.task;
-    cfg.TaskDescription         = task_descr(cfg.task);
-    cfg.Instructions            = task_instr(cfg.task);
+    cfg.TaskDescription         = intern_cfg.task_description ;%task_descr(cfg.task);
+    cfg.Instructions            = intern_cfg.task_instructions ;%task_instr(cfg.task);
 
     % Provide info about recording hardware
 

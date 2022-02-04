@@ -348,11 +348,11 @@ def go_to_subsession(*args):
 
     bids_run.append(
         widgets.BoundedIntText(
-            value=0,
+            value=1,
             min=0,
             max=10,
             step=1,
-            description="Run number (0 means not applicable):",
+            description="Run number:",
             style=style,
             layout=layout,
         )
@@ -360,7 +360,7 @@ def go_to_subsession(*args):
 
     bids_acquisition.append(
         widgets.Text(
-            description="acquisition e.g. StimOff01 or StimOnDopa30",
+            description="acquisition e.g. StimOff StimOnL or StimOnBDopa30",
             style=style,
             layout=layout,
         )
@@ -398,16 +398,24 @@ def save_all_information(*args):
     bidsdict = {}
     currentfile = []
     prefix = "bids_"
-    sourcedict = locals().copy()
+    sourcedict = globals().copy()
+
     for v in sourcedict:
+
         if v.startswith(prefix):
 
             if v == "bids_filechooser":
+                with output2:
+
+                    print("saving to: %.json", sourcedict[v][-1].selected_filename)
                 val = sourcedict[v][-1].selected_filename
                 currentfile = val
             elif v == "bids_date_of_implantation":
-                val = sourcedict[v].value
-                val = val.strftime("%m-%d-%YT00:00:00")
+                try:
+                    val = sourcedict[v].value
+                    val = val.strftime("%m-%d-%YT00:00:00")
+                finally:
+                    pass
             elif v == "bids_task":
                 val = task_options[bids_task[-1].value][0]
             elif v == "bids_subject":
@@ -421,7 +429,9 @@ def save_all_information(*args):
             bidsdict[v[len(prefix) :]] = val
     if not currentfile:
         with output2:
-            print("The information could not be saved, please select file")
+            print(currentfile)
+            print("The information could not be saved, please select file below")
+
     else:
         currentfile += ".json"
         with open(currentfile, "w") as outfile:
