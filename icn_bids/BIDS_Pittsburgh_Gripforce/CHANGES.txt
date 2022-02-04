@@ -1,4 +1,0 @@
-21.04.2021
-
--moved the channel_M1.tsv files to derivatives
--changed powerfreq from 50 to 60

@@ -1,3 +1,0 @@
-19.04.2021: Jonathan
-
-BCAN folder is copied to \Interventional Cognitive Neuromodulation - Data\_non_BIDS_data
