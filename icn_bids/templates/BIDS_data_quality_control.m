@@ -4,20 +4,20 @@ restoredefaultpath
 
 addpath(fullfile('C:\Users\Jonathan\Documents\MATLAB\add_on_Matlab\wjn_toolbox'));
 addpath(fullfile('C:\Users\Jonathan\Documents\CODE\fieldtrip'));
-addpath(fullfile('C:\Users\Jonathan\Documents\VSCODE'));
+addpath(fullfile('C:\Users\Jonathan\Documents\CODE\icn\icn_bids\templates'));
 ft_defaults
 intern_cfg = struct();
 cfg = struct();
 
 % This is the output root folder for our BIDS-dataset
-rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\rawdata3'
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\rawdata4'
 intern_cfg.rawdata_root = rawdata_root;
 % This is the input root folder for our BIDS-dataset
-sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\sourcedata\sub-009\ses-EcogLfpMedOn02'
-current_recording_folder = '531AI63_MedOn2_FreeDopa25_StimOff_1 - 20220125T105610';
+sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\sourcedata\sub-009\ses-EcogLfpMedOff03'
+current_recording_folder = '531AI63_MedOff3_Rest_StimOff_1 - 20220125T092554';
 
 JsonFolder = pwd;
-intern_cfg.jsonfile = '531AI63_MedOn2_FreeDopa25_StimOff_1-20220125T105610.DATA.Poly5.json'; 
+intern_cfg.jsonfile = '531AI63_MedOff3_Rest_StimOff_1-20220125T092554.DATA.Poly5.json'; 
 method = 'readjson';
 [~,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
 
@@ -25,7 +25,7 @@ method = 'readjson';
 input_recording = intern_cfg.filechooser;
 % Go to folder containing measurement data
 cd(fullfile(sourcedata_root, current_recording_folder));
-draw_figures = true;
+draw_figures = false;
 
 
 
@@ -99,11 +99,11 @@ end
 %% Note which channels were bad and why
 %bad = {'LFP_L_7_STN_MT' 'LFP_L_8_STN_MT' 'LFP_L_9_STN_MT' 'LFP_L_16_STN_MT' 'LFP_R_7_STN_MT' 'LFP_R_8_STN_MT' 'LFP_R_9_STN_MT'};
 %why = {'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Reference electrode' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact'};
-intern_cfg.bad ={'LFP_R_1_STN_MT', 'LFP_R_5_STN_MT'};
+intern_cfg.bad ={'LFP_L_8_STN_MT', 'LFP_R_5_STN_MT'};
 intern_cfg.why = {'Reference electrode','empty'};
-intern_cfg.iEEGRef ='LFP_R_1_STN_MT';
+intern_cfg.iEEGRef ='LFP_L_8_STN_MT';
 
-%% add aditional input
+% add aditional input
 overwrite = true;
 if overwrite
     intern_cfg.ECOG_localization =[
@@ -117,15 +117,17 @@ if overwrite
     %ECOG 1
     %to
     %ECOG 6 in MNI coords
-    intern_cfg.stim = false;
-    intern_cfg.stim = struct();
-    intern_cfg.stim.DateOfSetting = "2022-01-24";
-    intern_cfg.stim.L.CathodalContact = {'LFP_L_2_STN_MT','LFP_L_3_STN_MT','LFP_L_4_STN_MT'};
-    intern_cfg.stim.L.StimulationAmplitude = 2.0;
-    intern_cfg.stim.L.StimulationFrequency = 130;
-    intern_cfg.stim.R.CathodalContact ={'LFP_R_2_STN_MT','LFP_R_3_STN_MT','LFP_R_4_STN_MT'};
-    intern_cfg.stim.R.StimulationAmplitude = 2.0;
-    intern_cfg.stim.R.StimulationFrequency = 130;   
+    intern_cfg.stim = false; %was there stimulation?
+    if intern_cfg.stim
+        intern_cfg.stim = struct();
+        intern_cfg.stim.DateOfSetting = "2022-01-24";
+        intern_cfg.stim.L.CathodalContact = {'LFP_L_2_STN_MT','LFP_L_3_STN_MT','LFP_L_4_STN_MT'};
+        intern_cfg.stim.L.StimulationAmplitude = 2.0;
+        intern_cfg.stim.L.StimulationFrequency = 130;
+        intern_cfg.stim.R.CathodalContact ={'LFP_R_2_STN_MT','LFP_R_3_STN_MT','LFP_R_4_STN_MT'};
+        intern_cfg.stim.R.StimulationAmplitude = 2.0;
+        intern_cfg.stim.R.StimulationFrequency = 130;
+    end
 end
 
 
@@ -136,6 +138,6 @@ end
 data2bids(cfg, intern_cfg.data);
 % save configuration data
 cd(JsonFolder)
-intern_cfg = rmfield(intern_cfg,{'data','chs_other', 'rawdata_root'});
-jsonencode(intern_cfg)
-savejson('',intern_cfg,intern_cfg.jsonfile)
+intern_cfg_save = rmfield(intern_cfg,{'data','chs_other', 'rawdata_root'});
+jsonencode(intern_cfg_save)
+savejson('',intern_cfg_save,intern_cfg.jsonfile)

@@ -400,8 +400,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         zeros(DBS_contacts, 3); ...
         zeros(ECOG_contacts, 3)]; %what is this 12 refering to? I replaced it with n_ECOG_contact 
     % this is for medtronic
-    if isfield(cfg_intern.ECOG_localisation)
-        sens.chanpos(DBS_contacts+DBS_contacts + 1 : end,1:3) = cfg_intern.ECOG_localisation;
+    if isfield(intern_cfg,'ECOG_localization')
+        sens.chanpos(DBS_contacts+DBS_contacts + 1 : end,1:3) = intern_cfg.ECOG_localization;
     end
     
     
@@ -440,7 +440,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.electrodes.group        = [
         repmat({'DBS_right'},DBS_contacts,1);
         repmat({'DBS_left'},DBS_contacts,1);
-        repmat({'ECOG_strip'},ECOG_contacts,1)];
+        repmat({['ECOG_' cfg.participants.ECOG_hemisphere]},ECOG_contacts,1)];
     cfg.electrodes.hemisphere   = [
         repmat({'R'},DBS_contacts,1);
         repmat({'L'},DBS_contacts,1);
@@ -476,7 +476,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.channels.notch              = n_a;
 
     %%% TO DO Jonathan %%%
-    cfg.channels.group              = n_a; % => need to check with BIDS
+    cfg.channels.group              = n_a;
+    cfg.channels.group(startsWith(cfg.channels.name, 'LFP_R')) = {'DBS_right'};
+    cfg.channels.group(startsWith(cfg.channels.name, 'LFP_L')) = {'DBS_left'};
+    cfg.channels.group(startsWith(cfg.channels.name, 'ECOG_R')) = {'ECOG_right'};
+    cfg.channels.group(startsWith(cfg.channels.name, 'ECOG_L')) = {'ECOG_left'};
+    
     cfg.channels.status             = bads;
     cfg.channels.status_description = bads_descr;
 
@@ -486,8 +491,10 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     % this is to be specified for each model
     cfg.ieeg.iEEGPlacementScheme    = 'Left subdural cortical strip and bilateral subthalamic nucleus (STN) deep brain stimulation (DBS) leads.';
 
-    format_groups = 'ECOG_strip: %d-contact, 1x%d dual sided long term monitoring %s strip on %s, DBS_left: 1x%d %s %s %s DBS lead in left %s, DBS_right: 1x%d %s %s %s DBS lead in right %s.';
-    cfg.ieeg.iEEGElectrodeGroups = sprintf(format_groups, ECOG_contacts, ECOG_contacts, ECOG_manufacturer, ECOG_target_long, intern_cfg.DBS_hemispheres, DBS_contacts, DBS_manufacturer, DBS_model, directional, DBS_target, intern_cfg.DBS_hemispheres, DBS_contacts, DBS_manufacturer, DBS_model, directional, DBS_target);
+    format_groups = 'ECOG_%s: %d-contact, 1x%d dual-sided long-term monitoring %s strip on %s. DBS_left: 1x%d %s %s DBS lead in left %s, DBS_right: 1x%d %s %s DBS lead in right %s.';
+    cfg.ieeg.iEEGElectrodeGroups = sprintf(format_groups, cfg.participants.ECOG_hemisphere, ECOG_contacts, ECOG_contacts, ECOG_manufacturer, ECOG_target_long,...
+        DBS_contacts,  DBS_manufacturer, DBS_model, DBS_target,...
+        DBS_contacts,  DBS_manufacturer, DBS_model, DBS_target );
     % cfg.ieeg.iEEGElectrodeGroups    = 'ECOG_strip: 6-contact, 1x6 dual sided long term monitoring AdTech strip on left sensorimotor cortex, DBS_left: 1x16 Boston Scientific directional DBS lead (Cartesia X) in left STN, DBS_right: 1x16 Boston Scientific directional DBS lead (Cartesia X) in right STN.';
     
     % To Do: Software filters => need to check which were used
