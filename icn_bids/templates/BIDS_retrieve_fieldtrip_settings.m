@@ -481,7 +481,24 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.channels.group(startsWith(cfg.channels.name, 'LFP_L')) = {'DBS_left'};
     cfg.channels.group(startsWith(cfg.channels.name, 'ECOG_R')) = {'ECOG_right'};
     cfg.channels.group(startsWith(cfg.channels.name, 'ECOG_L')) = {'ECOG_left'};
-    
+    cfg.channels.group(startsWith(cfg.channels.name, 'EEG')) = {'EEG'};
+    cfg.channels.group(startsWith(cfg.channels.name, 'EMG_L')) = {'EMG_left'};
+    cfg.channels.group(startsWith(cfg.channels.name, 'EMG_R')) = {'EMG_right'};
+    cfg.channels.group(startsWith(cfg.channels.name, 'ECG')) = {'ECG'};
+    cfg.channels.group(startsWith(cfg.channels.name, 'ACC_L')) = {'accelerometer_left'};
+    cfg.channels.group(startsWith(cfg.channels.name, 'ACC_R')) = {'accelerometer_right'};
+
+    cfg.channels.description        = n_a;
+    cfg.channels.description(startsWith(cfg.channels.name, 'LFP')) = {'Deep Brain Stimulation'};
+    cfg.channels.description(startsWith(cfg.channels.name, 'ECOG')) = {'Electrocorticography'};
+    cfg.channels.description(startsWith(cfg.channels.name, 'EEG')) = {'ElectroEncephaloGram'};
+    cfg.channels.description(startsWith(cfg.channels.name, 'EMG')) = {'Electromyography'};
+    cfg.channels.description(startsWith(cfg.channels.name, 'ECG')) = {'ElectroCardioGram'};
+    cfg.channels.description(startsWith(cfg.channels.name, 'EOG')) = {'ElectroOculoGram'};
+    cfg.channels.description(startsWith(cfg.channels.name, 'ACC')) = {'Accelerometer'};
+    cfg.channels.description(startsWith(cfg.channels.name, 'MISC')) = {'Miscellaneous'};
+    cfg.channels.description(startsWith(cfg.channels.name, 'STIM')) = {'Trigger'};
+
     cfg.channels.status             = bads;
     cfg.channels.status_description = bads_descr;
 
