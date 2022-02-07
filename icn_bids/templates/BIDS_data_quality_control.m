@@ -13,11 +13,11 @@ cfg = struct();
 rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\rawdata4'
 intern_cfg.rawdata_root = rawdata_root;
 % This is the input root folder for our BIDS-dataset
-sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\sourcedata\sub-009\ses-EcogLfpMedOff03'
-current_recording_folder = '531AI63_MedOff3_Rest_StimOff_1 - 20220125T092554';
+sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\sourcedata\sub-009\ses-EcogLfpMedOff01'
+current_recording_folder = '531AI63_MedOff1_ReadRelaxMoveR_StimOff_1 - 20220124T095015';
 
 JsonFolder = pwd;
-intern_cfg.jsonfile = '531AI63_MedOff3_Rest_StimOff_1-20220125T092554.DATA.Poly5.json'; 
+intern_cfg.jsonfile = '531AI63_MedOff1_ReadRelaxMoveR_StimOff_1-20220124T095015.DATA.Poly5.json'; 
 method = 'readjson';
 [~,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
 
@@ -25,10 +25,8 @@ method = 'readjson';
 input_recording = intern_cfg.filechooser;
 % Go to folder containing measurement data
 cd(fullfile(sourcedata_root, current_recording_folder));
+
 draw_figures = false;
-
-
-
 %% Select input_recording, read data with Fieldtrip and inspect data with WJN Toolbox
 
 inputfig            = [];
@@ -59,7 +57,7 @@ end
     % Counter
     % Status
     % Z-AXIS, Y-AXIS, X-AXIS
-chans          = [[1:33]]; % count the channels you need to keep
+chans          = [[1:34]]; % count the channels you need to keep
 outputfig            = [];
 outputfig.dataset    = [input_recording];
 outputfig.continuous = 'yes';
@@ -85,7 +83,7 @@ intern_cfg.chs_other = {
         'ACC_L_X_D2_TM'
         'ACC_L_Y_D2_TM'
         'ACC_L_Z_D2_TM'
-        %'ANALOG_R_ROTA_CH'
+        'ANALOG_R_ROTA_CH'
         };
 method = 'update_channels';
 [cfg,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
@@ -99,8 +97,8 @@ end
 %% Note which channels were bad and why
 %bad = {'LFP_L_7_STN_MT' 'LFP_L_8_STN_MT' 'LFP_L_9_STN_MT' 'LFP_L_16_STN_MT' 'LFP_R_7_STN_MT' 'LFP_R_8_STN_MT' 'LFP_R_9_STN_MT'};
 %why = {'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Reference electrode' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact'};
-intern_cfg.bad ={'LFP_L_8_STN_MT', 'LFP_R_5_STN_MT'};
-intern_cfg.why = {'Reference electrode','empty'};
+intern_cfg.bad ={'LFP_L_8_STN_MT'};
+intern_cfg.why = {'Reference electrode'};
 intern_cfg.iEEGRef ='LFP_L_8_STN_MT';
 
 % add aditional input

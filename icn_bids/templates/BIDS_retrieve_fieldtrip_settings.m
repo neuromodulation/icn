@@ -484,6 +484,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.channels.group(startsWith(cfg.channels.name, 'ECG')) = {'ECG'};
     cfg.channels.group(startsWith(cfg.channels.name, 'ACC_L')) = {'accelerometer_left'};
     cfg.channels.group(startsWith(cfg.channels.name, 'ACC_R')) = {'accelerometer_right'};
+    cfg.channels.group(startsWith(cfg.channels.name, 'ANALOG_L_ROTA')) = {'rotameter_left'};
+    cfg.channels.group(startsWith(cfg.channels.name, 'ANALOG_R_ROTA')) = {'rotameter_right'};
 
     cfg.channels.description        = n_a; %the descriptions below are matching those of MNE despite the odd spelling!
     cfg.channels.description(startsWith(cfg.channels.name, 'LFP')) = {'Deep Brain Stimulation'};
@@ -495,6 +497,9 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.channels.description(startsWith(cfg.channels.name, 'ACC')) = {'Accelerometer'};
     cfg.channels.description(startsWith(cfg.channels.name, 'MISC')) = {'Miscellaneous'};
     cfg.channels.description(startsWith(cfg.channels.name, 'STIM')) = {'Trigger'};
+    cfg.channels.description(startsWith(cfg.channels.name, 'ANALOG_L_ROTA')) = {'Rotameter'};
+    cfg.channels.description(startsWith(cfg.channels.name, 'ANALOG_R_ROTA')) = {'Rotameter'};
+
 
     cfg.channels.status             = bads;
     cfg.channels.status_description = bads_descr;
