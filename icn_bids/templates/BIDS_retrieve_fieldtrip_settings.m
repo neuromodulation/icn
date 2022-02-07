@@ -50,6 +50,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
 
     ECOG_target = intern_cfg.ECOG_target;
     %ECOG_target = 'SMC'; % Sensorimotor Cortex
+    if strcmp(ECOG_target, 'SMC')
+        ECOG_target_long = 'sensorimotor cortex';
+    else
+        error('ECOG target not found, please specify a valid target.')
+    end
 
     if ~isfield(intern_cfg,'ECOG_hemisphere')
         intern_cfg.ECOG_hemisphere=false;
@@ -161,6 +166,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     chs_final = [chs_DBS; chs_ECOG; intern_cfg.chs_other];
     
     
+    if strcmp(DBS_directional, 'yes')
+        directional = 'directional';
+    else
+        directional = 'non-directional';
+    end
 
     %% Now assign channel types
 
@@ -349,12 +359,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.participants.ECOG_material              = ECOG_material;
     cfg.participants.ECOG_contacts              = ECOG_contacts;
     cfg.participants.ECOG_description           = ECOG_description;
+    cfg.participants.ECOG_target                = ECOG_target_long;
 
-    if strcmp("SMC", ECOG_target)
-        cfg.participants.ECOG_target                = 'sensorimotor cortex';
-    else
-        error('ECOG target not found, please specify a valid target.')
-    end
     if strcmp('R', ECOG_hemisphere)
         cfg.participants.ECOG_hemisphere            = 'right';
     else
@@ -474,7 +480,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.ieeg.iEEGGround             = 'Right shoulder patch';
     % this is to be specified for each model
     cfg.ieeg.iEEGPlacementScheme    = 'Left subdural cortical strip and bilateral subthalamic nucleus (STN) deep brain stimulation (DBS) leads.';
-    cfg.ieeg.iEEGElectrodeGroups    = 'ECOG_strip: 6-contact, 1x6 dual sided long term monitoring AdTech strip on left sensorimotor cortex, DBS_left: 1x16 Boston Scientific directional DBS lead (Cartesia X) in left STN, DBS_right: 1x16 Boston Scientific directional DBS lead (Cartesia X) in right STN.';
+
+    format_groups = 'ECOG_strip: %d-contact, 1x%d dual sided long term monitoring %s strip on %s, DBS_left: 1x%d %s %s %s DBS lead in left %s, DBS_right: 1x%d %s %s %s DBS lead in right %s.';
+    cfg.ieeg.iEEGElectrodeGroups = sprintf(format_groups, ECOG_contacts, ECOG_contacts, ECOG_manufacturer, ECOG_target_long, intern_cfg.DBS_hemispheres, DBS_contacts, DBS_manufacturer, DBS_model, directional, DBS_target, intern_cfg.DBS_hemispheres, DBS_contacts, DBS_manufacturer, DBS_model, directional, DBS_target);
+    % cfg.ieeg.iEEGElectrodeGroups    = 'ECOG_strip: 6-contact, 1x6 dual sided long term monitoring AdTech strip on left sensorimotor cortex, DBS_left: 1x16 Boston Scientific directional DBS lead (Cartesia X) in left STN, DBS_right: 1x16 Boston Scientific directional DBS lead (Cartesia X) in right STN.';
+    
     % To Do: Software filters => need to check which were used
     % eg. {"Anti-aliasing filter": {"half-amplitude cutoff (Hz)": 500, "Roll-off": "6dB/Octave"}}.
     cfg.ieeg.SoftwareFilters        = 'n/a'; %MUST
