@@ -334,38 +334,36 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.participants.handedness             = intern_cfg.handedness; %LFP excel sheet
     cfg.participants.age                    = intern_cfg.age ; %LFP excel sheet
     cfg.participants.date_of_implantation   = intern_cfg.date_of_implantation ;  %'2022-01-20T00:00:00'; %LFP excel sheet
-    % cfg.participants.UPDRS_III_preop_OFF    = 'n/a';-> how to calculate?
-    % cfg.participants.UPDRS_III_preop_ON     = 'n/a';-> how to calculate?
+    cfg.participants.UPDRS_III_preop_OFF    = 'n/a';%-> UPDRS is on session level
+    cfg.participants.UPDRS_III_preop_ON     = 'n/a';%-> UPDRS is on session level
     cfg.participants.disease_duration       = intern_cfg.disease_duration;%7; %LFP excel sheet
     cfg.participants.PD_subtype             = intern_cfg.PD_subtype; %'akinetic-rigid'; %SAP
     cfg.participants.symptom_dominant_side  = intern_cfg.symptom_dominant_side;% 'right'; %LFP excel sheet
     cfg.participants.LEDD                   = intern_cfg.LEDD; %1600; %calculated from lab book with https://www.parkinsonsmeasurement.org/toolBox/levodopaEquivalentDose.htm
-
-
-    % TO DO:  provide a dictionary for the DBS manufacturer
-    % Provide info about the DBS lead
-
     cfg.participants.DBS_target                 = DBS_target;
-    cfg.participants.DBS_model                  = DBS_model;
-    cfg.participants.DBS_contacts               = DBS_contacts;
     cfg.participants.DBS_manufacturer           = DBS_manufacturer;
+    cfg.participants.DBS_model                  = DBS_model;
     cfg.participants.DBS_directional            = DBS_directional;
+    cfg.participants.DBS_contacts               = DBS_contacts;
     cfg.participants.DBS_description            = DBS_description;
 
     % Info about the ECOG electrode
+    cfg.participants.ECOG_target                = ECOG_target_long;
+    
+    if strcmp('R', ECOG_hemisphere)
+        cfg.participants.ECOG_hemisphere            = 'right';
+    else
+        cfg.participants.ECOG_hemisphere            = 'left';
+    end
     cfg.participants.ECOG_manufacturer          = ECOG_manufacturer;
     cfg.participants.ECOG_model                 = ECOG_model;
     cfg.participants.ECOG_location              = ECOG_location;
     cfg.participants.ECOG_material              = ECOG_material;
     cfg.participants.ECOG_contacts              = ECOG_contacts;
     cfg.participants.ECOG_description           = ECOG_description;
-    cfg.participants.ECOG_target                = ECOG_target_long;
+    
 
-    if strcmp('R', ECOG_hemisphere)
-        cfg.participants.ECOG_hemisphere            = 'right';
-    else
-        cfg.participants.ECOG_hemisphere            = 'left';
-    end
+    
 
 
     % Provide info for the coordsystem.json file
@@ -475,7 +473,6 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     % always notch filter on n/a
     cfg.channels.notch              = n_a;
 
-    %%% TO DO Jonathan %%%
     cfg.channels.group              = n_a;
     cfg.channels.group(startsWith(cfg.channels.name, 'LFP_R')) = {'DBS_right'};
     cfg.channels.group(startsWith(cfg.channels.name, 'LFP_L')) = {'DBS_left'};
@@ -488,7 +485,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.channels.group(startsWith(cfg.channels.name, 'ACC_L')) = {'accelerometer_left'};
     cfg.channels.group(startsWith(cfg.channels.name, 'ACC_R')) = {'accelerometer_right'};
 
-    cfg.channels.description        = n_a;
+    cfg.channels.description        = n_a; %the descriptions below are matching those of MNE despite the odd spelling!
     cfg.channels.description(startsWith(cfg.channels.name, 'LFP')) = {'Deep Brain Stimulation'};
     cfg.channels.description(startsWith(cfg.channels.name, 'ECOG')) = {'Electrocorticography'};
     cfg.channels.description(startsWith(cfg.channels.name, 'EEG')) = {'ElectroEncephaloGram'};
