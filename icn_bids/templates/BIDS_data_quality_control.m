@@ -27,6 +27,8 @@ input_recording = intern_cfg.filechooser;
 cd(fullfile(sourcedata_root, current_recording_folder));
 draw_figures = true;
 
+
+
 %% Select input_recording, read data with Fieldtrip and inspect data with WJN Toolbox
 
 inputfig            = [];
@@ -100,6 +102,33 @@ end
 intern_cfg.bad ={'LFP_R_1_STN_MT', 'LFP_R_5_STN_MT'};
 intern_cfg.why = {'Reference electrode','empty'};
 intern_cfg.iEEGRef ='LFP_R_1_STN_MT';
+
+%% add aditional input
+overwrite = true;
+if overwrite
+    intern_cfg.ECOG_localization =[
+     -39, -35.5, 73;
+     -38.5, -24.5, 71;
+     -38, -15, 68;
+     -36.5, -6.5, 65.5;
+     -34, 5, 62.5;
+    -33.5, 16, 59;
+        ];
+    %ECOG 1
+    %to
+    %ECOG 6 in MNI coords
+    intern_cfg.stim = false;
+    intern_cfg.stim = struct();
+    intern_cfg.stim.DateOfSetting = "2022-01-24";
+    intern_cfg.stim.L.CathodalContact = {'LFP_L_2_STN_MT','LFP_L_3_STN_MT','LFP_L_4_STN_MT'};
+    intern_cfg.stim.L.StimulationAmplitude = 2.0;
+    intern_cfg.stim.L.StimulationFrequency = 130;
+    intern_cfg.stim.R.CathodalContact ={'LFP_R_2_STN_MT','LFP_R_3_STN_MT','LFP_R_4_STN_MT'};
+    intern_cfg.stim.R.StimulationAmplitude = 2.0;
+    intern_cfg.stim.R.StimulationFrequency = 130;   
+end
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [cfg,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg);
 

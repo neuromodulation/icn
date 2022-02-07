@@ -400,6 +400,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         zeros(DBS_contacts, 3); ...
         zeros(ECOG_contacts, 3)]; %what is this 12 refering to? I replaced it with n_ECOG_contact 
     % this is for medtronic
+    if isfield(cfg_intern.ECOG_localisation)
+        sens.chanpos(DBS_contacts+DBS_contacts + 1 : end,1:3) = cfg_intern.ECOG_localisation;
+    end
+    
+    
     % cfg.electrodes.size         = {
     %     6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
     %     6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
@@ -487,7 +492,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     
     % To Do: Software filters => need to check which were used
     % eg. {"Anti-aliasing filter": {"half-amplitude cutoff (Hz)": 500, "Roll-off": "6dB/Octave"}}.
-    cfg.ieeg.SoftwareFilters        = 'n/a'; %MUST
+    cfg.ieeg.SoftwareFilters        = 'no additional filters'; %MUST
     cfg.ieeg.HardwareFilters        = Hardware_Filters; %Recommended
     cfg.ieeg.RecordingType          = 'continuous';
     if contains(cfg.acq, 'On')
@@ -498,19 +503,19 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     if cfg.ieeg.ElectricalStimulation
         % Enter EXPERIMENTAL stimulation settings
         % these need to be written in the lab book
-        exp.DateOfSetting           = "2021-11-11";
+        exp.DateOfSetting           = intern_cfg.stim.DateOfSetting; %"2021-11-11"
         exp.StimulationTarget       = DBS_target;
         exp.StimulationMode         = "continuous";
         exp.StimulationParadigm     = "continuous stimulation";
         exp.SimulationMontage       = "monopolar";
-        L.AnodalContact             = "G";
-        L.CathodalContact           = "7, 8 and 9";
+        L.AnodalContact             = "Ground";
+        L.CathodalContact           = intern_cfg.stim.L.CathodalContact;
         L.AnodalContactDirection      = "none";
         L.CathodalContactDirection    = "omni";
         L.CathodalContactImpedance    = "n/a";
-        L.StimulationAmplitude        = 2.0;
+        L.StimulationAmplitude        = intern_cfg.stim.L.StimulationAmplitude;
         L.StimulationPulseWidth       = 60;
-        L.StimulationFrequency        = 130;
+        L.StimulationFrequency        = intern_cfg.stim.L.StimulationFrequency;
         L.InitialPulseShape           = "rectangular";
         L.InitialPulseWidth           = 60;
         L.InitialPulseAmplitude       = -1.0*L.StimulationAmplitude;
@@ -520,14 +525,14 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         L.SecondPulseAmplitude        = L.StimulationAmplitude;
         L.PostPulseInterval           = "n/a";
         exp.Left                    = L;
-        R.AnodalContact             = "G";
-        R.CathodalContact           = "7, 8 and 9";
+        R.AnodalContact             = "Ground";
+        R.CathodalContact           = intern_cfg.stim.R.CathodalContact;
         R.AnodalContactDirection      = "none";
         R.CathodalContactDirection    = "omni";
         R.CathodalContactImpedance    = "n/a";
-        R.StimulationAmplitude        = 2.0;
+        R.StimulationAmplitude        = intern_cfg.stim.R.StimulationAmplitude;
         R.StimulationPulseWidth       = 60;
-        R.StimulationFrequency        = 130;
+        R.StimulationFrequency        = intern_cfg.stim.R.StimulationFrequency;
         R.InitialPulseShape           = "rectangular";
         R.InitialPulseWidth           = 60;
         R.InitialPulseAmplitude       = -1.0*R.StimulationAmplitude;
@@ -538,34 +543,35 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         R.PostPulseInterval           = "n/a";
         exp.Right                     = R;
 
-        % Enter CLINICAL stimulation settings
-        clin.DateOfSetting           = "2021-08-30";
-        clin.StimulationTarget       = DBS_target;
-        clin.StimulationMode         = "continuous";
-        clin.StimulationParadigm     = "continuous stimulation";
-        clin.SimulationMontage       = "monopolar";
-        clear L R;
-        L                           = "OFF";
-        clin.Left                    = L;
-        R.AnodalContact             = "G";
-        R.CathodalContact           = "2, 3 and 4";
-        R.AnodalContactDirection      = "none";
-        R.CathodalContactDirection    = "omni";
-        R.CathodalContactImpedance    = "n/a";
-        R.StimulationAmplitude        = 1.5;
-        R.StimulationPulseWidth       = 60;
-        R.StimulationFrequency        = 130;
-        R.InitialPulseShape           = "rectangular";
-        R.InitialPulseWidth           = 60;
-        R.InitialPulseAmplitude       = -1.5;
-        R.InterPulseDelay             = 0;
-        R.SecondPulseShape            = "rectangular";
-        R.SecondPulseWidth            = 60;
-        R.SecondPulseAmplitude        = 1.5;
-        R.PostPulseInterval           = "n/a";
-        clin.Right                    = R;
+        % Enter CLINICAL stimulation settings (are here equal to
+        % stimsettings)
+%         clin.DateOfSetting           = intern_cfg.stim.DateOfSetting;
+%         clin.StimulationTarget       = DBS_target;
+%         clin.StimulationMode         = "continuous";
+%         clin.StimulationParadigm     = "continuous stimulation";
+%         clin.SimulationMontage       = "monopolar";
+% %         clear L R;
+% %         L                           = "OFF";
+%         clin.Left                    = L;
+% %         R.AnodalContact             = "G";
+% %         R.CathodalContact           = "2, 3 and 4";
+% %         R.AnodalContactDirection      = "none";
+% %         R.CathodalContactDirection    = "omni";
+% %         R.CathodalContactImpedance    = "n/a";
+% %         R.StimulationAmplitude        = 1.5;
+% %         R.StimulationPulseWidth       = 60;
+% %         R.StimulationFrequency        = 130;
+% %         R.InitialPulseShape           = "rectangular";
+% %         R.InitialPulseWidth           = 60;
+% %         R.InitialPulseAmplitude       = -1.5;
+% %         R.InterPulseDelay             = 0;
+% %         R.SecondPulseShape            = "rectangular";
+% %         R.SecondPulseWidth            = 60;
+% %         R.SecondPulseAmplitude        = 1.5;
+% %         R.PostPulseInterval           = "n/a";
+%         clin.Right                    = R;
 
-        param.BestClinicalSetting                = "n/a";
+        param.BestClinicalSetting                = "Berlin parameter preset";
         param.CurrentExperimentalSetting         = exp;
         cfg.ieeg.ElectricalStimulationParameters = param;
     end
