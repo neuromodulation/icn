@@ -13,11 +13,11 @@ cfg = struct();
 rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\rawdata4'
 intern_cfg.rawdata_root = rawdata_root;
 % This is the input root folder for our BIDS-dataset
-sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\sourcedata\sub-009\ses-EcogLfpMedOff01'
-current_recording_folder = '531AI63_MedOff1_ReadRelaxMoveR_StimOff_1 - 20220124T095015';
+sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\sourcedata\sub-009\ses-EcogLfpMedOn01'
+current_recording_folder = '531AI63_MedOn1_SelpfRotaR_StimOff_3 - 20220123T104334';
 
 JsonFolder = pwd;
-intern_cfg.jsonfile = '531AI63_MedOff1_ReadRelaxMoveR_StimOff_1-20220124T095015.DATA.Poly5.json'; 
+intern_cfg.jsonfile = '531AI63_MedOn1_SelpfRotaR_StimOff_3-20220123T104334.DATA.Poly5.json'; 
 method = 'readjson';
 [~,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
 
@@ -26,7 +26,7 @@ input_recording = intern_cfg.filechooser;
 % Go to folder containing measurement data
 cd(fullfile(sourcedata_root, current_recording_folder));
 
-draw_figures = false;
+draw_figures = true;
 %% Select input_recording, read data with Fieldtrip and inspect data with WJN Toolbox
 
 inputfig            = [];
@@ -57,7 +57,8 @@ end
     % Counter
     % Status
     % Z-AXIS, Y-AXIS, X-AXIS
-chans          = [[1:34]]; % count the channels you need to keep
+    % BIP 04
+chans          = [[1:34]]; % count the channels you need to keep eg. [[1:27],[29:33]]
 outputfig            = [];
 outputfig.dataset    = [input_recording];
 outputfig.continuous = 'yes';
@@ -97,9 +98,9 @@ end
 %% Note which channels were bad and why
 %bad = {'LFP_L_7_STN_MT' 'LFP_L_8_STN_MT' 'LFP_L_9_STN_MT' 'LFP_L_16_STN_MT' 'LFP_R_7_STN_MT' 'LFP_R_8_STN_MT' 'LFP_R_9_STN_MT'};
 %why = {'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Reference electrode' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact'};
-intern_cfg.bad ={'LFP_L_8_STN_MT'};
-intern_cfg.why = {'Reference electrode'};
-intern_cfg.iEEGRef ='LFP_L_8_STN_MT';
+intern_cfg.bad ={'EMG_L_BR_TM','LFP_R_1_STN_MT','LFP_R_5_STN_MT'};%, 'LFP_L_4_STN_MT','LFP_L_3_STN_MT','LFP_L_2_STN_MT','LFP_R_4_STN_MT','LFP_R_3_STN_MT','LFP_R_2_STN_MT'};
+intern_cfg.why = {'Reference at the left earlobe','empty','empty'}%,'Stimulation contact', 'Stimulation contact','Stimulation contact', 'Stimulation contact','Stimulation contact', 'Stimulation contact'};
+intern_cfg.iEEGRef ='EMG_L_BR_TM Reference at the left earlobe';
 
 % add aditional input
 overwrite = true;
@@ -118,7 +119,7 @@ if overwrite
     intern_cfg.stim = false; %was there stimulation?
     if intern_cfg.stim
         intern_cfg.stim = struct();
-        intern_cfg.stim.DateOfSetting = "2022-01-24";
+        intern_cfg.stim.DateOfSetting = '2022-01-24';
         intern_cfg.stim.L.CathodalContact = {'LFP_L_2_STN_MT','LFP_L_3_STN_MT','LFP_L_4_STN_MT'};
         intern_cfg.stim.L.StimulationAmplitude = 2.0;
         intern_cfg.stim.L.StimulationFrequency = 130;
@@ -137,5 +138,10 @@ data2bids(cfg, intern_cfg.data);
 % save configuration data
 cd(JsonFolder)
 intern_cfg_save = rmfield(intern_cfg,{'data','chs_other', 'rawdata_root'});
-jsonencode(intern_cfg_save)
+% if isfield(intern_cfg_save.stim, 'DateOfSetting')
+%     intern_cfg_save.DateOfSetting = intern_cfg_save.stim.DateOfSetting;
+%     intern_cfg_save.stim = rmfield(intern_cfg_save.stim, 'DateOfSetting');
+% end
 savejson('',intern_cfg_save,intern_cfg.jsonfile)
+
+
