@@ -413,7 +413,7 @@ def save_all_information(*args):
             elif v == "bids_date_of_implantation":
                 try:
                     val = bids_date_of_implantation.value
-                    val = val.strftime("%m-%d-%YT00:00:00")
+                    val = val.strftime("%Y-%m-%dT00:00:00")
                 except:
                     val = "unknown"
                 finally:
