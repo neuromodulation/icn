@@ -13,15 +13,15 @@ cfg = struct();
 rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\rawdata4'
 intern_cfg.rawdata_root = rawdata_root;
 % This is the input root folder for our BIDS-dataset
-sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\sourcedata\sub-009\ses-EcogLfpMedOn01'
-current_recording_folder = '531AI63_MedOn1_SelpfRotaR_StimOff_3 - 20220123T104334';
+sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\sourcedata\sub-010\ses-EcogLfpMedOn01'
+current_recording_folder = '532LO56_MedOn1_SelfpRotaL_StimOff_1 - 20220204T163239';
 
 JsonFolder = pwd;
-intern_cfg.jsonfile = '531AI63_MedOn1_SelpfRotaR_StimOff_3-20220123T104334.DATA.Poly5.json'; 
+intern_cfg.jsonfile = '532LO56_MedOn1_SelfpRotaL_StimOff_1-20220204T163239.DATA.Poly5.json'; 
 method = 'readjson';
 [~,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
 
-%input_recording = '531AI63_MedOff1_SelfpRotaR_StimOff_1-20220124T093627.DATA.Poly5'
+%input_recording = '532LO56_MedOff1_Rest_StimOff_1-20220207T113556.DATA.Poly5'
 input_recording = intern_cfg.filechooser;
 % Go to folder containing measurement data
 cd(fullfile(sourcedata_root, current_recording_folder));
@@ -98,33 +98,33 @@ end
 %% Note which channels were bad and why
 %bad = {'LFP_L_7_STN_MT' 'LFP_L_8_STN_MT' 'LFP_L_9_STN_MT' 'LFP_L_16_STN_MT' 'LFP_R_7_STN_MT' 'LFP_R_8_STN_MT' 'LFP_R_9_STN_MT'};
 %why = {'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Reference electrode' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact'};
-intern_cfg.bad ={'EMG_L_BR_TM','LFP_R_1_STN_MT','LFP_R_5_STN_MT'};%, 'LFP_L_4_STN_MT','LFP_L_3_STN_MT','LFP_L_2_STN_MT','LFP_R_4_STN_MT','LFP_R_3_STN_MT','LFP_R_2_STN_MT'};
-intern_cfg.why = {'Reference at the left earlobe','empty','empty'}%,'Stimulation contact', 'Stimulation contact','Stimulation contact', 'Stimulation contact','Stimulation contact', 'Stimulation contact'};
-intern_cfg.iEEGRef ='EMG_L_BR_TM Reference at the left earlobe';
+intern_cfg.bad ={'LFP_L_1_STN_MT','ECOG_R_1_SMC_AT'}%,'LFP_R_5_STN_MT'};%, 'LFP_L_4_STN_MT','LFP_L_3_STN_MT','LFP_L_2_STN_MT','LFP_R_4_STN_MT','LFP_R_3_STN_MT','LFP_R_2_STN_MT'};
+intern_cfg.why = {'Reference electrode','empty'}%,'empty'}%,'Stimulation contact', 'Stimulation contact','Stimulation contact', 'Stimulation contact','Stimulation contact', 'Stimulation contact'};
+intern_cfg.iEEGRef ='LFP_L_1_STN_MT';
 
 % add aditional input
 overwrite = true;
 if overwrite
-    intern_cfg.ECOG_localization =[
-     -39, -35.5, 73;
-     -38.5, -24.5, 71;
-     -38, -15, 68;
-     -36.5, -6.5, 65.5;
-     -34, 5, 62.5;
-    -33.5, 16, 59;
-        ];
+%     intern_cfg.ECOG_localization =[
+%      -39, -35.5, 73;
+%      -38.5, -24.5, 71;
+%      -38, -15, 68;
+%      -36.5, -6.5, 65.5;
+%      -34, 5, 62.5;
+%     -33.5, 16, 59;
+%         ];
     %ECOG 1
     %to
     %ECOG 6 in MNI coords
     intern_cfg.stim = false; %was there stimulation?
     if intern_cfg.stim
         intern_cfg.stim = struct();
-        intern_cfg.stim.DateOfSetting = '2022-01-24';
+        intern_cfg.stim.DateOfSetting = '2022-02-04';
         intern_cfg.stim.L.CathodalContact = {'LFP_L_2_STN_MT','LFP_L_3_STN_MT','LFP_L_4_STN_MT'};
-        intern_cfg.stim.L.StimulationAmplitude = 2.0;
+        intern_cfg.stim.L.StimulationAmplitude = 2.5;
         intern_cfg.stim.L.StimulationFrequency = 130;
         intern_cfg.stim.R.CathodalContact ={'LFP_R_2_STN_MT','LFP_R_3_STN_MT','LFP_R_4_STN_MT'};
-        intern_cfg.stim.R.StimulationAmplitude = 2.0;
+        intern_cfg.stim.R.StimulationAmplitude = 2.5;
         intern_cfg.stim.R.StimulationFrequency = 130;
     end
 end
