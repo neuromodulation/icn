@@ -1,23 +1,29 @@
+% RUN FROM FOLDER CONTAINING THIS .M file and the JSON-file
+
 %% Initialize settings and go to root of source data
-clear all, close all, clc
+clear all, close all, clc  % actively clear workspace at start for better performance?
 restoredefaultpath
 
-addpath(fullfile('C:\Users\Jonathan\Documents\MATLAB\add_on_Matlab\wjn_toolbox'));
-addpath(fullfile('C:\Users\Jonathan\Documents\CODE\fieldtrip'));
-addpath(fullfile('C:\Users\Jonathan\Documents\CODE\icn\icn_bids\templates'));
+addpath(fullfile('/Users/jeroenhabets/Downloads/wjn_toolbox-master'));
+addpath(fullfile('/Users/jeroenhabets/Downloads/fieldtrip-master'));
+addpath(fullfile('/Users/jeroenhabets/Research/CHARITE/projects/dyskinesia_neurophys/code/ICN_repo/icn/icn_bids'));
+
 ft_defaults
 intern_cfg = struct();
 cfg = struct();
 
 % This is the output root folder for our BIDS-dataset
-rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\rawdata4'
+rawdata_root = '/Users/jeroenhabets/Desktop/TEMP/rawdata'
 intern_cfg.rawdata_root = rawdata_root;
 % This is the input root folder for our BIDS-dataset
-sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\sourcedata\sub-009\ses-EcogLfpMedOn01'
-current_recording_folder = '531AI63_MedOn1_SelpfRotaR_StimOff_3 - 20220123T104334';
+sourcedata_root = '/Users/jeroenhabets/Desktop/TEMP/sourcedata/ses-EphysMedOn02/ieeg';
+current_recording_folder = '530OE55_MedON_StimOff_Rest5_LT55M - 20211115T122301';  % mind the whitespaces not present in the json filename
+% This is the folder where the JSON-file is stored
+JsonFolder = '/Users/jeroenhabets/Research/CHARITE/projects/dyskinesia_neurophys/code/ICN_repo/icn/icn_bids/BIDS_Berlin_ECOG_LFP';
 
-JsonFolder = pwd;
-intern_cfg.jsonfile = '531AI63_MedOn1_SelpfRotaR_StimOff_3-20220123T104334.DATA.Poly5.json'; 
+cd(JsonFolder);
+% define name of json-file generated for this session
+intern_cfg.jsonfile = '530OE55_MedON_StimOff_Rest5_LT55M-20211115T122301.DATA.Poly5.json'; 
 method = 'readjson';
 [~,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
 
@@ -58,7 +64,8 @@ end
     % Status
     % Z-AXIS, Y-AXIS, X-AXIS
     % BIP 04
-chans          = [[1:34]]; % count the channels you need to keep eg. [[1:27],[29:33]]
+% sub-008 has 2 x 16 DBS, 6 x ECOG, 2 EEG, 3 BIP (ECG-EMG), 6 ACC
+chans          = [[1:49]]; % count the channels you need to keep eg. [[1:27],[29:33]]
 outputfig            = [];
 outputfig.dataset    = [input_recording];
 outputfig.continuous = 'yes';
@@ -71,6 +78,9 @@ if draw_figures
 end
 %% Plot data with WJN viewer to double-check
 
+% set folder back to JSON-folder
+cd(JsonFolder);
+ 
 % specify channels used other than DBS and ECOG
 intern_cfg.chs_other = {
         'EEG_Cz_TM'
@@ -84,34 +94,34 @@ intern_cfg.chs_other = {
         'ACC_L_X_D2_TM'
         'ACC_L_Y_D2_TM'
         'ACC_L_Z_D2_TM'
-        'ANALOG_R_ROTA_CH'
+        %'ANALOG_R_ROTA_CH'
         };
 method = 'update_channels';
 [cfg,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
 if draw_figures
     figure('units','normalized','outerposition',[0 0 1 1])
     wjn_plot_raw_signals(intern_cfg.data.time{1},intern_cfg.data.trial{1},intern_cfg.data.label);
-    cd(JsonFolder)
+    cd(JsonFolder)  % reset working directory again
     saveas(gcf,[intern_cfg.jsonfile 'CLEAN.tif'])
 end
 
-%% Note which channels were bad and why
-%bad = {'LFP_L_7_STN_MT' 'LFP_L_8_STN_MT' 'LFP_L_9_STN_MT' 'LFP_L_16_STN_MT' 'LFP_R_7_STN_MT' 'LFP_R_8_STN_MT' 'LFP_R_9_STN_MT'};
-%why = {'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Reference electrode' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact'};
-intern_cfg.bad ={'EMG_L_BR_TM','LFP_R_1_STN_MT','LFP_R_5_STN_MT'};%, 'LFP_L_4_STN_MT','LFP_L_3_STN_MT','LFP_L_2_STN_MT','LFP_R_4_STN_MT','LFP_R_3_STN_MT','LFP_R_2_STN_MT'};
-intern_cfg.why = {'Reference at the left earlobe','empty','empty'}%,'Stimulation contact', 'Stimulation contact','Stimulation contact', 'Stimulation contact','Stimulation contact', 'Stimulation contact'};
-intern_cfg.iEEGRef ='EMG_L_BR_TM Reference at the left earlobe';
+%% MANUAL INPUT: Define which channels were bad and why
+% bad: contact names as in new figure. NOTE: Change LFP-LEAD side and Manufacturer code if necessary
+%why: Common reasons: 'Reference', 'Empty', 'Stimulation contact'
+intern_cfg.bad ={'LFP_L_16_STN_BS','EEG_Fz_TM','EEG_Cz_TM'};
+intern_cfg.why = {'Reference','empty','empty'};
+intern_cfg.iEEGRef ='LFP_L_16_STN_BS';  % define IEEG-reference here again
 
-% add aditional input
-overwrite = true;
+%% MANUAL INPUT: Electrode location coordinates and Stimulation-settings; written into JSON when overwrite is True
+overwrite = false;  % if electrode coordinates are added for one session, it is not required to overwrite for every recording
 if overwrite
     intern_cfg.ECOG_localization =[
-     -39, -35.5, 73;
-     -38.5, -24.5, 71;
-     -38, -15, 68;
-     -36.5, -6.5, 65.5;
-     -34, 5, 62.5;
-    -33.5, 16, 59;
+     -17.5, -60.5, 75.5;
+     -21, -51.5, 79.55;
+     -24.5, -41, 81;
+     -26.5, -30, 81;
+     -28.5, -19, 80.5;
+    -30, -8.5, 78;
         ];
     %ECOG 1
     %to
@@ -137,6 +147,7 @@ end
 data2bids(cfg, intern_cfg.data);
 % save configuration data
 cd(JsonFolder)
+% remove fields that should not be printed
 intern_cfg_save = rmfield(intern_cfg,{'data','chs_other', 'rawdata_root'});
 % if isfield(intern_cfg_save.stim, 'DateOfSetting')
 %     intern_cfg_save.DateOfSetting = intern_cfg_save.stim.DateOfSetting;
