@@ -1,3 +1,5 @@
+# ignore custom
+*.asv
 # python #
 ###################
 *.pyo
