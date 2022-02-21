@@ -322,6 +322,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         Hardware_Filters.Anti_AliasFilter.Low_Pass.UnipolarChannels     = 1600;
         Hardware_Filters.Anti_AliasFilter.Low_Pass.BipolarChannels      = 2100;
         Hardware_Filters.Anti_AliasFilter.Low_Pass.AuxiliaryChannels    = 2100;
+        Hardware_Filters.AnalogueBandwidth = 800;
     %elseif strcmp(hardware_manufacturer,'Alpha Omega')
     %elseif strcmp(hardware_manufacturer,'Newronika')
     else

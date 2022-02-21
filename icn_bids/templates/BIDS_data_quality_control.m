@@ -4,9 +4,9 @@
 clear all, close all, clc  % actively clear workspace at start for better performance?
 restoredefaultpath
 
-addpath(fullfile('/Users/jeroenhabets/Downloads/wjn_toolbox-master'));
-addpath(fullfile('/Users/jeroenhabets/Downloads/fieldtrip-master'));
-addpath(fullfile('/Users/jeroenhabets/Research/CHARITE/projects/dyskinesia_neurophys/code/ICN_repo/icn/icn_bids'));
+addpath(fullfile('C:\Users\Jonathan\Documents\MATLAB\add_on_Matlab\wjn_toolbox'));
+addpath(fullfile('C:\Users\Jonathan\Documents\CODE\fieldtrip'));
+addpath(fullfile('C:\Users\Jonathan\Documents\CODE\icn\icn_bids\templates'));
 
 ft_defaults
 intern_cfg = struct();
@@ -16,18 +16,19 @@ cfg = struct();
 rawdata_root = '/Users/jeroenhabets/Desktop/TEMP/rawdata'
 intern_cfg.rawdata_root = rawdata_root;
 % This is the input root folder for our BIDS-dataset
-sourcedata_root = '/Users/jeroenhabets/Desktop/TEMP/sourcedata/ses-EphysMedOn02/ieeg';
-current_recording_folder = '530OE55_MedON_StimOff_Rest5_LT55M - 20211115T122301';  % mind the whitespaces not present in the json filename
-% This is the folder where the JSON-file is stored
-JsonFolder = '/Users/jeroenhabets/Research/CHARITE/projects/dyskinesia_neurophys/code/ICN_repo/icn/icn_bids/BIDS_Berlin_ECOG_LFP';
 
-cd(JsonFolder);
+sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\sourcedata\sub-010\ses-EcogLfpMedOn01'
+current_recording_folder = '532LO56_MedOn1_SelfpRotaL_StimOff_1 - 20220204T163239';
+
+% This is the folder where the JSON-file is stored
+JsonFolder = pwd;
 % define name of json-file generated for this session
-intern_cfg.jsonfile = '530OE55_MedON_StimOff_Rest5_LT55M-20211115T122301.DATA.Poly5.json'; 
+intern_cfg.jsonfile = '532LO56_MedOn1_SelfpRotaL_StimOff_1-20220204T163239.DATA.Poly5.json'; 
+
 method = 'readjson';
 [~,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
 
-%input_recording = '531AI63_MedOff1_SelfpRotaR_StimOff_1-20220124T093627.DATA.Poly5'
+%input_recording = '532LO56_MedOff1_Rest_StimOff_1-20220207T113556.DATA.Poly5'
 input_recording = intern_cfg.filechooser;
 % Go to folder containing measurement data
 cd(fullfile(sourcedata_root, current_recording_folder));
@@ -107,34 +108,39 @@ end
 
 %% MANUAL INPUT: Define which channels were bad and why
 % bad: contact names as in new figure. NOTE: Change LFP-LEAD side and Manufacturer code if necessary
-%why: Common reasons: 'Reference', 'Empty', 'Stimulation contact'
-intern_cfg.bad ={'LFP_L_16_STN_BS','EEG_Fz_TM','EEG_Cz_TM'};
-intern_cfg.why = {'Reference','empty','empty'};
-intern_cfg.iEEGRef ='LFP_L_16_STN_BS';  % define IEEG-reference here again
+% why: Common reasons: 'Reference', 'Empty', 'Stimulation contact'
+% bad = {'LFP_L_7_STN_MT' 'LFP_L_8_STN_MT' 'LFP_L_9_STN_MT' 'LFP_L_16_STN_MT' 'LFP_R_7_STN_MT' 'LFP_R_8_STN_MT' 'LFP_R_9_STN_MT'};
+% why = {'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Reference electrode' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact'};
+intern_cfg.bad ={'LFP_L_1_STN_MT','ECOG_R_1_SMC_AT'}%,'LFP_R_5_STN_MT'};%, 'LFP_L_4_STN_MT','LFP_L_3_STN_MT','LFP_L_2_STN_MT','LFP_R_4_STN_MT','LFP_R_3_STN_MT','LFP_R_2_STN_MT'};
+intern_cfg.why = {'Reference electrode','empty'}%,'empty'}%,'Stimulation contact', 'Stimulation contact','Stimulation contact', 'Stimulation contact','Stimulation contact', 'Stimulation contact'};
+intern_cfg.iEEGRef ='LFP_L_1_STN_MT';  % define IEEG-reference here again
+
 
 %% MANUAL INPUT: Electrode location coordinates and Stimulation-settings; written into JSON when overwrite is True
 overwrite = false;  % if electrode coordinates are added for one session, it is not required to overwrite for every recording
 if overwrite
-    intern_cfg.ECOG_localization =[
-     -17.5, -60.5, 75.5;
-     -21, -51.5, 79.55;
-     -24.5, -41, 81;
-     -26.5, -30, 81;
-     -28.5, -19, 80.5;
-    -30, -8.5, 78;
-        ];
+
+%     intern_cfg.ECOG_localization =[
+%      -39, -35.5, 73;
+%      -38.5, -24.5, 71;
+%      -38, -15, 68;
+%      -36.5, -6.5, 65.5;
+%      -34, 5, 62.5;
+%     -33.5, 16, 59;
+%         ];
+
     %ECOG 1
     %to
     %ECOG 6 in MNI coords
     intern_cfg.stim = false; %was there stimulation?
     if intern_cfg.stim
         intern_cfg.stim = struct();
-        intern_cfg.stim.DateOfSetting = '2022-01-24';
+        intern_cfg.stim.DateOfSetting = '2022-02-04';
         intern_cfg.stim.L.CathodalContact = {'LFP_L_2_STN_MT','LFP_L_3_STN_MT','LFP_L_4_STN_MT'};
-        intern_cfg.stim.L.StimulationAmplitude = 2.0;
+        intern_cfg.stim.L.StimulationAmplitude = 2.5;
         intern_cfg.stim.L.StimulationFrequency = 130;
         intern_cfg.stim.R.CathodalContact ={'LFP_R_2_STN_MT','LFP_R_3_STN_MT','LFP_R_4_STN_MT'};
-        intern_cfg.stim.R.StimulationAmplitude = 2.0;
+        intern_cfg.stim.R.StimulationAmplitude = 2.5;
         intern_cfg.stim.R.StimulationFrequency = 130;
     end
 end
