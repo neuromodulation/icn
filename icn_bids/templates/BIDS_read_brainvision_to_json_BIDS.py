@@ -1,0 +1,129 @@
+# This script provides a meta-json structure of a BIDS dataset, which can be afterwards modified and converted with Fieldtrip
+# created by Jonathan Vanhoecke - ICN lab
+# 21.02.2022
+
+import os
+import mne_bids
+import json
+from mne_bids import BIDSPath
+from mne_bids.tsv_handler import _from_tsv
+from mne_bids.path import _find_matching_sidecar
+from bids import BIDSLayout
+
+
+# Choose an output directory
+os.chdir(r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev")
+
+# where is the BIDS data located?
+# root = r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Beijing_ECOG_LFP\rawdata"
+# root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Berlin_ECOG_LFP\rawdata"
+root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata"
+
+# iterate over the brainvision files
+layout = BIDSLayout(root)
+run_files = layout.get(extension=".vhdr")
+datatype = "ieeg"
+for run_file in run_files:
+    entities = mne_bids.get_entities_from_fname(run_file)
+    entities["space"] = "MNI152NLin2009bAsym"
+    bidspath = mne_bids.BIDSPath(
+        subject=entities["subject"],
+        session=entities["session"],
+        task=entities["task"],
+        run=entities["run"],
+        acquisition=entities["acquisition"],
+        datatype=datatype,
+        root=root,
+    )
+    # raw_arr = mne_bids.read_raw_bids(bidspath)
+
+    # read in associated subject info from participants.tsv
+    participants_tsv_path = bidspath.root / "participants.tsv"
+    participants_tsv = _from_tsv(participants_tsv_path)
+    bids_participants = dict()
+    for col_name, value in participants_tsv.items():
+        subjects = participants_tsv["participant_id"]
+        row_ind = subjects.index(f"sub-{bidspath.subject}")
+        bids_participants[col_name] = value[row_ind]
+
+    # read in scans_tsv
+    scans_fname = BIDSPath(
+        subject=bidspath.subject,
+        session=bidspath.session,
+        suffix="scans",
+        extension=".tsv",
+        root=bidspath.root,
+    ).fpath
+    scans_tsv = _from_tsv(scans_fname)
+    bids_scans = dict()
+    for col_name, value in scans_tsv.items():
+        scans = scans_tsv["filename"]
+        row_ind = scans.index(f"ieeg/{bidspath.basename}_ieeg.vhdr")
+        bids_scans[col_name] = value[row_ind]
+
+    # read in the electrodes tsv
+    electrodes_fname = BIDSPath(
+        subject=bidspath.subject,
+        session=bidspath.session,
+        datatype=datatype,
+        space=entities["space"],
+        suffix="electrodes",
+        extension=".tsv",
+        root=bidspath.root,
+    ).fpath
+    if electrodes_fname.exists():
+        electrodes_tsv = _from_tsv(electrodes_fname)
+        bids_electrodes = dict()
+        for col_name, value in electrodes_tsv.items():
+            bids_electrodes[col_name] = value
+
+    # read the channels tsv
+    channels_fname = BIDSPath(
+        subject=bidspath.subject,
+        session=bidspath.session,
+        datatype=datatype,
+        task=entities["task"],
+        run=entities["run"],
+        acquisition=entities["acquisition"],
+        suffix="channels",
+        extension=".tsv",
+        root=bidspath.root,
+    ).fpath
+    channels_tsv = _from_tsv(channels_fname)
+    bids_channels = dict()
+    for col_name, value in channels_tsv.items():
+        bids_channels[col_name] = value
+
+    # read the ieeg json
+    sidecar_fname = _find_matching_sidecar(bidspath, suffix=datatype, extension=".json")
+    with open(sidecar_fname, "r", encoding="utf-8-sig") as fin:
+        bids_sidecar_json = json.load(fin)
+
+    # read the scans.json
+    scans_json_fname = BIDSPath(
+        subject=bidspath.subject,
+        session=bidspath.session,
+        suffix="scans",
+        extension=".json",
+        root=bidspath.root,
+    ).fpath
+    if scans_json_fname.exists():
+        with open(scans_json_fname, "r", encoding="utf-8-sig") as fin:
+            bids_scans_json = json.load(fin)
+
+    # now create an output json file will all this meta data
+    bidsdict = dict()
+    bidsdict["inputdata_location"] = run_file.path
+    bidsdict["inputdata_fname"] = run_file.filename
+    bidsdict["participants_tsv"] = bids_participants
+    bidsdict["scans_tsv"] = bids_scans
+    bidsdict["scans_json"] = bids_scans_json
+    bidsdict["channels_tsv"] = bids_channels
+    bidsdict["electrodes_tsv"] = bids_electrodes
+    bidsdict["sidecare_json"] = bids_sidecar_json
+    bidsdict["entities"] = entities
+
+    json_writeout = bidspath.basename + ".json"
+
+    with open(json_writeout, "w") as outfile:
+        json.dump(bidsdict, outfile, indent=4)

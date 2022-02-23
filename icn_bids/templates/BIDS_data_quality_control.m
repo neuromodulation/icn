@@ -13,7 +13,7 @@ intern_cfg = struct();
 cfg = struct();
 
 % This is the output root folder for our BIDS-dataset
-rawdata_root = '/Users/jeroenhabets/Desktop/TEMP/rawdata'
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_Conversion\rawdata4\'
 intern_cfg.rawdata_root = rawdata_root;
 % This is the input root folder for our BIDS-dataset
 
