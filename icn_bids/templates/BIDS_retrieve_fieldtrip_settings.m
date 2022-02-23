@@ -36,7 +36,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     elseif strcmp(DBS_hemisphere, 'bilateral')
         DBS_hemispheres = {'R', 'L'};
     end
-    DBS_model=intern_cfg.DBS_model;
+    DBS_model=intern_cfg.participants.DBS_model;
     %DBS_model = 'SenSight Short'; %Medtronic
     %DBS_model = 'SenSight Long'; %Medtronic
     %DBS_model = 'Vercise Cartesia X'; %Boston Scientific
@@ -45,10 +45,10 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     %DBS_model = 'Abbott Directed Long'; %Abbott
     %DBS_model = 'Abbott Directed Short'; %Abbott
 
-    ECOG_target = intern_cfg.participants.ECOG_target;
+    ECOG_target_long = intern_cfg.participants.ECOG_target;
     %ECOG_target = 'SMC'; % Sensorimotor Cortex
-    if strcmp(ECOG_target, 'SMC')
-        ECOG_target_long = 'sensorimotor cortex';
+    if strcmp(ECOG_target_long, 'sensorimotor cortex')
+        ECOG_target = 'SMC';
     else
         error('ECOG target not found, please specify a valid target.')
     end
@@ -129,11 +129,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         DBS_material           = 'platinum/iridium';
         DBS_directional        = 'yes';
     elseif strcmp(DBS_model, 'n/a')
-        DBS_contacts           = intern_cfg.participants.DBS_contacts;
+        DBS_contacts           = str2num(intern_cfg.participants.DBS_contacts);
         DBS_manufacturer       = intern_cfg.participants.DBS_manufacturer;
         DBS_manufacturer_short = "MT";
         DBS_description        = intern_cfg.participants.DBS_description;
-        DBS_material           = intern_cfg.participants.DBS_material;
+        DBS_material           = 'platinum/iridium';
         DBS_directional        = intern_cfg.participants.DBS_directional;
     else
         error('DBS model not found, please specify a valid DBS lead.')
@@ -278,8 +278,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         };
     %task_descr = containers.Map(keySet,descrSet);
     %task_instr = containers.Map(keySet,instructionSet);
-    task_descr = intern_cfg.task_description;
-    task_instr = intern_cfg.task_instructions;
+    %task_descr = intern_cfg.task_description;
+    %task_instr = intern_cfg.task_instructions;
 
     %% Now write data to BIDS
 
@@ -292,22 +292,23 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.bidsroot                = intern_cfg.rawdata_root;
     cfg.datatype                = 'ieeg';
     cfg.sub                     = intern_cfg.entities.subject;%'009';
-    cfg.ses                     = intern_cfg.entities.session;
-    cfg.task                    = intern_cfg.task;
+    
+    cfg.ses                     = replace(intern_cfg.entities.session,'Ephys','EcogLfp');
+    cfg.task                    = intern_cfg.entities.task;
     cfg.acq                     = intern_cfg.entities.acquisition; %'StimOff01';  % add here 'Dopa00' during dyskinesia-protocol recording: e.g. 'StimOff01Dopa30'. (Dyskinesia-protocol recordings start at the intake of an higher than normal Levodopa-dosage, and will always be labeled MedOn)
-    cfg.run                     = intern_cfg.entities.run;
+    cfg.run                     = str2num(intern_cfg.entities.run);
     cfg.space                   = intern_cfg.entities.space; %'MNI152NLin2009bAsym';
 
     % Provide info for the scans.tsv file
     % the acquisition time could be found in the folder name of the recording
 
-    cfg.scans.acq_time              =  intern_cfg.time_of_acquisition;%'2022-01-24T09:36:27';
+    cfg.scans.acq_time              =  intern_cfg.scans_tsv.acq_time;%'2022-01-24T09:36:27';
     if contains(cfg.ses, 'Off')
         cfg.scans.medication_state  = 'OFF';
     else
         cfg.scans.medication_state  = 'ON';
     end
-    cfg.scans.UPDRS_III             =  intern_cfg.UPDRS_session;%'n/a'; % need to be calcuated.
+    cfg.scans.UPDRS_III             =  intern_cfg.scans_tsv.UPDRS_III;%'n/a'; % need to be calcuated.
 
     % Specify some general information
     cfg.InstitutionName                         = 'Charite - Universitaetsmedizin Berlin, corporate member of Freie Universitaet Berlin and Humboldt-Universitaet zu Berlin, Department of Neurology with Experimental Neurology/BNIC, Movement Disorders and Neuromodulation Unit';
@@ -321,9 +322,9 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
 
 
     % Provide the long description of the task and participant instructions
-    cfg.TaskName                = cfg.task;
-    cfg.TaskDescription         = intern_cfg.task_description ;%task_descr(cfg.task);
-    cfg.Instructions            = intern_cfg.task_instructions ;%task_instr(cfg.task);
+    cfg.TaskName                = intern_cfg.entities.task; %intern_cfg.ieeg.TaskName;
+    cfg.TaskDescription         = intern_cfg.ieeg.TaskDescription ;%task_descr(cfg.task);
+    cfg.Instructions            = intern_cfg.ieeg.Instructions ;%task_instr(cfg.task);
 
     % Provide info about recording hardware
     if isfield(intern_cfg.ieeg,'Manufacturer')
@@ -333,7 +334,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     end
     
     % NEED HELP FROM RICHARD here
-    if strcmp(hardware_manufacturer,'TMSi')
+    if logical(contains(hardware_manufacturer,'TMSi'))
         cfg.Manufacturer                = 'Twente Medical Systems International B.V. (TMSi)';
         cfg.ManufacturersModelName      = 'Saga 64+';
         cfg.SoftwareVersions            = 'TMSi Polybench - QRA for SAGA - REV1.1.0';
@@ -347,7 +348,16 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         Hardware_Filters.AnalogueBandwidth = 800;
         cfg.ieeg.SoftwareFilters        = 'no additional filters'; %MUST
         cfg.ieeg.HardwareFilters        = Hardware_Filters; %Recommended
-    elseif strcmp(hardware_manufacturer,'Alpha Omega')
+    elseif strcmp(hardware_manufacturer,'Alpha Omega Engineering Ltd. (AO)')
+        cfg.Manufacturer                = 'Alpha Omega Engineering Ltd. (AO)';
+        cfg.ManufacturersModelName      = 'Neuro Omega';
+        cfg.SoftwareVersions            = 'n/a';
+        cfg.DeviceSerialNumber          = 'n/a';
+        cfg.channels.low_cutoff         = repmat({'0'},intern_cfg.data.hdr.nChans,1);
+        cfg.channels.high_cutoff        = repmat({'n/a'},intern_cfg.data.hdr.nChans,1);
+        cfg.ieeg.SoftwareFilters        = 'n/a'; %MUST
+        cfg.ieeg.HardwareFilters        = 'n/a'; %Recommended
+        
     elseif strcmp(hardware_manufacturer,'Newronika')
     elseif strcmp(hardware_manufacturer,'Brain Products GmbH')
         cfg.Manufacturer                = 'Brain Products GmbH';
@@ -358,22 +368,32 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         cfg.channels.high_cutoff        = repmat({'n/a'},intern_cfg.data.hdr.nChans,1);
         cfg.ieeg.SoftwareFilters        = 'n/a'; %MUST
         cfg.ieeg.HardwareFilters        = 'n/a'; %Recommended
+    elseif strcmp(hardware_manufacturer,'Cambridge Electronic Design (CED)')
+        cfg.Manufacturer                = 'Cambridge Electronic Design (CED)';
+        cfg.ManufacturersModelName      = 'n/a';
+        cfg.SoftwareVersions            = 'n/a';
+        cfg.DeviceSerialNumber          = 'n/a';
+        cfg.channels.low_cutoff         = repmat({'0'},intern_cfg.data.hdr.nChans,1);
+        cfg.channels.high_cutoff        = repmat({'n/a'},intern_cfg.data.hdr.nChans,1);
+        cfg.ieeg.SoftwareFilters        = 'n/a'; %MUST
+        cfg.ieeg.HardwareFilters        = 'n/a'; %Recommended
+
     else
         error('Please define a valid hardware manufacturer')
     end
 
     % need to check in the LFP excel sheet on the S-drive
     % Provide info about the participant	
-    cfg.participants.sex                    = intern_cfg.sex; %found in the clinical data (you probably don't have have access to the SAP, sometimes it can be found in AG-Bewegungsstörungen/Filme)
-    cfg.participants.handedness             = intern_cfg.handedness; %LFP excel sheet
-    cfg.participants.age                    = intern_cfg.age ; %LFP excel sheet
-    cfg.participants.date_of_implantation   = intern_cfg.date_of_implantation ;  %'2022-01-20T00:00:00'; %LFP excel sheet
+    cfg.participants.sex                    = intern_cfg.participants.sex; %found in the clinical data (you probably don't have have access to the SAP, sometimes it can be found in AG-Bewegungsstörungen/Filme)
+    cfg.participants.handedness             = intern_cfg.participants.handedness; %LFP excel sheet
+    cfg.participants.age                    = intern_cfg.participants.age ; %LFP excel sheet
+    cfg.participants.date_of_implantation   = intern_cfg.participants.date_of_implantation ;  %'2022-01-20T00:00:00'; %LFP excel sheet
     cfg.participants.UPDRS_III_preop_OFF    = 'n/a';%-> UPDRS is on session level
     cfg.participants.UPDRS_III_preop_ON     = 'n/a';%-> UPDRS is on session level
-    cfg.participants.disease_duration       = intern_cfg.disease_duration;%7; %LFP excel sheet
-    cfg.participants.PD_subtype             = intern_cfg.PD_subtype; %'akinetic-rigid'; %SAP
-    cfg.participants.symptom_dominant_side  = intern_cfg.symptom_dominant_side;% 'right'; %LFP excel sheet
-    cfg.participants.LEDD                   = intern_cfg.LEDD; %1600; %calculated from lab book with https://www.parkinsonsmeasurement.org/toolBox/levodopaEquivalentDose.htm
+    cfg.participants.disease_duration       = intern_cfg.participants.disease_duration;%7; %LFP excel sheet
+    cfg.participants.PD_subtype             = intern_cfg.participants.PD_subtype; %'akinetic-rigid'; %SAP
+    cfg.participants.symptom_dominant_side  = intern_cfg.participants.symptom_dominant_side;% 'right'; %LFP excel sheet
+    cfg.participants.LEDD                   = intern_cfg.participants.LEDD; %1600; %calculated from lab book with https://www.parkinsonsmeasurement.org/toolBox/levodopaEquivalentDose.htm
     cfg.participants.DBS_target                 = DBS_target;
     cfg.participants.DBS_hemisphere             = DBS_hemisphere;
     cfg.participants.DBS_manufacturer           = DBS_manufacturer;
@@ -405,20 +425,23 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     if isfield(intern_cfg, 'electrodes_tsv')
         
         cfg.electrodes.name         = intern_cfg.electrodes_tsv.name;
-        cfg.elec                    =  [intern_cfg.electrodes_tsv.x;intern_cfg.electrodes_tsv.y;intern_cfg.electrodes_tsv.z];
-        cfg.electrodes.size         = intern_cfg.electrodes_tsv.size;
+        sens.label                  = intern_cfg.electrodes_tsv.name;
+        sens.elecpos                = str2double([intern_cfg.electrodes_tsv.x,intern_cfg.electrodes_tsv.y,intern_cfg.electrodes_tsv.z]);
+        cfg.elec                    = sens;
+        %cfg.electrodes.size        = intern_cfg.electrodes_tsv.size; -> need to create new when empty
         cfg.electrodes.material     = intern_cfg.electrodes_tsv.material;
         cfg.electrodes.manufacturer = intern_cfg.electrodes_tsv.manufacturer;
-        %cfg.electrodes.group -> need to overwrite
+        %cfg.electrodes.group       -> need to overwrite
         cfg.electrodes.hemisphere   = intern_cfg.electrodes_tsv.hemisphere;
         cfg.electrodes.type         = intern_cfg.electrodes_tsv.type;
         cfg.electrodes.impedance    = intern_cfg.electrodes_tsv.impedance;
         cfg.electrodes.dimension    = intern_cfg.electrodes_tsv.dimension;
-        
+       
         cfg.electrodes.group        = [
         repmat({'DBS_right'},DBS_contacts,1);
         repmat({'DBS_left'},DBS_contacts,1);
         repmat({['ECOG_' cfg.participants.ECOG_hemisphere]},ECOG_contacts,1)];
+    
     else
         
 
@@ -450,21 +473,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             sens.chanpos(DBS_contacts+DBS_contacts + 1 : end,1:3) = intern_cfg.ECOG_localization;
         end
 
-        % define size of single electrode contacts
-        % if 1 DBS contact per level: size=6; if 3 contacts per level: s=1.5
-        if isfield(cfg.participants.DBS_model(:,8),'SenSight')
-            cfg.electrodes.size = {
-                6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
-                6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
-                4.15 4.15 4.15 4.15 4.15 4.15}; %  ECoG contacts std 4.15
-
-        elseif isfield(cfg.participants.DBS_model, 'Vercise Cartesia X')
-            cfg.electrodes.size = {
-                1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
-                1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
-                4.15 4.15 4.15 4.15 4.15 4.15 ...
-                };
-        end
+        
         % sens.chanpos = [
         %     zeros(DBS_contacts, 3); ...
         %     zeros(DBS_contacts, 3); ...
@@ -500,24 +509,50 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             repmat({sprintf('[1x%d]',DBS_contacts)},DBS_contacts*2,1);
             repmat({sprintf('[1x%d]',ECOG_contacts)},ECOG_contacts,1)];
     end
+    
+    % define size of single electrode contacts
+    if isfield(intern_cfg.electrodes_tsv,'size')
+        cfg.electrodes.size = intern_cfg.electrodes_tsv.size;
+    else
+        % if 1 DBS contact per level: size=6; if 3 contacts per level: s=1.5
+        if isfield(cfg.participants.DBS_model(:,8),'SenSight')
+            cfg.electrodes.size = {
+                6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+                6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+                4.15 4.15 4.15 4.15 4.15 4.15}; %  ECoG contacts std 4.15
+
+        elseif isfield(cfg.participants.DBS_model, 'Vercise Cartesia X')
+            cfg.electrodes.size = {
+                1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+                1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+                4.15 4.15 4.15 4.15 4.15 4.15 ...
+                };
+        end
+    end
+    
+    
 
     % Provide special channel info
     if isfield(intern_cfg,'channels_tsv')
-        cfg.ieeg.iEEGReference = intern_cfg.ieeg.iEEGReference;
-        cfg.channels.reference          = intern_cfg.channel_tsv.reference;
-        cfg.channels.status             = intern_cfg.channel_tsv.status;
-        cfg.channels.status_description = intern_cfg.channel_tsv.status_description;
+        cfg.channels.status             = intern_cfg.channels_tsv.status;
+        cfg.channels.status_description = intern_cfg.channels_tsv.status_description;      
     else
-    
-        % Reference channels
-        cfg.ieeg.iEEGReference = iEEGRef;
-        typeSet = {'EEG', 'ECOG', 'DBS', 'SEEG', 'EMG', 'ECG', 'MISC'};
-        refSet = {iEEGRef, iEEGRef, iEEGRef, iEEGRef, 'bipolar', 'bipolar', 'n/a'};
-        ref_map = containers.Map(typeSet,refSet);
-        cfg.channels.reference = arrayfun(@(ch_type) {ref_map(ch_type{1})}, chantype);
         cfg.channels.status             = bads;
         cfg.channels.status_description = bads_descr;
     end
+    
+    % Reference channels
+    if isfield(intern_cfg.ieeg,'iEEGReference')
+        cfg.ieeg.iEEGReference = intern_cfg.ieeg.iEEGReference;
+    else
+        cfg.ieeg.iEEGReference = 'cfr labbook';
+    end
+    % Always reset the channels references
+    typeSet = {'EEG', 'ECOG', 'DBS', 'SEEG', 'EMG', 'ECG', 'MISC'};
+    refSet = {cfg.ieeg.iEEGReference, cfg.ieeg.iEEGReference, cfg.ieeg.iEEGReference, cfg.ieeg.iEEGReference, 'bipolar', 'bipolar', 'n/a'};
+    ref_map = containers.Map(typeSet,refSet);
+    cfg.channels.reference = arrayfun(@(ch_type) {ref_map(ch_type{1})}, chantype);
+        
     
     % settings that al always applicable
     cfg.channels.name               = chs_final;
@@ -660,22 +695,4 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             cfg.ieeg.ElectricalStimulationParameters = param;
         end
     end
-    
-    
-    
-    scans_json_fname = sprintf('sub-%s_ses-%s_scans.json',cfg.sub,cfg.ses);
-    
-    scans_json.acq_time.Description         = "date of acquistion in the format YYYY-MM-DDThh:mm:ss";
-    scans_json.acq_time.Units               = "datetime";
-    scans_json.acq_time.TermURL             = "https://tools.ietf.org/html/rfc3339#section-5.6";
-    scans_json.medication_sate.Description  = "state of medication during recording";
-    scans_json.medication_sate.Levels.OFF   = "OFF parkinsonian medication";
-    scans_json.medication_sate.Levels.ON    = "ON parkinsonian medication";
-    scans_json.UPDRS_III.Description        = "Score of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.";
-    scans_json.UPDRS_III.TermURL            = "https://doi.org/10.1002/mds.10473";
-    
-    
-    savejson('',scans_json,fullfile(cfg.bidsroot,cfg.subject,cfg.session,scans_json_fname))
-
-
-end
+ end

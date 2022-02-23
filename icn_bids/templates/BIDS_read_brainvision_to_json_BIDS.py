@@ -8,7 +8,22 @@ import json
 from mne_bids import BIDSPath
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.path import _find_matching_sidecar
-from bids import BIDSLayout
+
+def get_all_vhdr_files(directory):
+    """
+
+    Given a BIDS path return all vhdr file paths without BIDS_Layout
+    Args:
+        BIDS_path (string)
+    Returns:
+        vhdr_files (list)
+    """
+    vhdr_files = []
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith(".vhdr"):
+                vhdr_files.append(os.path.join(root, file))
+    return vhdr_files
 
 
 # Choose an output directory
@@ -20,8 +35,7 @@ os.chdir(r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev")
 root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata"
 
 # iterate over the brainvision files
-layout = BIDSLayout(root)
-run_files = layout.get(extension=".vhdr")
+run_files = get_all_vhdr_files(root)
 datatype = "ieeg"
 for run_file in run_files:
     entities = mne_bids.get_entities_from_fname(run_file)
@@ -111,20 +125,22 @@ for run_file in run_files:
             bids_scans_json = json.load(fin)
 
     # read the coords json
-    coords_fname = IDSPath(
+    coords_fname = BIDSPath(
         subject=bidspath.subject,
         session=bidspath.session,
         suffix="coordsystem",
         extension=".json",
         root=bidspath.root,
+        space=entities['space'],
+        datatype=datatype
     ).fpath
     with open(coords_fname, "r", encoding="utf-8-sig") as fin:
         bids_coords_json = json.load(fin)
 
     # now create an output json file will all this meta data
     bidsdict = dict()
-    bidsdict["inputdata_location"] = run_file.path
-    bidsdict["inputdata_fname"] = run_file.filename
+    bidsdict["inputdata_location"] = run_file
+    bidsdict["inputdata_fname"] = os.path.basename(run_file)
     bidsdict["entities"] = entities
     bidsdict["participants"] = bids_participants
     bidsdict["scans_tsv"] = bids_scans
