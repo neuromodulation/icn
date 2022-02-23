@@ -71,11 +71,10 @@ for run_file in run_files:
         extension=".tsv",
         root=bidspath.root,
     ).fpath
-    if electrodes_fname.exists():
-        electrodes_tsv = _from_tsv(electrodes_fname)
-        bids_electrodes = dict()
-        for col_name, value in electrodes_tsv.items():
-            bids_electrodes[col_name] = value
+    electrodes_tsv = _from_tsv(electrodes_fname)
+    bids_electrodes = dict()
+    for col_name, value in electrodes_tsv.items():
+        bids_electrodes[col_name] = value
 
     # read the channels tsv
     channels_fname = BIDSPath(
@@ -111,17 +110,30 @@ for run_file in run_files:
         with open(scans_json_fname, "r", encoding="utf-8-sig") as fin:
             bids_scans_json = json.load(fin)
 
+    # read the coords json
+    coords_fname = IDSPath(
+        subject=bidspath.subject,
+        session=bidspath.session,
+        suffix="coordsystem",
+        extension=".json",
+        root=bidspath.root,
+    ).fpath
+    with open(coords_fname, "r", encoding="utf-8-sig") as fin:
+        bids_coords_json = json.load(fin)
+
     # now create an output json file will all this meta data
     bidsdict = dict()
     bidsdict["inputdata_location"] = run_file.path
     bidsdict["inputdata_fname"] = run_file.filename
-    bidsdict["participants_tsv"] = bids_participants
+    bidsdict["entities"] = entities
+    bidsdict["participants"] = bids_participants
     bidsdict["scans_tsv"] = bids_scans
     bidsdict["scans_json"] = bids_scans_json
     bidsdict["channels_tsv"] = bids_channels
     bidsdict["electrodes_tsv"] = bids_electrodes
-    bidsdict["sidecare_json"] = bids_sidecar_json
-    bidsdict["entities"] = entities
+    bidsdict["coord_json"] = bids_coords_json
+    bidsdict["ieeg"] = bids_sidecar_json
+
 
     json_writeout = bidspath.basename + ".json"
 

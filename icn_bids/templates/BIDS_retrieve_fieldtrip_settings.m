@@ -22,21 +22,18 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         return
     end
 
-    
-    
-
     %% assign all variables to the cfg
-    DBS_target = intern_cfg.DBS_target; % explicit re-assign can remain here for the moment
+    DBS_target = intern_cfg.participants.DBS_target; % explicit re-assign can remain here for the moment
     %DBS_target = 'STN';
-    %DBS_target = "VIM";
-    %DBS_target = "GPI";
+    %DBS_target = 'VIM';
+    %DBS_target = 'GPI';
 
-    DBS_hemispheres = intern_cfg.DBS_hemispheres;
-    if strcmp(DBS_hemispheres, 'left')
+    DBS_hemisphere = intern_cfg.participants.DBS_hemisphere;
+    if strcmp(DBS_hemisphere, 'left')
         DBS_hemispheres = {'L'};
-    elseif strcmp(DBS_hemispheres, 'right')
+    elseif strcmp(DBS_hemisphere, 'right')
         DBS_hemispheres = {'R'};
-    elseif strcmp(DBS_hemispheres, 'bilateral')
+    elseif strcmp(DBS_hemisphere, 'bilateral')
         DBS_hemispheres = {'R', 'L'};
     end
     DBS_model=intern_cfg.DBS_model;
@@ -48,7 +45,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     %DBS_model = 'Abbott Directed Long'; %Abbott
     %DBS_model = 'Abbott Directed Short'; %Abbott
 
-    ECOG_target = intern_cfg.ECOG_target;
+    ECOG_target = intern_cfg.participants.ECOG_target;
     %ECOG_target = 'SMC'; % Sensorimotor Cortex
     if strcmp(ECOG_target, 'SMC')
         ECOG_target_long = 'sensorimotor cortex';
@@ -56,20 +53,29 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         error('ECOG target not found, please specify a valid target.')
     end
 
-    if ~isfield(intern_cfg,'ECOG_hemisphere')
-        intern_cfg.ECOG_hemisphere=false;
+    if ~isfield(intern_cfg.participants,'ECOG_hemisphere')
+        intern_cfg.participants.ECOG_hemisphere=false;
     else
-        ECOG_hemisphere=intern_cfg.ECOG_hemisphere;
+        ECOG_hemisphere=intern_cfg.participants.ECOG_hemisphere;
+        if strcmp(ECOG_hemisphere, 'left')
+            ECOG_hemispheres = {'L'};
+        elseif strcmp(ECOG_hemisphere, 'right')
+            ECOG_hemispheres = {'R'};
+        elseif strcmp(ECOG_hemisphere, 'bilateral')
+            ECOG_hemispheres = {'R', 'L'};
+        end
     end
-    %ECOG_hemisphere = 'R';
-    %ECOG_hemisphere = 'L';
+    %ECOG_hemisphere = 'left'
+    %ECOG_hemisphere = 'right'
+    %ECOG_hemispheres = {'R'};
+    %ECOG_hemispheres = {'L'};
 
-    ECOG_model=intern_cfg.ECOG_model;
+    ECOG_model=intern_cfg.participants.ECOG_model;
     %ECOG_model = 'TS06R-AP10X-0W6'; % manufacturer: Ad-Tech
-    %ECOG_model ='DS12A-SP10X-000'; % manufacturer: Ad-Tech
+    %ECOG_model = 'DS12A-SP10X-000'; % manufacturer: Ad-Tech
 
-
-    hardware_manufacturer   = 'TMSi';
+    
+    
 
     % Handle DBS lead model
 
@@ -122,6 +128,13 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         DBS_description        = '8-contact, 4-level, directional DBS lead. 0.5 mm spacing.';
         DBS_material           = 'platinum/iridium';
         DBS_directional        = 'yes';
+    elseif strcmp(DBS_model, 'n/a')
+        DBS_contacts           = intern_cfg.participants.DBS_contacts;
+        DBS_manufacturer       = intern_cfg.participants.DBS_manufacturer;
+        DBS_manufacturer_short = "MT";
+        DBS_description        = intern_cfg.participants.DBS_description;
+        DBS_material           = intern_cfg.participants.DBS_material;
+        DBS_directional        = intern_cfg.participants.DBS_directional;
     else
         error('DBS model not found, please specify a valid DBS lead.')
     end
@@ -139,32 +152,35 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     % Handle ECOG electrode model
     if strcmp(ECOG_model, 'TS06R-AP10X-0W6')
         ECOG_contacts              = 6;
-        ECOG_manufacturer_short    = "AT";
+        ECOG_manufacturer_short    = 'AT';
         ECOG_manufacturer          = 'Ad-Tech';
         ECOG_location              = 'subdural';
         ECOG_material              = 'platinum';
         ECOG_description           = '6-contact, 1x6 narrow-body long term monitoring strip. Platinum contacts, 10mm spacing, contact size 4.0 mm diameter/1.8 mm exposure.';
     elseif strcmp(ECOG_model, 'DS12A-SP10X-000')
         ECOG_contacts              = 12;
-        ECOG_manufacturer_short    = "AT";
+        ECOG_manufacturer_short    = 'AT';
         ECOG_manufacturer          = 'Ad-Tech';
         ECOG_location              = 'subdural';
         ECOG_material              = 'platinum';
         ECOG_description           = '12-contact, 1x6 dual sided long term monitoring strip. Platinum contacts, 10mm spacing, contact size 4.0 mm diameter/2.3 mm exposure. Platinum marker.';
-
     else
         error('ECOG model not found, please specify a valid ECOG electrode.')
     end
 
     chs_ECOG = cell(ECOG_contacts,1);
-    for ind = 1:ECOG_contacts
-        items = ["ECOG", ECOG_hemisphere, string(ind), ECOG_target, ECOG_manufacturer_short];
-        ch_name = join(items, '_');
-        chs_ECOG{ind} = ch_name{1};
+    for i = 1:length(ECOG_hemispheres)
+        hemisphere = ECOG_hemispheres{i};
+        for ind = 1:ECOG_contacts
+            items = ["ECOG", hemisphere, string(ind), ECOG_target, ECOG_manufacturer_short];
+            ch_name = join(items, '_');
+            chs_ECOG{ind} = ch_name{1};
+        end
     end
-
-    chs_final = [chs_DBS; chs_ECOG; intern_cfg.chs_other];
     
+    %TO DO need to be defined in python notebook
+    %chs_final = [chs_DBS; chs_ECOG; intern_cfg.chs_other];
+    chs_final = intern_cfg.channels_tsv.name;
     
     if strcmp(DBS_directional, 'yes')
         directional = 'directional';
@@ -196,7 +212,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     end
 
    intern_cfg.data.hdr.chantype   = chantype;
-    intern_cfg.data.hdr.chanunit   = repmat({'uV'}, intern_cfg.data.hdr.nChans,1);
+   intern_cfg.data.hdr.chanunit   = repmat({'uV'}, intern_cfg.data.hdr.nChans,1);
         
         
     if strcmp(method , 'update_channels')
@@ -205,24 +221,24 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     end
 
     
-    %% Note which channels were bad and why
-    %bad = {'LFP_L_7_STN_MT' 'LFP_L_8_STN_MT' 'LFP_L_9_STN_MT' 'LFP_L_16_STN_MT' 'LFP_R_7_STN_MT' 'LFP_R_8_STN_MT' 'LFP_R_9_STN_MT'};
-    %why = {'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Reference electrode' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact'};
-%     bad ={'LFP_L_8_STN_MT'};
-%     why = {'Reference electrode'};
-    bad = intern_cfg.bad;
-    why = intern_cfg.why;
-    iEEGRef = intern_cfg.iEEGRef;
-    %iEEGRef = 'LFP_L_8_STN_BS'; % what is the reference contact?
-
-    bads = repmat({'good'},intern_cfg.data.hdr.nChans,1);
-    bads_descr = repmat({'n/a'},intern_cfg.data.hdr.nChans,1);
-    for k=1:length(chs_final)
-        if ismember(chs_final{k}, bad)
-            bads{k} = 'bad';
-            bads_descr{k} = why{find(strcmp(bad,chs_final{k}))};
-        end
-    end
+%     %% Note which channels were bad and why
+%     %bad = {'LFP_L_7_STN_MT' 'LFP_L_8_STN_MT' 'LFP_L_9_STN_MT' 'LFP_L_16_STN_MT' 'LFP_R_7_STN_MT' 'LFP_R_8_STN_MT' 'LFP_R_9_STN_MT'};
+%     %why = {'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Reference electrode' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact'};
+%     %     bad ={'LFP_L_8_STN_MT'};
+%     %     why = {'Reference electrode'};
+%     bad = intern_cfg.bad;
+%     why = intern_cfg.why;
+%     iEEGRef = intern_cfg.iEEGRef;
+%     %iEEGRef = 'LFP_L_8_STN_BS'; % what is the reference contact?
+% 
+%     bads = repmat({'good'},intern_cfg.data.hdr.nChans,1);
+%     bads_descr = repmat({'n/a'},intern_cfg.data.hdr.nChans,1);
+%     for k=1:length(chs_final)
+%         if ismember(chs_final{k}, bad)
+%             bads{k} = 'bad';
+%             bads_descr{k} = why{find(strcmp(bad,chs_final{k}))};
+%         end
+%     end
 
     %% Initalize containers for BIDS conversion
     keySet = {'Rest', 'UPDRSIII', 'SelfpacedRotationL','SelfpacedRotationR',...
@@ -275,12 +291,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.method                  = 'convert';
     cfg.bidsroot                = intern_cfg.rawdata_root;
     cfg.datatype                = 'ieeg';
-    cfg.sub                     = intern_cfg.subject;%'009';
-    cfg.ses                     = intern_cfg.session;
+    cfg.sub                     = intern_cfg.entities.subject;%'009';
+    cfg.ses                     = intern_cfg.entities.session;
     cfg.task                    = intern_cfg.task;
-    cfg.acq                     = intern_cfg.acquisition; %'StimOff01';  % add here 'Dopa00' during dyskinesia-protocol recording: e.g. 'StimOff01Dopa30'. (Dyskinesia-protocol recordings start at the intake of an higher than normal Levodopa-dosage, and will always be labeled MedOn)
-    cfg.run                     = intern_cfg.run;
-    cfg.space                   = intern_cfg.space; %'MNI152NLin2009bAsym';
+    cfg.acq                     = intern_cfg.entities.acquisition; %'StimOff01';  % add here 'Dopa00' during dyskinesia-protocol recording: e.g. 'StimOff01Dopa30'. (Dyskinesia-protocol recordings start at the intake of an higher than normal Levodopa-dosage, and will always be labeled MedOn)
+    cfg.run                     = intern_cfg.entities.run;
+    cfg.space                   = intern_cfg.entities.space; %'MNI152NLin2009bAsym';
 
     % Provide info for the scans.tsv file
     % the acquisition time could be found in the folder name of the recording
@@ -310,7 +326,13 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.Instructions            = intern_cfg.task_instructions ;%task_instr(cfg.task);
 
     % Provide info about recording hardware
-
+    if isfield(intern_cfg.ieeg,'Manufacturer')
+        hardware_manufacturer = intern_cfg.ieeg.Manufacturer;
+    else
+        error('Please define a valid hardware manufacturer')
+    end
+    
+    % NEED HELP FROM RICHARD here
     if strcmp(hardware_manufacturer,'TMSi')
         cfg.Manufacturer                = 'Twente Medical Systems International B.V. (TMSi)';
         cfg.ManufacturersModelName      = 'Saga 64+';
@@ -323,8 +345,19 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         Hardware_Filters.Anti_AliasFilter.Low_Pass.BipolarChannels      = 2100;
         Hardware_Filters.Anti_AliasFilter.Low_Pass.AuxiliaryChannels    = 2100;
         Hardware_Filters.AnalogueBandwidth = 800;
-    %elseif strcmp(hardware_manufacturer,'Alpha Omega')
-    %elseif strcmp(hardware_manufacturer,'Newronika')
+        cfg.ieeg.SoftwareFilters        = 'no additional filters'; %MUST
+        cfg.ieeg.HardwareFilters        = Hardware_Filters; %Recommended
+    elseif strcmp(hardware_manufacturer,'Alpha Omega')
+    elseif strcmp(hardware_manufacturer,'Newronika')
+    elseif strcmp(hardware_manufacturer,'Brain Products GmbH')
+        cfg.Manufacturer                = 'Brain Products GmbH';
+        cfg.ManufacturersModelName      = 'n/a';
+        cfg.SoftwareVersions            = 'n/a';
+        cfg.DeviceSerialNumber          = 'n/a';
+        cfg.channels.low_cutoff         = repmat({'0'},intern_cfg.data.hdr.nChans,1);
+        cfg.channels.high_cutoff        = repmat({'n/a'},intern_cfg.data.hdr.nChans,1);
+        cfg.ieeg.SoftwareFilters        = 'n/a'; %MUST
+        cfg.ieeg.HardwareFilters        = 'n/a'; %Recommended
     else
         error('Please define a valid hardware manufacturer')
     end
@@ -342,6 +375,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.participants.symptom_dominant_side  = intern_cfg.symptom_dominant_side;% 'right'; %LFP excel sheet
     cfg.participants.LEDD                   = intern_cfg.LEDD; %1600; %calculated from lab book with https://www.parkinsonsmeasurement.org/toolBox/levodopaEquivalentDose.htm
     cfg.participants.DBS_target                 = DBS_target;
+    cfg.participants.DBS_hemisphere             = DBS_hemisphere;
     cfg.participants.DBS_manufacturer           = DBS_manufacturer;
     cfg.participants.DBS_model                  = DBS_model;
     cfg.participants.DBS_directional            = DBS_directional;
@@ -350,12 +384,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
 
     % Info about the ECOG electrode
     cfg.participants.ECOG_target                = ECOG_target_long;
-    
-    if strcmp('R', ECOG_hemisphere)
-        cfg.participants.ECOG_hemisphere            = 'right';
-    else
-        cfg.participants.ECOG_hemisphere            = 'left';
-    end
+    cfg.participants.ECOG_hemisphere            = ECOG_hemisphere;
     cfg.participants.ECOG_manufacturer          = ECOG_manufacturer;
     cfg.participants.ECOG_model                 = ECOG_model;
     cfg.participants.ECOG_location              = ECOG_location;
@@ -363,10 +392,6 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.participants.ECOG_contacts              = ECOG_contacts;
     cfg.participants.ECOG_description           = ECOG_description;
     
-
-    
-
-
     % Provide info for the coordsystem.json file
     % remains always the same in berlin
     cfg.coordsystem.IntendedFor                         = "n/a"; % OPTIONAL. Path or list of path relative to the subject subfolder pointing to the structural MRI, possibly of different types if a list is specified, to be used with the MEG recording. The path(s) need(s) to use forward slashes instead of backward slashes (e.g. "ses-<label>/anat/sub-01_T1w.nii.gz").
@@ -377,99 +402,133 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.coordsystem.iEEGCoordinateProcessingReference	= "Horn, A., Li, N., Dembek, T. A., Kappel, A., Boulay, C., Ewert, S., et al. (2018). Lead-DBS v2: Towards a comprehensive pipeline for deep brain stimulation imaging. NeuroImage."; % RECOMMENDED. A reference to a paper that defines in more detail the method used to localize the electrodes and to post-process the electrode positions. .
 
     % Provide columns in the electrodes.tsv
-
-    % REQUIRED. Name of the electrode
-    % need to build if for loop => what to do if the coordsys file already
-    % there is.
-    % here: on this place would the electrode localization file
-
-
-    % extract the channel names that contain LFP or ECOG
-    sens.label = chs_final(contains(string(chs_final),["LFP", "ECOG"]));
-
-    % Electrode positions are imported from external files (e.g. Lead-DBS
-    % ea_reconstruction.mat) and a sens FieldTrip struct is created 
-    % (see FT_DATATYPE_SENS)
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % To Do: -> for now fixed, if else statement fixed for models: Cartesia X and Sensight
-    % this is the channel position for medtronic
-    sens.chanpos = [
-        zeros(DBS_contacts, 3); ...
-        zeros(DBS_contacts, 3); ...
-        zeros(ECOG_contacts, 3)]; %what is this 12 refering to? I replaced it with n_ECOG_contact 
-    % this is for medtronic
-    if isfield(intern_cfg,'ECOG_localization')
-        sens.chanpos(DBS_contacts+DBS_contacts + 1 : end,1:3) = intern_cfg.ECOG_localization;
-    end
-    
-    % define size of single electrode contacts
-    % if 1 DBS contact per level: size=6; if 3 contacts per level: s=1.5
-    if isfield(cfg.participants.DBS_model(:,8),'SenSight')
-        cfg.electrodes.size = {
-            6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
-            6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
-            4.15 4.15 4.15 4.15 4.15 4.15}; %  ECoG contacts std 4.15
-    
-    elseif isfield(cfg.participants.DBS_model, 'Vercise Cartesia X')
-        cfg.electrodes.size = {
-            1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
-            1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
-            4.15 4.15 4.15 4.15 4.15 4.15 ...
-            };
-    end
-    % sens.chanpos = [
-    %     zeros(DBS_contacts, 3); ...
-    %     zeros(DBS_contacts, 3); ...
-    %     zeros(6, 3)]; %what is this 6 refering to?
-    sens.elecpos = sens.chanpos;
-    cfg.elec     = sens;
-    cfg.electrodes.name = sens.label;
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % RECOMMENDED. Material of the electrode, e.g., Tin, Ag/AgCl, Gold
-    cfg.electrodes.material     = [
-        repmat({DBS_material},DBS_contacts*2,1); 
-        repmat({ECOG_material}, ECOG_contacts ,1)];
-    cfg.electrodes.manufacturer = [
-        repmat({cfg.participants.DBS_manufacturer},DBS_contacts*2,1);
-        repmat({cfg.participants.ECOG_manufacturer},6,1)];
-    cfg.electrodes.group        = [
+    if isfield(intern_cfg, 'electrodes_tsv')
+        
+        cfg.electrodes.name         = intern_cfg.electrodes_tsv.name;
+        cfg.elec                    =  [intern_cfg.electrodes_tsv.x;intern_cfg.electrodes_tsv.y;intern_cfg.electrodes_tsv.z];
+        cfg.electrodes.size         = intern_cfg.electrodes_tsv.size;
+        cfg.electrodes.material     = intern_cfg.electrodes_tsv.material;
+        cfg.electrodes.manufacturer = intern_cfg.electrodes_tsv.manufacturer;
+        %cfg.electrodes.group -> need to overwrite
+        cfg.electrodes.hemisphere   = intern_cfg.electrodes_tsv.hemisphere;
+        cfg.electrodes.type         = intern_cfg.electrodes_tsv.type;
+        cfg.electrodes.impedance    = intern_cfg.electrodes_tsv.impedance;
+        cfg.electrodes.dimension    = intern_cfg.electrodes_tsv.dimension;
+        
+        cfg.electrodes.group        = [
         repmat({'DBS_right'},DBS_contacts,1);
         repmat({'DBS_left'},DBS_contacts,1);
         repmat({['ECOG_' cfg.participants.ECOG_hemisphere]},ECOG_contacts,1)];
-    cfg.electrodes.hemisphere   = [
-        repmat({'R'},DBS_contacts,1);
-        repmat({'L'},DBS_contacts,1);
-        repmat({ECOG_hemisphere},ECOG_contacts,1)];
-    % RECOMMENDED. Type of the electrode (e.g., cup, ring, clip-on, wire, needle)
-    cfg.electrodes.type         = [  
-        repmat({'depth'},DBS_contacts*2,1); %=> this is DBS
-        repmat({'strip'},ECOG_contacts,1)]; %=> this is the ECOG
+    else
+        
 
-    % RECOMMENDED. Impedance of the electrode in kOhm
-    cfg.electrodes.impedance    = repmat({'n/a'},length(sens.label),1);  
-    cfg.electrodes.dimension    = [  
-        repmat({sprintf('[1x%d]',DBS_contacts)},DBS_contacts*2,1);
-        repmat({sprintf('[1x%d]',ECOG_contacts)},ECOG_contacts,1)];
+
+
+
+
+        % REQUIRED. Name of the electrode
+        % need to build if for loop => what to do if the coordsys file already
+        % there is.
+        % here: on this place would the electrode localization file
+
+
+        % extract the channel names that contain LFP or ECOG
+        sens.label = chs_final(contains(string(chs_final),["LFP", "ECOG"]));
+
+        % Electrode positions are imported from external files (e.g. Lead-DBS
+        % ea_reconstruction.mat) and a sens FieldTrip struct is created 
+        % (see FT_DATATYPE_SENS)
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % To Do: -> for now fixed, if else statement fixed for models: Cartesia X and Sensight
+        % this is the channel position for medtronic
+        sens.chanpos = [
+            zeros(DBS_contacts, 3); ...
+            zeros(DBS_contacts, 3); ...
+            zeros(ECOG_contacts, 3)]; %what is this 12 refering to? I replaced it with n_ECOG_contact 
+        % this is for medtronic
+        if isfield(intern_cfg,'ECOG_localization')
+            sens.chanpos(DBS_contacts+DBS_contacts + 1 : end,1:3) = intern_cfg.ECOG_localization;
+        end
+
+        % define size of single electrode contacts
+        % if 1 DBS contact per level: size=6; if 3 contacts per level: s=1.5
+        if isfield(cfg.participants.DBS_model(:,8),'SenSight')
+            cfg.electrodes.size = {
+                6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+                6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+                4.15 4.15 4.15 4.15 4.15 4.15}; %  ECoG contacts std 4.15
+
+        elseif isfield(cfg.participants.DBS_model, 'Vercise Cartesia X')
+            cfg.electrodes.size = {
+                1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+                1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+                4.15 4.15 4.15 4.15 4.15 4.15 ...
+                };
+        end
+        % sens.chanpos = [
+        %     zeros(DBS_contacts, 3); ...
+        %     zeros(DBS_contacts, 3); ...
+        %     zeros(6, 3)]; %what is this 6 refering to?
+        sens.elecpos = sens.chanpos;
+        cfg.elec     = sens;
+        cfg.electrodes.name = sens.label;
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % RECOMMENDED. Material of the electrode, e.g., Tin, Ag/AgCl, Gold
+        cfg.electrodes.material     = [
+            repmat({DBS_material},DBS_contacts*2,1); 
+            repmat({ECOG_material}, ECOG_contacts ,1)];
+        cfg.electrodes.manufacturer = [
+            repmat({cfg.participants.DBS_manufacturer},DBS_contacts*2,1);
+            repmat({cfg.participants.ECOG_manufacturer},6,1)];
+        cfg.electrodes.group        = [
+            repmat({'DBS_right'},DBS_contacts,1);
+            repmat({'DBS_left'},DBS_contacts,1);
+            repmat({['ECOG_' cfg.participants.ECOG_hemisphere]},ECOG_contacts,1)];
+        cfg.electrodes.hemisphere   = [
+            repmat({'R'},DBS_contacts,1);
+            repmat({'L'},DBS_contacts,1);
+            repmat({ECOG_hemisphere},ECOG_contacts,1)];
+        % RECOMMENDED. Type of the electrode (e.g., cup, ring, clip-on, wire, needle)
+        cfg.electrodes.type         = [  
+            repmat({'depth'},DBS_contacts*2,1); %=> this is DBS
+            repmat({'strip'},ECOG_contacts,1)]; %=> this is the ECOG
+
+        % RECOMMENDED. Impedance of the electrode in kOhm
+        cfg.electrodes.impedance    = repmat({'n/a'},length(sens.label),1);  
+        cfg.electrodes.dimension    = [  
+            repmat({sprintf('[1x%d]',DBS_contacts)},DBS_contacts*2,1);
+            repmat({sprintf('[1x%d]',ECOG_contacts)},ECOG_contacts,1)];
+    end
 
     % Provide special channel info
+    if isfield(intern_cfg,'channels_tsv')
+        cfg.ieeg.iEEGReference = intern_cfg.ieeg.iEEGReference;
+        cfg.channels.reference          = intern_cfg.channel_tsv.reference;
+        cfg.channels.status             = intern_cfg.channel_tsv.status;
+        cfg.channels.status_description = intern_cfg.channel_tsv.status_description;
+    else
+    
+        % Reference channels
+        cfg.ieeg.iEEGReference = iEEGRef;
+        typeSet = {'EEG', 'ECOG', 'DBS', 'SEEG', 'EMG', 'ECG', 'MISC'};
+        refSet = {iEEGRef, iEEGRef, iEEGRef, iEEGRef, 'bipolar', 'bipolar', 'n/a'};
+        ref_map = containers.Map(typeSet,refSet);
+        cfg.channels.reference = arrayfun(@(ch_type) {ref_map(ch_type{1})}, chantype);
+        cfg.channels.status             = bads;
+        cfg.channels.status_description = bads_descr;
+    end
+    
+    % settings that al always applicable
     cfg.channels.name               = chs_final;
     cfg.channels.type               = chantype;
+    
+    % always notch filter on n/a
+    cfg.channels.notch              = n_a;
     cfg.channels.units              = intern_cfg.data.hdr.chanunit;
     sf = cell(length(chs_final),1);
     sf(:) = {intern_cfg.data.fsample};
     cfg.channels.sampling_frequency = sf;
-    %cfg.channels.description       = ft_getopt(cfg.channels, 'description'        , nan);  % OPTIONAL. Brief free-text description of the channel, or other information of interest. See examples below.
-
-    % Reference channels
-
-    cfg.ieeg.iEEGReference = iEEGRef;
-    typeSet = {'EEG', 'ECOG', 'DBS', 'SEEG', 'EMG', 'ECG', 'MISC'};
-    refSet = {iEEGRef, iEEGRef, iEEGRef, iEEGRef, 'bipolar', 'bipolar', 'n/a'};
-    ref_map = containers.Map(typeSet,refSet);
-    cfg.channels.reference = arrayfun(@(ch_type) {ref_map(ch_type{1})}, chantype);
-    % always notch filter on n/a
-    cfg.channels.notch              = n_a;
 
     cfg.channels.group              = n_a;
     cfg.channels.group(startsWith(cfg.channels.name, 'LFP_R')) = {'DBS_right'};
@@ -499,25 +558,23 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.channels.description(startsWith(cfg.channels.name, 'ANALOG_R_ROTA')) = {'Rotameter'};
 
 
-    cfg.channels.status             = bads;
-    cfg.channels.status_description = bads_descr;
+    
 
     % these are iEEG specific
     cfg.ieeg.PowerLineFrequency     = 50;   % since recorded in the Europe
     cfg.ieeg.iEEGGround             = 'Right shoulder patch';
     % this is to be specified for each model
-    cfg.ieeg.iEEGPlacementScheme    = 'Left subdural cortical strip and bilateral subthalamic nucleus (STN) deep brain stimulation (DBS) leads.';
+    format_groups = '%s subdural cortical strip and %s %s deep brain stimulation (DBS) leads.';
 
+    %cfg.ieeg.iEEGPlacementScheme    = 'Left subdural cortical strip and bilateral subthalamic nucleus (STN) deep brain stimulation (DBS) leads.';
+    cfg.ieeg.iEEGPlacementScheme =sprintf(format_groups,cfg.participants.ECOG_hemisphere, cfg.participants.DBS_hemisphere, intern_cfg.participants.DBS_target);
     format_groups = 'ECOG_%s: %d-contact, 1x%d dual-sided long-term monitoring %s strip on %s. DBS_left: 1x%d %s %s DBS lead in left %s, DBS_right: 1x%d %s %s DBS lead in right %s.';
     cfg.ieeg.iEEGElectrodeGroups = sprintf(format_groups, cfg.participants.ECOG_hemisphere, ECOG_contacts, ECOG_contacts, ECOG_manufacturer, ECOG_target_long,...
         DBS_contacts,  DBS_manufacturer, DBS_model, DBS_target,...
         DBS_contacts,  DBS_manufacturer, DBS_model, DBS_target );
     % cfg.ieeg.iEEGElectrodeGroups    = 'ECOG_strip: 6-contact, 1x6 dual sided long term monitoring AdTech strip on left sensorimotor cortex, DBS_left: 1x16 Boston Scientific directional DBS lead (Cartesia X) in left STN, DBS_right: 1x16 Boston Scientific directional DBS lead (Cartesia X) in right STN.';
     
-    % To Do: Software filters => need to check which were used
-    % eg. {"Anti-aliasing filter": {"half-amplitude cutoff (Hz)": 500, "Roll-off": "6dB/Octave"}}.
-    cfg.ieeg.SoftwareFilters        = 'no additional filters'; %MUST
-    cfg.ieeg.HardwareFilters        = Hardware_Filters; %Recommended
+    
     cfg.ieeg.RecordingType          = 'continuous';
     if contains(cfg.acq, 'On')
         cfg.ieeg.ElectricalStimulation  = true;
@@ -525,83 +582,100 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         cfg.ieeg.ElectricalStimulation  = false;
     end
     if cfg.ieeg.ElectricalStimulation
-        % Enter EXPERIMENTAL stimulation settings
-        % these need to be written in the lab book
-        exp.DateOfSetting           = intern_cfg.stim.DateOfSetting; %"2021-11-11"
-        exp.StimulationTarget       = DBS_target;
-        exp.StimulationMode         = "continuous";
-        exp.StimulationParadigm     = "continuous stimulation";
-        exp.SimulationMontage       = "monopolar";
-        L.AnodalContact             = "Ground";
-        L.CathodalContact           = intern_cfg.stim.L.CathodalContact;
-        L.AnodalContactDirection      = "none";
-        L.CathodalContactDirection    = "omni";
-        L.CathodalContactImpedance    = "n/a";
-        L.StimulationAmplitude        = intern_cfg.stim.L.StimulationAmplitude;
-        L.StimulationPulseWidth       = 60;
-        L.StimulationFrequency        = intern_cfg.stim.L.StimulationFrequency;
-        L.InitialPulseShape           = "rectangular";
-        L.InitialPulseWidth           = 60;
-        L.InitialPulseAmplitude       = -1.0*L.StimulationAmplitude;
-        L.InterPulseDelay             = 0;
-        L.SecondPulseShape            = "rectangular";
-        L.SecondPulseWidth            = 60;
-        L.SecondPulseAmplitude        = L.StimulationAmplitude;
-        L.PostPulseInterval           = "n/a";
-        exp.Left                    = L;
-        R.AnodalContact             = "Ground";
-        R.CathodalContact           = intern_cfg.stim.R.CathodalContact;
-        R.AnodalContactDirection      = "none";
-        R.CathodalContactDirection    = "omni";
-        R.CathodalContactImpedance    = "n/a";
-        R.StimulationAmplitude        = intern_cfg.stim.R.StimulationAmplitude;
-        R.StimulationPulseWidth       = 60;
-        R.StimulationFrequency        = intern_cfg.stim.R.StimulationFrequency;
-        R.InitialPulseShape           = "rectangular";
-        R.InitialPulseWidth           = 60;
-        R.InitialPulseAmplitude       = -1.0*R.StimulationAmplitude;
-        R.InterPulseDelay             = 0;
-        R.SecondPulseShape            = "rectangular";
-        R.SecondPulseWidth            = 60;
-        R.SecondPulseAmplitude        = R.StimulationAmplitude;
-        R.PostPulseInterval           = "n/a";
-        exp.Right                     = R;
+        if isfield(intern_cfg.ieeg,'ElectricalStimulationParameters')
+            cfg.ieeg.ElectricalStimulationParameters = intern_cfg.ieeg.ElectricalStimulationParameters;
+        else
+            % Enter EXPERIMENTAL stimulation settings
+            % these need to be written in the lab book
+            exp.DateOfSetting             = intern_cfg.stim.DateOfSetting; %"2021-11-11"
+            exp.StimulationTarget         = DBS_target;
+            exp.StimulationMode           = "continuous";
+            exp.StimulationParadigm       = "continuous stimulation";
+            exp.SimulationMontage         = "monopolar";
+            L.AnodalContact               = "Ground";
+            L.CathodalContact             = intern_cfg.stim.L.CathodalContact;
+            L.AnodalContactDirection      = "none";
+            L.CathodalContactDirection    = "omni";
+            L.CathodalContactImpedance    = "n/a";
+            L.StimulationAmplitude        = intern_cfg.stim.L.StimulationAmplitude;
+            L.StimulationPulseWidth       = 60;
+            L.StimulationFrequency        = intern_cfg.stim.L.StimulationFrequency;
+            L.InitialPulseShape           = "rectangular";
+            L.InitialPulseWidth           = 60;
+            L.InitialPulseAmplitude       = -1.0*L.StimulationAmplitude;
+            L.InterPulseDelay             = 0;
+            L.SecondPulseShape            = "rectangular";
+            L.SecondPulseWidth            = 60;
+            L.SecondPulseAmplitude        = L.StimulationAmplitude;
+            L.PostPulseInterval           = "n/a";
+            exp.Left                      = L;
+            R.AnodalContact               = "Ground";
+            R.CathodalContact             = intern_cfg.stim.R.CathodalContact;
+            R.AnodalContactDirection      = "none";
+            R.CathodalContactDirection    = "omni";
+            R.CathodalContactImpedance    = "n/a";
+            R.StimulationAmplitude        = intern_cfg.stim.R.StimulationAmplitude;
+            R.StimulationPulseWidth       = 60;
+            R.StimulationFrequency        = intern_cfg.stim.R.StimulationFrequency;
+            R.InitialPulseShape           = "rectangular";
+            R.InitialPulseWidth           = 60;
+            R.InitialPulseAmplitude       = -1.0*R.StimulationAmplitude;
+            R.InterPulseDelay             = 0;
+            R.SecondPulseShape            = "rectangular";
+            R.SecondPulseWidth            = 60;
+            R.SecondPulseAmplitude        = R.StimulationAmplitude;
+            R.PostPulseInterval           = "n/a";
+            exp.Right                     = R;
 
-        % Enter CLINICAL stimulation settings (are here equal to
-        % stimsettings)
-%         clin.DateOfSetting           = intern_cfg.stim.DateOfSetting;
-%         clin.StimulationTarget       = DBS_target;
-%         clin.StimulationMode         = "continuous";
-%         clin.StimulationParadigm     = "continuous stimulation";
-%         clin.SimulationMontage       = "monopolar";
-% %         clear L R;
-% %         L                           = "OFF";
-%         clin.Left                    = L;
-% %         R.AnodalContact             = "G";
-% %         R.CathodalContact           = "2, 3 and 4";
-% %         R.AnodalContactDirection      = "none";
-% %         R.CathodalContactDirection    = "omni";
-% %         R.CathodalContactImpedance    = "n/a";
-% %         R.StimulationAmplitude        = 1.5;
-% %         R.StimulationPulseWidth       = 60;
-% %         R.StimulationFrequency        = 130;
-% %         R.InitialPulseShape           = "rectangular";
-% %         R.InitialPulseWidth           = 60;
-% %         R.InitialPulseAmplitude       = -1.5;
-% %         R.InterPulseDelay             = 0;
-% %         R.SecondPulseShape            = "rectangular";
-% %         R.SecondPulseWidth            = 60;
-% %         R.SecondPulseAmplitude        = 1.5;
-% %         R.PostPulseInterval           = "n/a";
-%         clin.Right                    = R;
+            % Enter CLINICAL stimulation settings (are here equal to
+            % stimsettings)
+    %         clin.DateOfSetting           = intern_cfg.stim.DateOfSetting;
+    %         clin.StimulationTarget       = DBS_target;
+    %         clin.StimulationMode         = "continuous";
+    %         clin.StimulationParadigm     = "continuous stimulation";
+    %         clin.SimulationMontage       = "monopolar";
+    % %         clear L R;
+    % %         L                           = "OFF";
+    %         clin.Left                    = L;
+    % %         R.AnodalContact             = "G";
+    % %         R.CathodalContact           = "2, 3 and 4";
+    % %         R.AnodalContactDirection      = "none";
+    % %         R.CathodalContactDirection    = "omni";
+    % %         R.CathodalContactImpedance    = "n/a";
+    % %         R.StimulationAmplitude        = 1.5;
+    % %         R.StimulationPulseWidth       = 60;
+    % %         R.StimulationFrequency        = 130;
+    % %         R.InitialPulseShape           = "rectangular";
+    % %         R.InitialPulseWidth           = 60;
+    % %         R.InitialPulseAmplitude       = -1.5;
+    % %         R.InterPulseDelay             = 0;
+    % %         R.SecondPulseShape            = "rectangular";
+    % %         R.SecondPulseWidth            = 60;
+    % %         R.SecondPulseAmplitude        = 1.5;
+    % %         R.PostPulseInterval           = "n/a";
+    %         clin.Right                    = R;
 
-        param.BestClinicalSetting                = "Berlin parameter preset";
-        param.CurrentExperimentalSetting         = exp;
-        cfg.ieeg.ElectricalStimulationParameters = param;
+            param.BestClinicalSetting                = "Berlin parameter preset";
+            param.CurrentExperimentalSetting         = exp;
+            cfg.ieeg.ElectricalStimulationParameters = param;
+        end
     end
-
-
-
+    
+    
+    
+    scans_json_fname = sprintf('sub-%s_ses-%s_scans.json',cfg.sub,cfg.ses);
+    
+    scans_json.acq_time.Description         = "date of acquistion in the format YYYY-MM-DDThh:mm:ss";
+    scans_json.acq_time.Units               = "datetime";
+    scans_json.acq_time.TermURL             = "https://tools.ietf.org/html/rfc3339#section-5.6";
+    scans_json.medication_sate.Description  = "state of medication during recording";
+    scans_json.medication_sate.Levels.OFF   = "OFF parkinsonian medication";
+    scans_json.medication_sate.Levels.ON    = "ON parkinsonian medication";
+    scans_json.UPDRS_III.Description        = "Score of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.";
+    scans_json.UPDRS_III.TermURL            = "https://doi.org/10.1002/mds.10473";
+    
+    
+    savejson('',scans_json,fullfile(cfg.bidsroot,cfg.subject,cfg.session,scans_json_fname))
 
 
 end
