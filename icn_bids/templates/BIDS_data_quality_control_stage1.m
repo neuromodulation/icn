@@ -95,7 +95,7 @@ intern_cfg.chs_other = {
         'ACC_L_X_D2_TM'
         'ACC_L_Y_D2_TM'
         'ACC_L_Z_D2_TM'
-        %'ANALOG_R_ROTA_CH'
+        'ANALOG_R_ROTA_CH'
         };
 method = 'update_channels';
 [cfg,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
