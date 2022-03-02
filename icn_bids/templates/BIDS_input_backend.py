@@ -6,11 +6,125 @@ from IPython.display import display
 # pip install ipyfilechooser
 from ipyfilechooser import FileChooser
 import os
-
 import json
 
+from TMSiSDK.file_readers import Poly5Reader
+import numpy as np
+import mne
+
+# download from https://gitlab.com/tmsi/tmsi-python-interface/-/tree/main/TMSiSDK
+# and do pip install https://gitlab.com/tmsi/tmsi-python-interface/-/blob/main/requirements_Windows.txt
 style = {"description_width": "300px"}
 layout = {"width": "800px"}
+
+# initiate metadata dictionaries
+metadict = {}
+metadict['inputdata_location'] = str()
+metadict['inputdata_fname'] = str()
+metadict['entities'] = {}
+metadict['entities']['subject'] = str()
+metadict['entities']['session'] = str()
+metadict['entities']['task'] = str()
+metadict['entities']['acquisition'] = str()
+metadict['entities']['run'] = str()
+metadict['entities']['space'] = str()
+metadict['participants'] = {}
+metadict['participants']['participants_id'] = str()
+metadict['participants']['sex'] = str()
+metadict['participants']['handedness'] = str()
+metadict['participants']['age'] = str()
+metadict['participants']['date_of_implantation'] = str()
+metadict['participants']['UPDRS_III_preop_OFF'] = str()
+metadict['participants']['UPDRS_III_preop_ON'] = str()
+metadict['participants']['disease_duration'] = str()
+metadict['participants']['PD_subtype'] = str()
+metadict['participants']['symptom_dominant_side'] = str()
+metadict['participants']['LEDD'] = str()
+metadict['participants']['DBS_target'] = str()
+metadict['participants']['DBS_hemisphere'] = str()
+metadict['participants']['DBS_manufacturer'] = str()
+metadict['participants']['DBS_model'] = str()
+metadict['participants']['DBS_directional'] = str()
+metadict['participants']['DBS_contacts'] = str()
+metadict['participants']['DBS_description'] = str()
+metadict['participants']['ECOG_target'] = str()
+metadict['participants']['ECOG_hemisphere'] = str()
+metadict['participants']['ECOG_manufacturer'] = str()
+metadict['participants']['ECOG_model'] = str()
+metadict['participants']['ECOG_location'] = str()
+metadict['participants']['ECOG_material'] = str()
+metadict['participants']['ECOG_contacts'] = str()
+metadict['participants']['ECOG_description'] = str()
+metadict['scans_tsv'] = {}
+metadict['scans_tsv']['filename'] = str()
+metadict['scans_tsv']['acq_time'] = str()
+metadict['scans_tsv']['medication_state'] = str()
+metadict['scans_tsv']['UPDRS_III'] = str()
+metadict['scans_json'] = {}
+metadict['scans_json']['acq_time'] = {}
+metadict['scans_json']['medication_state'] = {}
+metadict['channels_tsv'] = {}
+metadict['channels_tsv']['name'] = []
+metadict['channels_tsv']['type'] = []
+metadict['channels_tsv']['units'] = []
+metadict['channels_tsv']['low_cutoff'] = []
+metadict['channels_tsv']['high_cutoff'] = []
+metadict['channels_tsv']['reference'] = []
+metadict['channels_tsv']['group'] = []
+metadict['channels_tsv']['sampling_frequency'] = []
+metadict['channels_tsv']['notch'] = []
+metadict['channels_tsv']['status'] = []
+metadict['channels_tsv']['status_description'] = []
+metadict['electrodes_tsv'] = {}
+metadict['electrodes_tsv']['name'] = []
+metadict['electrodes_tsv']['x'] = []
+metadict['electrodes_tsv']['y'] = []
+metadict['electrodes_tsv']['z'] = []
+metadict['electrodes_tsv']['size'] = []
+metadict['electrodes_tsv']['material'] = []
+metadict['electrodes_tsv']['manufacturer'] = []
+metadict['electrodes_tsv']['group'] = []
+metadict['electrodes_tsv']['hemisphere'] = []
+metadict['electrodes_tsv']['type'] = []
+metadict['electrodes_tsv']['impedance'] = []
+metadict['electrodes_tsv']['dimension'] = []
+metadict['coord_json'] = {}
+metadict['coord_json']['IntendedFor'] = str()
+metadict['coord_json']['iEEGCoordinateSystem'] = str()
+metadict['coord_json']['iEEGCoordinateUnits'] = str()
+metadict['coord_json']['iEEGCoordinateSystemDescription'] = str()
+metadict['coord_json']['iEEGCoordinateProcessingDescription'] = str()
+metadict['coord_json']['iEEGCoordinateProcessingReference'] = str()
+metadict['ieeg'] = {}
+metadict['ieeg']['DeviceSerialNumber'] = str()
+metadict['ieeg']['ECGChannelCount'] = int()
+metadict['ieeg']['ECOGChannelCount'] = int()
+metadict['ieeg']['EEGChannelCount'] = int()
+metadict['ieeg']['EMGChannelCount'] = int()
+metadict['ieeg']['EOGChannelCount'] = str()
+metadict['ieeg']['ElectricalStimulation'] = bool()
+metadict['ieeg']['HardwareFilters'] = str()
+metadict['ieeg']['InstitutionAddress'] = str()
+metadict['ieeg']['InstitutionName'] = str()
+metadict['ieeg']['Instructions'] = str()
+metadict['ieeg']['Manufacturer'] = str()
+metadict['ieeg']['ManufacturersModelName'] = str()
+metadict['ieeg']['MiscChannelCount'] = int()
+metadict['ieeg']['PowerLineFrequency'] = int()
+metadict['ieeg']['RecordingDuration'] = str()
+metadict['ieeg']['RecordingType'] = str()
+metadict['ieeg']['SEEGChannelCount'] = int()
+metadict['ieeg']['SamplingFrequency'] = float()
+metadict['ieeg']['SoftwareFilters'] = str()
+metadict['ieeg']['SoftwareVersions'] = str()
+metadict['ieeg']['TaskDescription'] = str()
+metadict['ieeg']['TaskName'] = str()
+metadict['ieeg']['TriggerChannelCount'] = int()
+metadict['ieeg']['iEEGElectrodeGroups'] = str()
+metadict['ieeg']['iEEGGround'] = str()
+metadict['ieeg']['iEEGPlacementScheme'] = str()
+metadict['ieeg']['iEEGReference'] = str()
+
 
 bids_subject = widgets.BoundedIntText(
     min=0, max=150, step=1, description="Subject nr:", style=style, layout=layout
@@ -395,40 +509,122 @@ def multiplefunctions(*args):
 
 def save_all_information(*args):
     # All the vars that I want to get start with bids_
-    bidsdict = {}
-    currentfile = []
-    prefix = "bids_"
-    sourcedict = globals().copy()
 
-    for v in sourcedict:
 
-        if v.startswith(prefix):
+    metadict['inputdata_location'] = bids_filechooser[-1].selected_path
+    metadict['inputdata_fname'] = bids_filechooser[-1].selected_filename
+    metadict['entities'] = {}
+    metadict['entities']['subject'] = str(bids_subject.value).zfill(3)
+    metadict['entities']['session'] = bids_session[-1].value
+    metadict['entities']['task'] = task_options[bids_task[-1].value][0]
+    metadict['entities']['acquisition'] = bids_acquisition[-1].value
+    metadict['entities']['run'] = bids_run[-1].value
+    metadict['entities']['space'] = bids_space[-1].value
+    metadict['participants'] = {}
+    metadict['participants']['participants_id'] = str()
+    metadict['participants']['sex'] = bids_sex.value
+    metadict['participants']['handedness'] = bids_handedness.value
+    metadict['participants']['age'] = bids_age.value
+    try:
+        bids_date_of_implantation = bids_date_of_implantation.value
+        bids_date_of_implantation = bids_date_of_implantation.strftime("%Y-%m-%dT00:00:00")
+    except:
+        bids_date_of_implantation = "unknown"
+    finally:
+        pass
+    metadict['participants']['date_of_implantation'] = bids_date_of_implantation
+    metadict['participants']['UPDRS_III_preop_OFF'] = str()
+    metadict['participants']['UPDRS_III_preop_ON'] = str()
+    metadict['participants']['disease_duration'] = bids_disease_duration.value
+    metadict['participants']['PD_subtype'] = bids_PD_subtype.value
+    metadict['participants']['symptom_dominant_side'] = bids_symptom_dominant_side.value
+    metadict['participants']['LEDD'] = bids_LEDD.value
+    metadict['participants']['DBS_target'] = bids_DBS_target.value
+    metadict['participants']['DBS_hemisphere'] = bids_DBS_hemispheres.value
+    metadict['participants']['DBS_manufacturer'] = str()
+    metadict['participants']['DBS_model'] = bids_DBS_model.value
+    metadict['participants']['DBS_directional'] = str()
+    metadict['participants']['DBS_contacts'] = str()
+    metadict['participants']['DBS_description'] = bids_DBS_description.value
+    metadict['participants']['ECOG_target'] = bids_ECOG_target.value
+    metadict['participants']['ECOG_hemisphere'] = bids_ECOG_hemisphere.value
+    metadict['participants']['ECOG_manufacturer'] = str()
+    metadict['participants']['ECOG_model'] = bids_ECOG_model.value
+    metadict['participants']['ECOG_location'] = str()
+    metadict['participants']['ECOG_material'] = str()
+    metadict['participants']['ECOG_contacts'] = str()
+    metadict['participants']['ECOG_description'] = bids_ECOG_description.value
+    metadict['scans_tsv'] = {}
+    metadict['scans_tsv']['filename'] = str()
+    metadict['scans_tsv']['acq_time'] = bids_time_of_acquisition[-1].value
+    metadict['scans_tsv']['medication_state'] = str()
+    metadict['scans_tsv']['UPDRS_III'] = bids_UPDRS_session[-1].value
+    metadict['scans_json'] = {}
+    metadict['scans_json']['acq_time'] = {}
+    metadict['scans_json']['medication_state'] = {}
+    metadict['channels_tsv']= {}
+    metadict['channels_tsv']['name'] = []
+    metadict['channels_tsv']['type'] = []
+    metadict['channels_tsv']['units'] = []
+    metadict['channels_tsv']['low_cutoff'] = []
+    metadict['channels_tsv']['high_cutoff'] = []
+    metadict['channels_tsv']['reference'] = []
+    metadict['channels_tsv']['group'] = []
+    metadict['channels_tsv']['sampling_frequency'] = []
+    metadict['channels_tsv']['notch'] = []
+    metadict['channels_tsv']['status'] = []
+    metadict['channels_tsv']['status_description'] = []
+    metadict['electrodes_tsv'] = {}
+    metadict['electrodes_tsv']['name'] = []
+    metadict['electrodes_tsv']['x'] = []
+    metadict['electrodes_tsv']['y'] = []
+    metadict['electrodes_tsv']['z'] = []
+    metadict['electrodes_tsv']['size'] = []
+    metadict['electrodes_tsv']['material'] = []
+    metadict['electrodes_tsv']['manufacturer'] = []
+    metadict['electrodes_tsv']['group'] = []
+    metadict['electrodes_tsv']['hemisphere'] = []
+    metadict['electrodes_tsv']['type'] = []
+    metadict['electrodes_tsv']['impedance'] = []
+    metadict['electrodes_tsv']['dimension'] = []
+    metadict['coord_json'] = {}
+    metadict['coord_json']['IntendedFor'] = str()
+    metadict['coord_json']['iEEGCoordinateSystem'] = str()
+    metadict['coord_json']['iEEGCoordinateUnits'] = str()
+    metadict['coord_json']['iEEGCoordinateSystemDescription'] = str()
+    metadict['coord_json']['iEEGCoordinateProcessingDescription'] = str()
+    metadict['coord_json']['iEEGCoordinateProcessingReference'] = str()
+    metadict['ieeg'] = {}
+    metadict['ieeg']['DeviceSerialNumber'] = str()
+    metadict['ieeg']['ECGChannelCount'] = int()
+    metadict['ieeg']['ECOGChannelCount'] = int()
+    metadict['ieeg']['EEGChannelCount'] = int()
+    metadict['ieeg']['EMGChannelCount'] = int()
+    metadict['ieeg']['EOGChannelCount'] = str()
+    metadict['ieeg']['ElectricalStimulation'] = bool()
+    metadict['ieeg']['HardwareFilters'] = str()
+    metadict['ieeg']['InstitutionAddress'] = str()
+    metadict['ieeg']['InstitutionName'] = str()
+    metadict['ieeg']['Instructions'] = bids_task_instructions[-1].value
+    metadict['ieeg']['Manufacturer'] = str()
+    metadict['ieeg']['ManufacturersModelName'] = str()
+    metadict['ieeg']['MiscChannelCount'] = int()
+    metadict['ieeg']['PowerLineFrequency'] = int()
+    metadict['ieeg']['RecordingDuration'] = str()
+    metadict['ieeg']['RecordingType'] = str()
+    metadict['ieeg']['SEEGChannelCount'] = int()
+    metadict['ieeg']['SamplingFrequency'] = float()
+    metadict['ieeg']['SoftwareFilters'] = str()
+    metadict['ieeg']['SoftwareVersions'] = str()
+    metadict['ieeg']['TaskDescription'] = str()
+    metadict['ieeg']['TaskName'] = str()
+    metadict['ieeg']['TriggerChannelCount'] = int()
+    metadict['ieeg']['iEEGElectrodeGroups'] = str()
+    metadict['ieeg']['iEEGGround'] = str()
+    metadict['ieeg']['iEEGPlacementScheme'] = str()
+    metadict['ieeg']['iEEGReference'] = str()
 
-            if v == "bids_filechooser":
-                with output2:
-
-                    print("saving to: %.json", sourcedict[v][-1].selected_filename)
-                val = sourcedict[v][-1].selected_filename
-                currentfile = val
-            elif v == "bids_date_of_implantation":
-                try:
-                    val = bids_date_of_implantation.value
-                    val = val.strftime("%Y-%m-%dT00:00:00")
-                except:
-                    val = "unknown"
-                finally:
-                    pass
-            elif v == "bids_task":
-                val = task_options[bids_task[-1].value][0]
-            elif v == "bids_subject":
-                val = str(bids_subject.value).zfill(3)
-
-            elif type(sourcedict[v]) == list:
-                val = sourcedict[v][-1].value
-            else:
-                val = sourcedict[v].value
-
-            bidsdict[v[len(prefix) :]] = val
+    currentfile = bids_filechooser[-1].selected_filename
     if not currentfile:
         with output2:
             print(currentfile)
@@ -437,9 +633,10 @@ def save_all_information(*args):
     else:
         currentfile += ".json"
         with open(currentfile, "w") as outfile:
-            json.dump(bidsdict, outfile, indent=4)
+            json.dump(metadict, outfile, indent=4)
 
         with output2:
+            print("saving to: %.json", bids_filechooser[-1].selected_filename)
             print("information is saved and cannot be changed")
 
 

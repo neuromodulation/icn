@@ -437,11 +437,13 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         cfg.electrodes.impedance    = intern_cfg.electrodes_tsv.impedance;
         cfg.electrodes.dimension    = intern_cfg.electrodes_tsv.dimension;
        
-        cfg.electrodes.group        = [
-        repmat({'DBS_right'},DBS_contacts,1);
-        repmat({'DBS_left'},DBS_contacts,1);
-        repmat({['ECOG_' cfg.participants.ECOG_hemisphere]},ECOG_contacts,1)];
-    
+        cfg.electrodes.group        =  repmat({'n/a'},length(cfg.electrodes.name),1);
+        
+        cfg.electrodes.group(startsWith(cfg.electrodes.name, 'LFP_R')) = {'DBS_right'};
+        cfg.electrodes.group(startsWith(cfg.electrodes.name, 'LFP_L')) = {'DBS_left'};
+        cfg.electrodes.group(startsWith(cfg.electrodes.name, 'ECOG_R')) = {'ECOG_right'};
+        cfg.electrodes.group(startsWith(cfg.electrodes.name, 'ECOG_L')) = {'ECOG_left'};
+            
     else
         
 
