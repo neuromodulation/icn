@@ -490,19 +490,101 @@ def go_to_subsession(*args):
             bids_time_of_acquisition[-1],
             bids_acquisition[-1],
             bids_run[-1],
-            save_to_json,
+            draw_channels,
         )
 
 
+
 specify_file.on_click(go_to_subsession)
-save_to_json = widgets.Button(
-    description="Save this meta data to json",
+draw_channels = widgets.Button(
+    description="go to channel plotting",
     style=style,
     layout=layout,
 )
+save_to_json = widgets.Button(
+    description="Save this meta data to json and go to next recording",
+    style=style,
+    layout=layout,
+)
+def plot_channels(*args):
+    data = Poly5Reader(bids_filechooser[-1].selected_path + os.sep + bids_filechooser[-1].selected_filename)
 
+    info = mne.create_info(ch_names=[ch._Channel__name for ch in data.channels], sfreq=data.sample_rate, ch_types=data.num_channels * ['misc'])
 
-def multiplefunctions(*args):
+    raw = mne.io.RawArray(data.samples, info)
+
+    bids_channel_names = []
+
+    for ch in raw.ch_names:
+        bids_channel_names = []
+
+        if ch.startswith('LFP'):
+            preset = 'LFP_' + ch[3] + '_' + ch[4] + '_' + ch[5:8] + '_'
+            if ch.endswith('B'):
+                preset += 'BS'
+            elif ch.endswith('M'):
+                preset += 'MT'
+        elif ch.startswith('ECX'):
+            preset = 'ECOG_' + ch[3] + '_' + ch[4] + '_' + ch[5:8] + '_'
+            if ch.endswith('B'):
+                preset += 'BS'
+            elif ch.endswith('M'):
+                preset += 'MT'
+            elif ch.endswith('A'):
+                preset += 'AT'
+        elif ch.startswith('EEG'):
+            preset = 'EEG_'
+            if ch.upper().find('CZ'):
+                preset += 'CZ_'
+            elif ch.upper().find('FZ'):
+                preset += 'FZ_'
+            if ch.upper().find('TM'):
+                preset += 'TM'
+        elif ch.startswith('BIP 01'):
+            preset = 'EMG_R_BR_TM'
+        elif ch.startswith('BIP 02'):
+            preset = 'EMG_L_BR_TM'
+        elif ch.startswith('BIP 03'):
+            preset = 'ECG'
+        elif ch.startswith('X-0'):
+            preset = 'ACC_R_X_D2_TM'
+        elif ch.startswith('Y-0'):
+            preset = 'ACC_R_Y_D2_TM'
+        elif ch.startswith('Z-0'):
+            preset = 'ACC_R_Z_D2_TM'
+        elif ch.startswith('X-1'):
+            preset = 'ACC_L_X_D2_TM'
+        elif ch.startswith('Y-1'):
+            preset = 'ACC_L_Y_D2_TM'
+        elif ch.startswith('Z-1'):
+            preset = 'ACC_L_Z_D2_TM'
+        elif ch.startswith('ISO aux'):
+            preset = 'ANALOG_R_ROTA_CH'
+        else:
+            preset = None
+
+        channel_widget = widgets.Text(
+            value=preset,
+            placeholder='***deleted***',
+            description=ch,
+            style=style,
+            layout=layout
+        )
+        bids_channel_names.append(channel_widget)
+
+    with output2:
+        raw.plot(show=True, block=True, n_channels=raw.info['nchan'], title=bids_filechooser[-1].selected_filename)
+        for widget in bids_channel_names:
+            display(widget)
+        display(save_to_json)
+
+draw_channels.on_click(plot_channels)
+
+def multiplefunctions_1(*args):
+    go_to_subsession(*args)
+    plot_channels(*args)
+
+def multiplefunctions_2(*args):
     save_all_information(*args)
     go_to_subsession(*args)
 
@@ -510,8 +592,7 @@ def multiplefunctions(*args):
 def save_all_information(*args):
     # All the vars that I want to get start with bids_
 
-
-    metadict['inputdata_location'] = bids_filechooser[-1].selected_path
+    metadict['inputdata_location'] = bids_filechooser[-1].selected_path + os.sep + bids_filechooser[-1].selected_filename
     metadict['inputdata_fname'] = bids_filechooser[-1].selected_filename
     metadict['entities'] = {}
     metadict['entities']['subject'] = str(bids_subject.value).zfill(3)
@@ -623,6 +704,9 @@ def save_all_information(*args):
     metadict['ieeg']['iEEGGround'] = str()
     metadict['ieeg']['iEEGPlacementScheme'] = str()
     metadict['ieeg']['iEEGReference'] = str()
+    metadict['poly5'] = {}
+    for widget in bids_channel_names:
+        metadict['poly5'][widget.description] = widget.value
 
     currentfile = bids_filechooser[-1].selected_filename
     if not currentfile:
@@ -640,7 +724,7 @@ def save_all_information(*args):
             print("information is saved and cannot be changed")
 
 
-save_to_json.on_click(multiplefunctions)
 
+save_to_json.on_click(multiplefunctions_2)
 
 output2 = widgets.Output()

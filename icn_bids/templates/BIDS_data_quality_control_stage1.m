@@ -84,8 +84,8 @@ cd(JsonFolder);
  
 % specify channels used other than DBS and ECOG
 intern_cfg.chs_other = {
-        'EEG_Cz_TM'
-        'EEG_Fz_TM'
+        'EEG_CZ_TM'
+        'EEG_FZ_TM'
         'EMG_R_BR_TM'
         'EMG_L_BR_TM'
         'ECG'
