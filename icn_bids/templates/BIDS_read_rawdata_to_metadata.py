@@ -34,6 +34,9 @@ os.chdir(r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev")
 # root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Berlin_ECOG_LFP\rawdata"
 root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata"
 
+references = [];
+run_file_list = [];
+
 # iterate over the brainvision files
 run_files = get_all_vhdr_files(root)
 datatype = "ieeg"
@@ -155,3 +158,8 @@ for run_file in run_files:
 
     with open(json_writeout, "w") as outfile:
         json.dump(bidsdict, outfile, indent=4)
+
+    run_file_list.append(bidsdict["inputdata_fname"])
+    references.append(bidsdict["ieeg"]["iEEGReference"])
+print('\n'.join(run_file_list))
+print( '\n'.join(references))

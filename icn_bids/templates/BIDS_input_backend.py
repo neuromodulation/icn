@@ -353,6 +353,11 @@ bids_task_instructions = []
 bids_time_of_acquisition = []
 bids_run = []
 bids_acquisition = []
+bids_channel_names_widgets = []
+bids_channel_names_list = []
+bids_reference = []
+bids_status_description_widgets = []
+bids_status_description_list = []
 
 
 task_options = [
@@ -497,15 +502,17 @@ def go_to_subsession(*args):
 
 specify_file.on_click(go_to_subsession)
 draw_channels = widgets.Button(
-    description="go to channel plotting",
+    description="go to channel plotting (wait long enough)",
     style=style,
     layout=layout,
 )
-save_to_json = widgets.Button(
-    description="Save this meta data to json and go to next recording",
+
+go_to_reference = widgets.Button(
+    description="define the reference and the channel status descriptions",
     style=style,
     layout=layout,
 )
+
 def plot_channels(*args):
     data = Poly5Reader(bids_filechooser[-1].selected_path + os.sep + bids_filechooser[-1].selected_filename)
 
@@ -513,10 +520,8 @@ def plot_channels(*args):
 
     raw = mne.io.RawArray(data.samples, info)
 
-    bids_channel_names = []
 
     for ch in raw.ch_names:
-        bids_channel_names = []
 
         if ch.startswith('LFP'):
             preset = 'LFP_' + ch[3] + '_' + ch[4] + '_' + ch[5:8] + '_'
@@ -570,15 +575,57 @@ def plot_channels(*args):
             style=style,
             layout=layout
         )
-        bids_channel_names.append(channel_widget)
+        bids_channel_names_widgets.append(channel_widget)
 
     with output2:
         raw.plot(show=True, block=True, n_channels=raw.info['nchan'], title=bids_filechooser[-1].selected_filename)
-        for widget in bids_channel_names:
+        for widget in bids_channel_names_widgets:
+            display(widget)
+        display(go_to_reference)
+
+draw_channels.on_click(plot_channels)
+
+save_to_json = widgets.Button(
+    description="Save this meta data to json and go to next recording",
+    style=style,
+    layout=layout,
+)
+
+def define_reference_and_status(*args):
+
+    for widget in bids_channel_names_widgets:
+        if widget.value != '':
+            bids_channel_names_list.append(widget.value)
+    bids_reference.append(
+        widgets.Combobox(
+        options=bids_channel_names_list,
+        description='iEEG Reference: ',
+        style=style,
+        layout=layout
+        )
+    )
+
+
+    for ch in bids_channel_names_list:
+
+        bids_status_description_widgets.append(
+            widgets.Combobox(
+            value='n/a',
+            options=['Reference electrode','Stimulation contact', 'Empty', 'Cable artefact'],
+            description=ch,
+            style=style,
+            layout=layout
+            )
+        )
+
+    with output2:
+        display(bids_reference[-1])
+        display('status is assumed to be "good", and is always "bad" when specific description is given')
+        for widget in bids_status_description_widgets:
             display(widget)
         display(save_to_json)
 
-draw_channels.on_click(plot_channels)
+go_to_reference.on_click(define_reference_and_status)
 
 def multiplefunctions_1(*args):
     go_to_subsession(*args)
@@ -607,13 +654,12 @@ def save_all_information(*args):
     metadict['participants']['handedness'] = bids_handedness.value
     metadict['participants']['age'] = bids_age.value
     try:
-        bids_date_of_implantation = bids_date_of_implantation.value
-        bids_date_of_implantation = bids_date_of_implantation.strftime("%Y-%m-%dT00:00:00")
+        bids_date_of_implantation_str = bids_date_of_implantation.value
+        metadict['participants']['date_of_implantation'] = bids_date_of_implantation_str.strftime("%Y-%m-%dT00:00:00")
     except:
-        bids_date_of_implantation = "unknown"
+        metadict['participants']['date_of_implantation'] = "unknown"
     finally:
         pass
-    metadict['participants']['date_of_implantation'] = bids_date_of_implantation
     metadict['participants']['UPDRS_III_preop_OFF'] = str()
     metadict['participants']['UPDRS_III_preop_ON'] = str()
     metadict['participants']['disease_duration'] = bids_disease_duration.value
@@ -644,7 +690,7 @@ def save_all_information(*args):
     metadict['scans_json']['acq_time'] = {}
     metadict['scans_json']['medication_state'] = {}
     metadict['channels_tsv']= {}
-    metadict['channels_tsv']['name'] = []
+    metadict['channels_tsv']['name'] = bids_channel_names_list
     metadict['channels_tsv']['type'] = []
     metadict['channels_tsv']['units'] = []
     metadict['channels_tsv']['low_cutoff'] = []
@@ -655,6 +701,12 @@ def save_all_information(*args):
     metadict['channels_tsv']['notch'] = []
     metadict['channels_tsv']['status'] = []
     metadict['channels_tsv']['status_description'] = []
+    for widget in bids_status_description_widgets:
+        if widget.value == 'n/a':
+            metadict['channels_tsv']['status'].append('good')
+        else:
+            metadict['channels_tsv']['status'].append('bad')
+        metadict['channels_tsv']['status_description'].append(widget.value)
     metadict['electrodes_tsv'] = {}
     metadict['electrodes_tsv']['name'] = []
     metadict['electrodes_tsv']['x'] = []
@@ -703,10 +755,13 @@ def save_all_information(*args):
     metadict['ieeg']['iEEGElectrodeGroups'] = str()
     metadict['ieeg']['iEEGGround'] = str()
     metadict['ieeg']['iEEGPlacementScheme'] = str()
-    metadict['ieeg']['iEEGReference'] = str()
+    metadict['ieeg']['iEEGReference'] = bids_reference[-1].value
     metadict['poly5'] = {}
-    for widget in bids_channel_names:
-        metadict['poly5'][widget.description] = widget.value
+    metadict['poly5']['old'] = []
+    metadict['poly5']['new'] = []
+    for widget in bids_channel_names_widgets:
+        metadict['poly5']['old'].append(widget.description)
+        metadict['poly5']['new'].append(widget.value)
 
     currentfile = bids_filechooser[-1].selected_filename
     if not currentfile:
@@ -728,3 +783,9 @@ def save_all_information(*args):
 save_to_json.on_click(multiplefunctions_2)
 
 output2 = widgets.Output()
+
+# # overwrite previous list
+#     bids_channel_names_widgets = []
+#     bids_channel_names_list = []
+#     bids_status_description_widgets = []
+#     bids_status_description_list = []

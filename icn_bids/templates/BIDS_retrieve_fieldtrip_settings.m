@@ -74,9 +74,6 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     %ECOG_model = 'TS06R-AP10X-0W6'; % manufacturer: Ad-Tech
     %ECOG_model = 'DS12A-SP10X-000'; % manufacturer: Ad-Tech
 
-    
-    
-
     % Handle DBS lead model
 
     if strcmp(DBS_model, 'SenSight Short')
@@ -167,20 +164,6 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     else
         error('ECOG model not found, please specify a valid ECOG electrode.')
     end
-
-    chs_ECOG = cell(ECOG_contacts,1);
-    for i = 1:length(ECOG_hemispheres)
-        hemisphere = ECOG_hemispheres{i};
-        for ind = 1:ECOG_contacts
-            items = ["ECOG", hemisphere, string(ind), ECOG_target, ECOG_manufacturer_short];
-            ch_name = join(items, '_');
-            chs_ECOG{ind} = ch_name{1};
-        end
-    end
-    
-    %TO DO need to be defined in python notebook
-    %chs_final = [chs_DBS; chs_ECOG; intern_cfg.chs_other];
-    chs_final = intern_cfg.channels_tsv.name;
     
     if strcmp(DBS_directional, 'yes')
         directional = 'directional';
@@ -188,11 +171,61 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         directional = 'non-directional';
     end
 
+
+    
+    %%update the channels with new channels from meta data intern_cfg.channels_tsv.name
+    
+    if strcmp(method , 'update_channels')
+        if isfield(intern_cfg,'poly5')
+            remove = [];
+            for i= 1:length(intern_cfg.data.label)
+                % this maps the old channel name in the poly5 dictionary to the new channel name
+                % note, as matlab does not allow spaces and hyphens in a
+                % struct, the new and old names are to be found in a list
+                % only select the first 15 characters, because that is how
+                % fieldtrip works
+                index = find(contains(intern_cfg.poly5.old,intern_cfg.data.label{i}(1:min(15, length(intern_cfg.data.label{i})))));
+                intern_cfg.data.label{i} = intern_cfg.poly5.new{index};
+                if isempty(intern_cfg.data.label{i})
+                    remove(end+1) = i;
+                end
+            end
+            
+            intern_cfg.data.label(remove) = [];
+            intern_cfg.data.trial{1}(remove,:) = [];
+            intern_cfg.data.hdr.chanunit(remove) = [];
+            intern_cfg.data.hdr.chantype(remove) = [];   
+            intern_cfg.data.hdr.nChans     = length(intern_cfg.channels_tsv.name); %update the channel numbers
+        else
+            intern_cfg.data.label = intern_cfg.channels_tsv.name;
+        end
+        
+        intern_cfg.data.hdr.label      = intern_cfg.data.label; % update the other channel names fields
+        
+        chs_final = intern_cfg.data.label;
+        return
+    else
+        chs_final = intern_cfg.channels_tsv.name;
+    end
+    
+    %     chs_ECOG = cell(ECOG_contacts,1);
+    %     for i = 1:length(ECOG_hemispheres)
+    %         hemisphere = ECOG_hemispheres{i};
+    %         for ind = 1:ECOG_contacts
+    %             items = ["ECOG", hemisphere, string(ind), ECOG_target, ECOG_manufacturer_short];
+    %             ch_name = join(items, '_');
+    %             chs_ECOG{ind} = ch_name{1};
+    %         end
+    %     end
+    %     intern_cfg.data.label          = chs_final;
+    %     intern_cfg.data.hdr.nChans     = length(chs_final);
+    %     intern_cfg.data.hdr.label      = intern_cfg.data.label;
+    %
+    %
+
     %% Now assign channel types
 
-    intern_cfg.data.label          = chs_final;
-    intern_cfg.data.hdr.nChans     = length(chs_final);
-    intern_cfg.data.hdr.label      = intern_cfg.data.label;
+    
     % Set channel types and channel units
     chantype            = cell(intern_cfg.data.hdr.nChans,1);
     for ch = 1:intern_cfg.data.hdr.nChans
@@ -212,15 +245,14 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     end
 
    intern_cfg.data.hdr.chantype   = chantype;
-   intern_cfg.data.hdr.chanunit   = repmat({'uV'}, intern_cfg.data.hdr.nChans,1);
-        
-        
-    if strcmp(method , 'update_channels')
-        intern_cfg.chs_final = chs_final;
-        return
-    end
-
-    
+   % need to make this more generalizable
+   if strcmp(intern_cfg.entities.subject,'002') ||  strcmp(intern_cfg.entities.subject,'004')
+        intern_cfg.data.hdr.chanunit   = repmat({'uV'}, intern_cfg.data.hdr.nChans,1);
+   else
+        intern_cfg.data.hdr.chanunit   = repmat({'V'}, intern_cfg.data.hdr.nChans,1);
+   end
+   
+ 
 %     %% Note which channels were bad and why
 %     %bad = {'LFP_L_7_STN_MT' 'LFP_L_8_STN_MT' 'LFP_L_9_STN_MT' 'LFP_L_16_STN_MT' 'LFP_R_7_STN_MT' 'LFP_R_8_STN_MT' 'LFP_R_9_STN_MT'};
 %     %why = {'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Reference electrode' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact' 'Stimulation contact'};
@@ -423,7 +455,17 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
 
     % Provide columns in the electrodes.tsv
     if isfield(intern_cfg, 'electrodes_tsv')
-        
+        if ~isempty(intern_cfg.electrodes_tsv.name)
+            no_need_for_new_electrodes_tsv = true;
+        else
+            no_need_for_new_electrodes_tsv = false;
+        end
+    else
+        no_need_for_new_electrodes_tsv = false;
+    end
+    
+    if no_need_for_new_electrodes_tsv
+            
         cfg.electrodes.name         = intern_cfg.electrodes_tsv.name;
         sens.label                  = intern_cfg.electrodes_tsv.name;
         sens.elecpos                = str2double([intern_cfg.electrodes_tsv.x,intern_cfg.electrodes_tsv.y,intern_cfg.electrodes_tsv.z]);
@@ -446,11 +488,6 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             
     else
         
-
-
-
-
-
         % REQUIRED. Name of the electrode
         % need to build if for loop => what to do if the coordsys file already
         % there is.
@@ -513,41 +550,45 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     end
     
     % define size of single electrode contacts
-    if isfield(intern_cfg.electrodes_tsv,'size')
-        cfg.electrodes.size = intern_cfg.electrodes_tsv.size;
-    else
-        % if 1 DBS contact per level: size=6; if 3 contacts per level: s=1.5
-        if isfield(cfg.participants.DBS_model(:,8),'SenSight')
-            cfg.electrodes.size = {
-                6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
-                6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
-                4.15 4.15 4.15 4.15 4.15 4.15}; %  ECoG contacts std 4.15
+    % if 1 DBS contact per level: size=6; if 3 contacts per level: s=1.5
+    if strcmp(cfg.participants.DBS_model(:,8),'SenSight')
+        cfg.electrodes.size = {
+            6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+            6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+            4.15 4.15 4.15 4.15 4.15 4.15}; %  ECoG contacts std 4.15
 
-        elseif isfield(cfg.participants.DBS_model, 'Vercise Cartesia X')
-            cfg.electrodes.size = {
-                1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
-                1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
-                4.15 4.15 4.15 4.15 4.15 4.15 ...
-                };
+    elseif strcmp(cfg.participants.DBS_model, 'Vercise Cartesia X')
+        cfg.electrodes.size = {
+            1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+            1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+            4.15 4.15 4.15 4.15 4.15 4.15 ...
+            };
+    elseif isfield(intern_cfg.electrodes_tsv,'size')
+        if ~isempty(intern_cfg.electrodes_tsv.size)
+            cfg.electrodes.size = intern_cfg.electrodes_tsv.size;
+        else
+            error('no electrode size')
         end
+    else
+        error('no electrode size')
     end
     
-    
-
     % Provide special channel info
     if isfield(intern_cfg,'channels_tsv')
         cfg.channels.status             = intern_cfg.channels_tsv.status;
         cfg.channels.status_description = intern_cfg.channels_tsv.status_description;      
     else
+        error('Provide special channel info in the python file')
         cfg.channels.status             = bads;
         cfg.channels.status_description = bads_descr;
     end
     
     % Reference channels
+    cfg.ieeg.iEEGReference = 'cfr labbook';
     if isfield(intern_cfg.ieeg,'iEEGReference')
-        cfg.ieeg.iEEGReference = intern_cfg.ieeg.iEEGReference;
-    else
-        cfg.ieeg.iEEGReference = 'cfr labbook';
+        if ~strcmp(intern_cfg.ieeg.iEEGReference,'n/a') && ~strcmp(intern_cfg.ieeg.iEEGReference,'')
+            cfg.ieeg.iEEGReference = intern_cfg.ieeg.iEEGReference;
+        end
     end
     % Always reset the channels references
     typeSet = {'EEG', 'ECOG', 'DBS', 'SEEG', 'EMG', 'ECG', 'MISC'};
@@ -556,7 +597,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.channels.reference = arrayfun(@(ch_type) {ref_map(ch_type{1})}, chantype);
         
     
-    % settings that al always applicable
+    % settings that are always applicable
     cfg.channels.name               = chs_final;
     cfg.channels.type               = chantype;
     
