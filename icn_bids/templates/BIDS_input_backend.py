@@ -244,7 +244,7 @@ def define_ECOG(click):
 ECOG_present.on_click(define_ECOG)
 
 bids_ECOG_target = widgets.RadioButtons(
-    options=["n/a", "SMC"],
+    options=["n/a", "sensorimotor cortex"],
     description="ECOG target",
     style=style,
     layout=layout,

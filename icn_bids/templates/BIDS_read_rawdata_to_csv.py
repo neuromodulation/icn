@@ -35,12 +35,10 @@ os.chdir(r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev")
 root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata2"
 
 import csv
-header = ['file name', 'current ref' , 'ground', 'stimulation','cathodal contact','amplitude','frequency','softwarefilter','manufacturer','hardware_high']
-references = [];
-run_file_list = [];
-HardwareFiltersUnipolarChannels =[];
-ElectricalStimulation = [];
-f = open("labbook.txt", "w")
+header = ['file name', 'iEEGReference' , 'iEEGGround', 'ElectricalStimulation','LEFT','AnodalContact','CathodalContact','StimulationAmplitude','StimulationPulseWidth','StimulationFrequency','RIGHT','AnodalContactR','CathodalContactR','StimulationAmplitudeR','StimulationPulseWidthR','StimulationFrequencyR','SoftwareFilters','Manufacturer','HardwareFiltersUnipolarChannels','HardwareFiltersBipolarChannels','HardwareFiltersAuxiliaryChannels','AnalogueBandwidth','low_cutoff']
+with open('data_overview.tsv', 'w', encoding='UTF8',newline='') as f:
+    tsv_writer = csv.writer(f, delimiter='\t')
+    tsv_writer.writerow(header)
 
 # iterate over the brainvision files
 run_files = get_all_vhdr_files(root)
@@ -161,21 +159,44 @@ for run_file in run_files:
 
     json_writeout = bidspath.basename + ".json"
 
-    with open(json_writeout, "w") as outfile:
-        json.dump(bidsdict, outfile, indent=4)
+    # with open(json_writeout, "w") as outfile:
+    #     json.dump(bidsdict, outfile, indent=4)
+    my_row = ['n/a']*23
 
-    run_file_list.append(bidsdict["inputdata_fname"])
-    references.append(bidsdict["ieeg"]["iEEGReference"])
+    my_row[0] = bidsdict["inputdata_fname"]
+    my_row[1] = bidsdict["ieeg"]["iEEGReference"]
+    my_row[2] = bidsdict["ieeg"]["iEEGGround"]
+    my_row[3] = bidsdict["ieeg"]["ElectricalStimulation"]
     try:
-        HardwareFiltersUnipolarChannels.append(bidsdict["ieeg"]["HardwareFilters"]["Anti_AliasFilter"]["Low_Pass"]["UnipolarChannels"])
+        my_row[5] = bidsdict["ieeg"]["ElectricalStimulationParameters"]["CurrentExperimentalSetting"]["Left"]["AnodalContact"]
+        my_row[6] = bidsdict["ieeg"]["ElectricalStimulationParameters"]["CurrentExperimentalSetting"]["Left"]["CathodalContact"]
+        my_row[7] = bidsdict["ieeg"]["ElectricalStimulationParameters"]["CurrentExperimentalSetting"]["Left"]["StimulationAmplitude"]
+        my_row[8] = bidsdict["ieeg"]["ElectricalStimulationParameters"]["CurrentExperimentalSetting"]["Left"]["StimulationPulseWidth"]
+        my_row[9] = bidsdict["ieeg"]["ElectricalStimulationParameters"]["CurrentExperimentalSetting"]["Left"]["StimulationFrequency"]
+        my_row[4] = 'Left'
     except:
-        HardwareFiltersUnipolarChannels.append('n/a')
-    ElectricalStimulation.append(bidsdict["ieeg"]["ElectricalStimulation"])
-
-# print('\n'.join(run_file_list))
-# print( '\n'.join(references))
-# f = open("labbook.txt", "w")
-# f.write('\n'.join(run_file_list))
-# f.write('\n'.join(references))
-# f.write('\n'.join(str(HardwareFiltersUnipolarChannels)))
-# f.write('\n'.join(str(ElectricalStimulation)))
+        pass
+    try:
+        my_row[11] = bidsdict["ieeg"]["ElectricalStimulationParameters"]["CurrentExperimentalSetting"]["Right"]["AnodalContact"]
+        my_row[12] = bidsdict["ieeg"]["ElectricalStimulationParameters"]["CurrentExperimentalSetting"]["Right"]["CathodalContact"]
+        my_row[13] = bidsdict["ieeg"]["ElectricalStimulationParameters"]["CurrentExperimentalSetting"]["Right"]["StimulationAmplitude"]
+        my_row[14] = bidsdict["ieeg"]["ElectricalStimulationParameters"]["CurrentExperimentalSetting"]["Right"]["StimulationPulseWidth"]
+        my_row[15] = bidsdict["ieeg"]["ElectricalStimulationParameters"]["CurrentExperimentalSetting"]["Right"]["StimulationFrequency"]
+        my_row[10] = 'Right'
+    except:
+        pass
+    my_row[16] = bidsdict["ieeg"]["SoftwareFilters"]
+    my_row[17] = bidsdict["ieeg"]["Manufacturer"]
+    try:
+        my_row[18] = bidsdict["ieeg"]["HardwareFilters"]["Anti_AliasFilter"]["Low_Pass"]["UnipolarChannels"]
+        my_row[19] = bidsdict["ieeg"]["HardwareFilters"]["Anti_AliasFilter"]["Low_Pass"]["BipolarChannels"]
+        my_row[20] = bidsdict["ieeg"]["HardwareFilters"]["Anti_AliasFilter"]["Low_Pass"]["AuxiliaryChannels"]
+        my_row[21] = bidsdict["ieeg"]["HardwareFilters"]["AnalogueBandwidth"]
+    except:
+        pass
+    my_row[22] = '0'
+    print(my_row)
+    with open('data_overview.tsv', 'a+', encoding='UTF8', newline='\n') as f:
+        tsv_writer = csv.writer(f, delimiter='\t')
+        # write the data
+        tsv_writer.writerow(my_row)

@@ -185,6 +185,22 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                 % only select the first 15 characters, because that is how
                 % fieldtrip works
                 index = find(contains(intern_cfg.poly5.old,intern_cfg.data.label{i}(1:min(15, length(intern_cfg.data.label{i})))));
+                if length(index) > 1
+                    % try to find a unique match
+                    control = index;
+                    index = find(ismember(intern_cfg.poly5.old,intern_cfg.data.label{i}(1:min(15, length(intern_cfg.data.label{i})))));
+                end
+                if isempty(index)
+                    % if no match was found, the new name is probably on
+                    % same positition of the old one
+                    index = i;
+                    if sum(ismember(control,index))==1
+                        continue
+                    else
+                        error('the channel name matching did not work')
+                    end
+                end
+                
                 intern_cfg.data.label{i} = intern_cfg.poly5.new{index};
                 if isempty(intern_cfg.data.label{i})
                     remove(end+1) = i;
@@ -328,7 +344,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.ses                     = replace(intern_cfg.entities.session,'Ephys','EcogLfp');
     cfg.task                    = intern_cfg.entities.task;
     cfg.acq                     = intern_cfg.entities.acquisition; %'StimOff01';  % add here 'Dopa00' during dyskinesia-protocol recording: e.g. 'StimOff01Dopa30'. (Dyskinesia-protocol recordings start at the intake of an higher than normal Levodopa-dosage, and will always be labeled MedOn)
-    cfg.run                     = str2num(intern_cfg.entities.run);
+    if isa(intern_cfg.entities.run,'double')
+        cfg.run                 = intern_cfg.entities.run;
+    else
+        cfg.run                 = str2num(intern_cfg.entities.run);
+    end
     cfg.space                   = intern_cfg.entities.space; %'MNI152NLin2009bAsym';
 
     % Provide info for the scans.tsv file
@@ -385,12 +405,21 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         cfg.ManufacturersModelName      = 'Neuro Omega';
         cfg.SoftwareVersions            = 'n/a';
         cfg.DeviceSerialNumber          = 'n/a';
+        %10000 Hz high -> 0.07Hz low
         cfg.channels.low_cutoff         = repmat({'0'},intern_cfg.data.hdr.nChans,1);
         cfg.channels.high_cutoff        = repmat({'n/a'},intern_cfg.data.hdr.nChans,1);
         cfg.ieeg.SoftwareFilters        = 'n/a'; %MUST
         cfg.ieeg.HardwareFilters        = 'n/a'; %Recommended
         
     elseif strcmp(hardware_manufacturer,'Newronika')
+        cfg.Manufacturer                = 'Newronika';
+        cfg.ManufacturersModelName      = 'n/a';
+        cfg.SoftwareVersions            = 'n/a';
+        cfg.DeviceSerialNumber          = 'n/a';
+        cfg.channels.low_cutoff         = repmat({'0'},intern_cfg.data.hdr.nChans,1);
+        cfg.channels.high_cutoff        = repmat({'n/a'},intern_cfg.data.hdr.nChans,1);
+        cfg.ieeg.SoftwareFilters        = 'n/a'; %MUST
+        cfg.ieeg.HardwareFilters        = 'n/a'; %Recommended
     elseif strcmp(hardware_manufacturer,'Brain Products GmbH')
         cfg.Manufacturer                = 'Brain Products GmbH';
         cfg.ManufacturersModelName      = 'n/a';
@@ -549,20 +578,36 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             repmat({sprintf('[1x%d]',ECOG_contacts)},ECOG_contacts,1)];
     end
     
+    % TO DO: need to add the ECOG contact size at the end and make it 6 or
+    % 12 long
     % define size of single electrode contacts
     % if 1 DBS contact per level: size=6; if 3 contacts per level: s=1.5
-    if strcmp(cfg.participants.DBS_model(:,8),'SenSight')
+    if strcmp(cfg.participants.DBS_model(1:8),'SenSight')
         cfg.electrodes.size = {
             6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
             6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
             4.15 4.15 4.15 4.15 4.15 4.15}; %  ECoG contacts std 4.15
-
+    elseif strcmp(cfg.participants.DBS_model,'Vercise Cartesia') %= 'Vercise Directed'
+        cfg.electrodes.size = {
+            6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+            6 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
+            4.15 4.15 4.15 4.15 4.15 4.15}; %  ECoG contacts std 4.15
+    elseif strcmp(cfg.participants.DBS_model,'Vercise Standard')
+        cfg.electrodes.size = {
+            6 6 6 6 6 6 6 6 ...
+            6 6 6 6 6 6 6 6 ...
+            4.15 4.15 4.15 4.15 4.15 4.15}; %  ECoG contacts std 4.15
     elseif strcmp(cfg.participants.DBS_model, 'Vercise Cartesia X')
         cfg.electrodes.size = {
             1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
             1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 1.5 6 ...
             4.15 4.15 4.15 4.15 4.15 4.15 ...
-            };
+            }; %  ECoG contacts std 4.15
+    elseif (strcmp(cfg.participants.DBS_model, 'Model 3387') || strcmp(cfg.participants.DBS_model, 'Model 3389')) % Medtronic
+         cfg.electrodes.size = {
+            6 6 6 6 ...
+            6 6 6 6 ...
+            4.15 4.15 4.15 4.15 4.15 4.15}; %  ECoG contacts std 4.15
     elseif isfield(intern_cfg.electrodes_tsv,'size')
         if ~isempty(intern_cfg.electrodes_tsv.size)
             cfg.electrodes.size = intern_cfg.electrodes_tsv.size;

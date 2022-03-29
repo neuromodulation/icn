@@ -16,11 +16,11 @@ for i =1:length(jsonfiles)
     cfg = struct();
 
     % This is the output root folder for our BIDS-dataset
-    rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata2\';
+    rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata5\';
     intern_cfg.rawdata_root = rawdata_root;
     % This is the input root folder for our BIDS-dataset
 
-    sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata\';
+    sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata4\';
 
     % This is the folder where the JSON-file is stored
     JsonFolder = pwd;
