@@ -380,6 +380,16 @@ task_options = [
 
 
 def go_to_subsession(*args):
+    global bids_channel_names_widgets
+    global bids_channel_names_list
+    global bids_reference
+    global bids_status_description_widgets
+    global bids_status_description_list
+    bids_channel_names_widgets = []
+    bids_channel_names_list = []
+    bids_reference = []
+    bids_status_description_widgets = []
+    bids_status_description_list = []
     def update_task(change):
         with output2:
             bids_task_description[-1].value = descriptions[change["new"]]
@@ -514,6 +524,7 @@ go_to_reference = widgets.Button(
 )
 
 def plot_channels(*args):
+
     data = Poly5Reader(bids_filechooser[-1].selected_path + os.sep + bids_filechooser[-1].selected_filename)
 
     info = mne.create_info(ch_names=[ch._Channel__name for ch in data.channels], sfreq=data.sample_rate, ch_types=data.num_channels * ['misc'])
@@ -539,9 +550,9 @@ def plot_channels(*args):
                 preset += 'AT'
         elif ch.startswith('EEG'):
             preset = 'EEG_'
-            if ch.upper().find('CZ'):
+            if ch.upper().find('C1CZ'):
                 preset += 'CZ_'
-            elif ch.upper().find('FZ'):
+            elif ch.upper().find('C1FZ'):
                 preset += 'FZ_'
             if ch.upper().find('TM'):
                 preset += 'TM'
