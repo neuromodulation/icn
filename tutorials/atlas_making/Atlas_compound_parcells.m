@@ -53,6 +53,15 @@ spm_imcalc(char(nii1.fname,nii2.fname,nii3.fname,nii4.fname,nii5.fname),...
     'i1 -i1.*(i4>0)-i1.*(i5>0) + (i2+(len_i1*(i2>0))) + (i3+((len_i1+len_i2)*(i3>0)))',...
     flags,...
     len_i1,len_i2,len_i3)
+%% round floats to integers
+
+nii_atlas = ea_load_nii('C:\Users\Jonathan\Documents\DATA\ATLAS_creation\compound_atlas_HCPex_SUIT_ABGT.nii');
+nii_atlas.img = round(nii_atlas.img);
+ea_write_nii(nii_atlas);
+
+%% provide compression
+
+gzip('C:\Users\Jonathan\Documents\DATA\ATLAS_creation\compound_atlas_HCPex_SUIT_ABGT.nii');
 
 
 %% print out the accompanying text file
