@@ -57,6 +57,7 @@ spm_imcalc(char(nii1.fname,nii2.fname,nii3.fname,nii4.fname,nii5.fname),...
 
 nii_atlas = ea_load_nii('C:\Users\Jonathan\Documents\DATA\ATLAS_creation\compound_atlas_HCPex_SUIT_ABGT.nii');
 nii_atlas.img = round(nii_atlas.img);
+nii_atlas.pinfo = [1;0;nii_atlas.pinfo(3)];
 ea_write_nii(nii_atlas);
 
 %% provide compression
