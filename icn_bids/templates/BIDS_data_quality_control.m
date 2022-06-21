@@ -9,6 +9,8 @@ addpath(fullfile('C:\Users\Jonathan\Documents\CODE\fieldtrip'));
 addpath(fullfile('C:\Users\Jonathan\Documents\CODE\icn\icn_bids\templates'));
 
 ft_defaults
+
+cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev')
 jsonfiles = dir('*.json');
 for i =1:length(jsonfiles)
     %% pathing and set-up
@@ -16,19 +18,21 @@ for i =1:length(jsonfiles)
     cfg = struct();
 
     % This is the output root folder for our BIDS-dataset
-    rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata8\';
+    rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata11\';
     intern_cfg.rawdata_root = rawdata_root;
     % This is the input root folder for our BIDS-dataset
 
-    %sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata4\';
+    
+    %sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata\';
     sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\sub-011';
     
     % This is the folder where the JSON-file is stored
     JsonFolder = pwd;
     % define name of json-file generated for this session
     intern_cfg.jsonfile = jsonfiles(i).name; 
-
-
+   %% make output dir rawdata
+   if ~exist(rawdata_root,'dir') mkdir(rawdata_root); end
+   
     %% read the meta data 
     method = 'readjson';
     [~,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
@@ -48,7 +52,13 @@ for i =1:length(jsonfiles)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Update channel naming and inspect data with WJN Toolbox
     if ~isequal(intern_cfg.data.label, intern_cfg.channels_tsv.name)
-        method = 'update_channels'; 
+        method = 'update_channels';
+        figure('units','normalized','outerposition',[0 0 1 1])
+        wjn_plot_raw_signals(intern_cfg.data.time{1},intern_cfg.data.trial{1},intern_cfg.data.label);
+        title( intern_cfg.jsonfile, 'before relabeling', 'interpreter', 'none')
+        saveas(gcf,fullfile(rawdata_root,[intern_cfg.jsonfile '_BEFORE_relabeling.tif']))
+        
+            
         [~,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
 %         if isfield(intern_cfg,'poly5')
 %             remove = [];
@@ -78,9 +88,9 @@ for i =1:length(jsonfiles)
 %         
         figure('units','normalized','outerposition',[0 0 1 1])
         wjn_plot_raw_signals(intern_cfg.data.time{1},intern_cfg.data.trial{1},intern_cfg.data.label);
-        %cd(JsonFolder)  % reset working directory again
-        saveas(gcf,[intern_cfg.jsonfile 'CLEAN.tif'])
-    
+        title( intern_cfg.jsonfile, 'after relabeling', 'interpreter', 'none')
+        saveas(gcf,fullfile(rawdata_root,[intern_cfg.jsonfile '_AFTER_relabeling.tif']))
+        %close all
     end
     
         
@@ -119,4 +129,3 @@ for i =1:length(jsonfiles)
     %% move the config file out of the way -> inside the rawdata
     movefile( intern_cfg.jsonfile , fullfile(cfg.bidsroot) )
 end
-

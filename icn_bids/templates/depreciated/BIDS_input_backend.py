@@ -252,9 +252,8 @@ bids_ECOG_target = widgets.RadioButtons(
 bids_ECOG_hemisphere = widgets.RadioButtons(
     options=[
         "n/a",
-        "right",
-        "left",
-        "bilateral"
+        "R",
+        "L",
     ],
     description="ECOG hemisphere",
     style=style,
