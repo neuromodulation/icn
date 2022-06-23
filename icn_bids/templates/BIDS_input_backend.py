@@ -11,6 +11,8 @@ import json
 from TMSiSDK.file_readers import Poly5Reader
 import numpy as np
 import mne
+import ipympl
+
 
 # download from https://gitlab.com/tmsi/tmsi-python-interface/-/tree/main/TMSiSDK
 # and do pip install https://gitlab.com/tmsi/tmsi-python-interface/-/blob/main/requirements_Windows.txt
@@ -591,8 +593,11 @@ def plot_channels(*args):
         )
         bids_channel_names_widgets.append(channel_widget)
 
+    raw.plot(show=True, block=True, n_channels=raw.info['nchan'], title=bids_filechooser[-1].selected_filename)
+
     with output2:
         raw.plot(show=True, block=True, n_channels=raw.info['nchan'], title=bids_filechooser[-1].selected_filename)
+
         for widget in bids_channel_names_widgets:
             display(widget)
         display(go_to_reference)

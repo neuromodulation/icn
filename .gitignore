@@ -1,6 +1,9 @@
 # ignore custom
 *.asv
 *.Poly5
+**/sub*/
+**/sub*/*
+**/*map.csv
 # python #
 ###################
 *.pyo
