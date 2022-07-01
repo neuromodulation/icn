@@ -12,6 +12,7 @@ from TMSiSDK.file_readers import Poly5Reader
 import numpy as np
 import mne
 import ipympl
+mne.viz.set_browser_backend('qt')  # Enable mne-qt-browser backend if mne < 1.0
 
 
 # download from https://gitlab.com/tmsi/tmsi-python-interface/-/tree/main/TMSiSDK
