@@ -375,12 +375,13 @@ task_options = [
     ("Evoked", 7),
     ("SelfpacedSpeech", 8),
     ("ReadRelaxMoveR", 9),
-    ("VigorStimR", 10),
-    ("VigorStimL", 11),
-    ("SelfpacedHandTapL", 12),
-    ("SelfpacedHandTapR", 13),
-    ("SelfpacedHandTapB", 14),
-    ("Free", 15),
+    ("ReadRelaxMoveL", 10),
+    ("VigorStimR", 11),
+    ("VigorStimL", 12),
+    ("SelfpacedHandTapL", 13),
+    ("SelfpacedHandTapR", 14),
+    ("SelfpacedHandTapB", 15),
+    ("Free", 16),
 ]
 
 
@@ -430,6 +431,9 @@ def go_to_subsession(*args):
         "Block of 30 seconds of continuous right wrist rotation performed on a custom-built rotameter which translates degree of rotation to volt followed by a block of 30 seconds of rest followed by a block of 30 seconds of reading aloud ("
         "The Parrot and the Cat"
         " by Aesop). Multiple sets.",
+        "Block of 30 seconds of continuous left wrist rotation performed on a custom-built rotameter which translates degree of rotation to volt followed by a block of 30 seconds of rest followed by a block of 30 seconds of reading aloud ("
+        "The Parrot and the Cat"
+        " by Aesop). Multiple sets.",
         "Performance of diagonal forearm movements with a cursor on a screen using a digitizing tablet. Start and stop events are visually cued on screen with a rest duration of 350 ms. 14 blocks with 32 movements each. In blocks 3-5/9-11 bilateral stimulation is applied for 300 ms if a movement is slower/faster than the previous two movements. The order of slow/fast blocks is alternated between participants.  Performed with the right hand.",
         "Performance of diagonal forearm movements with a cursor on a screen using a digitizing tablet. Start and stop events are visually cued on screen with a rest duration of 350 ms. 14 blocks with 32 movements each. In blocks 3-5/9-11 bilateral stimulation is applied for 300 ms if a movement is slower/faster than the previous two movements. The order of slow/fast blocks is alternated between participants.  Performed with the left hand.",
         "Selfpaced left hand tapping, circa every 10 seconds, without counting, in resting seated position.",
@@ -448,6 +452,7 @@ def go_to_subsession(*args):
         "Do not move or speak and keep your eyes open.",
         "Read aloud sentence by sentence the text in front of you. Leave a pause of several seconds in between sentences.",
         "At the beginning of each block, a text will appear on the screen, specifying the task to be performed. An auditory cue will then be issued, marking the begin of your task. Perform the task until the next cue marks the end of the task. Tasks are either continuous right wrist rotation, resting with open eyes or reading aloud the text displayed on the screen.",
+        "At the beginning of each block, a text will appear on the screen, specifying the task to be performed. An auditory cue will then be issued, marking the begin of your task. Perform the task until the next cue marks the end of the task. Tasks are either continuous left wrist rotation, resting with open eyes or reading aloud the text displayed on the screen.",
         "Your task is to move your pen from one side of the screen to the other. When you see a square, please move your pen there and stay on the square until a new square appears on the other side. Then move the pen to the new square. Please move as fast as you can and touch the screen with the pen throughout the whole experiment.",
         "Your task is to move your pen from one side of the screen to the other. When you see a square, please move your pen there and stay on the square until a new square appears on the other side. Then move the pen to the new square. Please move as fast as you can and touch the screen with the pen throughout the whole experiment.",
         "Keep both hands resting on your legs, and tap with your left hand by raising the hand and fingers of your left hand, without letting the arm be lifted from the leg. Do not count in between rotations.",
