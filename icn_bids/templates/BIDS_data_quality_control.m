@@ -101,7 +101,7 @@ for i =1:length(jsonfiles)
         %saveas(gcf,fullfile(rawdata_root,['sub-',cfg.sub , '_ses-', cfg.ses, '_task-',cfg.task, '_acq-',cfg.acq, '_run-',num2str(cfg.run), '_AFTER_relabeling.tif']))
         saveas(gcf,fullfile(rawdata_root,['sub-',intern_cfg.entities.subject , 'ses-', intern_cfg.entities.session, 'task-',intern_cfg.entities.task, 'acq-',intern_cfg.entities.acquisition, 'run-',num2str(intern_cfg.entities.run), '_AFTER_relabeling.tif']))
 
-        %close all
+        close all
     end
     
         

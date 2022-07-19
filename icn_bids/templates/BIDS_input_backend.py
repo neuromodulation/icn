@@ -560,7 +560,7 @@ def plot_channels(*args):
             elif ch.startswith('ECXR12'):
                 preset = 'ECOG_R_12_SMC_AT'
             else:
-                preset = 'ECOG_' + ch[3] + '_' + ch[4] + '_' + ch[5:8] + '_'
+                preset = 'ECOG_' + ch[3] + '_0' + ch[4] + '_' + ch[5:8] + '_'
                 if ch.endswith('B'):
                     preset += 'BS'
                 elif ch.endswith('M'):
