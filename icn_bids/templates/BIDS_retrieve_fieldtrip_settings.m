@@ -49,12 +49,21 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     %ECOG_target = 'SMC'; % Sensorimotor Cortex
     if strcmp(ECOG_target_long, 'sensorimotor cortex')
         ECOG_target = 'SMC';
+    elseif strcmp(ECOG_target_long, 'n/a')
+        ECOG_target = 'n/a';        
     else
         error('ECOG target not found, please specify a valid target.')
     end
 
     if ~isfield(intern_cfg.participants,'ECOG_hemisphere')
-        intern_cfg.participants.ECOG_hemisphere=false;
+        %intern_cfg.participants
+        ECOG_hemisphere='n/a';
+    elseif strcmp(intern_cfg.participants.ECOG_hemisphere,'n/a')
+        %intern_cfg.participants.ECOG_hemisphere=false;
+        ECOG_hemisphere='n/a';
+    elseif ~intern_cfg.participants.ECOG_hemisphere
+        %intern_cfg.participants.ECOG_hemisphere=false;
+        ECOG_hemisphere='n/a';
     else
         ECOG_hemisphere=intern_cfg.participants.ECOG_hemisphere;
         if strcmp(ECOG_hemisphere, 'left')
@@ -159,6 +168,13 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         ECOG_location              = 'subdural';
         ECOG_material              = 'platinum';
         ECOG_description           = '12-contact, 1x6 dual sided long term monitoring strip. Platinum contacts, 10mm spacing, contact size 4.0 mm diameter/2.3 mm exposure. Platinum marker.';
+    elseif strcmp(ECOG_model, 'n/a')
+        ECOG_contacts              = 0;
+        ECOG_manufacturer_short    = 'n/a';
+        ECOG_manufacturer          = 'n/a';
+        ECOG_location              = 'n/a';
+        ECOG_material              = 'n/a';
+        ECOG_description           = 'n/a';
     else
         error('ECOG model not found, please specify a valid ECOG electrode.')
     end
@@ -644,6 +660,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
            cfg.electrodes.size(end+1:end+6) = {2.54 2.54 2.54 2.54 2.54 2.54};
        elseif (ECOG_contacts == 12) && strcmp(ECOG_model,'DS12A-SP10X-000')
            cfg.electrodes.size(end+1:end+12) = {4.15 4.15 4.15 4.15 4.15 4.15 4.15 4.15 4.15 4.15 4.15 4.15};
+       elseif (ECOG_contacts == 0) && strcmp(ECOG_model,'n/a')
+           %continue
        else
            error('no ECOG size specified')
        end

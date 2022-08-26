@@ -10,7 +10,7 @@ doyouwanttkinter=True
 #path_target_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Tiantan\conversion_room\rawdata"
 #path_target_folder=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Tuebingen"
 #path_target_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Tiantan\conversion_room\electrodes"
-path_target_folder=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Berlin_ECOG_LFP\rawdata"
+path_target_folder=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Berlin_ECOG_LFP\rawdata\sub-010"
 back_up_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\backup"
 
 from IPython.core.interactiveshell import InteractiveShell

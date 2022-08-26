@@ -13,21 +13,22 @@ ft_defaults
 cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev')
 jsonfiles = dir('*.json');
 
-fh = figure;
+
 
 for i =1:length(jsonfiles)
     %% pathing and set-up
     intern_cfg = struct();
     cfg = struct();
+    fh = figure;
 
     % This is the output root folder for our BIDS-dataset
-    rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata14\';
+    rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata9b\';
     intern_cfg.rawdata_root = rawdata_root;
     % This is the input root folder for our BIDS-dataset
 
     
     %sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata\';
-    sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-014';
+    sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-015';
     
     % This is the folder where the JSON-file is stored
     JsonFolder = pwd;
