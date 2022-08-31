@@ -551,7 +551,7 @@ def plot_channels(*args):
     for ch in raw.ch_names:
 
         if ch.startswith('LFP'):
-            preset = 'LFP_' + ch[3] + '_' + ch[4] + '_' + ch[5:8] + '_'
+            preset = 'LFP_' + ch[3] + '_0' + ch[4] + '_' + ch[5:8] + '_'
             if ch.endswith('B'):
                 preset += 'BS'
             elif ch.endswith('M'):
