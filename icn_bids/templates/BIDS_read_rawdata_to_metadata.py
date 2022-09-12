@@ -32,7 +32,7 @@ os.chdir(r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev")
 # where is the BIDS data located?
 # root = r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Beijing_ECOG_LFP\rawdata"
 # root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Berlin_ECOG_LFP\rawdata"
-root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata2"
+root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10"
 
 import csv
 header = ['file name', 'current ref' , 'ground', 'stimulation','cathodal contact','amplitude','frequency','softwarefilter','manufacturer','hardware_high']
@@ -170,7 +170,11 @@ for run_file in run_files:
         HardwareFiltersUnipolarChannels.append(bidsdict["ieeg"]["HardwareFilters"]["Anti_AliasFilter"]["Low_Pass"]["UnipolarChannels"])
     except:
         HardwareFiltersUnipolarChannels.append('n/a')
-    ElectricalStimulation.append(bidsdict["ieeg"]["ElectricalStimulation"])
+    try:
+        ElectricalStimulation.append(bidsdict["ieeg"]["ElectricalStimulation"])
+    except:
+        ElectricalStimulation.append('n/a')
+
 
 # print('\n'.join(run_file_list))
 # print( '\n'.join(references))

@@ -22,13 +22,13 @@ for i =1:length(jsonfiles)
     fh = figure;
 
     % This is the output root folder for our BIDS-dataset
-    rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata9b\';
+    rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10b\';
     intern_cfg.rawdata_root = rawdata_root;
     % This is the input root folder for our BIDS-dataset
 
     
-    %sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata\';
-    sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-015';
+    sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10\';
+    %sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-015';
     
     % This is the folder where the JSON-file is stored
     JsonFolder = pwd;
