@@ -20,8 +20,8 @@ rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10d\'
 sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
 %sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-015';
     
-hard_coded_channel_renaming=false;
-hard_coded_reference=false;
+hard_coded_channel_renaming=true;
+hard_coded_reference=true;
 %% let's start
 jsonfiles = dir('*.json');
 for i =1:length(jsonfiles)
@@ -71,21 +71,21 @@ for i =1:length(jsonfiles)
     
     if ~isequal(intern_cfg.data.label, intern_cfg.channels_tsv.name)
         method = 'update_channels';
-        
+        clf('reset')
         set(0,'CurrentFigure',fg);
         set(fg,'units','normalized','outerposition',[0 0 1 1]);
         wjn_plot_raw_signals(intern_cfg.data.time{1},intern_cfg.data.trial{1},intern_cfg.data.label);
         title( intern_cfg.jsonfile, 'before relabeling', 'interpreter', 'none')
-        saveas(gcf,fullfile(rawdata_root,['sub-',intern_cfg.entities.subject , 'ses-', intern_cfg.entities.session, 'task-',intern_cfg.entities.task, 'acq-',intern_cfg.entities.acquisition, 'run-',num2str(intern_cfg.entities.run), '_BEFORE_relabeling.png']))
+        saveas(gcf,fullfile(rawdata_root,['sub-',intern_cfg.entities.subject , '_ses-', intern_cfg.entities.session, '_task-',intern_cfg.entities.task, '_acq-',intern_cfg.entities.acquisition, '_run-',num2str(intern_cfg.entities.run), '_BEFORE_relabeling.png']))
         
         [cfg,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
       
-        
+        clf('reset')
         set(0,'CurrentFigure',fg);
         set(fg,'units','normalized','outerposition',[0 0 1 1]);
         wjn_plot_raw_signals(intern_cfg.data.time{1},intern_cfg.data.trial{1},intern_cfg.data.label);
         title( intern_cfg.jsonfile, 'after relabeling', 'interpreter', 'none')
-        saveas(gcf,fullfile(rawdata_root,['sub-',intern_cfg.entities.subject , 'ses-', intern_cfg.entities.session, 'task-',intern_cfg.entities.task, 'acq-',intern_cfg.entities.acquisition, 'run-',num2str(intern_cfg.entities.run), '_AFTER_relabeling.png']))
+        saveas(gcf,fullfile(rawdata_root,['sub-',intern_cfg.entities.subject , '_ses-', intern_cfg.entities.session, '_task-',intern_cfg.entities.task, '_acq-',intern_cfg.entities.acquisition, '_run-',num2str(intern_cfg.entities.run), '_AFTER_relabeling.png']))
 
         %close all
     end

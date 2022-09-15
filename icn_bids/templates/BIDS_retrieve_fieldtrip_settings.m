@@ -688,8 +688,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         cfg.channels.status_description = bads_descr;
     end
     
+    % settings that are always applicable
+    cfg.channels.name               = chs_final;
+    cfg.channels.type               = chantype;
+    
     % Reference channels
-    %cfg.ieeg.iEEGReference = 'LFP_L_01_STN_MT';%'cfr labbook';
+    
     if isfield(intern_cfg.ieeg,'iEEGReference')
         if ~strcmp(intern_cfg.ieeg.iEEGReference,'n/a') && ~strcmp(intern_cfg.ieeg.iEEGReference,'')
             cfg.ieeg.iEEGReference = intern_cfg.ieeg.iEEGReference;
@@ -700,11 +704,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     refSet = {cfg.ieeg.iEEGReference, cfg.ieeg.iEEGReference, cfg.ieeg.iEEGReference, cfg.ieeg.iEEGReference, 'bipolar', 'bipolar', 'n/a'};
     ref_map = containers.Map(typeSet,refSet);
     cfg.channels.reference = arrayfun(@(ch_type) {ref_map(ch_type{1})}, chantype);
+    cfg.channels.status(find(contains(cfg.channels.name, cfg.ieeg.iEEGReference)))={'bad'}
+    cfg.channels.status_description(find(contains(cfg.channels.name, cfg.ieeg.iEEGReference)))={'Reference electrode'}
+    
         
     
-    % settings that are always applicable
-    cfg.channels.name               = chs_final;
-    cfg.channels.type               = chantype;
+    
     
     % always notch filter on n/a
     cfg.channels.notch              = n_a;
