@@ -689,7 +689,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     end
     
     % Reference channels
-    cfg.ieeg.iEEGReference = 'LFP_L_01_STN_MT';%'cfr labbook';
+    %cfg.ieeg.iEEGReference = 'LFP_L_01_STN_MT';%'cfr labbook';
     if isfield(intern_cfg.ieeg,'iEEGReference')
         if ~strcmp(intern_cfg.ieeg.iEEGReference,'n/a') && ~strcmp(intern_cfg.ieeg.iEEGReference,'')
             cfg.ieeg.iEEGReference = intern_cfg.ieeg.iEEGReference;

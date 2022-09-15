@@ -32,7 +32,7 @@ os.chdir(r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev")
 # where is the BIDS data located?
 # root = r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Beijing_ECOG_LFP\rawdata"
 # root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Berlin_ECOG_LFP\rawdata"
-root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10"
+root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c"
 
 import csv
 header = ['file name', 'current ref' , 'ground', 'stimulation','cathodal contact','amplitude','frequency','softwarefilter','manufacturer','hardware_high']
@@ -152,7 +152,7 @@ for run_file in run_files:
     bidsdict["entities"] = entities
     bidsdict["participants"] = bids_participants
     bidsdict["scans_tsv"] = bids_scans
-    bidsdict["scans_json"] = bids_scans_json
+#    bidsdict["scans_json"] = bids_scans_json
     bidsdict["channels_tsv"] = bids_channels
     bidsdict["electrodes_tsv"] = bids_electrodes
     bidsdict["coord_json"] = bids_coords_json

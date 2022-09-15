@@ -10,26 +10,26 @@ addpath(fullfile('C:\Users\Jonathan\Documents\CODE\icn\icn_bids\templates'));
 
 ft_defaults
 
+fg = figure(1);
+%% set up pathing
+% this is where the meta json files are located
 cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev')
+% This is the output root folder for our BIDS-dataset
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10d\';
+ % This is the input root folder for our BIDS-dataset
+sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
+%sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-015';
+    
+hard_coded_channel_renaming=false;
+hard_coded_reference=false;
+%% let's start
 jsonfiles = dir('*.json');
-
-
-
 for i =1:length(jsonfiles)
-    %% pathing and set-up
+    %% set-up
     intern_cfg = struct();
     cfg = struct();
-    fh = figure;
-
-    % This is the output root folder for our BIDS-dataset
-    rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10b\';
     intern_cfg.rawdata_root = rawdata_root;
-    % This is the input root folder for our BIDS-dataset
-
-    
-    sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10\';
-    %sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-015';
-    
+   
     % This is the folder where the JSON-file is stored
     JsonFolder = pwd;
     % define name of json-file generated for this session
@@ -55,54 +55,39 @@ for i =1:length(jsonfiles)
 %     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Update channel naming and inspect data with WJN Toolbox
+    % update from intern_cfg.channels_tsv.name to the intern_cfg.data.label
+    if hard_coded_channel_renaming
+        idx = startsWith(intern_cfg.channels_tsv.name,'X');
+        intern_cfg.channels_tsv.name(idx) = {'ACC_R_X_D2_TM'};
+        idx = startsWith(intern_cfg.channels_tsv.name,'Y');
+        intern_cfg.channels_tsv.name(idx) = {'ACC_R_Y_D2_TM'};
+        idx = startsWith(intern_cfg.channels_tsv.name,'Z');
+        intern_cfg.channels_tsv.name(idx) = {'ACC_R_Z_D2_TM'};
+    end
+    if hard_coded_reference
+        intern_cfg.ieeg.iEEGReference = 'LFP_L_01_STN_MT';
+    end
+    
+    
     if ~isequal(intern_cfg.data.label, intern_cfg.channels_tsv.name)
         method = 'update_channels';
-        set(0, 'CurrentFigure', fh);
-        clf reset;
-        fh = figure('units','normalized','outerposition',[0 0 1 1]);
+        
+        set(0,'CurrentFigure',fg);
+        set(fg,'units','normalized','outerposition',[0 0 1 1]);
         wjn_plot_raw_signals(intern_cfg.data.time{1},intern_cfg.data.trial{1},intern_cfg.data.label);
         title( intern_cfg.jsonfile, 'before relabeling', 'interpreter', 'none')
-        %saveas(gcf,fullfile(rawdata_root,['sub-',cfg.sub , '_ses-', cfg.ses, '_task-',cfg.task, '_acq-',cfg.acq, '_run-',num2str(cfg.run), '_BEFORE_relabeling.tif']))
-        saveas(gcf,fullfile(rawdata_root,['sub-',intern_cfg.entities.subject , 'ses-', intern_cfg.entities.session, 'task-',intern_cfg.entities.task, 'acq-',intern_cfg.entities.acquisition, 'run-',num2str(intern_cfg.entities.run), '_BEFORE_relabeling.tif']))
+        saveas(gcf,fullfile(rawdata_root,['sub-',intern_cfg.entities.subject , 'ses-', intern_cfg.entities.session, 'task-',intern_cfg.entities.task, 'acq-',intern_cfg.entities.acquisition, 'run-',num2str(intern_cfg.entities.run), '_BEFORE_relabeling.png']))
         
-        %'sub-',intern_cfg.sub , 'ses-', intern_cfg.ses, 'task-',intern_cfg.task, 'acq-',intern_cfg.acq, 'run-',intern_cfg.run, 
-            
         [cfg,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
-%         if isfield(intern_cfg,'poly5')
-%             remove = [];
-%             for i= 1:length(intern_cfg.data.label)
-%                 % this maps the old channel name in the poly5 dictionary to the new channel name
-%                 % note, as matlab does not allow spaces and hyphens in a
-%                 % struct, the new and old names are to be found in a list
-%                 % only select the first 15 characters, because that is how
-%                 % fieldtrip works
-%                 index = find(contains(intern_cfg.poly5.old,intern_cfg.data.label{i}(1:min(15, length(intern_cfg.data.label{i})))));
-%                 intern_cfg.data.label{i} = intern_cfg.poly5.new{index};
-%                 if isempty(intern_cfg.data.label{i})
-%                     remove(end+1) = i;
-%                 end
-%             end
-%             
-%             intern_cfg.data.label(remove) = [];
-%             intern_cfg.data.trial{1}(remove,:) = [];
-%             intern_cfg.data.hdr.chanunit(remove) = [];
-%             intern_cfg.data.hdr.chantype(remove) = [];   
-%             intern_cfg.data.hdr.nChans     = length(intern_cfg.channels_tsv.name); %update the channel numbers
-%         else
-%             intern_cfg.data.label = intern_cfg.channels_tsv.name;
-%         end
-%         
-%         intern_cfg.data.hdr.label      = intern_cfg.data.label; % update the other channel names fields
-%         
-        set(0, 'CurrentFigure', fh);
-        clf reset;
-        fh = figure('units','normalized','outerposition',[0 0 1 1]);
+      
+        
+        set(0,'CurrentFigure',fg);
+        set(fg,'units','normalized','outerposition',[0 0 1 1]);
         wjn_plot_raw_signals(intern_cfg.data.time{1},intern_cfg.data.trial{1},intern_cfg.data.label);
         title( intern_cfg.jsonfile, 'after relabeling', 'interpreter', 'none')
-        %saveas(gcf,fullfile(rawdata_root,['sub-',cfg.sub , '_ses-', cfg.ses, '_task-',cfg.task, '_acq-',cfg.acq, '_run-',num2str(cfg.run), '_AFTER_relabeling.tif']))
-        saveas(gcf,fullfile(rawdata_root,['sub-',intern_cfg.entities.subject , 'ses-', intern_cfg.entities.session, 'task-',intern_cfg.entities.task, 'acq-',intern_cfg.entities.acquisition, 'run-',num2str(intern_cfg.entities.run), '_AFTER_relabeling.tif']))
+        saveas(gcf,fullfile(rawdata_root,['sub-',intern_cfg.entities.subject , 'ses-', intern_cfg.entities.session, 'task-',intern_cfg.entities.task, 'acq-',intern_cfg.entities.acquisition, 'run-',num2str(intern_cfg.entities.run), '_AFTER_relabeling.png']))
 
-        close all
+        %close all
     end
     
         
@@ -141,3 +126,4 @@ for i =1:length(jsonfiles)
     %% move the config file out of the way -> inside the rawdata
     movefile( intern_cfg.jsonfile , fullfile(cfg.bidsroot) )
 end
+close all
