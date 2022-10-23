@@ -61,8 +61,10 @@ metadict['participants']['ECOG_description'] = str()
 metadict['scans_tsv'] = {}
 metadict['scans_tsv']['filename'] = str()
 metadict['scans_tsv']['acq_time'] = str()
-metadict['scans_tsv']['medication_state'] = str()
-metadict['scans_tsv']['UPDRS_III'] = str()
+metadict['sessions_tsv'] = {}
+metadict['sessions_tsv']['acq_date'] = str()
+metadict['sessions_tsv']['medication_state'] = str()
+metadict['sessions_tsv']['UPDRS_III'] = str()
 metadict['scans_json'] = {}
 metadict['scans_json']['acq_time'] = {}
 metadict['scans_json']['medication_state'] = {}
@@ -551,7 +553,7 @@ def plot_channels(*args):
     for ch in raw.ch_names:
 
         if ch.startswith('LFP'):
-            preset = 'LFP_' + ch[3] + '_0' + ch[4] + '_' + ch[5:8] + '_'
+            preset = 'LFP_' + ch[3] + '_' + ch[4:6] + '_' + ch[6:9] + '_'
             if ch.endswith('B'):
                 preset += 'BS'
             elif ch.endswith('M'):
@@ -564,7 +566,7 @@ def plot_channels(*args):
             elif ch.startswith('ECXR12'):
                 preset = 'ECOG_R_12_SMC_AT'
             else:
-                preset = 'ECOG_' + ch[3] + '_0' + ch[4] + '_' + ch[5:8] + '_'
+                preset = 'ECOG_' + ch[3] + '_' + ch[4:6] + '_' + ch[6:9] + '_'
                 if ch.endswith('B'):
                     preset += 'BS'
                 elif ch.endswith('M'):
@@ -726,8 +728,10 @@ def save_all_information(*args):
     metadict['scans_tsv'] = {}
     metadict['scans_tsv']['filename'] = str()
     metadict['scans_tsv']['acq_time'] = bids_time_of_acquisition[-1].value
-    metadict['scans_tsv']['medication_state'] = str()
-    metadict['scans_tsv']['UPDRS_III'] = bids_UPDRS_session[-1].value
+    metadict['sessions_tsv'] = {}
+    metadict['sessions_tsv']['acq_date'] = bids_time_of_acquisition[-1].value[0:10]
+    metadict['sessions_tsv']['medication_state'] = str()
+    metadict['sessions_tsv']['UPDRS_III'] = bids_UPDRS_session[-1].value
     metadict['scans_json'] = {}
     metadict['scans_json']['acq_time'] = {}
     metadict['scans_json']['medication_state'] = {}

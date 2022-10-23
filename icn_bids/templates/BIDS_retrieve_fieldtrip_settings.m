@@ -364,6 +364,27 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         error('session does not end on two digits')
     end
     
+    if isfield(intern_cfg.sessions_tsv,'acq_date')
+        cfg.sessions.acq_date = intern_cfg.sessions_tsv.acq_date;
+    else
+        cfg.sessions.acq_date =  intern_cfg.scans_tsv.acq_time(1:10);%for the sessions.tsv file
+    end
+    
+    if contains(cfg.ses, 'OnOff')
+        cfg.sessions.medication_state  = 'ON/OFF';
+    elseif contains(cfg.ses, 'Off')
+        cfg.sessions.medication_state  = 'OFF';
+    elseif contains(cfg.ses, 'On')
+        cfg.sessions.medication_state  = 'ON';
+    else
+        error('medication state could not be derived from session')
+    end
+    if isfield(intern_cfg.scans_tsv,'UPDRS_III')
+        cfg.sessions.UPDRS_III             =  intern_cfg.scans_tsv.UPDRS_III;
+    else
+        cfg.sessions.UPDRS_III             =  intern_cfg.sessions_tsv.UPDRS_III;
+    end
+    
     cfg.task                    = intern_cfg.entities.task;
     cfg.acq                     = intern_cfg.entities.acquisition; %'StimOff01';  % add here 'Dopa00' during dyskinesia-protocol recording: e.g. 'StimOff01Dopa30'. (Dyskinesia-protocol recordings start at the intake of an higher than normal Levodopa-dosage, and will always be labeled MedOn)
     if isa(intern_cfg.entities.run,'double')
@@ -377,12 +398,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     % the acquisition time could be found in the folder name of the recording
 
     cfg.scans.acq_time              =  intern_cfg.scans_tsv.acq_time;%'2022-01-24T09:36:27';
-    if contains(cfg.ses, 'Off')
-        cfg.scans.medication_state  = 'OFF';
-    else
-        cfg.scans.medication_state  = 'ON';
-    end
-    cfg.scans.UPDRS_III             =  intern_cfg.scans_tsv.UPDRS_III;%'n/a'; % need to be calcuated.
+%     if contains(cfg.ses, 'Off')
+%         cfg.scans.medication_state  = 'OFF';
+%     else
+%         cfg.scans.medication_state  = 'ON';
+%     end
+%     cfg.scans.UPDRS_III             =  intern_cfg.scans_tsv.UPDRS_III;%'n/a'; % need to be calcuated.
 
     % Specify some general information
     cfg.InstitutionName                         = 'Charite - Universitaetsmedizin Berlin, corporate member of Freie Universitaet Berlin and Humboldt-Universitaet zu Berlin, Department of Neurology with Experimental Neurology/BNIC, Movement Disorders and Neuromodulation Unit';

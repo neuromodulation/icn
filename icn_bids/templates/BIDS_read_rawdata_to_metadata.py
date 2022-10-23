@@ -31,8 +31,8 @@ os.chdir(r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev")
 
 # where is the BIDS data located?
 # root = r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Beijing_ECOG_LFP\rawdata"
-# root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Berlin_ECOG_LFP\rawdata"
-root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c"
+root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Berlin_ECOG_LFP\rawdata"
+# root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c"
 
 import csv
 header = ['file name', 'current ref' , 'ground', 'stimulation','cathodal contact','amplitude','frequency','softwarefilter','manufacturer','hardware_high']
