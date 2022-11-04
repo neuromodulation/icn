@@ -364,8 +364,10 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         error('session does not end on two digits')
     end
     
-    if isfield(intern_cfg.sessions_tsv,'acq_date')
-        cfg.sessions.acq_date = intern_cfg.sessions_tsv.acq_date;
+    if isfield(intern_cfg,'sessions_tsv')
+        if isfield(intern_cfg.sessions_tsv,'acq_date')
+            cfg.sessions.acq_date = intern_cfg.sessions_tsv.acq_date;
+        end
     else
         cfg.sessions.acq_date =  intern_cfg.scans_tsv.acq_time(1:10);%for the sessions.tsv file
     end

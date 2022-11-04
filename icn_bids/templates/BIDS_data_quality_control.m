@@ -15,13 +15,13 @@ fg = figure(1);
 % this is where the meta json files are located
 cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev')
 % This is the output root folder for our BIDS-dataset
-rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata16\';
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdataV001\';
  % This is the input root folder for our BIDS-dataset
-%sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
-sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\'%sub-016';
+% sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
+sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-V001';
     
-hard_coded_channel_renaming=true;
-hard_coded_reference=true;
+% hard_coded_channel_renaming=false;
+% hard_coded_reference=false;
 %% let's start
 jsonfiles = dir('*.json');
 for i =1:length(jsonfiles)
@@ -56,17 +56,17 @@ for i =1:length(jsonfiles)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Update channel naming and inspect data with WJN Toolbox
     % update from intern_cfg.channels_tsv.name to the intern_cfg.data.label
-    if hard_coded_channel_renaming
-        idx = startsWith(intern_cfg.channels_tsv.name,'X');
-        intern_cfg.channels_tsv.name(idx) = {'ACC_R_X_D2_TM'};
-        idx = startsWith(intern_cfg.channels_tsv.name,'Y');
-        intern_cfg.channels_tsv.name(idx) = {'ACC_R_Y_D2_TM'};
-        idx = startsWith(intern_cfg.channels_tsv.name,'Z');
-        intern_cfg.channels_tsv.name(idx) = {'ACC_R_Z_D2_TM'};
-    end
-    if hard_coded_reference
-        intern_cfg.ieeg.iEEGReference = 'LFP_L_01_STN_MT';
-    end
+%     if hard_coded_channel_renaming
+%         idx = startsWith(intern_cfg.channels_tsv.name,'X');
+%         intern_cfg.channels_tsv.name(idx) = {'ACC_R_X_D2_TM'};
+%         idx = startsWith(intern_cfg.channels_tsv.name,'Y');
+%         intern_cfg.channels_tsv.name(idx) = {'ACC_R_Y_D2_TM'};
+%         idx = startsWith(intern_cfg.channels_tsv.name,'Z');
+%         intern_cfg.channels_tsv.name(idx) = {'ACC_R_Z_D2_TM'};
+%     end
+%     if hard_coded_reference
+%         intern_cfg.ieeg.iEEGReference = 'LFP_L_01_STN_MT';
+%     end
     
     
     if ~isequal(intern_cfg.data.label, intern_cfg.channels_tsv.name)

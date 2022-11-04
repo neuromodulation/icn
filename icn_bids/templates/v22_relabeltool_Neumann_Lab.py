@@ -5,12 +5,12 @@ made by Jonathan Vanhoecke for the Neumann ICN Lab
 last update: 17.02.2022
 '''
 literal=False
-doyouwanttkinter=True
+doyouwanttkinter=False
 #get target folder
 #path_target_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Tiantan\conversion_room\rawdata"
 #path_target_folder=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Tuebingen"
 #path_target_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Tiantan\conversion_room\electrodes"
-path_target_folder=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Berlin_ECOG_LFP\rawdata"
+path_target_folder=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_01_Berlin_Neurophys\rawdata"
 back_up_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\backup"
 
 from IPython.core.interactiveshell import InteractiveShell

@@ -7,11 +7,12 @@ from IPython.display import display
 from ipyfilechooser import FileChooser
 import os
 import json
-
+import re
 from TMSiSDK.file_readers import Poly5Reader
 import numpy as np
 import mne
 import ipympl
+from ipywidgets import AppLayout
 mne.viz.set_browser_backend('qt')  # Enable mne-qt-browser backend if mne < 1.0
 
 
@@ -130,7 +131,12 @@ metadict['ieeg']['iEEGGround'] = str()
 metadict['ieeg']['iEEGPlacementScheme'] = str()
 metadict['ieeg']['iEEGReference'] = str()
 
-
+bids_subject_prefix = widgets.RadioButtons(
+    options=["EL", "L"],
+    description="Subject Prefix:",
+    style=style,
+    layout=layout,
+)
 bids_subject = widgets.BoundedIntText(
     min=0, max=150, step=1, description="Subject nr:", style=style, layout=layout
 )
@@ -368,7 +374,11 @@ bids_channel_names_list = []
 bids_reference = []
 bids_status_description_widgets = []
 bids_status_description_list = []
-
+bids_stimulation_contact = []
+bids_stimulation_amplitude_left = []
+bids_stimulation_frequency_left = []
+bids_stimulation_amplitude_right = []
+bids_stimulation_frequency_right = []
 
 task_options = [
     ("n/a", 0),
@@ -397,11 +407,17 @@ def go_to_subsession(*args):
     global bids_reference
     global bids_status_description_widgets
     global bids_status_description_list
+    global bids_stimulation_contact
+    global bids_stimulation_amplitude_left
+    global bids_stimulation_frequency_left
+    global bids_stimulation_amplitude_right
+    global bids_stimulation_frequency_right
     bids_channel_names_widgets = []
     bids_channel_names_list = []
     bids_reference = []
     bids_status_description_widgets = []
     bids_status_description_list = []
+    bids_stimulation_contact = []
     def update_task(change):
         with output2:
             bids_task_description[-1].value = descriptions[change["new"]]
@@ -553,11 +569,14 @@ def plot_channels(*args):
     for ch in raw.ch_names:
 
         if ch.startswith('LFP'):
-            preset = 'LFP_' + ch[3] + '_' + ch[4:6] + '_' + ch[6:9] + '_'
+            preset = 'LFP_' + ch[3] + '_' + ''.join(filter(lambda i: i.isdigit(), ch)).rjust(2,"0") + '_'
+            if 'STN' in ch: preset += 'STN_'
             if ch.endswith('B'):
                 preset += 'BS'
             elif ch.endswith('M'):
                 preset += 'MT'
+            elif ch.endswith('STN'):
+                preset += 'MT'  # assume that Medtronic is standard
         elif ch.startswith('ECX'):
             if ch.startswith('ECXR10'):
                 preset = 'ECOG_R_10_SMC_AT'
@@ -566,13 +585,16 @@ def plot_channels(*args):
             elif ch.startswith('ECXR12'):
                 preset = 'ECOG_R_12_SMC_AT'
             else:
-                preset = 'ECOG_' + ch[3] + '_' + ch[4:6] + '_' + ch[6:9] + '_'
+                preset = 'ECOG_' + ch[3] + '_' + ''.join(filter(lambda i: i.isdigit(), ch)).rjust(2,"0") + '_'
+                if 'SMC' in ch: preset += 'SMC_'
                 if ch.endswith('B'):
                     preset += 'BS'
                 elif ch.endswith('M'):
                     preset += 'MT'
                 elif ch.endswith('A'):
                     preset += 'AT'
+                elif ch.endswith('SMC'):
+                    preset += 'AT' #assume that AT is standard
         elif ch.startswith('EEG'):
             preset = 'EEG_'
             if ch.upper().find('CZ')>0:
@@ -581,6 +603,8 @@ def plot_channels(*args):
                 preset += 'FZ_'
             if ch.upper().find('T')>0:
                 preset += 'TM'
+        elif re.search("R[0-9]C[0-9]",ch):
+            preset = "EMG_L_" + re.search("R[0-9]C[0-9]",ch).group() + "_BR_TM"
         elif ch.startswith('BIP 01'):
             preset = 'EMG_R_BR_TM'
         elif ch.startswith('BIP 02'):
@@ -635,7 +659,9 @@ save_to_json = widgets.Button(
     layout=layout,
 )
 
-def define_reference_and_status(*args):
+
+
+def define_reference_and_stims(*args):
 
     for widget in bids_channel_names_widgets:
         if widget.value != '':
@@ -648,28 +674,108 @@ def define_reference_and_status(*args):
         layout=layout
         )
     )
+    for stimcon in range(0,8):
+        bids_stimulation_contact.append(
+            widgets.Combobox(
+            options=bids_channel_names_list,
+            description='Stimulation Contact: ',
+            style=style,
+            layout=layout
+            )
+        )
+    bids_stimulation_frequency_left.append(widgets.BoundedIntText(
+            value=130,
+            min=1,
+            max=1000,
+            step=1,
+            description='Stimulation Frequency left:',
+            style=style,
+            layout=layout
+        ))
+
+    bids_stimulation_frequency_right.append(widgets.BoundedIntText(
+            value=130,
+            min=1,
+            max=1000,
+            step=1,
+            description='Stimulation Frequency right:',
+            style=style,
+            layout=layout
+        ))
 
 
+    bids_stimulation_amplitude_left.append( widgets.BoundedFloatText(
+            value=0,
+            min=0,
+            max=5,
+            step=0.1,
+            description='Stimulation Amplitude left:',
+            style=style,
+            layout=layout
+        ))
+
+
+    bids_stimulation_amplitude_right.append(widgets.BoundedFloatText(
+            value=0,
+            min=0,
+            max=5,
+            step=0.1,
+            description='Stimulation Amplitude right:',
+            style=style,
+            layout=layout
+        ))
+
+
+
+
+    with output2:
+        display(bids_reference[-1])
+        for stimcon in range(0,8):
+            display(bids_stimulation_contact[stimcon])\
+
+        display(bids_stimulation_amplitude_left[-1])
+        display(bids_stimulation_amplitude_right[-1])
+        display(bids_stimulation_frequency_left[-1])
+        display(bids_stimulation_frequency_right[-1])
+        display(go_to_status_description)
+
+
+go_to_reference.on_click(define_reference_and_stims)
+go_to_status_description = widgets.Button(
+    description="define the channel status descriptions",
+    style=style,
+    layout=layout,
+)
+
+def define_status_description(*args):
+    stimcontacts = []
+    for stimcon in range(0,8):
+        stimcontacts.append(bids_stimulation_contact[stimcon].value)
     for ch in bids_channel_names_list:
+        if ch in stimcontacts:
+            defaultvalue = 'Stimulation contact'
+        elif ch in bids_reference[-1].value:
+            defaultvalue = 'Reference electrode'
+        else:
+            defaultvalue = 'n/a'
 
         bids_status_description_widgets.append(
             widgets.Combobox(
-            value='n/a',
+            value=defaultvalue,
             options=['Reference electrode','Stimulation contact', 'Empty', 'Cable artefact'],
             description=ch,
             style=style,
             layout=layout
             )
         )
-
     with output2:
-        display(bids_reference[-1])
         display('status is assumed to be "good", and is always "bad" when specific description is given')
+
         for widget in bids_status_description_widgets:
             display(widget)
         display(save_to_json)
 
-go_to_reference.on_click(define_reference_and_status)
+go_to_status_description.on_click(define_status_description)
 
 def multiplefunctions_1(*args):
     go_to_subsession(*args)
@@ -677,8 +783,9 @@ def multiplefunctions_1(*args):
 
 def multiplefunctions_2(*args):
     save_all_information(*args)
-    go_to_subsession(*args)
-
+    with output2:
+        display(session_creation)
+        display(specify_file)
 
 def save_all_information(*args):
     # All the vars that I want to get start with bids_
@@ -686,7 +793,7 @@ def save_all_information(*args):
     metadict['inputdata_location'] = bids_filechooser[-1].selected_path + os.sep + bids_filechooser[-1].selected_filename
     metadict['inputdata_fname'] = bids_filechooser[-1].selected_filename
     metadict['entities'] = {}
-    metadict['entities']['subject'] = str(bids_subject.value).zfill(3)
+    metadict['entities']['subject'] = str(bids_subject_prefix.value) + str(bids_subject.value).zfill(3)
     metadict['entities']['session'] = bids_session[-1].value
     metadict['entities']['task'] = task_options[bids_task[-1].value][0]
     metadict['entities']['acquisition'] = bids_acquisition[-1].value
@@ -773,6 +880,27 @@ def save_all_information(*args):
     metadict['coord_json']['iEEGCoordinateSystemDescription'] = str()
     metadict['coord_json']['iEEGCoordinateProcessingDescription'] = str()
     metadict['coord_json']['iEEGCoordinateProcessingReference'] = str()
+    for stimcon in range(0,8):
+        if bids_stimulation_contact[stimcon].value != "":
+            if not 'stim' in metadict:
+                metadict['stim'] ={}
+                metadict['stim']['DateOfSetting'] = metadict['sessions_tsv']['acq_date']
+                if bids_stimulation_amplitude_left[-1].value > 0:
+
+                    metadict['stim']['L'] = {}
+                    metadict['stim']['L']['CathodalContact'] = []
+                    metadict['stim']['L']['StimulationAmplitude'] = bids_stimulation_amplitude_left[-1].value
+                    metadict['stim']['L']['StimulationFrequency'] = bids_stimulation_frequency_left[-1].value
+                if bids_stimulation_amplitude_right[-1].value > 0:
+                    metadict['stim']['R'] = {}
+                    metadict['stim']['R']['CathodalContact'] = []
+                    metadict['stim']['R']['StimulationAmplitude'] = bids_stimulation_amplitude_right[-1].value
+                    metadict['stim']['R']['StimulationFrequency'] = bids_stimulation_frequency_right[-1].value
+            if '_L_' in bids_stimulation_contact[stimcon].value:
+                metadict['stim']['L']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
+            if '_R_' in bids_stimulation_contact[stimcon].value:
+                metadict['stim']['R']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
+
     metadict['ieeg'] = {}
     metadict['ieeg']['DeviceSerialNumber'] = str()
     metadict['ieeg']['ECGChannelCount'] = int()
@@ -828,6 +956,7 @@ def save_all_information(*args):
 
 save_to_json.on_click(multiplefunctions_2)
 
+
 output2 = widgets.Output()
 
 # # overwrite previous list
@@ -835,3 +964,99 @@ output2 = widgets.Output()
 #     bids_channel_names_list = []
 #     bids_status_description_widgets = []
 #     bids_status_description_list = []
+
+
+BASE_MAPPING = {
+    "LFPR1STNM": "LFP_R_01_STN_MT",
+    "LFPR2STNM": "LFP_R_02_STN_MT",
+    "LFPR3STNM": "LFP_R_03_STN_MT",
+    "LFPR4STNM": "LFP_R_04_STN_MT",
+    "LFPR5STNM": "LFP_R_05_STN_MT",
+    "LFPR6STNM": "LFP_R_06_STN_MT",
+    "LFPR7STNM": "LFP_R_07_STN_MT",
+    "LFPR8STNM": "LFP_R_08_STN_MT",
+    "LFPL1STNM": "LFP_L_01_STN_MT",
+    "LFPL2STNM": "LFP_L_02_STN_MT",
+    "LFPL3STNM": "LFP_L_03_STN_MT",
+    "LFPL4STNM": "LFP_L_04_STN_MT",
+    "LFPL5STNM": "LFP_L_05_STN_MT",
+    "LFPL6STNM": "LFP_L_06_STN_MT",
+    "LFPL7STNM": "LFP_L_07_STN_MT",
+    "LFPL8STNM": "LFP_L_08_STN_MT",
+    "LFPR01STN": "LFP_R_01_STN_MT",
+    "LFPR02STN": "LFP_R_02_STN_MT",
+    "LFPR03STN": "LFP_R_03_STN_MT",
+    "LFPR04STN": "LFP_R_04_STN_MT",
+    "LFPR05STN": "LFP_R_05_STN_MT",
+    "LFPR06STN": "LFP_R_06_STN_MT",
+    "LFPR07STN": "LFP_R_07_STN_MT",
+    "LFPR08STN": "LFP_R_08_STN_MT",
+    "LFPL01STN": "LFP_L_01_STN_MT",
+    "LFPL02STN": "LFP_L_02_STN_MT",
+    "LFPL03STN": "LFP_L_03_STN_MT",
+    "LFPL04STN": "LFP_L_04_STN_MT",
+    "LFPL05STN": "LFP_L_05_STN_MT",
+    "LFPL06STN": "LFP_L_06_STN_MT",
+    "LFPL07STN": "LFP_L_07_STN_MT",
+    "LFPL08STN": "LFP_L_08_STN_MT",
+    "EEGC1CzT": "EEG_CZ_TM",
+    "EEGC1FzT": "EEG_FZ_TM",
+    "EEGC1Cz_T": "EEG_CZ_TM",
+    "EEGC2Fz_T": "EEG_FZ_TM",
+    "EEGC1CzTM": "EEG_CZ_TM",
+    "EEGC1FzTM": "EEG_FZ_TM",
+    "ECXR1SMCA": "ECOG_R_01_SMC_AT",
+    "ECXR2SMCA": "ECOG_R_02_SMC_AT",
+    "ECXR3SMCA": "ECOG_R_03_SMC_AT",
+    "ECXR4SMCA": "ECOG_R_04_SMC_AT",
+    "ECXR5SMCA": "ECOG_R_05_SMC_AT",
+    "ECXR6SMCA": "ECOG_R_06_SMC_AT",
+    "ECXR01SMC": "ECOG_R_01_SMC_AT",
+    "ECXR02SMC": "ECOG_R_02_SMC_AT",
+    "ECXR03SMC": "ECOG_R_03_SMC_AT",
+    "ECXR04SMC": "ECOG_R_04_SMC_AT",
+    "ECXR05SMC": "ECOG_R_05_SMC_AT",
+    "ECXR06SMC": "ECOG_R_06_SMC_AT",
+    "R1C1": "EMG_L_R1C1_BR_TM",
+    "R1C2": "EMG_L_R1C2_BR_TM",
+    "R1C3": "EMG_L_R1C3_BR_TM",
+    "R1C4": "EMG_L_R1C4_BR_TM",
+    "R1C5": "EMG_L_R1C5_BR_TM",
+    "R1C6": "EMG_L_R1C6_BR_TM",
+    "R1C7": "EMG_L_R1C7_BR_TM",
+    "R1C8": "EMG_L_R1C8_BR_TM",
+    "R2C1": "EMG_L_R2C1_BR_TM",
+    "R2C2": "EMG_L_R2C2_BR_TM",
+    "R2C3": "EMG_L_R2C3_BR_TM",
+    "R2C4": "EMG_L_R2C4_BR_TM",
+    "R2C5": "EMG_L_R2C5_BR_TM",
+    "R2C6": "EMG_L_R2C6_BR_TM",
+    "R2C7": "EMG_L_R2C7_BR_TM",
+    "R2C8": "EMG_L_R2C8_BR_TM",
+    "R3C1": "EMG_L_R3C1_BR_TM",
+    "R3C2": "EMG_L_R3C2_BR_TM",
+    "R3C3": "EMG_L_R3C3_BR_TM",
+    "R3C4": "EMG_L_R3C4_BR_TM",
+    "R3C5": "EMG_L_R3C5_BR_TM",
+    "R3C6": "EMG_L_R3C6_BR_TM",
+    "R3C7": "EMG_L_R3C7_BR_TM",
+    "R3C8": "EMG_L_R3C8_BR_TM",
+    "R4C1": "EMG_L_R4C1_BR_TM",
+    "R4C2": "EMG_L_R4C2_BR_TM",
+    "R4C3": "EMG_L_R4C3_BR_TM",
+    "R4C4": "EMG_L_R4C4_BR_TM",
+    "R4C5": "EMG_L_R4C5_BR_TM",
+    "R4C6": "EMG_L_R4C6_BR_TM",
+    "R4C7": "EMG_L_R4C7_BR_TM",
+    "R4C8": "EMG_L_R4C8_BR_TM",
+    "BIP 01": "EMG_R_BR_TM",
+    "BIP 02": "EMG_L_BR_TM",
+    "BIP 03": "ECG",
+    "X-0": "ACC_R_X_D2_TM",
+    "Y-0": "ACC_R_Y_D2_TM",
+    "Z-0": "ACC_R_Z_D2_TM",
+    "X-1": "ACC_L_X_D2_TM",
+    "Y-1": "ACC_L_Y_D2_TM",
+    "Z-1": "ACC_L_Z_D2_TM",
+    "ISO aux": f"ANALOG_{metadict['participants']['ECOG_hemisphere']}_ROTA_CH",
+    }
