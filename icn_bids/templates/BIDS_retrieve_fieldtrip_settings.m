@@ -335,13 +335,14 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     end
     
     if isfield(intern_cfg,'sessions_tsv')
-        if isfield(intern_cfg.sessions_tsv,'acq_date')
-            cfg.sessions.acq_date = intern_cfg.sessions_tsv.acq_date;
-        end
+        
+       cfg.sessions.acq_date = intern_cfg.sessions_tsv.acq_date;
+        
     else
-        if ~strcmp(intern_cfg.scans_tsv.acq_time,'n/a')
-            cfg.sessions.acq_date =  intern_cfg.scans_tsv.acq_time(1:10);%for the sessions.tsv file
-        end
+       if ~strcmp(intern_cfg.scans_tsv.acq_time,'n/a')
+            cfg.sessions.acq_date =  char(intern_cfg.scans_tsv.acq_time(1:10));%for the sessions.tsv file
+       end
+        
     end
     
     if contains(cfg.ses, 'OnOff')
@@ -353,11 +354,28 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     else
         error('medication state could not be derived from session')
     end
-    if isfield(intern_cfg.scans_tsv,'UPDRS_III')
-        cfg.sessions.UPDRS_III             =  intern_cfg.scans_tsv.UPDRS_III;
-    else
-        cfg.sessions.UPDRS_III             =  intern_cfg.sessions_tsv.UPDRS_III;
+    
+    UPDRS=readtable('UPDRS_Berlin.xlsx','sheet','recording_detailed');
+    rownr = find(and(contains(UPDRS.Subject, cfg.sub) , contains(UPDRS.Session, cfg.ses)));
+    if size(rownr)==[1,1]
+        cfg.sessions.UPDRS_III = UPDRS.UPDRS_III(rownr);
+        cfg.sessions.subscore_tremor_right = UPDRS.subscore_tremor_right(rownr);
+        cfg.sessions.subscore_tremor_left = UPDRS.subscore_tremor_left(rownr);
+        cfg.sessions.subscore_tremor_total = UPDRS.subscore_tremor_total(rownr);
+        cfg.sessions.subscore_rigidity_right = UPDRS.subscore_rigidity_right(rownr);
+        cfg.sesssion.subscore_rigidity_left = UPDRS.subscore_rigidity_left(rownr);
+        cfg.sessions.subscore_rigidity_total = UPDRS.subscore_rigidity_total(rownr);
+        cfg.sessions.subscore_bradykinesia_right = UPDRS.subscore_bradykinesia_right(rownr);
+        cfg.sessions.subscore_bradykinesia_left = UPDRS.subscore_bradykinesia_left(rownr);
+        cfg.sessions.subscore_bradykinesia_total = UPDRS.subscore_bradykinesia_total(rownr);
     end
+     
+    
+    %if isfield(intern_cfg.scans_tsv,'UPDRS_III')
+    %    cfg.sessions.UPDRS_III             =  intern_cfg.scans_tsv.UPDRS_III;
+    %else
+    %    cfg.sessions.UPDRS_III             =  intern_cfg.sessions_tsv.UPDRS_III;
+    %end
     
     cfg.task                    = intern_cfg.entities.task;
     cfg.acq                     = intern_cfg.entities.acquisition; %'StimOff01';  % add here 'Dopa00' during dyskinesia-protocol recording: e.g. 'StimOff01Dopa30'. (Dyskinesia-protocol recordings start at the intake of an higher than normal Levodopa-dosage, and will always be labeled MedOn)

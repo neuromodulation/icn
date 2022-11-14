@@ -70,6 +70,7 @@ for i =1:length(jsonfiles)
     
     
     if ~isequal(intern_cfg.data.label, intern_cfg.channels_tsv.name)
+        error()
         method = 'update_channels';
         clf('reset')
         set(0,'CurrentFigure',fg);
