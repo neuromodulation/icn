@@ -27,11 +27,11 @@ def get_all_vhdr_files(directory):
 
 
 # Choose an output directory
-os.chdir(r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev")
+os.chdir(r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\metadata")
 
 # where is the BIDS data located?
 # root = r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Beijing_ECOG_LFP\rawdata"
-root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Berlin_ECOG_LFP\rawdata"
+root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_01_Berlin_Neurophys\rawdata"
 # root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c"
 
 import csv
