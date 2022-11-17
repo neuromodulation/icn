@@ -17,9 +17,9 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         temp = jsondecode(str);
         json_names=fieldnames(jsondecode(str));
         for k=1:length(json_names)
-            eval(['intern_cfg.' json_names{k} '=temp.' json_names{k}]);            
+            eval(['intern_cfg.' json_names{k} '=temp.' json_names{k} ';']);            
         end
-        return
+        return;
     end
 
     %% assign all variables to the cfg
@@ -267,7 +267,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         
         
         
-        return
+        return;
     else
         chs_final = intern_cfg.channels_tsv.name;
     end
@@ -336,11 +336,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     
     if isfield(intern_cfg,'sessions_tsv')
         
-       cfg.sessions.acq_date = intern_cfg.sessions_tsv.acq_date;
+       cfg.sessions.acq_date = char(intern_cfg.sessions_tsv.acq_date);
         
     else
        if ~strcmp(intern_cfg.scans_tsv.acq_time,'n/a')
-            cfg.sessions.acq_date =  char(intern_cfg.scans_tsv.acq_time(1:10));%for the sessions.tsv file
+            cfg.sessions.acq_date =  char([intern_cfg.scans_tsv.acq_time(1:10) ' ']);%for the sessions.tsv file
+            cfg.sessions.acq_date
        end
         
     end
@@ -371,11 +372,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     end
      
     
-    %if isfield(intern_cfg.scans_tsv,'UPDRS_III')
-    %    cfg.sessions.UPDRS_III             =  intern_cfg.scans_tsv.UPDRS_III;
-    %else
-    %    cfg.sessions.UPDRS_III             =  intern_cfg.sessions_tsv.UPDRS_III;
-    %end
+    
     
     cfg.task                    = intern_cfg.entities.task;
     cfg.acq                     = intern_cfg.entities.acquisition; %'StimOff01';  % add here 'Dopa00' during dyskinesia-protocol recording: e.g. 'StimOff01Dopa30'. (Dyskinesia-protocol recordings start at the intake of an higher than normal Levodopa-dosage, and will always be labeled MedOn)
@@ -390,15 +387,29 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     % the acquisition time could be found in the folder name of the recording
 
     cfg.scans.acq_time              =  intern_cfg.scans_tsv.acq_time;
-
+    
+    
+    % specify ieeg specific information
+    
+    DataNotes = readtable('Data_Notes_Berlin.xlsx','sheet','TO_JSON','Range','A:J');
+    total_name =  ['sub-', cfg.sub, '_ses-', cfg.ses, '_task-', cfg.task, '_acq-',cfg.acq,'_run-',num2str(cfg.run)];
+    rownr = find((contains(DataNotes.Filename, total_name)));
+    if size(rownr)==[1,1]
+        cfg.ieeg.Recording_notes        = DataNotes.recording_notes{rownr};
+        cfg.ieeg.Data_use               = DataNotes.data_use{rownr};
+        cfg.ieeg.Reference_description  = DataNotes.reference_description{rownr};
+        cfg.ieeg.Subject_notes          = DataNotes.subject_notes{rownr}; 
+    end
+    
+    
     % Specify some general information
     cfg.InstitutionName                         = 'Charite - Universitaetsmedizin Berlin, corporate member of Freie Universitaet Berlin and Humboldt-Universitaet zu Berlin, Department of Neurology with Experimental Neurology/BNIC, Movement Disorders and Neuromodulation Unit';
     cfg.InstitutionAddress                      = 'Chariteplatz 1, 10117 Berlin, Germany';
-    cfg.dataset_description.Name                = 'BIDS_Berlin_ECOG_LFP';
-    cfg.dataset_description.BIDSVersion         = '1.7.0';
+    cfg.dataset_description.Name                = 'BIDS_01_Berlin_Neurophys';
+    cfg.dataset_description.BIDSVersion         = '1.8.0';
     cfg.dataset_description.License             = 'n/a';
     cfg.dataset_description.Funding             = {'Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) - Project-ID 424778381 - TRR 295'};
-    cfg.dataset_description.Authors             = {'Johannes Busch', 'Meera Chikermane', 'Katharina Faust', 'Lucia Feldmann', 'Jeroen Habets', 'Richard Koehler', 'Andrea Kuehn', 'Roxanne Lofredi', 'Timon Merk', 'Wolf-Julian Neumann', 'Gerd-Helge Schneider', 'Ulrike Uhlig', 'Jonathan Vanhoecke'};
+    cfg.dataset_description.Authors             = {'Thomas Binns','Johannes Busch','Alessia Cavallo', 'Meera Chikermane', 'Katharina Faust', 'Lucia Feldmann', 'Jeroen Habets', 'Richard Koehler', 'Andrea Kuehn', 'Roxanne Lofredi', 'Timon Merk', 'Wolf-Julian Neumann', 'Gerd-Helge Schneider', 'Ulrike Uhlig', 'Jonathan Vanhoecke'};
     cfg.dataset_description.Acknowledgements    = 'Special thanks to all other people involved in acquiring the data.';
 
 
@@ -499,8 +510,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.participants.handedness             = intern_cfg.participants.handedness; %LFP excel sheet
     cfg.participants.age                    = intern_cfg.participants.age ; %LFP excel sheet
     cfg.participants.date_of_implantation   = intern_cfg.participants.date_of_implantation ;  %'2022-01-20T00:00:00'; %LFP excel sheet
-    cfg.participants.UPDRS_III_preop_OFF    = 'n/a';%-> UPDRS is on session level
-    cfg.participants.UPDRS_III_preop_ON     = 'n/a';%-> UPDRS is on session level
+    cfg.participants.UPDRS_III_preop_OFF    = 'n/a';
+    cfg.participants.UPDRS_III_preop_ON     = 'n/a';
     cfg.participants.disease_duration       = intern_cfg.participants.disease_duration;%7; %LFP excel sheet
     cfg.participants.PD_subtype             = intern_cfg.participants.PD_subtype; %'akinetic-rigid'; %SAP
     cfg.participants.symptom_dominant_side  = intern_cfg.participants.symptom_dominant_side;% 'right'; %LFP excel sheet
@@ -801,6 +812,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             exp.StimulationTarget         = DBS_target;
             exp.StimulationMode           = "continuous";
             exp.StimulationParadigm       = "continuous stimulation";
+            
+            if contains(cfg.task, 'VigorStim')
+                exp.StimulationMode           = "time-varying";
+                exp.StimulationParadigm       = "speed adaptive DBS";
+            end
+            
             exp.SimulationMontage         = "monopolar";
             if strcmpi(intern_cfg.stim.L,'OFF')
                 L = 'OFF';
