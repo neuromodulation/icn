@@ -74,3 +74,4 @@ profile_default/
 # intellij configs
 .idea/
 *.xses
+*.Poly5.json

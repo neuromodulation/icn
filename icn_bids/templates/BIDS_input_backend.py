@@ -151,6 +151,7 @@ bids_handedness = widgets.RadioButtons(
         "n/a",
         "right",
         "left",
+        "equal"
     ],
     description="handedness",
     style=style,
@@ -177,6 +178,7 @@ bids_symptom_dominant_side = widgets.RadioButtons(
         "n/a",
         "right",
         "left",
+        "equal"
     ],
     description="symptom dominant side",
     style=style,
@@ -900,7 +902,11 @@ def save_all_information(*args):
                 metadict['stim']['L']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
             if '_R_' in bids_stimulation_contact[stimcon].value:
                 metadict['stim']['R']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
-
+    del bids_stimulation_contact
+    del bids_stimulation_frequency_left
+    del bids_stimulation_frequency_right
+    del bids_stimulation_amplitude_left
+    del bids_stimulation_amplitude_right
     metadict['ieeg'] = {}
     metadict['ieeg']['DeviceSerialNumber'] = str()
     metadict['ieeg']['ECGChannelCount'] = int()

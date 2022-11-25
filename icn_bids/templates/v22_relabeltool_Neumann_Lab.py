@@ -5,7 +5,7 @@ made by Jonathan Vanhoecke for the Neumann ICN Lab
 last update: 17.02.2022
 '''
 literal=False
-doyouwanttkinter=False
+doyouwanttkinter=True
 #get target folder
 #path_target_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Tiantan\conversion_room\rawdata"
 #path_target_folder=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Tuebingen"

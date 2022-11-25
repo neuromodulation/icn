@@ -259,11 +259,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
 
        intern_cfg.data.hdr.chantype   = chantype;
        % need to make this more generalizable
-       if strcmp(intern_cfg.entities.subject,'EL002') ||  strcmp(intern_cfg.entities.subject,'EL004')
-            intern_cfg.data.hdr.chanunit   = repmat({'uV'}, intern_cfg.data.hdr.nChans,1);
-       else
-            intern_cfg.data.hdr.chanunit   = repmat({'V'}, intern_cfg.data.hdr.nChans,1);
-       end
+       %if strcmp(intern_cfg.entities.subject,'EL002') ||  strcmp(intern_cfg.entities.subject,'EL004')
+       %     intern_cfg.data.hdr.chanunit   = repmat({'uV'}, intern_cfg.data.hdr.nChans,1);
+       %else
+       intern_cfg.data.hdr.chanunit   = repmat({'V'}, intern_cfg.data.hdr.nChans,1);
+       
         
         
         
@@ -340,7 +340,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         
     else
        if ~strcmp(intern_cfg.scans_tsv.acq_time,'n/a')
-            cfg.sessions.acq_date =  char([intern_cfg.scans_tsv.acq_time(1:10) ' ']);%for the sessions.tsv file
+            cfg.sessions.acq_date =  char([intern_cfg.scans_tsv.acq_time(1:10)]);%for the sessions.tsv file
             cfg.sessions.acq_date
        end
         
@@ -364,7 +364,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         cfg.sessions.subscore_tremor_left = UPDRS.subscore_tremor_left(rownr);
         cfg.sessions.subscore_tremor_total = UPDRS.subscore_tremor_total(rownr);
         cfg.sessions.subscore_rigidity_right = UPDRS.subscore_rigidity_right(rownr);
-        cfg.sesssion.subscore_rigidity_left = UPDRS.subscore_rigidity_left(rownr);
+        cfg.sessions.subscore_rigidity_left = UPDRS.subscore_rigidity_left(rownr);
         cfg.sessions.subscore_rigidity_total = UPDRS.subscore_rigidity_total(rownr);
         cfg.sessions.subscore_bradykinesia_right = UPDRS.subscore_bradykinesia_right(rownr);
         cfg.sessions.subscore_bradykinesia_left = UPDRS.subscore_bradykinesia_left(rownr);
