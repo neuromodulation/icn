@@ -15,12 +15,12 @@ fg = figure(1);
 % this is where the meta json files are located
 cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev')
 % This is the output root folder for our BIDS-dataset
-rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_json_data_notes\';
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_LFPonly\';
  % This is the input root folder for our BIDS-dataset
 % sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
 % sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-L008';
 %% set up conversion intensions
-use_dummy_data = true;
+use_dummy_data = false;
 % hard_coded_channel_renaming=false;
 % hard_coded_reference=false;
 %% let's start
@@ -74,7 +74,10 @@ for i =1:length(jsonfiles)
     
     
     if ~isequal(intern_cfg.data.label, intern_cfg.channels_tsv.name)
-        error()
+        if use_dummy_data
+            error('no updating from channels')
+        end
+        
         method = 'update_channels';
         clf('reset')
         set(0,'CurrentFigure',fg);

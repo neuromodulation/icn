@@ -560,7 +560,22 @@ go_to_reference = widgets.Button(
 )
 
 def plot_channels(*args):
-
+    global bids_channel_names_widgets
+    global bids_channel_names_list
+    global bids_reference
+    global bids_status_description_widgets
+    global bids_status_description_list
+    global bids_stimulation_contact
+    global bids_stimulation_amplitude_left
+    global bids_stimulation_frequency_left
+    global bids_stimulation_amplitude_right
+    global bids_stimulation_frequency_right
+    bids_channel_names_widgets = []
+    bids_channel_names_list = []
+    bids_reference = []
+    bids_status_description_widgets = []
+    bids_status_description_list = []
+    bids_stimulation_contact = []
     data = Poly5Reader(bids_filechooser[-1].selected_path + os.sep + bids_filechooser[-1].selected_filename)
 
     info = mne.create_info(ch_names=[ch._Channel__name for ch in data.channels], sfreq=data.sample_rate, ch_types=data.num_channels * ['misc'])
@@ -664,6 +679,11 @@ save_to_json = widgets.Button(
 
 
 def define_reference_and_stims(*args):
+    global bids_stimulation_contact
+    global bids_stimulation_amplitude_left
+    global bids_stimulation_frequency_left
+    global bids_stimulation_amplitude_right
+    global bids_stimulation_frequency_right
 
     for widget in bids_channel_names_widgets:
         if widget.value != '':
@@ -902,11 +922,6 @@ def save_all_information(*args):
                 metadict['stim']['L']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
             if '_R_' in bids_stimulation_contact[stimcon].value:
                 metadict['stim']['R']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
-    del bids_stimulation_contact
-    del bids_stimulation_frequency_left
-    del bids_stimulation_frequency_right
-    del bids_stimulation_amplitude_left
-    del bids_stimulation_amplitude_right
     metadict['ieeg'] = {}
     metadict['ieeg']['DeviceSerialNumber'] = str()
     metadict['ieeg']['ECGChannelCount'] = int()

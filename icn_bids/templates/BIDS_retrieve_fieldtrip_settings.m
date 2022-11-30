@@ -679,7 +679,9 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             cfg.electrodes.size = intern_cfg.electrodes_tsv.size;
             add_ECOG_size = 0;
         else
-            error('no electrode size')
+            if isempty(cfg.electrodes.size)
+                error('no electrode size')
+            end
         end
     else
         error('no electrode size')
@@ -720,18 +722,21 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
 %         cfg.channels.type               = intern_cfg.channels_tsv.type;
             cfg.channels = intern_cfg.channels_tsv; %these are recording-specific, and often manually updated or maintained
         else
-            error('need to fix code so that number channels.tsv can have fewer ECOG contacts based on the model, because sometimes they are empty or deleted') 
+            if ECOG_contacts == 12
+                error('need to fix code so that number channels.tsv can have fewer ECOG contacts based on the model, because sometimes they are empty or deleted') 
+            end
             %from the python input file
             cfg.channels.status             = intern_cfg.channels_tsv.status;
             cfg.channels.status_description = intern_cfg.channels_tsv.status_description;
             % settings that are mostly applicable, but now cut out
             cfg.channels.name               = chs_final;
-            cfg.channels.type               = chantype;
+            cfg.channels.type               = intern_cfg.data.hdr.chantype;
              % MOSTLY Always reset the channels references
             typeSet = {'EEG', 'ECOG', 'DBS', 'SEEG', 'EMG', 'ECG', 'MISC'};
+            cfg.ieeg.iEEGReference = intern_cfg.ieeg.iEEGReference ; 
             refSet = {cfg.ieeg.iEEGReference, cfg.ieeg.iEEGReference, cfg.ieeg.iEEGReference, cfg.ieeg.iEEGReference, 'bipolar', 'bipolar', 'n/a'};
             ref_map = containers.Map(typeSet,refSet);
-            cfg.channels.reference = arrayfun(@(ch_type) {ref_map(ch_type{1})}, chantype);
+            cfg.channels.reference = arrayfun(@(ch_type) {ref_map(ch_type{1})}, cfg.channels.type);
             cfg.channels.status(find(contains(cfg.channels.name, cfg.ieeg.iEEGReference)))={'bad'}
             cfg.channels.status_description(find(contains(cfg.channels.name, cfg.ieeg.iEEGReference)))={'Reference electrode'}
 
@@ -819,31 +824,38 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             end
             
             exp.SimulationMontage         = "monopolar";
-            if strcmpi(intern_cfg.stim.L,'OFF')
+            if ~isfield(intern_cfg.stim, 'L')
                 L = 'OFF';
             else
-                L.AnodalContact               = "Ground";
-                L.CathodalContact             = intern_cfg.stim.L.CathodalContact;
-                L.AnodalContactDirection      = "none";
-                L.CathodalContactDirection    = "omni";
-                L.CathodalContactImpedance    = "n/a";
-                L.StimulationAmplitude        = intern_cfg.stim.L.StimulationAmplitude;
-                L.StimulationPulseWidth       = 60;
-                L.StimulationFrequency        = intern_cfg.stim.L.StimulationFrequency;
-                L.InitialPulseShape           = "rectangular";
-                L.InitialPulseWidth           = 60;
-                L.InitialPulseAmplitude       = -1.0*L.StimulationAmplitude;
-                L.InterPulseDelay             = 0;
-                L.SecondPulseShape            = "rectangular";
-                L.SecondPulseWidth            = 60;
-                L.SecondPulseAmplitude        = L.StimulationAmplitude;
-                L.PostPulseInterval           = "n/a";
+                if strcmpi(intern_cfg.stim.L,'OFF')
+                    L = 'OFF';
+                else
+                    L.AnodalContact               = "Ground";
+                    L.CathodalContact             = intern_cfg.stim.L.CathodalContact;
+                    L.AnodalContactDirection      = "none";
+                    L.CathodalContactDirection    = "omni";
+                    L.CathodalContactImpedance    = "n/a";
+                    L.StimulationAmplitude        = intern_cfg.stim.L.StimulationAmplitude;
+                    L.StimulationPulseWidth       = 60;
+                    L.StimulationFrequency        = intern_cfg.stim.L.StimulationFrequency;
+                    L.InitialPulseShape           = "rectangular";
+                    L.InitialPulseWidth           = 60;
+                    L.InitialPulseAmplitude       = -1.0*L.StimulationAmplitude;
+                    L.InterPulseDelay             = 0;
+                    L.SecondPulseShape            = "rectangular";
+                    L.SecondPulseWidth            = 60;
+                    L.SecondPulseAmplitude        = L.StimulationAmplitude;
+                    L.PostPulseInterval           = "n/a";
+                end
             end
             exp.Left                      = L;
             
-            if strcmpi(intern_cfg.stim.R,'OFF')
+            if ~isfield(intern_cfg.stim, 'R')
                 R = 'OFF';
             else
+                if strcmpi(intern_cfg.stim.R,'OFF')
+                    R = 'OFF';
+                else
                 R.AnodalContact               = "Ground";
                 R.CathodalContact             = intern_cfg.stim.R.CathodalContact;
                 R.AnodalContactDirection      = "none";
@@ -860,6 +872,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                 R.SecondPulseWidth            = 60;
                 R.SecondPulseAmplitude        = R.StimulationAmplitude;
                 R.PostPulseInterval           = "n/a";
+                end
             end
             exp.Right                     = R;
 
