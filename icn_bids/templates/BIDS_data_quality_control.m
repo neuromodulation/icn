@@ -15,10 +15,10 @@ fg = figure(1);
 % this is where the meta json files are located
 cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev')
 % This is the output root folder for our BIDS-dataset
-rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_LFPonly\';
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata17\';
  % This is the input root folder for our BIDS-dataset
 % sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
-% sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-L008';
+sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-L017';
 %% set up conversion intensions
 use_dummy_data = false;
 % hard_coded_channel_renaming=false;

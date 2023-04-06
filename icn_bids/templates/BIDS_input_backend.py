@@ -585,12 +585,14 @@ def plot_channels(*args):
 
     for ch in raw.ch_names:
 
-        if ch.startswith('LFP'):
+        if ('STN' in ch) or ('LFP' in ch) :
             preset = 'LFP_' + ch[3] + '_' + ''.join(filter(lambda i: i.isdigit(), ch)).rjust(2,"0") + '_'
             if 'STN' in ch: preset += 'STN_'
             if ch.endswith('B'):
                 preset += 'BS'
             elif ch.endswith('M'):
+                preset += 'MT'
+            elif ch.endswith('MT'):
                 preset += 'MT'
             elif ch.endswith('STN'):
                 preset += 'MT'  # assume that Medtronic is standard
@@ -622,11 +624,11 @@ def plot_channels(*args):
                 preset += 'TM'
         elif re.search("R[0-9]C[0-9]",ch):
             preset = "EMG_L_" + re.search("R[0-9]C[0-9]",ch).group() + "_BR_TM"
-        elif ch.startswith('BIP 01'):
+        elif ch.startswith('BIP 01') or ch.startswith('EMGR'):
             preset = 'EMG_R_BR_TM'
-        elif ch.startswith('BIP 02'):
+        elif ch.startswith('BIP 02') or ch.startswith('EMGL'):
             preset = 'EMG_L_BR_TM'
-        elif ch.startswith('BIP 03'):
+        elif ch.startswith('BIP 03') or ch.startswith('ECG'):
             preset = 'ECG'
         elif ch.startswith('X-0'):
             preset = 'ACC_R_X_D2_TM'
