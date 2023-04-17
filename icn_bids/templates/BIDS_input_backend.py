@@ -604,8 +604,14 @@ def plot_channels(*args):
             elif ch.startswith('ECXR12'):
                 preset = 'ECOG_R_12_SMC_AT'
             else:
-                preset = 'ECOG_' + ch[3] + '_' + ''.join(filter(lambda i: i.isdigit(), ch)).rjust(2,"0") + '_'
-                if 'SMC' in ch: preset += 'SMC_'
+                if (ch[3] == 'R') and (bids_ECOG_hemisphere.value == 'right'):
+                    ecog_side='R'
+                elif (ch[3] == 'L') and (bids_ECOG_hemisphere.value == 'left'):
+                    ecog_side = 'L'
+                else:
+                    ecog_side = 'HEMISPHERE_AMBIGUITY'
+                preset = 'ECOG_' + ecog_side + '_' + ''.join(filter(lambda i: i.isdigit(), ch)).rjust(2,"0") + '_'
+                if 'SM' in ch: preset += 'SMC_'
                 if ch.endswith('B'):
                     preset += 'BS'
                 elif ch.endswith('M'):
