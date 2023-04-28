@@ -32,6 +32,7 @@ os.chdir(r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\metadata")
 # where is the BIDS data located?
 # root = r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Beijing_ECOG_LFP\rawdata"
 root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_01_Berlin_Neurophys\rawdata"
+root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_01_Berlin_Neurophys\rawdata_27.04.2023"
 # root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c"
 
 import csv
@@ -54,9 +55,11 @@ for run_file in run_files:
         task=entities["task"],
         run=entities["run"],
         acquisition=entities["acquisition"],
+        description=entities["description"],
         datatype=datatype,
         root=root,
     )
+    print(bidspath)
     # raw_arr = mne_bids.read_raw_bids(bidspath)
 
     # read in associated subject info from participants.tsv
@@ -116,7 +119,7 @@ for run_file in run_files:
         bids_channels[col_name] = value
 
     # read the ieeg json
-    sidecar_fname = _find_matching_sidecar(bidspath, suffix=datatype, extension=".json")
+    sidecar_fname = _find_matching_sidecar(bidspath,suffix=datatype, extension=".json")
     with open(sidecar_fname, "r", encoding="utf-8-sig") as fin:
         bids_sidecar_json = json.load(fin)
 

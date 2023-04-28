@@ -15,12 +15,12 @@ fg = figure(1);
 % this is where the meta json files are located
 cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev')
 % This is the output root folder for our BIDS-dataset
-rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata17\';
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update\';
  % This is the input root folder for our BIDS-dataset
 % sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
-sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-L017';
+%sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-L017';
 %% set up conversion intensions
-use_dummy_data = false;
+use_dummy_data = true; %for updating metadata files
 % hard_coded_channel_renaming=false;
 % hard_coded_reference=false;
 %% let's start
@@ -104,7 +104,13 @@ for i =1:length(jsonfiles)
     [cfg,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg);
 
     % Now convert data to BIDS !
-    data2bids(cfg, intern_cfg.data);
+    if startsWith(cfg.ses,pattern('EcogLfpMedOffDys'))
+        disp('Does not convert following because of MedOffDys:'); cfg.ses %take instead MedOffOnDys data
+    elseif startsWith(cfg.ses,pattern('EcogLfpMedOnDys'))
+        disp('Does not convert following because of MedOnDys:'); cfg.ses %take instead MedOffOnDys data
+    else
+        data2bids(cfg, intern_cfg.data);
+    end
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% save configuration data when needed
@@ -114,10 +120,10 @@ for i =1:length(jsonfiles)
     % savejson('',intern_cfg_save,intern_cfg.jsonfile)
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %% Quick fix for the scans.tsv file
+    %% Quick fix for the scans.json file
     scans_json_fname = sprintf('sub-%s_ses-%s_scans.json',cfg.sub,cfg.ses);
 
-    scans_json.acq_time.Description         = 'date and time of acquistion in the format YYYY-MM-DDThh:mm:ss';
+    scans_json.acq_time.Description         = 'date and time of acquistion in the format YYYY-MM-DDThh:mm:ss. In case of missing timepoint format is YYYY-MM-DDT00:00:00';
     scans_json.acq_time.Units               = 'datetime';
 %    scans_json.acq_time.TermURL             = char("https:\\tools.ietf.org\html\rfc3339#section-5.6");
 %    scans_json.medication_sate.Description  = 'state of medication during recording';
@@ -141,11 +147,99 @@ for i =1:length(jsonfiles)
     sessions_json.medication_sate.Levels.ON    = 'ON parkinsonian medication';
     sessions_json.UPDRS_III.Description        = char("Score of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
     sessions_json.UPDRS_III.TermURL            = char("https:\\doi.org\10.1002\mds.10473");
+    sessions_json.subscore_tremor_right.Description        = char("Tremor subscore right of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+    sessions_json.subscore_tremor_left.Description        = char("Tremor subscore left of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+    sessions_json.subscore_tremor_total.Description        = char("Tremor subscore total of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+    sessions_json.subscore_rigidity_right.Description        = char("Rigidity subscore right of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+    sessions_json.subscore_rigidity_left.Description        = char("Rigidity subscore left of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+    sessions_json.subscore_rigidity_total.Description        = char("Rigidity subscore total of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+    sessions_json.subscore_bradykinesia_right.Description        = char("Bradykinesia subscore right of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+    sessions_json.subscore_bradykinesia_left.Description        = char("Bradykinesia subscore left of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+    sessions_json.subscore_bradykinesia_total.Description        = char("Bradykinesia subscore total of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
 
     fileID = fopen(fullfile(cfg.bidsroot,cfg.sub,sessions_json_fname));
     savejson('',sessions_json,sessions_json_fname)
     movefile(sessions_json_fname,fullfile(cfg.bidsroot,['sub-' cfg.sub]))
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Make duplicates of the REST Data in case of MedOnDys or MedOffDys
+    clarification_MedOffOnDys= strjoin({'Dyskinesia Protocol:',...
+    'The filename indicates time after intake of a fast-acting dopaminergic agent (Madopar LT) as Dopa XX (minutes after intake).', ...
+    'For all rest analyses aiming to compare OFF and ON medication states:', ...
+    'use the Dopa00 or pre-medication (DopaPre) for OFF and', ...
+    'use the Dopa60 (Dopa50-Dopa70) for ON medication conditions.', ...
+    ' ', ...
+    'A mere copy of the recordings can be found in the session folder MedOnDys and MedOffDys.', ...
+    'The data is being managed in, written in and copied from the MedOffOnDys folder.', ...
+    'The MedOffOnDys contains also all other recordings of that session.'},'\n');
     
+    if contains(cfg.ses,'MedOffOnDys')
+        
+        time_since_medication = str2double(cfg.acq(isstrprop(cfg.acq, 'digit')));
+        if time_since_medication==0 || contains(cfg.acq, 'DopaPre')
+            cfg.ses = strrep(cfg.ses,'MedOffOn','MedOff');                
+            cfg.sessions.medication_state = strrep(cfg.sessions.medication_state,'OFFON','OFF');
+            
+            create_a_copy = 1;
+           
+        elseif 50 <= time_since_medication && time_since_medication<= 70
+            cfg.ses = strrep(cfg.ses,'MedOffOn','MedOn');
+            cfg.sessions.medication_state = strrep(cfg.sessions.medication_state,'OFFON','ON');
+
+            create_a_copy = 1;
+        else
+            create_a_copy = 0;
+        end
+        
+
+            
+        if create_a_copy == 1
+            UPDRS=readtable('UPDRS_Berlin.xlsx','sheet','recording_detailed');
+            rownr = find(and(contains(UPDRS.Subject, cfg.sub) , contains(UPDRS.Session, cfg.ses)));
+            if size(rownr)==[1,1]
+                cfg.sessions.UPDRS_III = UPDRS.UPDRS_III(rownr);
+                cfg.sessions.subscore_tremor_right = UPDRS.subscore_tremor_right(rownr);
+                cfg.sessions.subscore_tremor_left = UPDRS.subscore_tremor_left(rownr);
+                cfg.sessions.subscore_tremor_total = UPDRS.subscore_tremor_total(rownr);
+                cfg.sessions.subscore_rigidity_right = UPDRS.subscore_rigidity_right(rownr);
+                cfg.sessions.subscore_rigidity_left = UPDRS.subscore_rigidity_left(rownr);
+                cfg.sessions.subscore_rigidity_total = UPDRS.subscore_rigidity_total(rownr);
+                cfg.sessions.subscore_bradykinesia_right = UPDRS.subscore_bradykinesia_right(rownr);
+                cfg.sessions.subscore_bradykinesia_left = UPDRS.subscore_bradykinesia_left(rownr);
+                cfg.sessions.subscore_bradykinesia_total = UPDRS.subscore_bradykinesia_total(rownr);
+            else
+                cfg.sessions.UPDRS_III = 'n/a';
+                cfg.sessions.subscore_tremor_right = 'n/a';
+                cfg.sessions.subscore_tremor_left = 'n/a';
+                cfg.sessions.subscore_tremor_total = 'n/a';
+                cfg.sessions.subscore_rigidity_right = 'n/a';
+                cfg.sessions.subscore_rigidity_left = 'n/a';
+                cfg.sessions.subscore_rigidity_total = 'n/a';
+                cfg.sessions.subscore_bradykinesia_right = 'n/a';
+                cfg.sessions.subscore_bradykinesia_left = 'n/a';
+                cfg.sessions.subscore_bradykinesia_total = 'n/a';
+            end
+            
+            data2bids(cfg, intern_cfg.data);
+            
+            fileID = fopen('README.txt','w');
+            fprintf(fileID, clarification_MedOffOnDys);
+            fclose(fileID);
+            movefile('README.txt',fullfile(cfg.bidsroot,['sub-' cfg.sub],['ses-' cfg.ses]))
+
+            scans_json_fname = sprintf('sub-%s_ses-%s_scans.json',cfg.sub,cfg.ses);
+            fileID = fopen(fullfile(cfg.bidsroot,cfg.sub,cfg.ses,scans_json_fname));
+            savejson('',scans_json,scans_json_fname)
+            movefile(scans_json_fname,fullfile(cfg.bidsroot,['sub-' cfg.sub],['ses-' cfg.ses]))
+        
+        
+        else
+            disp('Not relevant MedOffOnDys Rest recording:')
+            disp([cfg.sub , ' ' , cfg.task, ' ', cfg.acq])
+        end
+     
+    end
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% move the config file out of the way -> inside the rawdata
