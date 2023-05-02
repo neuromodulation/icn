@@ -1,6 +1,6 @@
 # This script provides a meta-json structure of a BIDS dataset, which can be afterwards modified and converted with Fieldtrip
 # created by Jonathan Vanhoecke - ICN lab
-# 21.02.2022
+# 02.05.2023
 
 import os
 import mne_bids
@@ -60,6 +60,7 @@ for run_file in run_files:
         root=root,
     )
     print(bidspath)
+
     # raw_arr = mne_bids.read_raw_bids(bidspath)
 
     # read in associated subject info from participants.tsv
@@ -83,8 +84,30 @@ for run_file in run_files:
     bids_scans = dict()
     for col_name, value in scans_tsv.items():
         scans = scans_tsv["filename"]
-        row_ind = scans.index(f"ieeg/{bidspath.basename}_ieeg.vhdr")
-        bids_scans[col_name] = value[row_ind]
+        try:
+            row_ind = scans.index(f"ieeg/{bidspath.basename}_ieeg.vhdr")
+            bids_scans[col_name] = value[row_ind]
+        except ValueError:
+            if bidspath.description=='neurobehav' or bidspath.description=='behav':
+                bids_scans['filename'] = f"ieeg/{bidspath.subject}_ieeg.vhdr"
+                bidspath_with_neurophys_desc = bidspath.copy().update(description='neurophys')
+                row_ind = scans.index(f"ieeg/{bidspath_with_neurophys_desc.basename}_ieeg.vhdr")
+                bids_scans[col_name] = value[row_ind]
+
+    # read the sessions tsv
+    sessions_fname = BIDSPath(
+        subject=bidspath.subject,
+        suffix="sessions",
+        extension=".tsv",
+        root=bidspath.root,
+    ).fpath
+
+    sessions_tsv = _from_tsv(sessions_fname)
+    bids_sessions = dict()
+    sessions = sessions_tsv["session_id"]
+    row_ind = sessions.index(f"ses-{bidspath.session}")
+    for col_name, value in sessions_tsv.items():
+        bids_sessions[col_name] = value[row_ind]
 
     # read in the electrodes tsv
     electrodes_fname = BIDSPath(
@@ -109,6 +132,7 @@ for run_file in run_files:
         task=entities["task"],
         run=entities["run"],
         acquisition=entities["acquisition"],
+        description=entities["description"],
         suffix="channels",
         extension=".tsv",
         root=bidspath.root,
@@ -117,6 +141,7 @@ for run_file in run_files:
     bids_channels = dict()
     for col_name, value in channels_tsv.items():
         bids_channels[col_name] = value
+
 
     # read the ieeg json
     sidecar_fname = _find_matching_sidecar(bidspath,suffix=datatype, extension=".json")
@@ -134,6 +159,18 @@ for run_file in run_files:
     if scans_json_fname.exists():
         with open(scans_json_fname, "r", encoding="utf-8-sig") as fin:
             bids_scans_json = json.load(fin)
+
+    # read the sessions.json
+    sessions_json_fname = BIDSPath(
+        subject=bidspath.subject,
+        suffix="sessions",
+        extension=".json",
+        root=bidspath.root,
+    ).fpath
+
+    if sessions_json_fname.exists():
+        with open(sessions_json_fname, "r", encoding="utf-8-sig") as fin:
+            bids_sessions_json = json.load(fin)
 
     # read the coords json
     coords_fname = BIDSPath(
@@ -156,10 +193,12 @@ for run_file in run_files:
     bidsdict["participants"] = bids_participants
     bidsdict["scans_tsv"] = bids_scans
 #    bidsdict["scans_json"] = bids_scans_json
+#    bidsdict["sesssions_json"] = bids_sessions_json
     bidsdict["channels_tsv"] = bids_channels
     bidsdict["electrodes_tsv"] = bids_electrodes
     bidsdict["coord_json"] = bids_coords_json
     bidsdict["ieeg"] = bids_sidecar_json
+    bidsdict["sessions_tsv"] = bids_sessions
 
 
     json_writeout = bidspath.basename + ".json"
@@ -167,16 +206,16 @@ for run_file in run_files:
     with open(json_writeout, "w") as outfile:
         json.dump(bidsdict, outfile, indent=4)
 
-    run_file_list.append(bidsdict["inputdata_fname"])
-    references.append(bidsdict["ieeg"]["iEEGReference"])
-    try:
-        HardwareFiltersUnipolarChannels.append(bidsdict["ieeg"]["HardwareFilters"]["Anti_AliasFilter"]["Low_Pass"]["UnipolarChannels"])
-    except:
-        HardwareFiltersUnipolarChannels.append('n/a')
-    try:
-        ElectricalStimulation.append(bidsdict["ieeg"]["ElectricalStimulation"])
-    except:
-        ElectricalStimulation.append('n/a')
+    #run_file_list.append(bidsdict["inputdata_fname"])
+    #references.append(bidsdict["ieeg"]["iEEGReference"])
+    #try:
+    #    HardwareFiltersUnipolarChannels.append(bidsdict["ieeg"]["HardwareFilters"]["Anti_AliasFilter"]["Low_Pass"]["UnipolarChannels"])
+    #except:
+    #    HardwareFiltersUnipolarChannels.append('n/a')
+    #try:
+    #    ElectricalStimulation.append(bidsdict["ieeg"]["ElectricalStimulation"])
+    #except:
+    #    ElectricalStimulation.append('n/a')
 
 
 # print('\n'.join(run_file_list))

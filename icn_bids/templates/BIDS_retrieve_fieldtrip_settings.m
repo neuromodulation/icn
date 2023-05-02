@@ -369,10 +369,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
 
     if matches(intern_cfg.scans_tsv.acq_time,pat1)
         cfg.scans.acq_time = intern_cfg.scans_tsv.acq_time; %known time point
-    elseif matches(intern_cfg.session_tsv.acq_date,pat2)
-        cfg.scans.acq_time = [intern_cfg.session_tsv.acq_date , 'T00:00:00']; %unknown time point
+    elseif contains(intern_cfg.scans_tsv.acq_time,'n/a')
+        error('no datetime found in scans tsv, it contains n/a')        
+    elseif matches(intern_cfg.sessions_tsv.acq_date,pat2)
+        cfg.scans.acq_time = [intern_cfg.sessions_tsv.acq_date , 'T00:00:00']; %unknown time point
     else
-        error('no datetime found')
+        error('no datetime found in sessions tsv neither match in scans.tsv')
     end
    
     
@@ -417,6 +419,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
      
     
     cfg.task                    = intern_cfg.entities.task;
+    %cfg.description            is determined at place of stimsettings
     cfg.acq                     = intern_cfg.entities.acquisition; %'StimOff01';  % add here 'Dopa00' during dyskinesia-protocol recording: e.g. 'StimOffDopa30'.
     if isa(intern_cfg.entities.run,'double')
         cfg.run                 = intern_cfg.entities.run;
@@ -858,6 +861,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             if contains(cfg.task, 'VigorStim')
                 exp.StimulationMode           = "time-varying";
                 exp.StimulationParadigm       = "speed adaptive DBS";
+                cfg.description = intern_cfg.entities.description;
             end
             
             exp.SimulationMontage         = "monopolar";

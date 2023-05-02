@@ -13,18 +13,20 @@ ft_defaults
 fg = figure(1);
 %% set up pathing
 % this is where the meta json files are located
-cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev')
+cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\metadata')
 % This is the output root folder for our BIDS-dataset
 rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update\';
  % This is the input root folder for our BIDS-dataset
 % sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
 %sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-L017';
 %% set up conversion intensions
-use_dummy_data = true; %for updating metadata files
+use_dummy_data = false; %for updating metadata files
 % hard_coded_channel_renaming=false;
 % hard_coded_reference=false;
 %% let's start
 jsonfiles = dir('*.json');
+%% make output dir rawdata
+if ~exist(rawdata_root,'dir'), mkdir(rawdata_root); end
 for i =1:length(jsonfiles)
     %% set-up
     intern_cfg = struct();
@@ -35,8 +37,7 @@ for i =1:length(jsonfiles)
     JsonFolder = pwd;
     % define name of json-file generated for this session
     intern_cfg.jsonfile = jsonfiles(i).name; 
-    %% make output dir rawdata
-    if ~exist(rawdata_root,'dir'), mkdir(rawdata_root); end
+   
    
     %% read the meta data 
     method = 'readjson';
@@ -110,56 +111,57 @@ for i =1:length(jsonfiles)
         disp('Does not convert following because of MedOnDys:'); cfg.ses %take instead MedOffOnDys data
     else
         data2bids(cfg, intern_cfg.data);
+
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %% save configuration data when needed
+        % cd(JsonFolder)
+        % % remove fields that should not be printed
+        % intern_cfg_save = rmfield(intern_cfg,{'data','chs_other', 'rawdata_root'});
+        % savejson('',intern_cfg_save,intern_cfg.jsonfile)
+
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %% Quick fix for the scans.json file
+        scans_json_fname = sprintf('sub-%s_ses-%s_scans.json',cfg.sub,cfg.ses);
+
+        scans_json.acq_time.Description         = 'date and time of acquistion in the format YYYY-MM-DDThh:mm:ss. In case of missing timepoint format is YYYY-MM-DDT00:00:00';
+        scans_json.acq_time.Units               = 'datetime';
+    %    scans_json.acq_time.TermURL             = char("https:\\tools.ietf.org\html\rfc3339#section-5.6");
+    %    scans_json.medication_sate.Description  = 'state of medication during recording';
+    %    scans_json.medication_sate.Levels.OFF   = 'OFF parkinsonian medication';
+    %    scans_json.medication_sate.Levels.ON    = 'ON parkinsonian medication';
+    %    scans_json.UPDRS_III.Description        = char("Score of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+    %    scans_json.UPDRS_III.TermURL            = char("https:\\doi.org\10.1002\mds.10473");
+
+        fileID = fopen(fullfile(cfg.bidsroot,cfg.sub,cfg.ses,scans_json_fname));
+        savejson('',scans_json,scans_json_fname)
+        movefile(scans_json_fname,fullfile(cfg.bidsroot,['sub-' cfg.sub],['ses-' cfg.ses]))
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Quick fix for the sessions.json file
+        sessions_json_fname = sprintf('sub-%s_sessions.json',cfg.sub);
+
+        sessions_json.acq_time.Description         = 'date of acquistion in the format YYYY-MM-DD';
+        sessions_json.acq_time.Units               = 'date';
+        sessions_json.acq_time.TermURL             = char("https:\\tools.ietf.org\html\rfc3339#section-5.6");
+        sessions_json.medication_sate.Description  = 'state of medication during recording';
+        sessions_json.medication_sate.Levels.OFF   = 'OFF parkinsonian medication';
+        sessions_json.medication_sate.Levels.ON    = 'ON parkinsonian medication';
+        sessions_json.UPDRS_III.Description        = char("Score of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+        sessions_json.UPDRS_III.TermURL            = char("https:\\doi.org\10.1002\mds.10473");
+        sessions_json.subscore_tremor_right.Description        = char("Tremor subscore right of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+        sessions_json.subscore_tremor_left.Description        = char("Tremor subscore left of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+        sessions_json.subscore_tremor_total.Description        = char("Tremor subscore total of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+        sessions_json.subscore_rigidity_right.Description        = char("Rigidity subscore right of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+        sessions_json.subscore_rigidity_left.Description        = char("Rigidity subscore left of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+        sessions_json.subscore_rigidity_total.Description        = char("Rigidity subscore total of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+        sessions_json.subscore_bradykinesia_right.Description        = char("Bradykinesia subscore right of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+        sessions_json.subscore_bradykinesia_left.Description        = char("Bradykinesia subscore left of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+        sessions_json.subscore_bradykinesia_total.Description        = char("Bradykinesia subscore total of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
+
+        fileID = fopen(fullfile(cfg.bidsroot,cfg.sub,sessions_json_fname));
+        savejson('',sessions_json,sessions_json_fname)
+        movefile(sessions_json_fname,fullfile(cfg.bidsroot,['sub-' cfg.sub]))
     end
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %% save configuration data when needed
-    % cd(JsonFolder)
-    % % remove fields that should not be printed
-    % intern_cfg_save = rmfield(intern_cfg,{'data','chs_other', 'rawdata_root'});
-    % savejson('',intern_cfg_save,intern_cfg.jsonfile)
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %% Quick fix for the scans.json file
-    scans_json_fname = sprintf('sub-%s_ses-%s_scans.json',cfg.sub,cfg.ses);
-
-    scans_json.acq_time.Description         = 'date and time of acquistion in the format YYYY-MM-DDThh:mm:ss. In case of missing timepoint format is YYYY-MM-DDT00:00:00';
-    scans_json.acq_time.Units               = 'datetime';
-%    scans_json.acq_time.TermURL             = char("https:\\tools.ietf.org\html\rfc3339#section-5.6");
-%    scans_json.medication_sate.Description  = 'state of medication during recording';
-%    scans_json.medication_sate.Levels.OFF   = 'OFF parkinsonian medication';
-%    scans_json.medication_sate.Levels.ON    = 'ON parkinsonian medication';
-%    scans_json.UPDRS_III.Description        = char("Score of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
-%    scans_json.UPDRS_III.TermURL            = char("https:\\doi.org\10.1002\mds.10473");
-
-    fileID = fopen(fullfile(cfg.bidsroot,cfg.sub,cfg.ses,scans_json_fname));
-    savejson('',scans_json,scans_json_fname)
-    movefile(scans_json_fname,fullfile(cfg.bidsroot,['sub-' cfg.sub],['ses-' cfg.ses]))
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Quick fix for the sessions.json file
-    sessions_json_fname = sprintf('sub-%s_sessions.json',cfg.sub);
-
-    sessions_json.acq_time.Description         = 'date of acquistion in the format YYYY-MM-DD';
-    sessions_json.acq_time.Units               = 'date';
-    sessions_json.acq_time.TermURL             = char("https:\\tools.ietf.org\html\rfc3339#section-5.6");
-    sessions_json.medication_sate.Description  = 'state of medication during recording';
-    sessions_json.medication_sate.Levels.OFF   = 'OFF parkinsonian medication';
-    sessions_json.medication_sate.Levels.ON    = 'ON parkinsonian medication';
-    sessions_json.UPDRS_III.Description        = char("Score of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
-    sessions_json.UPDRS_III.TermURL            = char("https:\\doi.org\10.1002\mds.10473");
-    sessions_json.subscore_tremor_right.Description        = char("Tremor subscore right of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
-    sessions_json.subscore_tremor_left.Description        = char("Tremor subscore left of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
-    sessions_json.subscore_tremor_total.Description        = char("Tremor subscore total of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
-    sessions_json.subscore_rigidity_right.Description        = char("Rigidity subscore right of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
-    sessions_json.subscore_rigidity_left.Description        = char("Rigidity subscore left of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
-    sessions_json.subscore_rigidity_total.Description        = char("Rigidity subscore total of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
-    sessions_json.subscore_bradykinesia_right.Description        = char("Bradykinesia subscore right of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
-    sessions_json.subscore_bradykinesia_left.Description        = char("Bradykinesia subscore left of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
-    sessions_json.subscore_bradykinesia_total.Description        = char("Bradykinesia subscore total of the unified Parkinson's disease rating scale (UPDRS) part III, as determined on the day of recording.");
-
-    fileID = fopen(fullfile(cfg.bidsroot,cfg.sub,sessions_json_fname));
-    savejson('',sessions_json,sessions_json_fname)
-    movefile(sessions_json_fname,fullfile(cfg.bidsroot,['sub-' cfg.sub]))
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Make duplicates of the REST Data in case of MedOnDys or MedOffDys
     clarification_MedOffOnDys= strjoin({'Dyskinesia Protocol:',...
