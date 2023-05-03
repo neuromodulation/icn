@@ -421,6 +421,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.task                    = intern_cfg.entities.task;
     %cfg.description            is determined at place of stimsettings
     cfg.acq                     = intern_cfg.entities.acquisition; %'StimOff01';  % add here 'Dopa00' during dyskinesia-protocol recording: e.g. 'StimOffDopa30'.
+    % cfg.acq in case of StimOn is being set at the end
     if isa(intern_cfg.entities.run,'double')
         cfg.run                 = intern_cfg.entities.run;
     else
@@ -842,7 +843,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     
     
     cfg.ieeg.RecordingType          = 'continuous';
-    if contains(cfg.acq, 'On')
+    if contains(cfg.acq, 'StimOn') || contains(cfg.acq, 'StimOffOn')
         cfg.ieeg.ElectricalStimulation  = true;
     else
         cfg.ieeg.ElectricalStimulation  = false;
@@ -850,6 +851,30 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     if cfg.ieeg.ElectricalStimulation
         if isfield(intern_cfg.ieeg,'ElectricalStimulationParameters')
             cfg.ieeg.ElectricalStimulationParameters = intern_cfg.ieeg.ElectricalStimulationParameters;
+            if isstruct(cfg.ieeg.ElectricalStimulationParameters)
+                if isfield(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting, 'Right')
+                    if strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right,'n/a')
+                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right = struct();
+                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus="OFF";
+                    elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right,'OFF')
+                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right = struct();
+                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus="OFF";
+                    elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.InitialPulseShape,'rectangular') %to check whether there was stimulation
+                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus="ON";
+                    end
+                end
+                if isfield(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting, 'Left')
+                    if strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left,'n/a')
+                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left = struct();
+                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus="OFF";
+                    elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left,'OFF')
+                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left = struct();
+                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus="OFF";
+                    elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.InitialPulseShape,'rectangular') %to check whether there was stimulation
+                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus="ON";
+                    end
+                end
+            end
         else
             % Enter EXPERIMENTAL stimulation settings
             % these need to be written in the lab book
@@ -866,10 +891,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             
             exp.SimulationMontage         = "monopolar";
             if ~isfield(intern_cfg.stim, 'L')
-                L = 'OFF';
+                %L = 'OFF';
+                L.StimulationStatus           = "OFF";
             else
-                if strcmpi(intern_cfg.stim.L,'OFF')
-                    L = 'OFF';
+                if strcmpi(intern_cfg.stim.L,"OFF")
+                    %L = 'OFF';
+                    L.StimulationStatus           = "OFF";
                 else
                     L.AnodalContact               = "Ground";
                     L.CathodalContact             = intern_cfg.stim.L.CathodalContact;
@@ -879,6 +906,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     L.StimulationAmplitude        = intern_cfg.stim.L.StimulationAmplitude;
                     L.StimulationPulseWidth       = 60;
                     L.StimulationFrequency        = intern_cfg.stim.L.StimulationFrequency;
+                    L.StimulationStatus           = "ON";
                     L.InitialPulseShape           = "rectangular";
                     L.InitialPulseWidth           = 60;
                     L.InitialPulseAmplitude       = -1.0*L.StimulationAmplitude;
@@ -892,10 +920,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             exp.Left                      = L;
             
             if ~isfield(intern_cfg.stim, 'R')
-                R = 'OFF';
+               %R = 'OFF';
+               R.StimulationStatus           = "OFF";
             else
-                if strcmpi(intern_cfg.stim.R,'OFF')
-                    R = 'OFF';
+                if strcmpi(intern_cfg.stim.R,"OFF")
+                    %R = 'OFF';
+                    R.StimulationStatus           = "OFF";
                 else
                 R.AnodalContact               = "Ground";
                 R.CathodalContact             = intern_cfg.stim.R.CathodalContact;
@@ -905,6 +935,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                 R.StimulationAmplitude        = intern_cfg.stim.R.StimulationAmplitude;
                 R.StimulationPulseWidth       = 60;
                 R.StimulationFrequency        = intern_cfg.stim.R.StimulationFrequency;
+                R.StimulationStatus           = "ON";
                 R.InitialPulseShape           = "rectangular";
                 R.InitialPulseWidth           = 60;
                 R.InitialPulseAmplitude       = -1.0*R.StimulationAmplitude;
@@ -947,7 +978,41 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
 
             param.BestClinicalSetting                = "Berlin parameter preset";
             param.CurrentExperimentalSetting         = exp;
-            cfg.ieeg.ElectricalStimulationParameters = param;
+            cfg.ieeg.ElectricalStimulationParameters = param;      
         end
     end
- end
+    
+    if cfg.ieeg.ElectricalStimulation
+        if contains(cfg.acq, 'StimOn') && isfield(cfg.ieeg.ElectricalStimulationParameters,'CurrentExperimentalSetting')
+            if startsWith(cfg.acq, 'StimOnL')
+                assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'OFF'))
+                assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'ON'))
+            elseif startsWith(cfg.acq, 'StimOnR')
+                assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'ON'))
+                assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'OFF'))        
+            elseif startsWith(cfg.acq, 'StimOnB')
+                assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'ON'))
+                assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'ON'))
+            elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'OFF') && strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'ON')
+                cfg.acq = replace(cfg.acq,'StimOn','StimOnL');
+            elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'ON') && strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'OFF')
+                cfg.acq = replace(cfg.acq,'StimOn','StimOnR');
+            elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'ON') && strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'ON')
+                cfg.acq = replace(cfg.acq,'StimOn','StimOnB');
+            else
+                error('Stim status unknown')
+            end
+        end
+        if contains(cfg.acq, 'StimOn')        
+            if ~(contains(cfg.acq, 'StimOnL') || contains(cfg.acq, 'StimOnR') || contains(cfg.acq, 'StimOnB') || contains(cfg.acq, 'StimOnX'))
+                cfg.acq = replace(cfg.acq,'StimOn','StimOnX');
+                assert(strcmp(cfg.ieeg.ElectricalStimulationParameters,'n/a') || ischar(cfg.ieeg.ElectricalStimulationParameters))
+            end
+        elseif contains(cfg.acq, 'StimOffOn')
+            if ~(contains(cfg.acq, 'StimOffOnL') || contains(cfg.acq, 'StimOffOnR') || contains(cfg.acq, 'StimOffOnB') || contains(cfg.acq, 'StimOffOnX'))
+                cfg.acq = replace(cfg.acq,'StimOffOn','StimOffOnX');
+                assert(strcmp(cfg.ieeg.ElectricalStimulationParameters,'n/a') || ischar(cfg.ieeg.ElectricalStimulationParameters))
+            end
+        end
+    end
+end
