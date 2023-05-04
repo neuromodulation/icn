@@ -19,6 +19,13 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         for k=1:length(json_names)
             eval(['intern_cfg.' json_names{k} '=temp.' json_names{k} ';']);            
         end
+        try
+            intern_cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.CathodalContact=string(intern_cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.CathodalContact);
+        end
+        try
+            intern_cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.CathodalContact=string(intern_cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.CathodalContact);
+        end
+            
         return;
     end
 
