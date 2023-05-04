@@ -19,13 +19,18 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         for k=1:length(json_names)
             eval(['intern_cfg.' json_names{k} '=temp.' json_names{k} ';']);            
         end
+        
         try
+            if ~isempty(intern_cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.CathodalContact)
             intern_cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.CathodalContact=string(intern_cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.CathodalContact);
+            end
         end
         try
+            if ~isempty(intern_cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.CathodalContact)
             intern_cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.CathodalContact=string(intern_cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.CathodalContact);
+            end
         end
-            
+             
         return;
     end
 
@@ -855,7 +860,10 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     else
         cfg.ieeg.ElectricalStimulation  = false;
     end
+    
+    
     if cfg.ieeg.ElectricalStimulation
+        
         if isfield(intern_cfg.ieeg,'ElectricalStimulationParameters')
             cfg.ieeg.ElectricalStimulationParameters = intern_cfg.ieeg.ElectricalStimulationParameters;
             if isstruct(cfg.ieeg.ElectricalStimulationParameters)
@@ -890,11 +898,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             exp.StimulationMode           = "continuous";
             exp.StimulationParadigm       = "continuous stimulation";
             
-            if contains(cfg.task, 'VigorStim')
-                exp.StimulationMode           = "time-varying";
-                exp.StimulationParadigm       = "speed adaptive DBS";
-                cfg.description = intern_cfg.entities.description;
-            end
+            
             
             exp.SimulationMontage         = "monopolar";
             if ~isfield(intern_cfg.stim, 'L')
@@ -955,41 +959,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             end
             exp.Right                     = R;
 
-            % Enter CLINICAL stimulation settings (are here equal to
-            % stimsettings)
-    %         clin.DateOfSetting           = intern_cfg.stim.DateOfSetting;
-    %         clin.StimulationTarget       = DBS_target;
-    %         clin.StimulationMode         = "continuous";
-    %         clin.StimulationParadigm     = "continuous stimulation";
-    %         clin.SimulationMontage       = "monopolar";
-    % %         clear L R;
-    % %         L                           = "OFF";
-    %         clin.Left                    = L;
-    % %         R.AnodalContact             = "G";
-    % %         R.CathodalContact           = "2, 3 and 4";
-    % %         R.AnodalContactDirection      = "none";
-    % %         R.CathodalContactDirection    = "omni";
-    % %         R.CathodalContactImpedance    = "n/a";
-    % %         R.StimulationAmplitude        = 1.5;
-    % %         R.StimulationPulseWidth       = 60;
-    % %         R.StimulationFrequency        = 130;
-    % %         R.InitialPulseShape           = "rectangular";
-    % %         R.InitialPulseWidth           = 60;
-    % %         R.InitialPulseAmplitude       = -1.5;
-    % %         R.InterPulseDelay             = 0;
-    % %         R.SecondPulseShape            = "rectangular";
-    % %         R.SecondPulseWidth            = 60;
-    % %         R.SecondPulseAmplitude        = 1.5;
-    % %         R.PostPulseInterval           = "n/a";
-    %         clin.Right                    = R;
-
             param.BestClinicalSetting                = "Berlin parameter preset";
             param.CurrentExperimentalSetting         = exp;
             cfg.ieeg.ElectricalStimulationParameters = param;      
         end
-    end
-    
-    if cfg.ieeg.ElectricalStimulation
+
+ % under if cfg.ieeg.ElectricalStimulation
         if contains(cfg.acq, 'StimOn') && isfield(cfg.ieeg.ElectricalStimulationParameters,'CurrentExperimentalSetting')
             if startsWith(cfg.acq, 'StimOnL')
                 assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'OFF'))
@@ -1010,6 +985,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                 error('Stim status unknown')
             end
         end
+        
+ % under if cfg.ieeg.ElectricalStimulation   
         if contains(cfg.acq, 'StimOn')        
             if ~(contains(cfg.acq, 'StimOnL') || contains(cfg.acq, 'StimOnR') || contains(cfg.acq, 'StimOnB') || contains(cfg.acq, 'StimOnX'))
                 cfg.acq = replace(cfg.acq,'StimOn','StimOnX');
@@ -1021,5 +998,13 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                 assert(strcmp(cfg.ieeg.ElectricalStimulationParameters,'n/a') || ischar(cfg.ieeg.ElectricalStimulationParameters))
             end
         end
+        
+ % under if cfg.ieeg.ElectricalStimulation   
+        if contains(cfg.task, 'VigorStim')
+            exp.StimulationMode           = "time-varying";
+            exp.StimulationParadigm       = "speed adaptive DBS";
+            cfg.desc = intern_cfg.entities.description;     
+        end
+        
     end
 end

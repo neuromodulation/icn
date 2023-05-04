@@ -44,16 +44,10 @@ for i =1:length(jsonfiles)
     [cfg,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg, method);
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Read data with Fieldtrip 
-%     if use_dummy_data
-%         dummy_fig=[];
-%         dummy_fig.trialdef.ntrials=1;
-%         inputfig = ft_definetrial(dummy_fig);
-%     else
-%         inputfig  = [];
-%     end
+    inputfig = [];
     inputfig.dataset    = [intern_cfg.inputdata_location]; %not correct json file if error
     inputfig.continuous = 'yes';
-    if use_dummy_data
+    if use_dummy_data && ~contains(intern_cfg.jsonfile,'VigorStim')
         inputfig.trl = [1,2,1];
     end
     intern_cfg.data = ft_preprocessing(inputfig);
