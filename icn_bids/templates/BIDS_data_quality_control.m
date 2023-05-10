@@ -20,7 +20,7 @@ rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_upda
 % sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
 %sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-L017';
 %% set up conversion intensions
-use_dummy_data = true; %for updating metadata files
+use_dummy_data = false; %for updating metadata files
 % hard_coded_channel_renaming=false;
 % hard_coded_reference=false;
 %% let's start
@@ -47,7 +47,7 @@ for i =1:length(jsonfiles)
     inputfig = [];
     inputfig.dataset    = [intern_cfg.inputdata_location]; %not correct json file if error
     inputfig.continuous = 'yes';
-    if use_dummy_data && ~contains(intern_cfg.jsonfile,'VigorStim')
+    if use_dummy_data
         inputfig.trl = [1,2,1];
     end
     intern_cfg.data = ft_preprocessing(inputfig);
