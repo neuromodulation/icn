@@ -32,7 +32,7 @@ os.chdir(r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\metadata")
 # where is the BIDS data located?
 # root = r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Beijing_ECOG_LFP\rawdata"
 root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_01_Berlin_Neurophys\rawdata"
-root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_01_Berlin_Neurophys\rawdata_27.04.2023"
+# root=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_01_Berlin_Neurophys\rawdata_27.04.2023"
 # root = r"C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c"
 
 import csv
@@ -41,7 +41,7 @@ references = [];
 run_file_list = [];
 HardwareFiltersUnipolarChannels =[];
 ElectricalStimulation = [];
-f = open("labbook.txt", "w")
+#f = open("labbook.txt", "w")
 
 # iterate over the brainvision files
 run_files = get_all_vhdr_files(root)
@@ -88,6 +88,7 @@ for run_file in run_files:
             row_ind = scans.index(f"ieeg/{bidspath.basename}_ieeg.vhdr")
             bids_scans[col_name] = value[row_ind]
         except ValueError:
+            error()
             if bidspath.description=='neurobehav' or bidspath.description=='behav':
                 bids_scans['filename'] = f"ieeg/{bidspath.subject}_ieeg.vhdr"
                 bidspath_with_neurophys_desc = bidspath.copy().update(description='neurophys')

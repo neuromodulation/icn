@@ -15,12 +15,12 @@ fg = figure(1);
 % this is where the meta json files are located
 cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\metadata')
 % This is the output root folder for our BIDS-dataset
-rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update2\';
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update3\';
  % This is the input root folder for our BIDS-dataset
 % sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
 %sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-L017';
 %% set up conversion intensions
-use_dummy_data = false; %for updating metadata files
+use_dummy_data = true; %for updating metadata files
 % hard_coded_channel_renaming=false;
 % hard_coded_reference=false;
 %% let's start
@@ -98,7 +98,8 @@ for i =1:length(jsonfiles)
         %close all
     end
     
-        
+    %%%%%%%
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Convert data to BIDS 
     [cfg,intern_cfg] =BIDS_retrieve_fieldtrip_settings(cfg, intern_cfg);
@@ -139,9 +140,9 @@ for i =1:length(jsonfiles)
     %% Quick fix for the sessions.json file
         sessions_json_fname = sprintf('sub-%s_sessions.json',cfg.sub);
 
-        sessions_json.acq_time.Description         = 'date of acquistion in the format YYYY-MM-DD';
-        sessions_json.acq_time.Units               = 'date';
-        sessions_json.acq_time.TermURL             = char("https:\\tools.ietf.org\html\rfc3339#section-5.6");
+        sessions_json.acq_date_no_time.Description         = 'date of acquistion in the format YYYY-MM-DDT00:00:00, not indicating time';
+        sessions_json.acq_date_no_time.Units               = 'date';
+        sessions_json.acq_date_no_time.TermURL             = char("https:\\tools.ietf.org\html\rfc3339#section-5.6");
         sessions_json.medication_sate.Description  = 'state of medication during recording';
         sessions_json.medication_sate.Levels.OFF   = 'OFF parkinsonian medication';
         sessions_json.medication_sate.Levels.ON    = 'ON parkinsonian medication';

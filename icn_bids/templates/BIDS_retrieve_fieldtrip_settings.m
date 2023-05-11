@@ -427,6 +427,15 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         cfg.sessions.subscore_bradykinesia_right = 'n/a';
         cfg.sessions.subscore_bradykinesia_left = 'n/a';
         cfg.sessions.subscore_bradykinesia_total = 'n/a';
+        if isequal(cfg.sessions.acq_date_no_time,'2017-10-18T00:00:00')
+            cfg.sessions.subscore_bradykinesia_total = 0; % hack to overcome that this session EL001 ses-EcogLfpMedOff01 is overwritten
+        elseif isequal(cfg.sessions.acq_date_no_time,'2022-04-08T00:00:00')
+            cfg.sessions.subscore_bradykinesia_total = 0; % hack to overcome that this session L005 ses-EcogLfpOff01 is overwritten
+        elseif isequal(cfg.sessions.acq_date_no_time,'2022-04-10T00:00:00')
+            cfg.sessions.subscore_bradykinesia_total = 0; % hack to overcome that this session L005 ses-EcogLfpOff02 is overwritten   
+        elseif isequal(cfg.sessions.acq_date_no_time,'2022-04-25T00:00:00')
+            cfg.sessions.subscore_bradykinesia_total = 0; % hack to overcome that this session L006 ses-EcogLfpOff01 is overwritten   
+        end
     end
      
     
@@ -757,6 +766,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     
 %% Provide special channel info
     if isfield(intern_cfg,'channels_tsv')
+        if ~isfield(intern_cfg.channels_tsv,'notch')
+            intern_cfg.channels_tsv.notch = n_a;
+        end
+    end
+    if isfield(intern_cfg,'channels_tsv')
         if ~isempty(intern_cfg.channels_tsv.name) && ...
             ~isempty(intern_cfg.channels_tsv.type) && ...
             ~isempty(intern_cfg.channels_tsv.units) && ...
@@ -842,6 +856,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     % these are iEEG specific
     cfg.ieeg.PowerLineFrequency     = 50;   % since recorded in the Europe
     cfg.ieeg.iEEGGround             = 'Right shoulder patch';
+    hdr = ft_read_header(intern_cfg.inputdata_location, 'checkmaxfilter', false, 'readbids', false);
+    cfg.ieeg.RecordingDuration               = (hdr.nTrials*hdr.nSamples)/hdr.Fs; %to prevent error for dummy data
     % this is to be specified for each model
     format_groups = '%s subdural cortical strip and %s %s deep brain stimulation (DBS) leads.';
 
@@ -868,26 +884,36 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             cfg.ieeg.ElectricalStimulationParameters = intern_cfg.ieeg.ElectricalStimulationParameters;
             if isstruct(cfg.ieeg.ElectricalStimulationParameters)
                 if isfield(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting, 'Right')
-                    if strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right,'n/a')
-                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right = struct();
-                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus="OFF";
-                    elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right,'OFF')
-                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right = struct();
-                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus="OFF";
-                    elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.InitialPulseShape,'rectangular') %to check whether there was stimulation
-                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus="ON";
+                    if isfield(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right, 'StimulationStatus')
+                        assert(or(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'OFF'),...
+                            strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'ON')))
+                    else
+                        if strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right,'n/a')
+                            cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right = struct();
+                            cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus="OFF";
+                        elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right,'OFF')
+                            cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right = struct();
+                            cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus="OFF";
+                        elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.InitialPulseShape,'rectangular') %to check whether there was stimulation
+                            cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus="ON";
+                        end
                     end
                 end
                 if isfield(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting, 'Left')
-                    if strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left,'n/a')
-                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left = struct();
-                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus="OFF";
-                    elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left,'OFF')
-                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left = struct();
-                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus="OFF";
-                    elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.InitialPulseShape,'rectangular') %to check whether there was stimulation
-                        cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus="ON";
-                    end
+                     if isfield(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right, 'StimulationStatus')
+                        assert(or(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'OFF'),...
+                            strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'ON')))
+                     else
+                        if strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left,'n/a')
+                            cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left = struct();
+                            cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus="OFF";
+                        elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left,'OFF')
+                            cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left = struct();
+                            cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus="OFF";
+                        elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.InitialPulseShape,'rectangular') %to check whether there was stimulation
+                            cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus="ON";
+                        end
+                     end
                 end
             end
         else
