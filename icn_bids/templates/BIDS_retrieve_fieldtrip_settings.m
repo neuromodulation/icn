@@ -1029,7 +1029,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         if contains(cfg.task, 'VigorStim')
             exp.StimulationMode           = "time-varying";
             exp.StimulationParadigm       = "speed adaptive DBS";
-            cfg.desc = intern_cfg.entities.description;     
+            if isfield(intern_cfg.entities,'description')
+                cfg.desc = intern_cfg.entities.description;
+            else
+                cfg.desc = 'neurophys';
+            end
         end
         
     end

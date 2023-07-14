@@ -13,14 +13,14 @@ ft_defaults
 fg = figure(1);
 %% set up pathing
 % this is where the meta json files are located
-cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\metadata')
+cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\')
 % This is the output root folder for our BIDS-dataset
-rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update3\';
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update4\';
  % This is the input root folder for our BIDS-dataset
 % sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
-%sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\sub-L017';
+sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\';
 %% set up conversion intensions
-use_dummy_data = true; %for updating metadata files
+use_dummy_data = false; %for updating metadata files
 % hard_coded_channel_renaming=false;
 % hard_coded_reference=false;
 %% let's start
@@ -48,7 +48,7 @@ for i =1:length(jsonfiles)
     inputfig.dataset    = [intern_cfg.inputdata_location]; %not correct json file if error
     inputfig.continuous = 'yes';
     if use_dummy_data
-        inputfig.trl = [1,2,1];
+        inputfig.trl = [1,2,0];
     end
     intern_cfg.data = ft_preprocessing(inputfig);
 
