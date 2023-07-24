@@ -57,7 +57,7 @@ for i =1:length(jsonfiles)
 %     intern_cfg.data.hdr.nChans     = length(chs_final);
 %     intern_cfg.data.hdr.label      = intern_cfg.data.label;
 %     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Update channel naming and inspect data with WJN Toolbox
     % update from intern_cfg.channels_tsv.name to the intern_cfg.data.label
 %     if hard_coded_channel_renaming
@@ -193,6 +193,7 @@ for i =1:length(jsonfiles)
         end
         
 
+ 
             
         if create_a_copy == 1
             UPDRS=readtable('UPDRS_Berlin.xlsx','sheet','recording_detailed');

@@ -11,9 +11,9 @@ doyouwanttkinter=True
 #path_target_folder=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Tuebingen"
 #path_target_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Tiantan\conversion_room\electrodes"
 path_target_folder=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_01_Berlin_Neurophys\rawdata17"
-path_target_folder=r"E:\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - PROJECT MEG Connectomics\3_TUTTI"
+#path_target_folder=r"E:\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - PROJECT MEG Connectomics\3_TUTTI"
 back_up_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\backup"
-back_up_folder=r"E:\"
+#back_up_folder=r"E:\"
 
 from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = "all"

@@ -373,9 +373,10 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
 %        end
 %         
 %     end
-    %% Provide info for the scans.tsv file
-    % the acquisition time can normally be found in the folder name of the recording
-%    cfg.scans.acq_time              =  intern_cfg.scans_tsv.acq_time;
+
+   %% Provide info for the scans.tsv file
+   % the acquisition time can normally be found in the folder name of the recording
+    cfg.scans.acq_time              =  intern_cfg.scans_tsv.acq_time;
     pat1=pattern(digitsPattern(4) + "-" + digitsPattern(2) + "-" + digitsPattern(2) + "T" + digitsPattern(2) + ":" + digitsPattern(2) + ":"+ digitsPattern(2));
     pat2=pattern(digitsPattern(4) + "-" + digitsPattern(2) + "-" + digitsPattern(2));
 
@@ -389,8 +390,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         error('no datetime found in sessions tsv neither match in scans.tsv')
     end
    
-    
-   
+
+%%% NEED TO BE FIXED FOR NEW RECORDINGS 17 7 2023
     %% sessions.tsv
     cfg.sessions.acq_date_no_time = [ char([intern_cfg.scans_tsv.acq_time(1:10)]),  'T00:00:00'];
     if contains(cfg.ses, 'OffOn')
@@ -427,15 +428,16 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         cfg.sessions.subscore_bradykinesia_right = 'n/a';
         cfg.sessions.subscore_bradykinesia_left = 'n/a';
         cfg.sessions.subscore_bradykinesia_total = 'n/a';
-        if isequal(cfg.sessions.acq_date_no_time,'2017-10-18T00:00:00')
-            cfg.sessions.subscore_bradykinesia_total = 0; % hack to overcome that this session EL001 ses-EcogLfpMedOff01 is overwritten
-        elseif isequal(cfg.sessions.acq_date_no_time,'2022-04-08T00:00:00')
-            cfg.sessions.subscore_bradykinesia_total = 0; % hack to overcome that this session L005 ses-EcogLfpOff01 is overwritten
-        elseif isequal(cfg.sessions.acq_date_no_time,'2022-04-10T00:00:00')
-            cfg.sessions.subscore_bradykinesia_total = 0; % hack to overcome that this session L005 ses-EcogLfpOff02 is overwritten   
-        elseif isequal(cfg.sessions.acq_date_no_time,'2022-04-25T00:00:00')
-            cfg.sessions.subscore_bradykinesia_total = 0; % hack to overcome that this session L006 ses-EcogLfpOff01 is overwritten   
-        end
+
+       if isequal(cfg.sessions.acq_date_no_time,'2017-10-18T00:00:00')
+           cfg.sessions.subscore_bradykinesia_total = 0; % hack to overcome that this session EL001 ses-EcogLfpMedOff01 is overwritten
+       elseif isequal(cfg.sessions.acq_date_no_time,'2022-04-08T00:00:00')
+           cfg.sessions.subscore_bradykinesia_total = 0; % hack to overcome that this session L005 ses-EcogLfpOff01 is overwritten
+       elseif isequal(cfg.sessions.acq_date_no_time,'2022-04-10T00:00:00')
+           cfg.sessions.subscore_bradykinesia_total = 0; % hack to overcome that this session L005 ses-EcogLfpOff02 is overwritten   
+       elseif isequal(cfg.sessions.acq_date_no_time,'2022-04-25T00:00:00')
+           cfg.sessions.subscore_bradykinesia_total = 0; % hack to overcome that this session L006 ses-EcogLfpOff01 is overwritten   
+       end
     end
      
     
@@ -919,6 +921,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         else
             % Enter EXPERIMENTAL stimulation settings
             % these need to be written in the lab book
+            
             exp.DateOfSetting             = intern_cfg.stim.DateOfSetting; %"2021-11-11"
             exp.StimulationTarget         = DBS_target;
             exp.StimulationMode           = "continuous";
@@ -927,6 +930,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             
             
             exp.SimulationMontage         = "monopolar";
+
             if ~isfield(intern_cfg.stim, 'L')
                 %L = 'OFF';
                 L.StimulationStatus           = "OFF";
@@ -1027,8 +1031,14 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         
  % under if cfg.ieeg.ElectricalStimulation   
         if contains(cfg.task, 'VigorStim')
-            exp.StimulationMode           = "time-varying";
-            exp.StimulationParadigm       = "speed adaptive DBS";
+            
+            if contains(cfg.acq, 'Cont')
+                exp.StimulationMode           = "continuous";
+                exp.StimulationParadigm       = "continuous stimulation";
+            else
+                exp.StimulationMode           = "time-varying";
+                exp.StimulationParadigm       = "speed adaptive DBS";
+            end
             if isfield(intern_cfg.entities,'description')
                 cfg.desc = intern_cfg.entities.description;
             else
