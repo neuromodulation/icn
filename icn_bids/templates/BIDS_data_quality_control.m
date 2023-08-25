@@ -13,9 +13,10 @@ ft_defaults
 fg = figure(1);
 %% set up pathing
 % this is where the meta json files are located
+addpath(fullfile('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\'));
 cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\')
 % This is the output root folder for our BIDS-dataset
-rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update5\';
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update6\';
  % This is the input root folder for our BIDS-dataset
 % sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
 sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\';
@@ -111,6 +112,7 @@ for i =1:length(jsonfiles)
         disp('Does not convert following because of MedOnDys:'); cfg.ses %take instead MedOffOnDys data
     else
         data2bids(cfg, intern_cfg.data);
+        % ERROR INCONSISTENT NUMBER OF CHANNELS: then check the ECOG Model perhaps size 0 instead 6
 
 
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

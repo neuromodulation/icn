@@ -379,6 +379,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.scans.acq_time              =  intern_cfg.scans_tsv.acq_time;
     pat1=pattern(digitsPattern(4) + "-" + digitsPattern(2) + "-" + digitsPattern(2) + "T" + digitsPattern(2) + ":" + digitsPattern(2) + ":"+ digitsPattern(2));
     pat2=pattern(digitsPattern(4) + "-" + digitsPattern(2) + "-" + digitsPattern(2));
+    pat3=pattern(digitsPattern(8) + "T" + digitsPattern(6));
 
     if matches(intern_cfg.scans_tsv.acq_time,pat1)
         cfg.scans.acq_time = intern_cfg.scans_tsv.acq_time; %known time point
@@ -386,8 +387,13 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         error('no datetime found in scans tsv, it contains n/a')        
     elseif matches(intern_cfg.sessions_tsv.acq_date,pat2)
         cfg.scans.acq_time = [intern_cfg.sessions_tsv.acq_date , 'T00:00:00']; %unknown time point
+    elseif ~isempty(extract(intern_cfg.inputdata_fname,pat3))
+        time_date=extract(intern_cfg.inputdata_fname,pat3);
+        time_date=time_date{1};
+        cfg.scans.acq_time = strcat(time_date(1:4) , '-' , time_date(5:6) , '-' , time_date(7:11) , ':' , time_date(12:13) , ':' , time_date(14:15)); 
+        intern_cfg.scans_tsv.acq_time = cfg.scans.acq_time; %reverse writing from cfg to intern_cfg
     else
-        error('no datetime found in sessions tsv neither match in scans.tsv')
+        error('no datetime found in sessions tsv neither match in scans.tsv or inputfilename')
     end
    
 
@@ -639,7 +645,14 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         cfg.electrodes.group(startsWith(cfg.electrodes.name, 'LFP_L')) = {'DBS_left'};
         cfg.electrodes.group(startsWith(cfg.electrodes.name, 'ECOG_R')) = {'ECOG_right'};
         cfg.electrodes.group(startsWith(cfg.electrodes.name, 'ECOG_L')) = {'ECOG_left'};
-            
+        
+        %check for the side of the ecog strip
+            %first column is x > +1
+        assert(all(sens.elecpos((startsWith(sens.label, 'ECOG_R')),1) >= 0))
+            %first column is x < -1
+        assert(all(sens.elecpos((startsWith(sens.label, 'ECOG_L')),1) <= 0))
+        
+        
     else
         
         % REQUIRED. Name of the electrode
@@ -649,7 +662,32 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
 
 
         % extract the channel names that contain LFP or ECOG
-        sens.label = chs_final(contains(string(chs_final),["LFP", "ECOG"]));
+        %sens.label = chs_final(contains(string(chs_final),["LFP", "ECOG"]));
+        
+        % create extra channels in case some channels are combined together
+        sens.label = {};
+        if any(contains(string(chs_final),["ECOG_R"]))
+            for i=1:ECOG_contacts
+                sens.label{end+1} = strcat('ECOG_R_', sprintf( '%02d', i ), '_', ECOG_target, '_', char(ECOG_manufacturer_short));
+            end
+        end
+        if any(contains(string(chs_final),["ECOG_L"]))
+            for i=1:ECOG_contacts
+                sens.label{end+1} = strcat('ECOG_L_', sprintf( '%02d', i ), '_', ECOG_target, '_', char(ECOG_manufacturer_short));
+            end
+        end
+        if any(contains(string(chs_final),["LFP_R"]))
+            for i=1:DBS_contacts
+                sens.label{end+1} = strcat('LFP_R_', sprintf( '%02d', i ), '_', DBS_target, '_', char(DBS_manufacturer_short));
+            end
+        end
+        if any(contains(string(chs_final),["LFP_L"]))
+            for i=1:DBS_contacts
+                sens.label{end+1} = strcat('LFP_L_', sprintf( '%02d', i ), '_', DBS_target, '_', char(DBS_manufacturer_short));
+            end
+        end
+        
+        sens.label =sens.label';
 
         % Electrode positions are imported from external files (e.g. Lead-DBS
         % ea_reconstruction.mat) and a sens FieldTrip struct is created 
@@ -658,11 +696,13 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         % To Do: -> for now fixed, if else statement fixed for models: Cartesia X and Sensight
         % this is the channel position for medtronic
         sens.chanpos = [
+            zeros(ECOG_contacts, 3);...
             zeros(DBS_contacts, 3); ...
-            zeros(DBS_contacts, 3); ...
-            zeros(ECOG_contacts, 3)]; %what is this 12 refering to? I replaced it with n_ECOG_contact 
+            zeros(DBS_contacts, 3) 
+            ];
         % this is for medtronic
         if isfield(intern_cfg,'ECOG_localization')
+            error('what is this function doing?') %need to perhaps swap the order of ECOG with DBS
             sens.chanpos(DBS_contacts+DBS_contacts + 1 : end,1:3) = intern_cfg.ECOG_localization;
         end
 
