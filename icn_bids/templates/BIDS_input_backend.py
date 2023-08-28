@@ -253,7 +253,6 @@ def define_ECOG(click):
             bids_ECOG_description,
         )
 
-
 ECOG_present.on_click(define_ECOG)
 
 bids_ECOG_target = widgets.RadioButtons(
@@ -501,15 +500,18 @@ def go_to_subsession(*args):
             layout=layout,
         )
     )
-
-    bids_time_of_acquisition.append(
-        widgets.Text(
-            description="Date and time of recording",
-            placeholder="2022-01-24T09:36:27 (use this format)",
-            style=style,
-            layout=layout,
-        )
-    )
+#    strdatetime = bids_filechooser[-1].selected_filename
+#
+#
+#    bids_time_of_acquisition.append(
+#        widgets.Text(
+#            description="Date and time of recording",
+#            value=strdatetime,
+#            placeholder="2022-01-24T09:36:27 (use this format)",
+#            style=style,
+#            layout=layout,
+#        )
+#    )
 
     bids_run.append(
         widgets.BoundedIntText(
@@ -523,13 +525,16 @@ def go_to_subsession(*args):
         )
     )
 
-    bids_acquisition.append(
-        widgets.Text(
-            description="acquisition e.g. StimOff StimOnL or StimOnBDopa30",
-            style=style,
-            layout=layout,
-        )
-    )
+
+
+    #bids_acquisition.append(
+    #    widgets.Text(
+    #        value=acq,
+    #        description="acquisition e.g. StimOff StimOnL StimOnB StimOffDopa30",
+    #        style=style,
+    #        layout=layout,
+    #    )
+    #)
 
     with output2:
 
@@ -538,12 +543,11 @@ def go_to_subsession(*args):
             bids_task[-1],
             bids_task_description[-1],
             bids_task_instructions[-1],
-            bids_time_of_acquisition[-1],
+            #bids_time_of_acquisition[-1],
             bids_acquisition[-1],
             bids_run[-1],
             draw_channels,
         )
-
 
 
 specify_file.on_click(go_to_subsession)
@@ -576,6 +580,47 @@ def plot_channels(*args):
     bids_status_description_widgets = []
     bids_status_description_list = []
     bids_stimulation_contact = []
+
+    strdatetime = bids_filechooser[-1].selected_filename
+    m = re.search(r'(20[0-9]{6}T[0-9]{6})', strdatetime)
+    if m is not None:
+        strdatetime = m.group(0)
+        strdatetime = strdatetime[0:4] + '-' + strdatetime[4:6] + '-' + strdatetime[6:8] + strdatetime[8] + strdatetime[9:11] + ':' + strdatetime[11:13] + ':' + strdatetime[13:15]
+    bids_time_of_acquisition.append(
+        widgets.Text(
+            description="Date and time of recording",
+            value=strdatetime,
+            placeholder="2022-01-24T09:36:27 (use this format)",
+            style=style,
+            layout=layout,
+        )
+    )
+
+    stracq = bids_filechooser[-1].selected_filename
+    if 'StimOnL' in stracq:
+        stracq = 'StimOnL'
+    elif 'StimOnR' in stracq:
+        stracq = 'StimOnR'
+    elif 'StimOnB' in stracq:
+        stracq = 'StimOnB'
+    elif 'DopaPre' in stracq:
+        stracq = 'StimOffDopaPre'
+    elif 'Dopa' not in stracq:
+        stracq = 'StimOff'
+    else:
+        m = re.search(r'(Dopa[0-9]{2,3})', stracq)
+        if m is not None:
+            stracq = 'StimOff' + m.group(0)
+
+    bids_acquisition.append(
+        widgets.Text(
+            value=stracq,
+            description="acquisition e.g. StimOff StimOnL StimOnB StimOffDopa30",
+            style=style,
+            layout=layout,
+        )
+    )
+
     data = Poly5Reader(bids_filechooser[-1].selected_path + os.sep + bids_filechooser[-1].selected_filename)
 
     info = mne.create_info(ch_names=[ch._Channel__name for ch in data.channels], sfreq=data.sample_rate, ch_types=data.num_channels * ['misc'])
@@ -596,6 +641,22 @@ def plot_channels(*args):
                 preset += 'MT'
             elif ch.endswith('STN'):
                 preset += 'MT'  # assume that Medtronic is standard
+        elif ch.startswith('ECXX'):
+            ecog_side = bids_ECOG_hemisphere.value
+            if ecog_side == 'right':
+                ecog_side = 'R'
+            elif ecog_side == 'left':
+                ecog_side = 'L'
+            preset = 'ECOG_' + ecog_side + '_' + ''.join(filter(lambda i: i.isdigit(), ch)).rjust(2, "0") + '_'
+            if 'SM' in ch: preset += 'SMC_'
+            if ch.endswith('B'):
+                preset += 'BS'
+            elif ch.endswith('M'):
+                preset += 'MT'
+            elif ch.endswith('A'):
+                preset += 'AT'
+            elif ch.endswith('SMC'):
+                preset += 'AT'  # assume that AT is standard
         elif ch.startswith('ECX'):
             if ch.startswith('ECXR10'):
                 preset = 'ECOG_R_10_SMC_AT'
@@ -609,7 +670,7 @@ def plot_channels(*args):
                 elif (ch[3] == 'L') and (bids_ECOG_hemisphere.value == 'left'):
                     ecog_side = 'L'
                 else:
-                    ecog_side = 'HEMISPHERE_AMBIGUITY'
+                    ecog_side = 'HEMISPHERE_AMBIGUITY_OR_CONFLICT_WITH_INPUT_ABOVE'
                 preset = 'ECOG_' + ecog_side + '_' + ''.join(filter(lambda i: i.isdigit(), ch)).rjust(2,"0") + '_'
                 if 'SM' in ch: preset += 'SMC_'
                 if ch.endswith('B'):
@@ -668,7 +729,7 @@ def plot_channels(*args):
 
     with output2:
         #raw.plot(show=True, block=True, n_channels=raw.info['nchan'], title=bids_filechooser[-1].selected_filename)
-
+        display(bids_time_of_acquisition[-1])
         for widget in bids_channel_names_widgets:
             display(widget)
 
@@ -696,8 +757,14 @@ def define_reference_and_stims(*args):
     for widget in bids_channel_names_widgets:
         if widget.value != '':
             bids_channel_names_list.append(widget.value)
+
+    if not bids_reference:
+        previous_reference = 'ref input'
+    else:
+        previous_reference = bids_reference[-1].value
     bids_reference.append(
         widgets.Combobox(
+        value=previous_reference,
         options=bids_channel_names_list,
         description='iEEG Reference: ',
         style=style,
@@ -755,18 +822,16 @@ def define_reference_and_stims(*args):
             layout=layout
         ))
 
-
-
-
     with output2:
         display(bids_reference[-1])
-        for stimcon in range(0,8):
-            display(bids_stimulation_contact[stimcon])\
+        if 'Stim' in bids_acquisition:
+            for stimcon in range(0,8):
+                display(bids_stimulation_contact[stimcon])\
 
-        display(bids_stimulation_amplitude_left[-1])
-        display(bids_stimulation_amplitude_right[-1])
-        display(bids_stimulation_frequency_left[-1])
-        display(bids_stimulation_frequency_right[-1])
+            display(bids_stimulation_amplitude_left[-1])
+            display(bids_stimulation_amplitude_right[-1])
+            display(bids_stimulation_frequency_left[-1])
+            display(bids_stimulation_frequency_right[-1])
         display(go_to_status_description)
 
 
