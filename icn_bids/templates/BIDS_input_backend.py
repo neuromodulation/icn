@@ -686,11 +686,11 @@ def plot_channels(*args):
         elif ch.startswith('EEG'):
             preset = 'EEG_'
             if ch.upper().find('CZ')>0:
-                preset += 'CZ_'
+                preset += 'CZ_TM'
             if ch.upper().find('FZ')>0:
-                preset += 'FZ_'
-            if ch.upper().find('T')>0:
-                preset += 'TM'
+                preset += 'FZ_TM'
+            #if ch.upper().find('T')>0:
+            #    preset += 'TM'
         elif re.search("R[0-9]C[0-9]",ch):
             preset = "EMG_L_" + re.search("R[0-9]C[0-9]",ch).group() + "_BR_TM"
         elif ch.startswith('BIP 01') or ch.startswith('EMGR'):
