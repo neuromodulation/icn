@@ -184,13 +184,15 @@ bids_symptom_dominant_side = widgets.RadioButtons(
     style=style,
     layout=layout,
 )
-bids_LEDD = widgets.BoundedIntText(
+'''
+  bids_LEDD = widgets.BoundedIntText(
     max=10000,
     step=1,
     description="Levodopa equivalent daily dose (LEDD):",
     style=style,
     layout=layout,
 )
+'''
 bids_DBS_target = widgets.RadioButtons(
     options=["n/a", "STN", "GPI", "VIM"],
     description="DBS target",
@@ -344,7 +346,7 @@ def on_session_creation(click1):
 
         display(
             bids_session[-1],
-            bids_UPDRS_session[-1],
+            #bids_UPDRS_session[-1],
             bids_space[-1],
             specify_file,
         )
@@ -544,7 +546,7 @@ def go_to_subsession(*args):
             bids_task_description[-1],
             bids_task_instructions[-1],
             #bids_time_of_acquisition[-1],
-            bids_acquisition[-1],
+            #bids_acquisition[-1],
             bids_run[-1],
             draw_channels,
         )
@@ -730,6 +732,7 @@ def plot_channels(*args):
     with output2:
         #raw.plot(show=True, block=True, n_channels=raw.info['nchan'], title=bids_filechooser[-1].selected_filename)
         display(bids_time_of_acquisition[-1])
+        display(bids_acquisition[-1])
         for widget in bids_channel_names_widgets:
             display(widget)
 
@@ -758,8 +761,8 @@ def define_reference_and_stims(*args):
         if widget.value != '':
             bids_channel_names_list.append(widget.value)
 
-    if not bids_reference:
-        previous_reference = 'ref input'
+    if len(bids_reference)<1:
+        previous_reference = ''
     else:
         previous_reference = bids_reference[-1].value
     bids_reference.append(
@@ -824,7 +827,7 @@ def define_reference_and_stims(*args):
 
     with output2:
         display(bids_reference[-1])
-        if 'Stim' in bids_acquisition:
+        if 'StimOn' in bids_acquisition[-1].value:
             for stimcon in range(0,8):
                 display(bids_stimulation_contact[stimcon])\
 
@@ -833,7 +836,6 @@ def define_reference_and_stims(*args):
             display(bids_stimulation_frequency_left[-1])
             display(bids_stimulation_frequency_right[-1])
         display(go_to_status_description)
-
 
 go_to_reference.on_click(define_reference_and_stims)
 go_to_status_description = widgets.Button(
@@ -911,7 +913,7 @@ def save_all_information(*args):
     metadict['participants']['disease_duration'] = bids_disease_duration.value
     metadict['participants']['PD_subtype'] = bids_PD_subtype.value
     metadict['participants']['symptom_dominant_side'] = bids_symptom_dominant_side.value
-    metadict['participants']['LEDD'] = bids_LEDD.value
+    metadict['participants']['LEDD'] = 0 #bids_LEDD.value
     metadict['participants']['DBS_target'] = bids_DBS_target.value
     metadict['participants']['DBS_hemisphere'] = bids_DBS_hemispheres.value
     metadict['participants']['DBS_manufacturer'] = str()
