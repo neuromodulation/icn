@@ -315,11 +315,13 @@ session_creation = widgets.Button(
 
 def on_session_creation(click1):
     with output2:
+        ses_options = ['EcogLfpMedOff01','EcogLfpMedOff02','EcogLfpMedOn01','EcogLfpMedOn02','EcogLfpMedOffOnDys01','EcogLfpMedOffOnDys02',
+                       'LfpMedOff01', 'LfpMedOff02', 'LfpMedOn01', 'LfpMedOn02', 'LfpMedOffOnDys01', 'LfpMedOffOnDys02']
 
         bids_session.append(
-            widgets.Text(
+            widgets.Combobox(
+                options=ses_options,
                 description="Session name:",
-                placeholder="Give in the session name",
                 style=style,
                 layout=layout,
             )
@@ -605,7 +607,9 @@ def plot_channels(*args):
         stracq = 'StimOnR'
     elif 'StimOnB' in stracq:
         stracq = 'StimOnB'
-    elif 'DopaPre' in stracq:
+    elif 'StimOn' in stracq:
+        stracq = 'StimOn_SPECIFY_WHICH_SIDE'
+    elif ('pre' or 'Pre') in stracq:
         stracq = 'StimOffDopaPre'
     elif 'Dopa' not in stracq:
         stracq = 'StimOff'
@@ -617,7 +621,7 @@ def plot_channels(*args):
     bids_acquisition.append(
         widgets.Text(
             value=stracq,
-            description="acquisition e.g. StimOff StimOnL StimOnB StimOffDopa30",
+            description="acquisition StimOff StimOnL StimOnB StimOffDopa30",
             style=style,
             layout=layout,
         )
@@ -978,7 +982,7 @@ def save_all_information(*args):
     metadict['coord_json']['iEEGCoordinateProcessingDescription'] = str()
     metadict['coord_json']['iEEGCoordinateProcessingReference'] = str()
     for stimcon in range(0,8):
-        if bids_stimulation_contact[stimcon].value != "":
+        if (bids_stimulation_contact[stimcon].value != "") and (metadict['entities']['acquisition'] != 'StimOff'):
             if not 'stim' in metadict:
                 metadict['stim'] ={}
                 metadict['stim']['DateOfSetting'] = metadict['sessions_tsv']['acq_date']

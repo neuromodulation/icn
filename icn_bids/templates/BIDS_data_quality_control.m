@@ -16,7 +16,7 @@ fg = figure(1);
 addpath(fullfile('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\'));
 cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\')
 % This is the output root folder for our BIDS-dataset
-rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update6\';
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update7\';
  % This is the input root folder for our BIDS-dataset
 % sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
 sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\';
@@ -176,72 +176,84 @@ for i =1:length(jsonfiles)
     'The data is being managed in, written in and copied from the MedOffOnDys folder.', ...
     'The MedOffOnDys contains also all other recordings of that session.'},'\n');
     
-    if contains(cfg.ses,'MedOffOnDys')
+    if contains(cfg.ses,'Dys')
+        if contains(cfg.ses,'MedOffOnDys')
         
-        time_since_medication = str2double(cfg.acq(isstrprop(cfg.acq, 'digit')));
-        if time_since_medication==0 || contains(cfg.acq, 'DopaPre')
-            cfg.ses = strrep(cfg.ses,'MedOffOn','MedOff');                
-            cfg.sessions.medication_state = strrep(cfg.sessions.medication_state,'OFFON','OFF');
-            
-            create_a_copy = 1;
-           
-        elseif 50 <= time_since_medication && time_since_medication<= 70
-            cfg.ses = strrep(cfg.ses,'MedOffOn','MedOn');
-            cfg.sessions.medication_state = strrep(cfg.sessions.medication_state,'OFFON','ON');
-
-            create_a_copy = 1;
-        else
-            create_a_copy = 0;
-        end
-        
-
- 
-            
-        if create_a_copy == 1
-            UPDRS=readtable('UPDRS_Berlin.xlsx','sheet','recording_detailed');
-            rownr = find(and(contains(UPDRS.Subject, cfg.sub) , contains(UPDRS.Session, cfg.ses)));
-            if size(rownr)==[1,1]
-                cfg.sessions.UPDRS_III = UPDRS.UPDRS_III(rownr);
-                cfg.sessions.subscore_tremor_right = UPDRS.subscore_tremor_right(rownr);
-                cfg.sessions.subscore_tremor_left = UPDRS.subscore_tremor_left(rownr);
-                cfg.sessions.subscore_tremor_total = UPDRS.subscore_tremor_total(rownr);
-                cfg.sessions.subscore_rigidity_right = UPDRS.subscore_rigidity_right(rownr);
-                cfg.sessions.subscore_rigidity_left = UPDRS.subscore_rigidity_left(rownr);
-                cfg.sessions.subscore_rigidity_total = UPDRS.subscore_rigidity_total(rownr);
-                cfg.sessions.subscore_bradykinesia_right = UPDRS.subscore_bradykinesia_right(rownr);
-                cfg.sessions.subscore_bradykinesia_left = UPDRS.subscore_bradykinesia_left(rownr);
-                cfg.sessions.subscore_bradykinesia_total = UPDRS.subscore_bradykinesia_total(rownr);
-            else
-                cfg.sessions.UPDRS_III = 'n/a';
-                cfg.sessions.subscore_tremor_right = 'n/a';
-                cfg.sessions.subscore_tremor_left = 'n/a';
-                cfg.sessions.subscore_tremor_total = 'n/a';
-                cfg.sessions.subscore_rigidity_right = 'n/a';
-                cfg.sessions.subscore_rigidity_left = 'n/a';
-                cfg.sessions.subscore_rigidity_total = 'n/a';
-                cfg.sessions.subscore_bradykinesia_right = 'n/a';
-                cfg.sessions.subscore_bradykinesia_left = 'n/a';
-                cfg.sessions.subscore_bradykinesia_total = 'n/a';
+            time_since_medication = str2double(cfg.acq(isstrprop(cfg.acq, 'digit')));
+            if isnan(time_since_medication) && (~contains(cfg.acq, 'DopaPre'))
+                error('Dopa time is forgotten in acq entity')
             end
-            
-            data2bids(cfg, intern_cfg.data);
-            
-            fileID = fopen('README.txt','w');
-            fprintf(fileID, clarification_MedOffOnDys);
-            fclose(fileID);
-            movefile('README.txt',fullfile(cfg.bidsroot,['sub-' cfg.sub],['ses-' cfg.ses]))
 
-            scans_json_fname = sprintf('sub-%s_ses-%s_scans.json',cfg.sub,cfg.ses);
-            fileID = fopen(fullfile(cfg.bidsroot,cfg.sub,cfg.ses,scans_json_fname));
-            savejson('',scans_json,scans_json_fname)
-            movefile(scans_json_fname,fullfile(cfg.bidsroot,['sub-' cfg.sub],['ses-' cfg.ses]))
-        
-        
+            if time_since_medication==0 || contains(cfg.acq, 'DopaPre')
+                cfg.ses = strrep(cfg.ses,'MedOffOn','MedOff');                
+                cfg.sessions.medication_state = strrep(cfg.sessions.medication_state,'OFFON','OFF');
+
+                create_a_copy = 1;
+
+            elseif 50 <= time_since_medication && time_since_medication<= 70
+                cfg.ses = strrep(cfg.ses,'MedOffOn','MedOn');
+                cfg.sessions.medication_state = strrep(cfg.sessions.medication_state,'OFFON','ON');
+
+                create_a_copy = 1;
+            elseif (50 <= time_since_medication && time_since_medication) && contains(cfg.task,'VigorStim')
+                cfg.ses = strrep(cfg.ses,'MedOffOn','MedOn');
+                cfg.sessions.medication_state = strrep(cfg.sessions.medication_state,'OFFON','ON');
+
+                create_a_copy = 1;
+            else
+                create_a_copy = 0;
+            end
+
+
+
+
+            if create_a_copy == 1
+                UPDRS=readtable('UPDRS_Berlin.xlsx','sheet','recording_detailed');
+                rownr = find(and(contains(UPDRS.Subject, cfg.sub) , contains(UPDRS.Session, cfg.ses)));
+                if size(rownr)==[1,1]
+                    cfg.sessions.UPDRS_III = UPDRS.UPDRS_III(rownr);
+                    cfg.sessions.subscore_tremor_right = UPDRS.subscore_tremor_right(rownr);
+                    cfg.sessions.subscore_tremor_left = UPDRS.subscore_tremor_left(rownr);
+                    cfg.sessions.subscore_tremor_total = UPDRS.subscore_tremor_total(rownr);
+                    cfg.sessions.subscore_rigidity_right = UPDRS.subscore_rigidity_right(rownr);
+                    cfg.sessions.subscore_rigidity_left = UPDRS.subscore_rigidity_left(rownr);
+                    cfg.sessions.subscore_rigidity_total = UPDRS.subscore_rigidity_total(rownr);
+                    cfg.sessions.subscore_bradykinesia_right = UPDRS.subscore_bradykinesia_right(rownr);
+                    cfg.sessions.subscore_bradykinesia_left = UPDRS.subscore_bradykinesia_left(rownr);
+                    cfg.sessions.subscore_bradykinesia_total = UPDRS.subscore_bradykinesia_total(rownr);
+                else
+                    cfg.sessions.UPDRS_III = 'n/a';
+                    cfg.sessions.subscore_tremor_right = 'n/a';
+                    cfg.sessions.subscore_tremor_left = 'n/a';
+                    cfg.sessions.subscore_tremor_total = 'n/a';
+                    cfg.sessions.subscore_rigidity_right = 'n/a';
+                    cfg.sessions.subscore_rigidity_left = 'n/a';
+                    cfg.sessions.subscore_rigidity_total = 'n/a';
+                    cfg.sessions.subscore_bradykinesia_right = 'n/a';
+                    cfg.sessions.subscore_bradykinesia_left = 'n/a';
+                    cfg.sessions.subscore_bradykinesia_total = 'n/a';
+                end
+
+                data2bids(cfg, intern_cfg.data);
+
+                fileID = fopen('README.txt','w');
+                fprintf(fileID, clarification_MedOffOnDys);
+                fclose(fileID);
+                movefile('README.txt',fullfile(cfg.bidsroot,['sub-' cfg.sub],['ses-' cfg.ses]))
+
+                scans_json_fname = sprintf('sub-%s_ses-%s_scans.json',cfg.sub,cfg.ses);
+                fileID = fopen(fullfile(cfg.bidsroot,cfg.sub,cfg.ses,scans_json_fname));
+                savejson('',scans_json,scans_json_fname)
+                movefile(scans_json_fname,fullfile(cfg.bidsroot,['sub-' cfg.sub],['ses-' cfg.ses]))
+
+
+            else
+                disp('Not relevant MedOffOnDys Rest recording:')
+                disp([cfg.sub , ' ' , cfg.task, ' ', cfg.acq])
+            end
         else
-            disp('Not relevant MedOffOnDys Rest recording:')
-            disp([cfg.sub , ' ' , cfg.task, ' ', cfg.acq])
+            error('mistake in session naming for dyskinesia')
         end
-     
     end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

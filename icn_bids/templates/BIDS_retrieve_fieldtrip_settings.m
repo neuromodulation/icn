@@ -340,10 +340,14 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.bidsroot                = intern_cfg.rawdata_root;
     cfg.datatype                = 'ieeg';
     cfg.sub                     = intern_cfg.entities.subject;
-    if endsWith( intern_cfg.entities.session , digitsPattern(2))
-        cfg.ses                     = replace(intern_cfg.entities.session,'Ephys','EcogLfp');
-    else
+    if ~endsWith( intern_cfg.entities.session , digitsPattern(2))
         error('session does not end on two digits')
+    elseif xor((startsWith( intern_cfg.entities.session , 'EcogLfpMed')) , (ECOG_contacts>0))
+        error('session does not match with ECOG')
+    elseif xor((startsWith( intern_cfg.entities.session , 'LfpMed')) , (ECOG_contacts==0))
+        error('session does not match with LFP only')
+    else
+        cfg.ses                     = intern_cfg.entities.session;
     end
     
     
@@ -582,7 +586,10 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     cfg.participants.date_of_implantation   = intern_cfg.participants.date_of_implantation ;  %'2022-01-20T00:00:00'; %LFP excel sheet
     cfg.participants.UPDRS_III_preop_OFF    = 'n/a';
     cfg.participants.UPDRS_III_preop_ON     = 'n/a';
-    cfg.participants.disease_duration       = intern_cfg.participants.disease_duration;%7; %LFP excel sheet
+    cfg.participants.disease_duration       = 'n/a';
+    if any(intern_cfg.participants.disease_duration) > 0
+        cfg.participants.disease_duration       = intern_cfg.participants.disease_duration;
+    end
     cfg.participants.PD_subtype             = intern_cfg.participants.PD_subtype; %'akinetic-rigid'; %SAP
     cfg.participants.symptom_dominant_side  = intern_cfg.participants.symptom_dominant_side;% 'right'; %LFP excel sheet
     cfg.participants.LEDD                   = intern_cfg.participants.LEDD; %1600; %calculated from lab book with https://www.parkinsonsmeasurement.org/toolBox/levodopaEquivalentDose.htm
@@ -1079,11 +1086,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                 exp.StimulationMode           = "time-varying";
                 exp.StimulationParadigm       = "speed adaptive DBS";
             end
-            if isfield(intern_cfg.entities,'description')
-                cfg.desc = intern_cfg.entities.description;
-            else
-                cfg.desc = 'neurophys';
-            end
+            %if isfield(intern_cfg.entities,'description')
+            %    cfg.desc = intern_cfg.entities.description;
+            %else
+            %    cfg.desc = 'neurophys';
+            %end
         end
         
     end
