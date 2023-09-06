@@ -43,6 +43,8 @@ HardwareFiltersUnipolarChannels =[];
 ElectricalStimulation = [];
 #f = open("labbook.txt", "w")
 
+need to remove the desc and need to update beh folder
+
 # iterate over the brainvision files
 run_files = get_all_vhdr_files(root)
 datatype = "ieeg"

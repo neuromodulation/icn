@@ -301,8 +301,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         'Evoked potentials recording. Single stimulation pulses of fixed amplitude following periods of high frequency stimulation with varying amplitude (0, 1.5 and 3 mA) per block.',...
         'Selfpaced reading aloud of the fable ''The Parrot and the Cat'' by Aesop. Extended pauses in between sentences.',...
         'Block of 30 seconds of continuous left wrist rotation performed on a custom-built rotameter which translates degree of rotation to volt followed by a block of 30 seconds of rest followed by a block of 30 seconds of reading aloud (''The Parrot and the Cat'' by Aesop). Multiple sets.',...
-        'Performance of diagonal forearm movements with a cursor on a screen using a digitizing tablet. Start and stop events are visually cued on screen with a rest duration of 350 ms. 14 blocks with 32 movements each. In blocks 3-5/9-11 bilateral stimulation is applied for 300 ms if a movement is slower/faster than the previous two movements. The order of slow/fast blocks is alternated between participants.  Performed with the right hand.',...
-        'Performance of diagonal forearm movements with a cursor on a screen using a digitizing tablet. Start and stop events are visually cued on screen with a rest duration of 350 ms. 14 blocks with 32 movements each. In blocks 3-5/9-11 bilateral stimulation is applied for 300 ms if a movement is slower/faster than the previous two movements. The order of slow/fast blocks is alternated between participants.  Performed with the left hand.',...
+        'Performance of diagonal forearm movements with a cursor on a screen using a digitizing tablet. Start and stop events are visually cued on screen with a rest duration of 350 ms. 4 blocks with 96 movements each. In blocks 1 an 3 subthalamic deep brain stimulation is applied for 300 ms if a movement is slower/faster than the previous two movements. The order of slow/fast blocks is alternated between participants. Performed with the dominant hand. (right)',...
+        'Performance of diagonal forearm movements with a cursor on a screen using a digitizing tablet. Start and stop events are visually cued on screen with a rest duration of 350 ms. 4 blocks with 96 movements each. In blocks 1 an 3 subthalamic deep brain stimulation is applied for 300 ms if a movement is slower/faster than the previous two movements. The order of slow/fast blocks is alternated between participants. Performed with the dominant hand. (left)',...
         'Selfpaced left hand tapping, circa every 10 seconds, without counting, in resting seated position.',...
         'Selfpaced right hand tapping, circa every 10 seconds, without counting, in resting seated position.',...
         'Bilateral selfpaced hand tapping in rested seated position, one tap every 10 seconds, the patient should not count the seconds. The hand should be raised while the wrist stays mounted on the leg. Correct the pacing of the taps when the tap-intervals are below 8 seconds, or above 12 seconds. Start with contralateral side compared to ECoG implantation-hemisfere. The investigator counts the number of taps and instructs the patients to switch tapping-side after 30 taps, for another 30 taps in the second side.',...
@@ -842,11 +842,25 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                 error('need to fix code so that number channels.tsv can have fewer ECOG contacts based on the model, because sometimes they are empty or deleted') 
             end
             %from the python input file
+            
+            
+            %eeg_emg_channel = find(startsWith(intern_cfg.data.label,'EEG') + startsWith(intern_cfg.data.label,'EMG'));
+
+            for chan= 1:length(intern_cfg.channels_tsv.name)
+               if ~any(intern_cfg.data.trial{1}(chan,1:10000))
+                   intern_cfg.channels_tsv.status{chan}='bad';
+                   if strcmp(intern_cfg.channels_tsv.status_description{chan},'n/a')
+                       intern_cfg.channels_tsv.status_description{chan}='Empty';
+                   end
+               end
+            end
             cfg.channels.status             = intern_cfg.channels_tsv.status;
             cfg.channels.status_description = intern_cfg.channels_tsv.status_description;
+            
             % settings that are mostly applicable, but now cut out
             cfg.channels.name               = chs_final;
             cfg.channels.type               = intern_cfg.data.hdr.chantype;
+            
              % MOSTLY Always reset the channels references
             typeSet = {'EEG', 'ECOG', 'DBS', 'SEEG', 'EMG', 'ECG', 'MISC'};
             cfg.ieeg.iEEGReference = intern_cfg.ieeg.iEEGReference ; 
