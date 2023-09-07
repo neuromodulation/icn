@@ -14,7 +14,7 @@ nii_atlas = ea_load_nii('C:\Users\Jonathan\Documents\DATA\ATLAS_creation\compoun
 nii_PET = ea_load_nii('C:\Users\Jonathan\Documents\CODE\hansen_receptors\data\PET_nifti_images\DAT_fepe2i_hc6_sasaki.nii.gz');
 nii_out = nii_atlas;
 
-%% read in the accopanying area label table and define the output
+%% read in the accompanying area label table and define the output
 areas = readtable('C:\Users\Jonathan\Documents\DATA\ATLAS_creation\compound_atlas_HCPex_SUIT_ABGT.txt');
 areas_out = table({'id'},{'intensity'},{'label'});
 

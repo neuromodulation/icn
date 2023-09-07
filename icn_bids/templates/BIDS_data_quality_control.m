@@ -203,7 +203,8 @@ for i =1:length(jsonfiles)
             else
                 create_a_copy = 0;
             end
-
+            %need to implement that if the beh folder only exist in the medoff medon that it should be
+            %copied anyhow
 
 
 
