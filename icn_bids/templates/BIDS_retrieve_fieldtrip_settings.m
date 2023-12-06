@@ -648,10 +648,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
        
         cfg.electrodes.group        =  repmat({'n/a'},length(cfg.electrodes.name),1);
         
-        cfg.electrodes.group(startsWith(cfg.electrodes.name, 'LFP_R')) = {'DBS_right'};
-        cfg.electrodes.group(startsWith(cfg.electrodes.name, 'LFP_L')) = {'DBS_left'};
         cfg.electrodes.group(startsWith(cfg.electrodes.name, 'ECOG_R')) = {'ECOG_right'};
         cfg.electrodes.group(startsWith(cfg.electrodes.name, 'ECOG_L')) = {'ECOG_left'};
+        cfg.electrodes.group(startsWith(cfg.electrodes.name, 'LFP_R')) = {'DBS_right'};
+        cfg.electrodes.group(startsWith(cfg.electrodes.name, 'LFP_L')) = {'DBS_left'};
+        
         
         %check for the side of the ecog strip
             %first column is x > +1
@@ -725,29 +726,35 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % RECOMMENDED. Material of the electrode, e.g., Tin, Ag/AgCl, Gold
         cfg.electrodes.material     = [
-            repmat({DBS_material},DBS_contacts*2,1); 
-            repmat({ECOG_material}, ECOG_contacts ,1)];
+            repmat({ECOG_material}, ECOG_contacts ,1);
+            repmat({DBS_material},DBS_contacts*2,1) 
+            ];
         cfg.electrodes.manufacturer = [
-            repmat({cfg.participants.DBS_manufacturer},DBS_contacts*2,1);
-            repmat({cfg.participants.ECOG_manufacturer},ECOG_contacts,1)];
+            repmat({cfg.participants.ECOG_manufacturer},ECOG_contacts,1);
+            repmat({cfg.participants.DBS_manufacturer},DBS_contacts*2,1)
+            ];
         cfg.electrodes.group        = [
+            repmat({['ECOG_' cfg.participants.ECOG_hemisphere]},ECOG_contacts,1);
             repmat({'DBS_right'},DBS_contacts,1);
-            repmat({'DBS_left'},DBS_contacts,1);
-            repmat({['ECOG_' cfg.participants.ECOG_hemisphere]},ECOG_contacts,1)];
+            repmat({'DBS_left'},DBS_contacts,1)
+            ];
         cfg.electrodes.hemisphere   = [
+            repmat({ECOG_hemisphere},ECOG_contacts,1);
             repmat({'right'},DBS_contacts,1);
-            repmat({'left'},DBS_contacts,1);
-            repmat({ECOG_hemisphere},ECOG_contacts,1)];
+            repmat({'left'},DBS_contacts,1)
+            ];
         % RECOMMENDED. Type of the electrode (e.g., cup, ring, clip-on, wire, needle)
-        cfg.electrodes.type         = [  
-            repmat({'depth'},DBS_contacts*2,1); %=> this is DBS
-            repmat({'strip'},ECOG_contacts,1)]; %=> this is the ECOG
+        cfg.electrodes.type         = [
+            repmat({'strip'},ECOG_contacts,1);%=> this is the ECOG
+            repmat({'depth'},DBS_contacts*2,1) %=> this is DBS
+            ]; 
 
         % RECOMMENDED. Impedance of the electrode in kOhm
         cfg.electrodes.impedance    = repmat({'n/a'},length(sens.label),1);  
-        cfg.electrodes.dimension    = [  
-            repmat({sprintf('[1x%d]',DBS_contacts)},DBS_contacts*2,1);
-            repmat({sprintf('[1x%d]',ECOG_contacts)},ECOG_contacts,1)];
+        cfg.electrodes.dimension    = [
+            repmat({sprintf('[1x%d]',ECOG_contacts)},ECOG_contacts,1);
+            repmat({sprintf('[1x%d]',DBS_contacts)},DBS_contacts*2,1)
+            ];
     end
     
     % TO DO: need to add the ECOG contact size at the end and make it 6 or
@@ -800,9 +807,9 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     
    if add_ECOG_size
        if (ECOG_contacts == 6) &&  strcmp(ECOG_model,'TS06R-AP10X-0W6')
-           cfg.electrodes.size(end+1:end+6) = {2.54 2.54 2.54 2.54 2.54 2.54};
+           cfg.electrodes.size(1:end+6) = [{2.54} {2.54} {2.54} {2.54} {2.54} {2.54} cfg.electrodes.size(:)' ];
        elseif (ECOG_contacts == 12) && strcmp(ECOG_model,'DS12A-SP10X-000')
-           cfg.electrodes.size(end+1:end+12) = {4.15 4.15 4.15 4.15 4.15 4.15 4.15 4.15 4.15 4.15 4.15 4.15};
+           cfg.electrodes.size(1:end+12) = [{4.15} {4.15} {4.15} {4.15} {4.15} {4.15} {4.15} {4.15} {4.15} {4.15} {4.15} {4.15} cfg.electrodes.size(:)'];
        elseif (ECOG_contacts == 0) && strcmp(ECOG_model,'n/a')
            %continue
        else

@@ -1001,6 +1001,8 @@ def save_all_information(*args):
                 metadict['stim']['L']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
             if '_R_' in bids_stimulation_contact[stimcon].value:
                 metadict['stim']['R']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
+    if 'StimOff' in metadict['entities']['acquisition']:
+        metadict['stim'] = {}
     metadict['ieeg'] = {}
     metadict['ieeg']['DeviceSerialNumber'] = str()
     metadict['ieeg']['ECGChannelCount'] = int()
