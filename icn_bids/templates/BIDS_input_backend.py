@@ -403,6 +403,8 @@ task_options = [
     ("SelfpacedHandTapR", 14),
     ("SelfpacedHandTapB", 15),
     ("Free", 16),
+    ("DyskinesiaProtocol",17),
+    ("NaturalBehavior", 18),
 ]
 
 
@@ -467,6 +469,8 @@ def go_to_subsession(*args):
         "Selfpaced right hand tapping, circa every 10 seconds, without counting, in resting seated position.",
         "Bilateral selfpaced hand tapping in rested seated position, one tap every 10 seconds, the patient should not count the seconds. The hand should be raised while the wrist stays mounted on the leg. Correct the pacing of the taps when the tap-intervals are below 8 seconds, or above 12 seconds. Start with contralateral side compared to ECoG implantation-hemisfere. The investigator counts the number of taps and instructs the patients to switch tapping-side after 30 taps, for another 30 taps in the second side.",
         "Free period, no instructions, during Dyskinesia-Protocol still recorded to monitor the increasing Dopamine-Level",
+        "Total concatenated recording of the dyskinesia protocol, as defined in the lab book",
+        "Natural behavior observed when walking, chatting, drinking or eating at the hospital venue, outside of the experimental lab",
     ]
     instructions = [
         "n/a",
@@ -486,6 +490,7 @@ def go_to_subsession(*args):
         "Keep both hands resting on your legs, and tap with your right hand by raising the hand and fingers of your right hand, without letting the arm be lifted from the leg. Do not count in between rotations.",
         "Keep both hands resting on your legs. First tap with your left hand (if ECoG is implanted in the right hemisphere; if ECoG is implanted in left hemisphere, start with right hand) by raising the left hand and fingers while the wrist is mounted on the leg. Make one tap every +/- ten seconds. Do not count in between taps. After 30 taps, the recording investigator will instruct you to tap on with your right (i.e. left) hand. After 30 taps the recording investigator will instruct you to stop tapping.",
         "Free period, without instructions or restrictions, of rest between Rest-measurement and Task-measurements",
+        "Free period to be spend at the hospital venue (corridor, canteen, ...), without further instructions",
     ]
 
     bids_task_description.append(
@@ -584,12 +589,23 @@ def plot_channels(*args):
     bids_status_description_widgets = []
     bids_status_description_list = []
     bids_stimulation_contact = []
+    bids_stimulation_amplitude_left =[]
+    bids_stimulation_frequency_left =[]
+    bids_stimulation_amplitude_right =[]
+    bids_stimulation_frequency_right =[]
 
     strdatetime = bids_filechooser[-1].selected_filename
     m = re.search(r'(20[0-9]{6}T[0-9]{6})', strdatetime)
     if m is not None:
         strdatetime = m.group(0)
         strdatetime = strdatetime[0:4] + '-' + strdatetime[4:6] + '-' + strdatetime[6:8] + strdatetime[8] + strdatetime[9:11] + ':' + strdatetime[11:13] + ':' + strdatetime[13:15]
+    else:
+        m = re.search(r'(202[0-9]{5}_[0-9]{6})', strdatetime)
+        if m is not None:
+            strdatetime = m.group(0)
+            strdatetime = strdatetime[0:4] + '-' + strdatetime[4:6] + '-' + strdatetime[6:8] + strdatetime[
+                8] + strdatetime[9:11] + ':' + strdatetime[11:13] + ':' + strdatetime[13:15]
+
     bids_time_of_acquisition.append(
         widgets.Text(
             description="Date and time of recording",
@@ -764,7 +780,11 @@ def define_reference_and_stims(*args):
     global bids_stimulation_frequency_left
     global bids_stimulation_amplitude_right
     global bids_stimulation_frequency_right
-
+    bids_stimulation_contact =[]
+    bids_stimulation_frequency_left =[]
+    bids_stimulation_frequency_right=[]
+    bids_stimulation_amplitude_left=[]
+    bids_stimulation_amplitude_right=[]
     for widget in bids_channel_names_widgets:
         if widget.value != '':
             bids_channel_names_list.append(widget.value)
@@ -854,6 +874,7 @@ go_to_status_description = widgets.Button(
 
 def define_status_description(*args):
     stimcontacts = []
+    bids_status_description_widgets = []
     for stimcon in range(0,8):
         stimcontacts.append(bids_stimulation_contact[stimcon].value)
     for ch in bids_channel_names_list:
