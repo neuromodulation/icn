@@ -601,7 +601,11 @@ def plot_channels(*args):
     )
 
     stracq = bids_filechooser[-1].selected_filename
-    if 'StimOnL' in stracq:
+    if 'EStimOnL' in stracq:
+        stracq = 'EStimOnL'
+    elif 'EStimOnR' in stracq:
+        stracq = 'EStimOnR'
+    elif 'StimOnL' in stracq:
         stracq = 'StimOnL'
     elif 'StimOnR' in stracq:
         stracq = 'StimOnR'
