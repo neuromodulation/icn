@@ -1,5 +1,7 @@
 # conda install -c conda-forge ipywidgets
 # pip install ipywidgets
+from typing import List, Any
+
 import ipywidgets as widgets
 from IPython.display import display
 
@@ -21,115 +23,7 @@ mne.viz.set_browser_backend('qt')  # Enable mne-qt-browser backend if mne < 1.0
 style = {"description_width": "300px"}
 layout = {"width": "800px"}
 
-# initiate metadata dictionaries
-metadict = {}
-metadict['inputdata_location'] = str()
-metadict['inputdata_fname'] = str()
-metadict['entities'] = {}
-metadict['entities']['subject'] = str()
-metadict['entities']['session'] = str()
-metadict['entities']['task'] = str()
-metadict['entities']['acquisition'] = str()
-metadict['entities']['run'] = str()
-metadict['entities']['space'] = str()
-metadict['participants'] = {}
-metadict['participants']['participants_id'] = str()
-metadict['participants']['sex'] = str()
-metadict['participants']['handedness'] = str()
-metadict['participants']['age'] = str()
-metadict['participants']['date_of_implantation'] = str()
-metadict['participants']['UPDRS_III_preop_OFF'] = str()
-metadict['participants']['UPDRS_III_preop_ON'] = str()
-metadict['participants']['disease_duration'] = str()
-metadict['participants']['PD_subtype'] = str()
-metadict['participants']['symptom_dominant_side'] = str()
-metadict['participants']['LEDD'] = str()
-metadict['participants']['DBS_target'] = str()
-metadict['participants']['DBS_hemisphere'] = str()
-metadict['participants']['DBS_manufacturer'] = str()
-metadict['participants']['DBS_model'] = str()
-metadict['participants']['DBS_directional'] = str()
-metadict['participants']['DBS_contacts'] = str()
-metadict['participants']['DBS_description'] = str()
-metadict['participants']['ECOG_target'] = str()
-metadict['participants']['ECOG_hemisphere'] = str()
-metadict['participants']['ECOG_manufacturer'] = str()
-metadict['participants']['ECOG_model'] = str()
-metadict['participants']['ECOG_location'] = str()
-metadict['participants']['ECOG_material'] = str()
-metadict['participants']['ECOG_contacts'] = str()
-metadict['participants']['ECOG_description'] = str()
-metadict['scans_tsv'] = {}
-metadict['scans_tsv']['filename'] = str()
-metadict['scans_tsv']['acq_time'] = str()
-metadict['sessions_tsv'] = {}
-metadict['sessions_tsv']['acq_date'] = str()
-metadict['sessions_tsv']['medication_state'] = str()
-metadict['sessions_tsv']['UPDRS_III'] = str()
-metadict['scans_json'] = {}
-metadict['scans_json']['acq_time'] = {}
-metadict['scans_json']['medication_state'] = {}
-metadict['channels_tsv'] = {}
-metadict['channels_tsv']['name'] = []
-metadict['channels_tsv']['type'] = []
-metadict['channels_tsv']['units'] = []
-metadict['channels_tsv']['low_cutoff'] = []
-metadict['channels_tsv']['high_cutoff'] = []
-metadict['channels_tsv']['reference'] = []
-metadict['channels_tsv']['group'] = []
-metadict['channels_tsv']['sampling_frequency'] = []
-metadict['channels_tsv']['notch'] = []
-metadict['channels_tsv']['status'] = []
-metadict['channels_tsv']['status_description'] = []
-metadict['electrodes_tsv'] = {}
-metadict['electrodes_tsv']['name'] = []
-metadict['electrodes_tsv']['x'] = []
-metadict['electrodes_tsv']['y'] = []
-metadict['electrodes_tsv']['z'] = []
-metadict['electrodes_tsv']['size'] = []
-metadict['electrodes_tsv']['material'] = []
-metadict['electrodes_tsv']['manufacturer'] = []
-metadict['electrodes_tsv']['group'] = []
-metadict['electrodes_tsv']['hemisphere'] = []
-metadict['electrodes_tsv']['type'] = []
-metadict['electrodes_tsv']['impedance'] = []
-metadict['electrodes_tsv']['dimension'] = []
-metadict['coord_json'] = {}
-metadict['coord_json']['IntendedFor'] = str()
-metadict['coord_json']['iEEGCoordinateSystem'] = str()
-metadict['coord_json']['iEEGCoordinateUnits'] = str()
-metadict['coord_json']['iEEGCoordinateSystemDescription'] = str()
-metadict['coord_json']['iEEGCoordinateProcessingDescription'] = str()
-metadict['coord_json']['iEEGCoordinateProcessingReference'] = str()
-metadict['ieeg'] = {}
-metadict['ieeg']['DeviceSerialNumber'] = str()
-metadict['ieeg']['ECGChannelCount'] = int()
-metadict['ieeg']['ECOGChannelCount'] = int()
-metadict['ieeg']['EEGChannelCount'] = int()
-metadict['ieeg']['EMGChannelCount'] = int()
-metadict['ieeg']['EOGChannelCount'] = str()
-metadict['ieeg']['ElectricalStimulation'] = bool()
-metadict['ieeg']['HardwareFilters'] = str()
-metadict['ieeg']['InstitutionAddress'] = str()
-metadict['ieeg']['InstitutionName'] = str()
-metadict['ieeg']['Instructions'] = str()
-metadict['ieeg']['Manufacturer'] = str()
-metadict['ieeg']['ManufacturersModelName'] = str()
-metadict['ieeg']['MiscChannelCount'] = int()
-metadict['ieeg']['PowerLineFrequency'] = int()
-metadict['ieeg']['RecordingDuration'] = str()
-metadict['ieeg']['RecordingType'] = str()
-metadict['ieeg']['SEEGChannelCount'] = int()
-metadict['ieeg']['SamplingFrequency'] = float()
-metadict['ieeg']['SoftwareFilters'] = str()
-metadict['ieeg']['SoftwareVersions'] = str()
-metadict['ieeg']['TaskDescription'] = str()
-metadict['ieeg']['TaskName'] = str()
-metadict['ieeg']['TriggerChannelCount'] = int()
-metadict['ieeg']['iEEGElectrodeGroups'] = str()
-metadict['ieeg']['iEEGGround'] = str()
-metadict['ieeg']['iEEGPlacementScheme'] = str()
-metadict['ieeg']['iEEGReference'] = str()
+
 
 bids_subject_prefix = widgets.RadioButtons(
     options=["EL", "L"],
@@ -145,6 +39,7 @@ bids_sex = widgets.Dropdown(
     description="Sex:",
     style=style,
     layout=layout,
+    value="n/a",
 )
 bids_handedness = widgets.RadioButtons(
     options=[
@@ -156,22 +51,28 @@ bids_handedness = widgets.RadioButtons(
     description="handedness",
     style=style,
     layout=layout,
+    value="n/a"
 )
 
 bids_age = widgets.BoundedIntText(
-    min=0, max=150, step=1, description="Age:", style=style, layout=layout
+    min=0, max=150, step=1, description="Age:", style=style, layout=layout, value=0,
 )
+'''
 bids_date_of_implantation = widgets.DatePicker(
-    description="Date of Implantation", style=style, layout=layout
+    description="Date of Implantation", style=style, layout=layout, value=
 )
+'''
+bids_date_of_implantation = 'unknown'
+
 bids_disease_duration = widgets.BoundedIntText(
-    min=0, max=150, step=1, description="Disease duration:", style=style, layout=layout
+    min=0, max=150, step=1, description="Disease duration:", style=style, layout=layout, value=99
 )
 bids_PD_subtype = widgets.RadioButtons(
     options=["n/a", "akinetic-rigid", "tremor-dominant", "equivalent"],
     description="PD subtype",
     style=style,
     layout=layout,
+    value='akinetic-rigid',
 )
 bids_symptom_dominant_side = widgets.RadioButtons(
     options=[
@@ -183,6 +84,7 @@ bids_symptom_dominant_side = widgets.RadioButtons(
     description="symptom dominant side",
     style=style,
     layout=layout,
+    value="n/a",
 )
 '''
   bids_LEDD = widgets.BoundedIntText(
@@ -198,12 +100,14 @@ bids_DBS_target = widgets.RadioButtons(
     description="DBS target",
     style=style,
     layout=layout,
+    value='STN',
 )
 bids_DBS_hemispheres = widgets.RadioButtons(
     options=["n/a", "right", "left", "bilateral"],
     description="DBS hemisphere",
     style=style,
     layout=layout,
+    value='bilateral',
 )
 bids_DBS_model = widgets.RadioButtons(
     options=[
@@ -219,6 +123,7 @@ bids_DBS_model = widgets.RadioButtons(
     description="DBS model",
     style=style,
     layout=layout,
+    value="SenSight Short",
 )
 bids_DBS_description = widgets.RadioButtons(
     options=[
@@ -234,6 +139,7 @@ bids_DBS_description = widgets.RadioButtons(
     description="DBS description",
     style=style,
     layout=layout,
+    value="Medtronic: 8-contact, 4-level, directional DBS lead. 0.5 mm spacing.",
 )
 mylink = widgets.jslink((bids_DBS_model, "index"), (bids_DBS_description, "index"))
 
@@ -249,10 +155,10 @@ def define_ECOG(click):
     with output1:
         ECOG_present.disabled = 1
         display(
-            bids_ECOG_target,
+            #bids_ECOG_target,
             bids_ECOG_hemisphere,
-            bids_ECOG_model,
-            bids_ECOG_description,
+            #bids_ECOG_model,
+            #bids_ECOG_description,
         )
 
 ECOG_present.on_click(define_ECOG)
@@ -262,7 +168,7 @@ bids_ECOG_target = widgets.RadioButtons(
     description="ECOG target",
     style=style,
     layout=layout,
-    value="n/a",
+    value="sensorimotor cortex",
 )
 bids_ECOG_hemisphere = widgets.RadioButtons(
     options=[
@@ -285,7 +191,7 @@ bids_ECOG_model = widgets.RadioButtons(
     description="ECOG model",
     style=style,
     layout=layout,
-    value="n/a",
+    value="TS06R-AP10X-0W6",
 )
 bids_ECOG_description = widgets.RadioButtons(
     options=[
@@ -296,7 +202,7 @@ bids_ECOG_description = widgets.RadioButtons(
     description="ECOG description",
     style=style,
     layout={"width": "max-content"},
-    value="n/a",
+    value="Ad-Tech: 6-contact, 1x6 narrow-body long term monitoring strip. Platinum contacts, 10mm spacing, contact size 4.0 mm diameter/1.8 mm exposure.",
 )
 mylink = widgets.jslink((bids_ECOG_model, "index"), (bids_ECOG_description, "index"))
 
@@ -380,10 +286,10 @@ bids_reference = []
 bids_status_description_widgets = []
 bids_status_description_list = []
 bids_stimulation_contact = []
-bids_stimulation_amplitude_left = []
-bids_stimulation_frequency_left = []
-bids_stimulation_amplitude_right = []
-bids_stimulation_frequency_right = []
+bids_stimulation_amplitude_left = 0
+bids_stimulation_frequency_left = 0
+bids_stimulation_amplitude_right = 0
+bids_stimulation_frequency_right = 0
 
 task_options = [
     ("n/a", 0),
@@ -423,8 +329,12 @@ def go_to_subsession(*args):
     bids_channel_names_list = []
     bids_reference = []
     bids_status_description_widgets = []
-    bids_status_description_list = []
-    bids_stimulation_contact = []
+    bids_stimulation_contact= []
+    bids_status_description_list=[]
+    bids_stimulation_amplitude_left= 0
+    bids_stimulation_frequency_left= 0
+    bids_stimulation_amplitude_right= 0
+    bids_stimulation_frequency_right= 0
     def update_task(change):
         with output2:
             bids_task_description[-1].value = descriptions[change["new"]]
@@ -521,7 +431,6 @@ def go_to_subsession(*args):
 #            layout=layout,
 #        )
 #    )
-
     bids_run.append(
         widgets.BoundedIntText(
             value=1,
@@ -533,9 +442,6 @@ def go_to_subsession(*args):
             layout=layout,
         )
     )
-
-
-
     #bids_acquisition.append(
     #    widgets.Text(
     #        value=acq,
@@ -544,7 +450,6 @@ def go_to_subsession(*args):
     #        layout=layout,
     #    )
     #)
-
     with output2:
 
         display(
@@ -557,7 +462,6 @@ def go_to_subsession(*args):
             bids_run[-1],
             draw_channels,
         )
-
 
 specify_file.on_click(go_to_subsession)
 draw_channels = widgets.Button(
@@ -583,16 +487,17 @@ def plot_channels(*args):
     global bids_stimulation_frequency_left
     global bids_stimulation_amplitude_right
     global bids_stimulation_frequency_right
+    global bids_time_of_acquisition
     bids_channel_names_widgets = []
     bids_channel_names_list = []
     bids_reference = []
     bids_status_description_widgets = []
-    bids_status_description_list = []
     bids_stimulation_contact = []
-    bids_stimulation_amplitude_left =[]
-    bids_stimulation_frequency_left =[]
-    bids_stimulation_amplitude_right =[]
-    bids_stimulation_frequency_right =[]
+    bids_stimulation_amplitude_left =0
+    bids_stimulation_frequency_left =0
+    bids_stimulation_amplitude_right =0
+    bids_stimulation_frequency_right =0
+    bids_time_of_acquisition = []
 
     strdatetime = bids_filechooser[-1].selected_filename
     m = re.search(r'(20[0-9]{6}T[0-9]{6})', strdatetime)
@@ -775,16 +680,26 @@ save_to_json = widgets.Button(
 
 
 def define_reference_and_stims(*args):
+    global bids_channel_names_widgets
+    global bids_channel_names_list
+    global bids_reference
+    global bids_status_description_widgets
+    global bids_status_description_list
     global bids_stimulation_contact
     global bids_stimulation_amplitude_left
     global bids_stimulation_frequency_left
     global bids_stimulation_amplitude_right
     global bids_stimulation_frequency_right
-    bids_stimulation_contact =[]
-    bids_stimulation_frequency_left =[]
-    bids_stimulation_frequency_right=[]
-    bids_stimulation_amplitude_left=[]
-    bids_stimulation_amplitude_right=[]
+
+    bids_channel_names_list = []
+    bids_reference = []
+    bids_status_description_widgets = []
+    bids_stimulation_contact = []
+    bids_stimulation_amplitude_left = 0
+    bids_stimulation_frequency_left = 0
+    bids_stimulation_amplitude_right = 0
+    bids_stimulation_frequency_right = 0
+
     for widget in bids_channel_names_widgets:
         if widget.value != '':
             bids_channel_names_list.append(widget.value)
@@ -808,10 +723,11 @@ def define_reference_and_stims(*args):
             options=bids_channel_names_list,
             description='Stimulation Contact: ',
             style=style,
-            layout=layout
+            layout=layout,
+            value="",
             )
         )
-    bids_stimulation_frequency_left.append(widgets.BoundedIntText(
+    bids_stimulation_frequency_left=widgets.BoundedIntText(
             value=130,
             min=1,
             max=1000,
@@ -819,9 +735,9 @@ def define_reference_and_stims(*args):
             description='Stimulation Frequency left:',
             style=style,
             layout=layout
-        ))
+        )
 
-    bids_stimulation_frequency_right.append(widgets.BoundedIntText(
+    bids_stimulation_frequency_right=widgets.BoundedIntText(
             value=130,
             min=1,
             max=1000,
@@ -829,10 +745,9 @@ def define_reference_and_stims(*args):
             description='Stimulation Frequency right:',
             style=style,
             layout=layout
-        ))
+        )
 
-
-    bids_stimulation_amplitude_left.append( widgets.BoundedFloatText(
+    bids_stimulation_amplitude_left=widgets.BoundedFloatText(
             value=0,
             min=0,
             max=5,
@@ -840,10 +755,9 @@ def define_reference_and_stims(*args):
             description='Stimulation Amplitude left:',
             style=style,
             layout=layout
-        ))
+        )
 
-
-    bids_stimulation_amplitude_right.append(widgets.BoundedFloatText(
+    bids_stimulation_amplitude_right=widgets.BoundedFloatText(
             value=0,
             min=0,
             max=5,
@@ -851,21 +765,22 @@ def define_reference_and_stims(*args):
             description='Stimulation Amplitude right:',
             style=style,
             layout=layout
-        ))
+        )
 
     with output2:
         display(bids_reference[-1])
         if 'StimOn' in bids_acquisition[-1].value:
             for stimcon in range(0,8):
-                display(bids_stimulation_contact[stimcon])\
+                display(bids_stimulation_contact[stimcon])
 
-            display(bids_stimulation_amplitude_left[-1])
-            display(bids_stimulation_amplitude_right[-1])
-            display(bids_stimulation_frequency_left[-1])
-            display(bids_stimulation_frequency_right[-1])
+            display(bids_stimulation_amplitude_left)
+            display(bids_stimulation_amplitude_right)
+            display(bids_stimulation_frequency_left)
+            display(bids_stimulation_frequency_right)
         display(go_to_status_description)
 
 go_to_reference.on_click(define_reference_and_stims)
+
 go_to_status_description = widgets.Button(
     description="define the channel status descriptions",
     style=style,
@@ -873,8 +788,18 @@ go_to_status_description = widgets.Button(
 )
 
 def define_status_description(*args):
-    stimcontacts = []
+    global bids_channel_names_widgets
+    global bids_channel_names_list
+    global bids_reference
+    global bids_status_description_widgets
+    global bids_status_description_list
+    global bids_stimulation_contact
+    global bids_stimulation_amplitude_left
+    global bids_stimulation_frequency_left
+    global bids_stimulation_amplitude_right
+    global bids_stimulation_frequency_right
     bids_status_description_widgets = []
+    stimcontacts = []
     for stimcon in range(0,8):
         stimcontacts.append(bids_stimulation_contact[stimcon].value)
     for ch in bids_channel_names_list:
@@ -915,61 +840,66 @@ def multiplefunctions_2(*args):
 
 def save_all_information(*args):
     # All the vars that I want to get start with bids_
-
-    metadict['inputdata_location'] = bids_filechooser[-1].selected_path + os.sep + bids_filechooser[-1].selected_filename
-    metadict['inputdata_fname'] = bids_filechooser[-1].selected_filename
+    global bids_channel_names_widgets
+    global bids_channel_names_list
+    global bids_reference
+    global bids_status_description_widgets
+    global bids_status_description_list
+    global bids_stimulation_contact
+    global bids_stimulation_amplitude_left
+    global bids_stimulation_frequency_left
+    global bids_stimulation_amplitude_right
+    global bids_stimulation_frequency_right
+    # initiate metadata dictionaries
+    metadict = {}
+    metadict['inputdata_location'] = str()
+    metadict['inputdata_fname'] = str()
     metadict['entities'] = {}
-    metadict['entities']['subject'] = str(bids_subject_prefix.value) + str(bids_subject.value).zfill(3)
-    metadict['entities']['session'] = bids_session[-1].value
-    metadict['entities']['task'] = task_options[bids_task[-1].value][0]
-    metadict['entities']['acquisition'] = bids_acquisition[-1].value
-    metadict['entities']['run'] = bids_run[-1].value
-    metadict['entities']['space'] = bids_space[-1].value
+    metadict['entities']['subject'] = str()
+    metadict['entities']['session'] = str()
+    metadict['entities']['task'] = str()
+    metadict['entities']['acquisition'] = str()
+    metadict['entities']['run'] = str()
+    metadict['entities']['space'] = str()
     metadict['participants'] = {}
     metadict['participants']['participants_id'] = str()
-    metadict['participants']['sex'] = bids_sex.value
-    metadict['participants']['handedness'] = bids_handedness.value
-    metadict['participants']['age'] = bids_age.value
-    try:
-        bids_date_of_implantation_str = bids_date_of_implantation.value
-        metadict['participants']['date_of_implantation'] = bids_date_of_implantation_str.strftime("%Y-%m-%dT00:00:00")
-    except:
-        metadict['participants']['date_of_implantation'] = "unknown"
-    finally:
-        pass
+    metadict['participants']['sex'] = str()
+    metadict['participants']['handedness'] = str()
+    metadict['participants']['age'] = str()
+    metadict['participants']['date_of_implantation'] = str()
     metadict['participants']['UPDRS_III_preop_OFF'] = str()
     metadict['participants']['UPDRS_III_preop_ON'] = str()
-    metadict['participants']['disease_duration'] = bids_disease_duration.value
-    metadict['participants']['PD_subtype'] = bids_PD_subtype.value
-    metadict['participants']['symptom_dominant_side'] = bids_symptom_dominant_side.value
-    metadict['participants']['LEDD'] = 0 #bids_LEDD.value
-    metadict['participants']['DBS_target'] = bids_DBS_target.value
-    metadict['participants']['DBS_hemisphere'] = bids_DBS_hemispheres.value
+    metadict['participants']['disease_duration'] = str()
+    metadict['participants']['PD_subtype'] = str()
+    metadict['participants']['symptom_dominant_side'] = str()
+    metadict['participants']['LEDD'] = str()
+    metadict['participants']['DBS_target'] = str()
+    metadict['participants']['DBS_hemisphere'] = str()
     metadict['participants']['DBS_manufacturer'] = str()
-    metadict['participants']['DBS_model'] = bids_DBS_model.value
+    metadict['participants']['DBS_model'] = str()
     metadict['participants']['DBS_directional'] = str()
     metadict['participants']['DBS_contacts'] = str()
-    metadict['participants']['DBS_description'] = bids_DBS_description.value
-    metadict['participants']['ECOG_target'] = bids_ECOG_target.value
-    metadict['participants']['ECOG_hemisphere'] = bids_ECOG_hemisphere.value
+    metadict['participants']['DBS_description'] = str()
+    metadict['participants']['ECOG_target'] = str()
+    metadict['participants']['ECOG_hemisphere'] = str()
     metadict['participants']['ECOG_manufacturer'] = str()
-    metadict['participants']['ECOG_model'] = bids_ECOG_model.value
+    metadict['participants']['ECOG_model'] = str()
     metadict['participants']['ECOG_location'] = str()
     metadict['participants']['ECOG_material'] = str()
     metadict['participants']['ECOG_contacts'] = str()
-    metadict['participants']['ECOG_description'] = bids_ECOG_description.value
+    metadict['participants']['ECOG_description'] = str()
     metadict['scans_tsv'] = {}
     metadict['scans_tsv']['filename'] = str()
-    metadict['scans_tsv']['acq_time'] = bids_time_of_acquisition[-1].value
+    metadict['scans_tsv']['acq_time'] = str()
     metadict['sessions_tsv'] = {}
-    metadict['sessions_tsv']['acq_date'] = bids_time_of_acquisition[-1].value[0:10]
+    metadict['sessions_tsv']['acq_date'] = str()
     metadict['sessions_tsv']['medication_state'] = str()
-    metadict['sessions_tsv']['UPDRS_III'] = bids_UPDRS_session[-1].value
+    metadict['sessions_tsv']['UPDRS_III'] = str()
     metadict['scans_json'] = {}
     metadict['scans_json']['acq_time'] = {}
     metadict['scans_json']['medication_state'] = {}
-    metadict['channels_tsv']= {}
-    metadict['channels_tsv']['name'] = bids_channel_names_list
+    metadict['channels_tsv'] = {}
+    metadict['channels_tsv']['name'] = []
     metadict['channels_tsv']['type'] = []
     metadict['channels_tsv']['units'] = []
     metadict['channels_tsv']['low_cutoff'] = []
@@ -980,12 +910,6 @@ def save_all_information(*args):
     metadict['channels_tsv']['notch'] = []
     metadict['channels_tsv']['status'] = []
     metadict['channels_tsv']['status_description'] = []
-    for widget in bids_status_description_widgets:
-        if widget.value == 'n/a':
-            metadict['channels_tsv']['status'].append('good')
-        else:
-            metadict['channels_tsv']['status'].append('bad')
-        metadict['channels_tsv']['status_description'].append(widget.value)
     metadict['electrodes_tsv'] = {}
     metadict['electrodes_tsv']['name'] = []
     metadict['electrodes_tsv']['x'] = []
@@ -1006,28 +930,6 @@ def save_all_information(*args):
     metadict['coord_json']['iEEGCoordinateSystemDescription'] = str()
     metadict['coord_json']['iEEGCoordinateProcessingDescription'] = str()
     metadict['coord_json']['iEEGCoordinateProcessingReference'] = str()
-    for stimcon in range(0,8):
-        if (bids_stimulation_contact[stimcon].value != "") and (metadict['entities']['acquisition'] != 'StimOff'):
-            if not 'stim' in metadict:
-                metadict['stim'] ={}
-                metadict['stim']['DateOfSetting'] = metadict['sessions_tsv']['acq_date']
-                if bids_stimulation_amplitude_left[-1].value > 0:
-
-                    metadict['stim']['L'] = {}
-                    metadict['stim']['L']['CathodalContact'] = []
-                    metadict['stim']['L']['StimulationAmplitude'] = bids_stimulation_amplitude_left[-1].value
-                    metadict['stim']['L']['StimulationFrequency'] = bids_stimulation_frequency_left[-1].value
-                if bids_stimulation_amplitude_right[-1].value > 0:
-                    metadict['stim']['R'] = {}
-                    metadict['stim']['R']['CathodalContact'] = []
-                    metadict['stim']['R']['StimulationAmplitude'] = bids_stimulation_amplitude_right[-1].value
-                    metadict['stim']['R']['StimulationFrequency'] = bids_stimulation_frequency_right[-1].value
-            if '_L_' in bids_stimulation_contact[stimcon].value:
-                metadict['stim']['L']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
-            if '_R_' in bids_stimulation_contact[stimcon].value:
-                metadict['stim']['R']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
-    if 'StimOff' in metadict['entities']['acquisition']:
-        metadict['stim'] = {}
     metadict['ieeg'] = {}
     metadict['ieeg']['DeviceSerialNumber'] = str()
     metadict['ieeg']['ECGChannelCount'] = int()
@@ -1039,7 +941,7 @@ def save_all_information(*args):
     metadict['ieeg']['HardwareFilters'] = str()
     metadict['ieeg']['InstitutionAddress'] = str()
     metadict['ieeg']['InstitutionName'] = str()
-    metadict['ieeg']['Instructions'] = bids_task_instructions[-1].value
+    metadict['ieeg']['Instructions'] = str()
     metadict['ieeg']['Manufacturer'] = str()
     metadict['ieeg']['ManufacturersModelName'] = str()
     metadict['ieeg']['MiscChannelCount'] = int()
@@ -1056,30 +958,207 @@ def save_all_information(*args):
     metadict['ieeg']['iEEGElectrodeGroups'] = str()
     metadict['ieeg']['iEEGGround'] = str()
     metadict['ieeg']['iEEGPlacementScheme'] = str()
-    metadict['ieeg']['iEEGReference'] = bids_reference[-1].value
-    metadict['poly5'] = {}
-    metadict['poly5']['old'] = []
-    metadict['poly5']['new'] = []
-    for widget in bids_channel_names_widgets:
-        metadict['poly5']['old'].append(widget.description)
-        metadict['poly5']['new'].append(widget.value)
+    metadict['ieeg']['iEEGReference'] = str()
+    try:
+        metadict['inputdata_location'] = bids_filechooser[-1].selected_path + os.sep + bids_filechooser[-1].selected_filename
+        metadict['inputdata_fname'] = bids_filechooser[-1].selected_filename
+        metadict['entities'] = {}
+        metadict['entities']['subject'] = str(bids_subject_prefix.value) + str(bids_subject.value).zfill(3)
+        metadict['entities']['session'] = bids_session[-1].value
+        metadict['entities']['task'] = task_options[bids_task[-1].value][0]
+        metadict['entities']['acquisition'] = bids_acquisition[-1].value
+        metadict['entities']['run'] = bids_run[-1].value
+        metadict['entities']['space'] = bids_space[-1].value
+        metadict['participants'] = {}
+        metadict['participants']['participants_id'] = str()
+        metadict['participants']['sex'] = bids_sex.value
+        metadict['participants']['handedness'] = bids_handedness.value
+        metadict['participants']['age'] = bids_age.value
+        try:
+            bids_date_of_implantation_str = bids_date_of_implantation.value
+            metadict['participants']['date_of_implantation'] = bids_date_of_implantation_str.strftime("%Y-%m-%dT00:00:00")
+        except:
+            metadict['participants']['date_of_implantation'] = "unknown"
+        finally:
+            pass
+        metadict['participants']['UPDRS_III_preop_OFF'] = str()
+        metadict['participants']['UPDRS_III_preop_ON'] = str()
+        metadict['participants']['disease_duration'] = bids_disease_duration.value
+        metadict['participants']['PD_subtype'] = bids_PD_subtype.value
+        metadict['participants']['symptom_dominant_side'] = bids_symptom_dominant_side.value
+        metadict['participants']['LEDD'] = 0 #bids_LEDD.value
+        metadict['participants']['DBS_target'] = bids_DBS_target.value
+        metadict['participants']['DBS_hemisphere'] = bids_DBS_hemispheres.value
+        metadict['participants']['DBS_manufacturer'] = str()
+        metadict['participants']['DBS_model'] = bids_DBS_model.value
+        metadict['participants']['DBS_directional'] = str()
+        metadict['participants']['DBS_contacts'] = str()
+        metadict['participants']['DBS_description'] = bids_DBS_description.value
+        metadict['participants']['ECOG_target'] = bids_ECOG_target.value
+        metadict['participants']['ECOG_hemisphere'] = bids_ECOG_hemisphere.value
+        metadict['participants']['ECOG_manufacturer'] = str()
+        metadict['participants']['ECOG_model'] = bids_ECOG_model.value
+        metadict['participants']['ECOG_location'] = str()
+        metadict['participants']['ECOG_material'] = str()
+        metadict['participants']['ECOG_contacts'] = str()
+        metadict['participants']['ECOG_description'] = bids_ECOG_description.value
+        metadict['scans_tsv'] = {}
+        metadict['scans_tsv']['filename'] = str()
+        metadict['scans_tsv']['acq_time'] = bids_time_of_acquisition[-1].value
+        metadict['sessions_tsv'] = {}
+        metadict['sessions_tsv']['acq_date'] = bids_time_of_acquisition[-1].value[0:10]
+        metadict['sessions_tsv']['medication_state'] = str()
+        metadict['sessions_tsv']['UPDRS_III'] = bids_UPDRS_session[-1].value
+        metadict['scans_json'] = {}
+        metadict['scans_json']['acq_time'] = {}
+        metadict['scans_json']['medication_state'] = {}
+        metadict['channels_tsv']= {}
+        metadict['channels_tsv']['name'] = bids_channel_names_list
+        metadict['channels_tsv']['type'] = []
+        metadict['channels_tsv']['units'] = []
+        metadict['channels_tsv']['low_cutoff'] = []
+        metadict['channels_tsv']['high_cutoff'] = []
+        metadict['channels_tsv']['reference'] = []
+        metadict['channels_tsv']['group'] = []
+        metadict['channels_tsv']['sampling_frequency'] = []
+        metadict['channels_tsv']['notch'] = []
+        metadict['channels_tsv']['status'] = []
+        metadict['channels_tsv']['status_description'] = []
+        for widget in bids_status_description_widgets:
+            if widget.value == 'n/a':
+                metadict['channels_tsv']['status'].append('good')
+            else:
+                metadict['channels_tsv']['status'].append('bad')
+            metadict['channels_tsv']['status_description'].append(widget.value)
+        metadict['electrodes_tsv'] = {}
+        metadict['electrodes_tsv']['name'] = []
+        metadict['electrodes_tsv']['x'] = []
+        metadict['electrodes_tsv']['y'] = []
+        metadict['electrodes_tsv']['z'] = []
+        metadict['electrodes_tsv']['size'] = []
+        metadict['electrodes_tsv']['material'] = []
+        metadict['electrodes_tsv']['manufacturer'] = []
+        metadict['electrodes_tsv']['group'] = []
+        metadict['electrodes_tsv']['hemisphere'] = []
+        metadict['electrodes_tsv']['type'] = []
+        metadict['electrodes_tsv']['impedance'] = []
+        metadict['electrodes_tsv']['dimension'] = []
+        metadict['coord_json'] = {}
+        metadict['coord_json']['IntendedFor'] = str()
+        metadict['coord_json']['iEEGCoordinateSystem'] = str()
+        metadict['coord_json']['iEEGCoordinateUnits'] = str()
+        metadict['coord_json']['iEEGCoordinateSystemDescription'] = str()
+        metadict['coord_json']['iEEGCoordinateProcessingDescription'] = str()
+        metadict['coord_json']['iEEGCoordinateProcessingReference'] = str()
+        for stimcon in range(0,8):
+            if len(bids_stimulation_contact)==8:
+                if (bids_stimulation_contact[stimcon].value != "") and (metadict['entities']['acquisition'] != 'StimOff'):
+                    if not 'stim' in metadict:
+                        metadict['stim'] ={}
+                        metadict['stim']['DateOfSetting'] = metadict['sessions_tsv']['acq_date']
+                        try:
+                            if bids_stimulation_amplitude_left.value > 0:
 
-    currentfile = bids_filechooser[-1].selected_filename
-    if not currentfile:
-        with output2:
-            print(currentfile)
-            print("The information could not be saved, please select file below")
+                                metadict['stim']['L'] = {}
+                                metadict['stim']['L']['CathodalContact'] = []
+                                metadict['stim']['L']['StimulationAmplitude'] = bids_stimulation_amplitude_left.value
+                                metadict['stim']['L']['StimulationFrequency'] = bids_stimulation_frequency_left.value
+                            if bids_stimulation_amplitude_right.value > 0:
+                                metadict['stim']['R'] = {}
+                                metadict['stim']['R']['CathodalContact'] = []
+                                metadict['stim']['R']['StimulationAmplitude'] = bids_stimulation_amplitude_right.value
+                                metadict['stim']['R']['StimulationFrequency'] = bids_stimulation_frequency_right.value
+                        except:
+                            with output2:
+                                display(bids_stimulation_amplitude_left)
+                                display(bids_stimulation_amplitude_right)
+                                display(bids_stimulation_amplitude_left.value)
+                                display(bids_stimulation_amplitude_right.value)
+                                display(bids_stimulation_contact)
+                    try:
+                        if '_L_' in bids_stimulation_contact[stimcon].value:
+                            metadict['stim']['L']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
+                        if '_R_' in bids_stimulation_contact[stimcon].value:
+                            metadict['stim']['R']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
+                    except:
+                        with output2:
+                            display(bids_stimulation_amplitude_left)
+                            display(bids_stimulation_amplitude_right)
+                            display(bids_stimulation_amplitude_left.value)
+                            display(bids_stimulation_amplitude_right.value)
+                            display(bids_stimulation_contact)
+            else:
+                with output2:
+                    print("ERROR bids_stimulation_contact shorter as 8")
+                    print(bids_stimulation_contact)
+        bids_stimulation_contact=[]
+        bids_stimulation_amplitude_left=0
+        bids_stimulation_amplitude_right=0
+        if 'StimOff' in metadict['entities']['acquisition']:
+            metadict['stim'] = {}
+        metadict['ieeg'] = {}
+        metadict['ieeg']['DeviceSerialNumber'] = str()
+        metadict['ieeg']['ECGChannelCount'] = int()
+        metadict['ieeg']['ECOGChannelCount'] = int()
+        metadict['ieeg']['EEGChannelCount'] = int()
+        metadict['ieeg']['EMGChannelCount'] = int()
+        metadict['ieeg']['EOGChannelCount'] = str()
+        metadict['ieeg']['ElectricalStimulation'] = bool()
+        metadict['ieeg']['HardwareFilters'] = str()
+        metadict['ieeg']['InstitutionAddress'] = str()
+        metadict['ieeg']['InstitutionName'] = str()
+        metadict['ieeg']['Instructions'] = bids_task_instructions[-1].value
+        metadict['ieeg']['Manufacturer'] = str()
+        metadict['ieeg']['ManufacturersModelName'] = str()
+        metadict['ieeg']['MiscChannelCount'] = int()
+        metadict['ieeg']['PowerLineFrequency'] = int()
+        metadict['ieeg']['RecordingDuration'] = str()
+        metadict['ieeg']['RecordingType'] = str()
+        metadict['ieeg']['SEEGChannelCount'] = int()
+        metadict['ieeg']['SamplingFrequency'] = float()
+        metadict['ieeg']['SoftwareFilters'] = str()
+        metadict['ieeg']['SoftwareVersions'] = str()
+        metadict['ieeg']['TaskDescription'] = str()
+        metadict['ieeg']['TaskName'] = str()
+        metadict['ieeg']['TriggerChannelCount'] = int()
+        metadict['ieeg']['iEEGElectrodeGroups'] = str()
+        metadict['ieeg']['iEEGGround'] = str()
+        metadict['ieeg']['iEEGPlacementScheme'] = str()
+        metadict['ieeg']['iEEGReference'] = bids_reference[-1].value
+        metadict['poly5'] = {}
+        metadict['poly5']['old'] = []
+        metadict['poly5']['new'] = []
+        for widget in bids_channel_names_widgets:
+            metadict['poly5']['old'].append(widget.description)
+            metadict['poly5']['new'].append(widget.value)
 
-    else:
+        currentfile = bids_filechooser[-1].selected_filename
+        if not currentfile:
+            with output2:
+                print(currentfile)
+                print("The information could not be saved, please select file below")
+
+        else:
+            currentfile += ".json"
+            with open(currentfile, "w") as outfile:
+                json.dump(metadict, outfile, indent=4)
+
+            with output2:
+                print("saving to: %.json", bids_filechooser[-1].selected_filename)
+                print("information is saved and cannot be changed")
+    except:
+        currentfile = bids_filechooser[-1].selected_filename
         currentfile += ".json"
         with open(currentfile, "w") as outfile:
             json.dump(metadict, outfile, indent=4)
 
         with output2:
             print("saving to: %.json", bids_filechooser[-1].selected_filename)
-            print("information is saved and cannot be changed")
-
-
+            print("ERROR information not sucessfully saved")
+    finally:
+        with output2:
+            print(metadict)
+            print(bids_stimulation_contact)
 
 save_to_json.on_click(multiplefunctions_2)
 
@@ -1185,5 +1264,4 @@ BASE_MAPPING = {
     "X-1": "ACC_L_X_D2_TM",
     "Y-1": "ACC_L_Y_D2_TM",
     "Z-1": "ACC_L_Z_D2_TM",
-    "ISO aux": f"ANALOG_{metadict['participants']['ECOG_hemisphere']}_ROTA_CH",
     }

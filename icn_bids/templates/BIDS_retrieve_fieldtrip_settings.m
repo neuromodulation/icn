@@ -998,7 +998,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             % these need to be written in the lab book
             
             exp.DateOfSetting             = intern_cfg.stim.DateOfSetting; %"2021-11-11"
-            exp.StimulationTarget         = DBS_target;
+            if startswith(intern_cfg.entities.acquisition,'EStim')
+                exp.StimulationTarget     = ECOG_target_long;
+            else
+                exp.StimulationTarget         = DBS_target;
+            end
             exp.StimulationMode           = "continuous";
             exp.StimulationParadigm       = "continuous stimulation";
             
@@ -1014,7 +1018,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     %L = 'OFF';
                     L.StimulationStatus           = "OFF";
                 else
-                    L.AnodalContact               = "Ground";
+                    if isfield(intern_cfg.stim.L, 'AnodalContact')
+                        L.AnodalContact               = intern_cfg.stim.L.AnodalContact;
+                    else
+                        L.AnodalContact               = "Ground";
+                    end
                     L.CathodalContact             = intern_cfg.stim.L.CathodalContact;
                     L.AnodalContactDirection      = "none";
                     L.CathodalContactDirection    = "omni";
@@ -1043,7 +1051,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     %R = 'OFF';
                     R.StimulationStatus           = "OFF";
                 else
-                R.AnodalContact               = "Ground";
+                if isfield(intern_cfg.stim.R, 'AnodalContact')
+                        R.AnodalContact               = intern_cfg.stim.R.AnodalContact;
+                else
+                    R.AnodalContact               = "Ground";
+                end
                 R.CathodalContact             = intern_cfg.stim.R.CathodalContact;
                 R.AnodalContactDirection      = "none";
                 R.CathodalContactDirection    = "omni";
@@ -1071,13 +1083,13 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
 
  % under if cfg.ieeg.ElectricalStimulation
         if contains(cfg.acq, 'StimOn') && isfield(cfg.ieeg.ElectricalStimulationParameters,'CurrentExperimentalSetting')
-            if startsWith(cfg.acq, 'StimOnL')
+            if startsWith(cfg.acq, 'StimOnL') || startsWith(cfg.acq, 'EStimOnL')
                 assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'OFF'))
                 assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'ON'))
-            elseif startsWith(cfg.acq, 'StimOnR')
+            elseif startsWith(cfg.acq, 'StimOnR') || startsWith(cfg.acq, 'EStimOnR')
                 assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'ON'))
                 assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'OFF'))        
-            elseif startsWith(cfg.acq, 'StimOnB')
+            elseif startsWith(cfg.acq, 'StimOnB') || startsWith(cfg.acq, 'EStimOnB')
                 assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'ON'))
                 assert(strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'ON'))
             elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'OFF') && strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'ON')
