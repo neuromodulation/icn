@@ -62,7 +62,9 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     if strcmp(ECOG_target_long, 'sensorimotor cortex')
         ECOG_target = 'SMC';
     elseif strcmp(ECOG_target_long, 'n/a')
-        ECOG_target = 'n/a';        
+        ECOG_target = 'n/a';
+    elseif strcmp(ECOG_target_long, '')
+        ECOG_target = 'n/a';
     else
         error('ECOG target not found, please specify a valid target.')
     end
@@ -180,7 +182,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         ECOG_location              = 'subdural';
         ECOG_material              = 'platinum';
         ECOG_description           = '12-contact, 1x12 dual sided long term monitoring strip. Platinum contacts, 10mm spacing, contact size 4.0 mm diameter/2.3 mm exposure.';
-    elseif strcmp(ECOG_model, 'n/a')
+    elseif strcmp(ECOG_model, 'n/a') || strcmp(ECOG_model, '')
+        ECOG_model                 = 'n/a';
         ECOG_contacts              = 0;
         ECOG_manufacturer_short    = 'n/a';
         ECOG_manufacturer          = 'n/a';
@@ -998,7 +1001,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             % these need to be written in the lab book
             
             exp.DateOfSetting             = intern_cfg.stim.DateOfSetting; %"2021-11-11"
-            if startswith(intern_cfg.entities.acquisition,'EStim')
+            if startsWith(intern_cfg.entities.acquisition,'EStim')
                 exp.StimulationTarget     = ECOG_target_long;
             else
                 exp.StimulationTarget         = DBS_target;

@@ -62,7 +62,7 @@ bids_date_of_implantation = widgets.DatePicker(
     description="Date of Implantation", style=style, layout=layout, value=
 )
 '''
-bids_date_of_implantation = 'unknown'
+bids_date_of_implantation = '2024-00-00T00:00:00'
 
 bids_disease_duration = widgets.BoundedIntText(
     min=0, max=150, step=1, description="Disease duration:", style=style, layout=layout, value=99
@@ -154,6 +154,9 @@ ECOG_present = widgets.Button(
 def define_ECOG(click):
     with output1:
         ECOG_present.disabled = 1
+        bids_ECOG_target.value="sensorimotor cortex"
+        bids_ECOG_model.value="TS06R-AP10X-0W6"
+        bids_ECOG_description.value = "Ad-Tech: 6-contact, 1x6 narrow-body long term monitoring strip. Platinum contacts, 10mm spacing, contact size 4.0 mm diameter/1.8 mm exposure."
         display(
             #bids_ECOG_target,
             bids_ECOG_hemisphere,
@@ -168,7 +171,7 @@ bids_ECOG_target = widgets.RadioButtons(
     description="ECOG target",
     style=style,
     layout=layout,
-    value="sensorimotor cortex",
+    value="n/a",
 )
 bids_ECOG_hemisphere = widgets.RadioButtons(
     options=[
@@ -191,7 +194,7 @@ bids_ECOG_model = widgets.RadioButtons(
     description="ECOG model",
     style=style,
     layout=layout,
-    value="TS06R-AP10X-0W6",
+    value="n/a",
 )
 bids_ECOG_description = widgets.RadioButtons(
     options=[
@@ -202,7 +205,7 @@ bids_ECOG_description = widgets.RadioButtons(
     description="ECOG description",
     style=style,
     layout={"width": "max-content"},
-    value="Ad-Tech: 6-contact, 1x6 narrow-body long term monitoring strip. Platinum contacts, 10mm spacing, contact size 4.0 mm diameter/1.8 mm exposure.",
+    value="n/a",
 )
 mylink = widgets.jslink((bids_ECOG_model, "index"), (bids_ECOG_description, "index"))
 

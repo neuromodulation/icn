@@ -209,7 +209,11 @@ for i =1:length(jsonfiles)
 
 
             if create_a_copy == 1
-                UPDRS=readtable('UPDRS_Berlin.xlsx','sheet','recording_detailed');
+                if startsWith(cfg.ses, 'Ecog')
+                    UPDRS=readtable('UPDRS_Berlin.xlsx','sheet','recording_detailed_EcogLFP');
+                else
+                    UPDRS=readtable('UPDRS_Berlin.xlsx','sheet','recording_detailed_LFP');
+                end
                 rownr = find(and(contains(UPDRS.Subject, cfg.sub) , contains(UPDRS.Session, cfg.ses)));
                 if size(rownr)==[1,1]
                     cfg.sessions.UPDRS_III = UPDRS.UPDRS_III(rownr);
