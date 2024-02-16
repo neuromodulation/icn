@@ -291,7 +291,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
 
     %% Initalize containers for BIDS conversion
     keySet = {'Rest', 'UPDRSIII', 'SelfpacedRotationL','SelfpacedRotationR',...
-        'BlockRotationL','BlockRotationR', 'Evoked', 'SelfpacedSpeech',...
+        'BlockRotationL','BlockRotationR', 'Evoked', 'EvokedTest','SelfpacedSpeech',...
         'ReadRelaxMoveL', 'VigorStimR', 'VigorStimL', 'SelfpacedHandTapL',...
         'SelfpacedHandTapR', 'SelfpacedHandTapB','Free','DyskinesiaProtocol',...
         'NaturalBehavior'...
@@ -302,7 +302,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         'Selfpaced right wrist rotations performed on custom-built analog rotameter which translates degree of rotation to volt.',...
         'Blocks of 30 seconds of rest followed by blocks of 30 seconds of continuous wrist rotation performed on a custom-built rotameter which translates degree of rotation to volt. Performed with the left hand.',...
         'Blocks of 30 seconds of rest followed by blocks of 30 seconds of continuous wrist rotation performed on a custom-built rotameter which translates degree of rotation to volt. Performed with the right hand.',...
-        'Evoked potentials recording. Single stimulation pulses of fixed amplitude following periods of high frequency stimulation with varying amplitude (0, 1.5 and 3 mA) per block.',...
+        'Evoked potentials recording. Single stimulation pulses of fixed amplitude following a block of a specified frequency.',...
+        'Evoked potentials recording. Single stimulation pulses of varying amplitude per block of a specified frequency.',...
         'Selfpaced reading aloud of the fable ''The Parrot and the Cat'' by Aesop. Extended pauses in between sentences.',...
         'Block of 30 seconds of continuous left wrist rotation performed on a custom-built rotameter which translates degree of rotation to volt followed by a block of 30 seconds of rest followed by a block of 30 seconds of reading aloud (''The Parrot and the Cat'' by Aesop). Multiple sets.',...
         'Performance of diagonal forearm movements with a cursor on a screen using a digitizing tablet. Start and stop events are visually cued on screen with a rest duration of 350 ms. 4 blocks with 96 movements each. In blocks 1 an 3 subthalamic deep brain stimulation is applied for 300 ms if a movement is slower/faster than the previous two movements. The order of slow/fast blocks is alternated between participants. Performed with the dominant hand. (right)',...
@@ -319,6 +320,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         'Perform 50 wrist rotations with your right hand with an interval of about 10 seconds. Do not count in between rotations.',...
         'Upon the auditory command "start", perform continuous wrist rotations with your left hand, until you perceive the auditory command "stop". Perform these wrist rotations as fast as possible and with the largest possible amplitude.',...
         'Upon the auditory command "start", perform continuous wrist rotations with your right hand, until you perceive the auditory command "stop". Perform these wrist rotations as fast as possible and with the largest possible amplitude.',...
+        'Do not move or speak and keep your eyes open.',...
         'Do not move or speak and keep your eyes open.',...
         'Read aloud sentence by sentence the text in front of you. Leave a pause of several seconds in between sentences.',...
         'At the beginning of each block, a text will appear on the screen, specifying the task to be performed. An auditory cue will then be issued, marking the begin of your task. Perform the task until the next cue marks the end of the task. Tasks are either continuous left wrist rotation, resting with open eyes or reading aloud the text displayed on the screen.',...
@@ -500,12 +502,16 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     % Provide the long description of the task and participant instructions
     cfg.TaskName                = intern_cfg.entities.task; %intern_cfg.ieeg.TaskName;
     if isfield(intern_cfg.ieeg,'TaskDescription')
-        cfg.TaskDescription         = intern_cfg.ieeg.TaskDescription;
+        if ~strcmp(intern_cfg.ieeg.TaskDescription,'')
+            cfg.TaskDescription         = intern_cfg.ieeg.TaskDescription;
+        end
     else
         cfg.TaskDescription         = task_descr(intern_cfg.entities.task);
     end
     if isfield(intern_cfg.ieeg,'Instructions')
-        cfg.Instructions            = intern_cfg.ieeg.Instructions ;
+        if ~strcmp(intern_cfg.ieeg.Instructions,'')
+            cfg.Instructions            = intern_cfg.ieeg.Instructions ;
+        end
     else
         cfg.Instructions            = task_instr(intern_cfg.entities.task);
     end
@@ -959,7 +965,38 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     
     
     if cfg.ieeg.ElectricalStimulation
-        
+        if contain(cfg.task, 'Evoked')
+            exp.StimulationMode           = "time-varying";
+            exp.StimulationParadigm       = "single pulse stimulation in block-paradigm";
+        else
+            exp.StimulationMode           = "continuous";
+            exp.StimulationParadigm       = "continuous stimulation";
+        end
+        if startsWith(intern_cfg.entities.acquisition,'EStim')
+            exp.StimulationTarget     = ECOG_target_long;
+            
+        else
+            exp.StimulationTarget         = DBS_target;
+            exp.SimulationMontage         = "monopolar";
+        end
+        % under if cfg.ieeg.ElectricalStimulation      
+        if contains(cfg.task, 'VigorStim')
+            
+            if contains(cfg.acq, 'Cont')
+                exp.StimulationMode           = "continuous";
+                exp.StimulationParadigm       = "continuous stimulation";
+            else
+                exp.StimulationMode           = "time-varying";
+                exp.StimulationParadigm       = "speed-adaptive DBS";
+            end
+            %if isfield(intern_cfg.entities,'description')
+            %    cfg.desc = intern_cfg.entities.description;
+            %else
+            %    cfg.desc = 'neurophys';
+            %end
+        end
+
+        %%% correct the stim settings from metadata
         if isfield(intern_cfg.ieeg,'ElectricalStimulationParameters')
             cfg.ieeg.ElectricalStimulationParameters = intern_cfg.ieeg.ElectricalStimulationParameters;
             if isstruct(cfg.ieeg.ElectricalStimulationParameters)
@@ -996,23 +1033,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                      end
                 end
             end
-        else
+        else %%% file from BIDS input
             % Enter EXPERIMENTAL stimulation settings
             % these need to be written in the lab book
             
             exp.DateOfSetting             = intern_cfg.stim.DateOfSetting; %"2021-11-11"
-            if startsWith(intern_cfg.entities.acquisition,'EStim')
-                exp.StimulationTarget     = ECOG_target_long;
-            else
-                exp.StimulationTarget         = DBS_target;
-            end
-            exp.StimulationMode           = "continuous";
-            exp.StimulationParadigm       = "continuous stimulation";
             
-            
-            
-            exp.SimulationMontage         = "monopolar";
-
             if ~isfield(intern_cfg.stim, 'L')
                 %L = 'OFF';
                 L.StimulationStatus           = "OFF";
@@ -1118,23 +1144,15 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                 assert(strcmp(cfg.ieeg.ElectricalStimulationParameters,'n/a') || ischar(cfg.ieeg.ElectricalStimulationParameters))
             end
         end
-        
- % under if cfg.ieeg.ElectricalStimulation   
-        if contains(cfg.task, 'VigorStim')
-            
-            if contains(cfg.acq, 'Cont')
-                exp.StimulationMode           = "continuous";
-                exp.StimulationParadigm       = "continuous stimulation";
-            else
-                exp.StimulationMode           = "time-varying";
-                exp.StimulationParadigm       = "speed adaptive DBS";
-            end
-            %if isfield(intern_cfg.entities,'description')
-            %    cfg.desc = intern_cfg.entities.description;
-            %else
-            %    cfg.desc = 'neurophys';
-            %end
+   % under if cfg.ieeg.ElectricalStimulation   
+    cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "monopolar";
+    if strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'ON')
+        if contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.AnodalContact, 'LFP') || contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.AnodalContact, 'ECOG') 
+            cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "bipolar";
         end
-        
+    elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'ON')
+        if contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.AnodalContact, 'LFP') || contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.AnodalContact, 'ECOG') 
+            cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "bipolar";
+        end
     end
 end
