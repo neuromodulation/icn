@@ -504,6 +504,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     if isfield(intern_cfg.ieeg,'TaskDescription')
         if ~strcmp(intern_cfg.ieeg.TaskDescription,'')
             cfg.TaskDescription         = intern_cfg.ieeg.TaskDescription;
+        else
+            cfg.TaskDescription         = task_descr(intern_cfg.entities.task);
         end
     else
         cfg.TaskDescription         = task_descr(intern_cfg.entities.task);
@@ -511,6 +513,8 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     if isfield(intern_cfg.ieeg,'Instructions')
         if ~strcmp(intern_cfg.ieeg.Instructions,'')
             cfg.Instructions            = intern_cfg.ieeg.Instructions ;
+        else
+        cfg.Instructions            = task_instr(intern_cfg.entities.task);
         end
     else
         cfg.Instructions            = task_instr(intern_cfg.entities.task);
@@ -965,7 +969,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
     
     
     if cfg.ieeg.ElectricalStimulation
-        if contain(cfg.task, 'Evoked')
+        if contains(cfg.task, 'Evoked')
             exp.StimulationMode           = "time-varying";
             exp.StimulationParadigm       = "single pulse stimulation in block-paradigm";
         else
@@ -1068,6 +1072,12 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     L.SecondPulseWidth            = 60;
                     L.SecondPulseAmplitude        = L.StimulationAmplitude;
                     L.PostPulseInterval           = "n/a";
+
+                    if strcmp(cfg.task,'EvokedTest')
+                        L.StimulationAmplitude = "time-varying";
+                        L.InitialPulseAmplitude = "time-varying";
+                        L.SecondPulseAmplitude = "time-varying";
+                    end
                 end
             end
             exp.Left                      = L;
@@ -1101,6 +1111,13 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                 R.SecondPulseWidth            = 60;
                 R.SecondPulseAmplitude        = R.StimulationAmplitude;
                 R.PostPulseInterval           = "n/a";
+
+                if strcmp(cfg.task,'EvokedTest')
+                    R.StimulationAmplitude = "time-varying";
+                    R.InitialPulseAmplitude = "time-varying";
+                    R.SecondPulseAmplitude = "time-varying";
+                end
+
                 end
             end
             exp.Right                     = R;
@@ -1155,4 +1172,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "bipolar";
         end
     end
+
+    
+
 end

@@ -304,17 +304,18 @@ task_options = [
     ("BlockRotationL", 5),
     ("BlockRotationR", 6),
     ("Evoked", 7),
-    ("SelfpacedSpeech", 8),
-    ("ReadRelaxMoveR", 9),
-    ("ReadRelaxMoveL", 10),
-    ("VigorStimR", 11),
-    ("VigorStimL", 12),
-    ("SelfpacedHandTapL", 13),
-    ("SelfpacedHandTapR", 14),
-    ("SelfpacedHandTapB", 15),
-    ("Free", 16),
-    ("DyskinesiaProtocol",17),
-    ("NaturalBehavior", 18),
+    ("EvokedTest", 8),
+    ("SelfpacedSpeech", 9),
+    ("ReadRelaxMoveR", 10),
+    ("ReadRelaxMoveL", 11),
+    ("VigorStimR", 12),
+    ("VigorStimL", 13),
+    ("SelfpacedHandTapL", 14),
+    ("SelfpacedHandTapR", 15),
+    ("SelfpacedHandTapB", 16),
+    ("Free", 17),
+    ("DyskinesiaProtocol",18),
+    ("NaturalBehavior", 19),
 ]
 
 
@@ -369,7 +370,8 @@ def go_to_subsession(*args):
         "Selfpaced right wrist rotations performed on custom-built analog rotameter which translates degree of rotation to volt.",
         "Blocks of 30 seconds of rest followed by blocks of 30 seconds of continuous wrist rotation performed on a custom-built rotameter which translates degree of rotation to volt. Performed with the left hand.",
         "Blocks of 30 seconds of rest followed by blocks of 30 seconds of continuous wrist rotation performed on a custom-built rotameter which translates degree of rotation to volt. Performed with the right hand.",
-        "Evoked potentials recording. Single stimulation pulses of fixed amplitude following periods of high frequency stimulation with varying amplitude (0, 1.5 and 3 mA) per block.",
+        'Evoked potentials recording. Single stimulation pulses of fixed amplitude following a block of a specified frequency.',
+        'Evoked potentials recording. Single stimulation pulses of varying amplitude per block of a specified frequency.',
         "Selfpaced reading aloud of the fable "
         "The Parrot and the Cat"
         " by Aesop. Extended pauses in between sentences.",
@@ -396,6 +398,7 @@ def go_to_subsession(*args):
         "Perform 50 wrist rotations with your right hand with an interval of about 10 seconds. Do not count in between rotations.",
         'Upon the auditory command "start", perform continuous wrist rotations with your left hand, until you perceive the auditory command "stop". Perform these wrist rotations as fast as possible and with the largest possible amplitude.',
         'Upon the auditory command "start", perform continuous wrist rotations with your right hand, until you perceive the auditory command "stop". Perform these wrist rotations as fast as possible and with the largest possible amplitude.',
+        "Do not move or speak and keep your eyes open.",
         "Do not move or speak and keep your eyes open.",
         "Read aloud sentence by sentence the text in front of you. Leave a pause of several seconds in between sentences.",
         "At the beginning of each block, a text will appear on the screen, specifying the task to be performed. An auditory cue will then be issued, marking the begin of your task. Perform the task until the next cue marks the end of the task. Tasks are either continuous right wrist rotation, resting with open eyes or reading aloud the text displayed on the screen.",
@@ -825,9 +828,14 @@ def define_status_description(*args):
     stimcontacts = []
     for stimcon in range(0,8):
         stimcontacts.append(bids_stimulation_contact[stimcon].value)
+    anocontacts = []
+    for anocon in range(0,8):
+        anocontacts.append(bids_anodal_contact[anocon].value)
     for ch in bids_channel_names_list:
         if ch in stimcontacts:
             defaultvalue = 'Stimulation contact'
+        elif ch in anocontacts:
+            defaultvalue = 'Stimulation contact (anode)'
         elif ch in bids_reference[-1].value:
             defaultvalue = 'Reference electrode'
         else:
@@ -836,7 +844,7 @@ def define_status_description(*args):
         bids_status_description_widgets.append(
             widgets.Combobox(
             value=defaultvalue,
-            options=['Reference electrode','Stimulation contact', 'Empty', 'Cable artefact'],
+            options=['Reference electrode','Stimulation contact', 'Stimulation contact (anode)', 'Empty', 'Cable artefact'],
             description=ch,
             style=style,
             layout=layout
