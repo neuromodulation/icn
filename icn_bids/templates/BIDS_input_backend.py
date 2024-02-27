@@ -293,7 +293,7 @@ bids_stimulation_amplitude_left = 0
 bids_stimulation_frequency_left = 0
 bids_stimulation_amplitude_right = 0
 bids_stimulation_frequency_right = 0
-bids_anodal_contact = []
+bids_cathodal_contact = []
 
 task_options = [
     ("n/a", 0),
@@ -304,7 +304,7 @@ task_options = [
     ("BlockRotationL", 5),
     ("BlockRotationR", 6),
     ("Evoked", 7),
-    ("EvokedTest", 8),
+    ("EvokedRamp", 8),
     ("SelfpacedSpeech", 9),
     ("ReadRelaxMoveR", 10),
     ("ReadRelaxMoveL", 11),
@@ -330,7 +330,7 @@ def go_to_subsession(*args):
     global bids_stimulation_frequency_left
     global bids_stimulation_amplitude_right
     global bids_stimulation_frequency_right
-    global bids_anodal_contact
+    global bids_cathodal_contact
     bids_channel_names_widgets = []
     bids_channel_names_list = []
     bids_reference = []
@@ -341,7 +341,7 @@ def go_to_subsession(*args):
     bids_stimulation_frequency_left= 0
     bids_stimulation_amplitude_right= 0
     bids_stimulation_frequency_right= 0
-    bids_anodal_contact = []
+    bids_cathodal_contact = []
     def update_task(change):
         with output2:
             bids_task_description[-1].value = descriptions[change["new"]]
@@ -497,7 +497,7 @@ def plot_channels(*args):
     global bids_stimulation_amplitude_right
     global bids_stimulation_frequency_right
     global bids_time_of_acquisition
-    global bids_anodal_contact
+    global bids_cathodal_contact
     bids_channel_names_widgets = []
     bids_channel_names_list = []
     bids_reference = []
@@ -508,7 +508,7 @@ def plot_channels(*args):
     bids_stimulation_amplitude_right =0
     bids_stimulation_frequency_right =0
     bids_time_of_acquisition = []
-    bids_anodal_contact = []
+    bids_cathodal_contact = []
 
     strdatetime = bids_filechooser[-1].selected_filename
     m = re.search(r'(20[0-9]{6}T[0-9]{6})', strdatetime)
@@ -652,9 +652,16 @@ def plot_channels(*args):
         elif ch.startswith('Z-1'):
             preset = 'ACC_L_Z_D2_TM'
         elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'SelfpacedRotationL' or task_options[bids_task[-1].value][0] == 'BlockRotationL' or task_options[bids_task[-1].value][0] == 'ReadRelaxMoveL'):
-                preset = 'ANALOG_L_ROTA_CH'
+            preset = 'ANALOG_L_ROTA_CH'
         elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'SelfpacedRotationR' or task_options[bids_task[-1].value][0] == 'BlockRotationR' or task_options[bids_task[-1].value][0] == 'ReadRelaxMoveR'):
-                preset = 'ANALOG_R_ROTA_CH'
+            preset = 'ANALOG_R_ROTA_CH'
+        elif ch in dictchannelnames:
+            preset = dictchannelnames[ch]
+            if preset.startswith('EMG_L') and bids_ECOG_hemisphere.value == 'left':
+                with output2:
+                    print('warning, EMG is assumed to be contralateral to ecog side')
+                if ecog_side =='L':
+                    preset = preset.replace('EMG_L','EMG_R')
         else:
             preset = None
 
@@ -701,7 +708,7 @@ def define_reference_and_stims(*args):
     global bids_stimulation_frequency_left
     global bids_stimulation_amplitude_right
     global bids_stimulation_frequency_right
-    global bids_anodal_contact
+    global bids_cathodal_contact
 
     bids_channel_names_list = []
     bids_reference = []
@@ -733,17 +740,17 @@ def define_reference_and_stims(*args):
         bids_stimulation_contact.append(
             widgets.Combobox(
             options=bids_channel_names_list,
-            description='Cathodal Contact: ',
+            description='Anodal Contact: ',
             style=style,
             layout=layout,
             value="",
             )
         )
-    for anocon in range(0,8):
-        bids_anodal_contact.append(
+    for cathocon in range(0, 8):
+        bids_cathodal_contact.append(
             widgets.Combobox(
             options=bids_channel_names_list,
-            description='Anodal Contact: ',
+            description='Cathodal Contact: ',
             style=style,
             layout=layout,
             value="",
@@ -799,8 +806,8 @@ def define_reference_and_stims(*args):
             display(bids_stimulation_amplitude_right)
             display(bids_stimulation_frequency_left)
             display(bids_stimulation_frequency_right)
-            for anocon in range(0,8):
-                display(bids_anodal_contact[anocon])
+            for cathocon in range(0, 8):
+                display(bids_cathodal_contact[cathocon])
 
         display(go_to_status_description)
 
@@ -823,19 +830,19 @@ def define_status_description(*args):
     global bids_stimulation_frequency_left
     global bids_stimulation_amplitude_right
     global bids_stimulation_frequency_right
-    global bids_anodal_contact
+    global bids_cathodal_contact
     bids_status_description_widgets = []
     stimcontacts = []
     for stimcon in range(0,8):
         stimcontacts.append(bids_stimulation_contact[stimcon].value)
-    anocontacts = []
-    for anocon in range(0,8):
-        anocontacts.append(bids_anodal_contact[anocon].value)
+    cathocontacts = []
+    for cathocon in range(0, 8):
+        cathocontacts.append(bids_cathodal_contact[cathocon].value)
     for ch in bids_channel_names_list:
         if ch in stimcontacts:
             defaultvalue = 'Stimulation contact'
-        elif ch in anocontacts:
-            defaultvalue = 'Stimulation contact (anode)'
+        elif ch in cathocontacts:
+            defaultvalue = 'Stimulation contact (cathode)'
         elif ch in bids_reference[-1].value:
             defaultvalue = 'Reference electrode'
         else:
@@ -844,7 +851,7 @@ def define_status_description(*args):
         bids_status_description_widgets.append(
             widgets.Combobox(
             value=defaultvalue,
-            options=['Reference electrode','Stimulation contact', 'Stimulation contact (anode)', 'Empty', 'Cable artefact'],
+            options=['Reference electrode','Stimulation contact', 'Stimulation contact (cathode)', 'Empty', 'Cable artefact'],
             description=ch,
             style=style,
             layout=layout
@@ -881,7 +888,7 @@ def save_all_information(*args):
     global bids_stimulation_frequency_left
     global bids_stimulation_amplitude_right
     global bids_stimulation_frequency_right
-    global bids_anodal_contact
+    global bids_cathodal_contact
     # initiate metadata dictionaries
     metadict = {}
     metadict['inputdata_location'] = str()
@@ -1013,7 +1020,7 @@ def save_all_information(*args):
             bids_date_of_implantation_str = bids_date_of_implantation.value
             metadict['participants']['date_of_implantation'] = bids_date_of_implantation_str.strftime("%Y-%m-%dT00:00:00")
         except:
-            metadict['participants']['date_of_implantation'] = "unknown"
+            metadict['participants']['date_of_implantation'] = "na-na-2024T00:00:00"
         finally:
             pass
         metadict['participants']['UPDRS_III_preop_OFF'] = str()
@@ -1114,13 +1121,13 @@ def save_all_information(*args):
                                 display(bids_stimulation_contact)
                     try:
                         if '_L_' in bids_stimulation_contact[stimcon].value:
-                            metadict['stim']['L']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
+                            metadict['stim']['L']['AnodalContact'].append(bids_stimulation_contact[stimcon].value)
                         if '_R_' in bids_stimulation_contact[stimcon].value:
-                            metadict['stim']['R']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
-                        if '_L_' in bids_anodal_contact[stimcon].value:
-                            metadict['stim']['L']['AnodalContact'].append(bids_anodal_contact[stimcon].value)
-                        if '_R_' in bids_anodal_contact[stimcon].value:
-                            metadict['stim']['R']['AnodalContact'].append(bids_anodal_contact[stimcon].value)
+                            metadict['stim']['R']['AnodalContact'].append(bids_stimulation_contact[stimcon].value)
+                        if '_L_' in bids_cathodal_contact[stimcon].value:
+                            metadict['stim']['L']['CathodalContact'].append(bids_cathodal_contact[stimcon].value)
+                        if '_R_' in bids_cathodal_contact[stimcon].value:
+                            metadict['stim']['R']['CathodalContact'].append(bids_cathodal_contact[stimcon].value)
                     except:
                         with output2:
                             display(bids_stimulation_amplitude_left)
@@ -1213,7 +1220,7 @@ output2 = widgets.Output()
 #     bids_status_description_list = []
 
 
-BASE_MAPPING = {
+dictchannelnames = {
     "LFPR1STNM": "LFP_R_01_STN_MT",
     "LFPR2STNM": "LFP_R_02_STN_MT",
     "LFPR3STNM": "LFP_R_03_STN_MT",
@@ -1305,4 +1312,36 @@ BASE_MAPPING = {
     "X-1": "ACC_L_X_D2_TM",
     "Y-1": "ACC_L_Y_D2_TM",
     "Z-1": "ACC_L_Z_D2_TM",
+    "F6": "EMG_L_R1C1_BR_TM",
+    "F2": "EMG_L_R1C2_BR_TM",
+    "F1": "EMG_L_R1C3_BR_TM",
+    "F5": "EMG_L_R1C4_BR_TM",
+    "AF8": "EMG_L_R1C5_BR_TM",
+    "AF4": "EMG_L_R1C6_BR_TM",
+    "AF3": "EMG_L_R1C7_BR_TM",
+    "AF7": "EMG_L_R1C8_BR_TM",
+    "C2": "EMG_L_R2C1_BR_TM",
+    "C6": "EMG_L_R2C2_BR_TM",
+    "CP3": "EMG_L_R2C3_BR_TM",
+    "C1": "EMG_L_R2C4_BR_TM",
+    "C5": "EMG_L_R2C5_BR_TM",
+    "FC4": "EMG_L_R2C6_BR_TM",
+    "FCz": "EMG_L_R2C7_BR_TM",
+    "FC3": "EMG_L_R2C8_BR_TM",
+    "P5": "EMG_L_R3C1_BR_TM",
+    "CP4": "EMG_L_R3C2_BR_TM",
+    "CPz": "EMG_L_R3C3_BR_TM",
+    "P1": "EMG_L_R3C4_BR_TM",
+    "P2": "EMG_L_R3C5_BR_TM",
+    "P6": "EMG_L_R3C6_BR_TM",
+    "PO5": "EMG_L_R3C7_BR_TM",
+    "PO3": "EMG_L_R3C8_BR_TM",
+    "PO4": "EMG_L_R4C1_BR_TM",
+    "PO6": "EMG_L_R4C2_BR_TM",
+    "FT7": "EMG_L_R4C3_BR_TM",
+    "FT8": "EMG_L_R4C4_BR_TM",
+    "TP7": "EMG_L_R4C5_BR_TM",
+    "TP8": "EMG_L_R4C6_BR_TM",
+    "PO7": "EMG_L_R4C7_BR_TM",
+    "PO8": "EMG_L_R4C8_BR_TM",
     }

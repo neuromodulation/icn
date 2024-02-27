@@ -247,13 +247,36 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             intern_cfg.data.label = intern_cfg.channels_tsv.name;
         end
         
+        chs_unsorted = intern_cfg.data.label;
+        
+        %% sort the channel names
+        % first sort by LFP then ECOG, then the other
+        temp_LFP_R=sort(chs_unsorted(startsWith(chs_unsorted,{'LFP_R'})));
+        temp_LFP_L=sort(chs_unsorted(startsWith(chs_unsorted,{'LFP_L'})));
+        temp_ECOG_R=sort(chs_unsorted(startsWith(chs_unsorted,{'ECOG_R'})));
+        temp_ECOG_L=sort(chs_unsorted(startsWith(chs_unsorted,{'ECOG_L'})));
+        temp_ECOG_LFP = [temp_LFP_R;temp_LFP_L;temp_ECOG_R;temp_ECOG_L];
+        chs_final=sort(chs_unsorted(~contains(chs_unsorted,temp_ECOG_LFP)));
+        chs_final = [temp_ECOG_LFP;chs_final];
+        index_sorted = arrayfun(@(x) find(strcmp(chs_unsorted,x)), chs_final );
+
+        % now sort the other information
+        intern_cfg.data.label        = intern_cfg.data.label(index_sorted);
+        intern_cfg.data.trial{1}     = intern_cfg.data.trial{1}(index_sorted,:);
+        intern_cfg.data.hdr.chanunit = intern_cfg.data.hdr.chanunit(index_sorted);
+        intern_cfg.data.hdr.chantype = intern_cfg.data.hdr.chantype(index_sorted);
+
         intern_cfg.data.hdr.label      = intern_cfg.data.label; % update the other channel names fields
         
-        chs_final = intern_cfg.data.label;
-        
-            %% Now assign channel types
+        ii=fieldnames(intern_cfg.channels_tsv);
+        for i = 1:numel(ii)
+            if ~isempty(intern_cfg.channels_tsv.(ii{i}))
+                intern_cfg.channels_tsv.(ii{i}) = intern_cfg.channels_tsv.(ii{i})(index_sorted);
+            end
+        end
 
-    
+
+        %% Now assign channel types
         % Set channel types and channel units
         chantype            = cell(intern_cfg.data.hdr.nChans,1);
         for ch = 1:intern_cfg.data.hdr.nChans
@@ -284,14 +307,14 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         
         return;
     else
-        chs_final = intern_cfg.channels_tsv.name;
+        chs_final  = intern_cfg.channels_tsv.name;
     end
     
  
 
     %% Initalize containers for BIDS conversion
     keySet = {'Rest', 'UPDRSIII', 'SelfpacedRotationL','SelfpacedRotationR',...
-        'BlockRotationL','BlockRotationR', 'Evoked', 'EvokedTest','SelfpacedSpeech',...
+        'BlockRotationL','BlockRotationR', 'Evoked', 'EvokedRamp','SelfpacedSpeech',...
         'ReadRelaxMoveL', 'VigorStimR', 'VigorStimL', 'SelfpacedHandTapL',...
         'SelfpacedHandTapR', 'SelfpacedHandTapB','Free','DyskinesiaProtocol',...
         'NaturalBehavior'...
@@ -894,6 +917,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             refSet = {cfg.ieeg.iEEGReference, cfg.ieeg.iEEGReference, cfg.ieeg.iEEGReference, cfg.ieeg.iEEGReference, 'bipolar', 'bipolar', 'n/a'};
             ref_map = containers.Map(typeSet,refSet);
             cfg.channels.reference = arrayfun(@(ch_type) {ref_map(ch_type{1})}, cfg.channels.type);
+            cfg.channels.reference(startsWith(cfg.channels.name,{'EMG_L_R','EMG_R_R'})) = {cfg.ieeg.iEEGReference};
             cfg.channels.status(find(contains(cfg.channels.name, cfg.ieeg.iEEGReference)))={'bad'}
             cfg.channels.status_description(find(contains(cfg.channels.name, cfg.ieeg.iEEGReference)))={'Reference electrode'}
 
@@ -978,6 +1002,16 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
         end
         if startsWith(intern_cfg.entities.acquisition,'EStim')
             exp.StimulationTarget     = ECOG_target_long;
+            if isfield(intern_cfg.stim, 'L')
+                for i=1:length(intern_cfg.stim.L.CathodalContact)
+                    assert(startsWith(intern_cfg.stim.L.CathodalContact{i},'ECOG'))
+                end
+
+            else
+                for i=1:length(intern_cfg.stim.R.CathodalContact)
+                    assert(startsWith(intern_cfg.stim.R.CathodalContact{i},'ECOG'))
+                end
+            end
             
         else
             exp.StimulationTarget         = DBS_target;
@@ -1051,12 +1085,16 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     %L = 'OFF';
                     L.StimulationStatus           = "OFF";
                 else
-                    if isfield(intern_cfg.stim.L, 'AnodalContact')
-                        L.AnodalContact               = intern_cfg.stim.L.AnodalContact;
+                    if isfield(intern_cfg.stim.L, 'CathodalContact')
+                        if ~isempty(intern_cfg.stim.L.CathodalContact)
+                             L.CathodalContact               = intern_cfg.stim.L.CathodalContact;
+                        else
+                            L.CathodalContact               = "Ground";
+                        end
                     else
-                        L.AnodalContact               = "Ground";
+                        L.CathodalContact               = "Ground";
                     end
-                    L.CathodalContact             = intern_cfg.stim.L.CathodalContact;
+                    L.AnodalContact             = intern_cfg.stim.L.AnodalContact;
                     L.AnodalContactDirection      = "none";
                     L.CathodalContactDirection    = "omni";
                     L.CathodalContactImpedance    = "n/a";
@@ -1073,10 +1111,16 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     L.SecondPulseAmplitude        = L.StimulationAmplitude;
                     L.PostPulseInterval           = "n/a";
 
-                    if strcmp(cfg.task,'EvokedTest')
+                    if strcmp(cfg.task,'EvokedRamp')
                         L.StimulationAmplitude = "time-varying";
                         L.InitialPulseAmplitude = "time-varying";
                         L.SecondPulseAmplitude = "time-varying";
+                    end
+                    if contains(cfg.task,'Evoked')
+                        L.StimulationPulseWidth  = 90;
+                        L.InitialPulseWidth = 90;
+                        L.SecondPulseWidth = 90;
+                        L.InterPulseDelay = 53;
                     end
                 end
             end
@@ -1090,12 +1134,16 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     %R = 'OFF';
                     R.StimulationStatus           = "OFF";
                 else
-                if isfield(intern_cfg.stim.R, 'AnodalContact')
-                        R.AnodalContact               = intern_cfg.stim.R.AnodalContact;
+                if isfield(intern_cfg.stim.R, 'CathodalContact')
+                    if ~isempty(intern_cfg.stim.R.CathodalContact)
+                        R.CathodalContact               = intern_cfg.stim.R.CathodalContact;
+                    else
+                        R.CathodalContact               = "Ground";
+                    end
                 else
-                    R.AnodalContact               = "Ground";
+                    R.CathodalContact               = "Ground";
                 end
-                R.CathodalContact             = intern_cfg.stim.R.CathodalContact;
+                R.AnodalContact             = intern_cfg.stim.R.AnodalContact;
                 R.AnodalContactDirection      = "none";
                 R.CathodalContactDirection    = "omni";
                 R.CathodalContactImpedance    = "n/a";
@@ -1112,10 +1160,16 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                 R.SecondPulseAmplitude        = R.StimulationAmplitude;
                 R.PostPulseInterval           = "n/a";
 
-                if strcmp(cfg.task,'EvokedTest')
+                if strcmp(cfg.task,'EvokedRamp')
                     R.StimulationAmplitude = "time-varying";
                     R.InitialPulseAmplitude = "time-varying";
                     R.SecondPulseAmplitude = "time-varying";
+                end
+                if contains(cfg.task,'Evoked')
+                        R.StimulationPulseWidth  = 90;
+                        R.InitialPulseWidth = 90;
+                        R.SecondPulseWidth = 90;
+                        R.InterPulseDelay = 53;
                 end
 
                 end
@@ -1164,11 +1218,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
    % under if cfg.ieeg.ElectricalStimulation   
     cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "monopolar";
     if strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'ON')
-        if contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.AnodalContact, 'LFP') || contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.AnodalContact, 'ECOG') 
+        if any([contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.CathodalContact, 'LFP') ; contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.CathodalContact, 'ECOG')] )
             cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "bipolar";
         end
     elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'ON')
-        if contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.AnodalContact, 'LFP') || contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.AnodalContact, 'ECOG') 
+        if any([contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.CathodalContact, 'LFP') ; contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.CathodalContact, 'ECOG')] )
             cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "bipolar";
         end
     end
