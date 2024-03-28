@@ -310,12 +310,14 @@ task_options = [
     ("ReadRelaxMoveL", 11),
     ("VigorStimR", 12),
     ("VigorStimL", 13),
-    ("SelfpacedHandTapL", 14),
-    ("SelfpacedHandTapR", 15),
-    ("SelfpacedHandTapB", 16),
-    ("Free", 17),
-    ("DyskinesiaProtocol",18),
-    ("NaturalBehavior", 19),
+    ("MoveVigorStimR", 14),
+    ("MoveVigorStimL", 15),
+    ("SelfpacedHandTapL", 16),
+    ("SelfpacedHandTapR", 17),
+    ("SelfpacedHandTapB", 18),
+    ("Free", 19),
+    ("DyskinesiaProtocol",20),
+    ("NaturalBehavior", 21),
 ]
 
 
@@ -383,6 +385,8 @@ def go_to_subsession(*args):
         " by Aesop). Multiple sets.",
         "Performance of diagonal forearm movements with a cursor on a screen using a digitizing tablet. Start and stop events are visually cued on screen with a rest duration of 350 ms. 14 blocks with 32 movements each. In blocks 3-5/9-11 bilateral stimulation is applied for 300 ms if a movement is slower/faster than the previous two movements. The order of slow/fast blocks is alternated between participants.  Performed with the right hand.",
         "Performance of diagonal forearm movements with a cursor on a screen using a digitizing tablet. Start and stop events are visually cued on screen with a rest duration of 350 ms. 14 blocks with 32 movements each. In blocks 3-5/9-11 bilateral stimulation is applied for 300 ms if a movement is slower/faster than the previous two movements. The order of slow/fast blocks is alternated between participants.  Performed with the left hand.",
+        "Performance of arm movements using the handle of a custom-made rail. The paradigm is structured into 4 blocks (A,B,C,D) in pseudorandomized order. During each block the patient performs 12 movement episodes lasting 4 seconds. Each movement is followed by a break episode of the same length. During the movement episodes the patient is asked to move the handle from one side of the rail to the other as fast as possible. Movement and break episodes are cued on screen. 2 minutes break are forced between blocks. Stimulation during each block: A=Stimulation during movement segments (3-10), B=Stimulation during break segments (3-10), C=Stimulation during movement and break (3-10), D=No stimulation. Performed with right hand",
+        "Performance of arm movements using the handle of a custom-made rail. The paradigm is structured into 4 blocks (A,B,C,D) in pseudorandomized order. During each block the patient performs 12 movement episodes lasting 4 seconds. Each movement is followed by a break episode of the same length. During the movement episodes the patient is asked to move the handle from one side of the rail to the other as fast as possible. Movement and break episodes are cued on screen. 2 minutes break are forced between blocks. Stimulation during each block: A=Stimulation during movement segments (3-10), B=Stimulation during break segments (3-10), C=Stimulation during movement and break (3-10), D=No stimulation. Performed with left hand",
         "Selfpaced left hand tapping, circa every 10 seconds, without counting, in resting seated position.",
         "Selfpaced right hand tapping, circa every 10 seconds, without counting, in resting seated position.",
         "Bilateral selfpaced hand tapping in rested seated position, one tap every 10 seconds, the patient should not count the seconds. The hand should be raised while the wrist stays mounted on the leg. Correct the pacing of the taps when the tap-intervals are below 8 seconds, or above 12 seconds. Start with contralateral side compared to ECoG implantation-hemisfere. The investigator counts the number of taps and instructs the patients to switch tapping-side after 30 taps, for another 30 taps in the second side.",
@@ -405,6 +409,8 @@ def go_to_subsession(*args):
         "At the beginning of each block, a text will appear on the screen, specifying the task to be performed. An auditory cue will then be issued, marking the begin of your task. Perform the task until the next cue marks the end of the task. Tasks are either continuous left wrist rotation, resting with open eyes or reading aloud the text displayed on the screen.",
         "Your task is to move your pen from one side of the screen to the other. When you see a square, please move your pen there and stay on the square until a new square appears on the other side. Then move the pen to the new square. Please move as fast as you can and touch the screen with the pen throughout the whole experiment.",
         "Your task is to move your pen from one side of the screen to the other. When you see a square, please move your pen there and stay on the square until a new square appears on the other side. Then move the pen to the new square. Please move as fast as you can and touch the screen with the pen throughout the whole experiment.",
+        "Your task is to move the handle from one side to the other as far and as fast as possible as soon as the Move-cue is given on the screen. As soon as you see the Break-cue you should stop moving the handle. Use right hand.",
+        "Your task is to move the handle from one side to the other as far and as fast as possible as soon as the Move-cue is given on the screen. As soon as you see the Break-cue you should stop moving the handle. Use left hand.",
         "Keep both hands resting on your legs, and tap with your left hand by raising the hand and fingers of your left hand, without letting the arm be lifted from the leg. Do not count in between rotations.",
         "Keep both hands resting on your legs, and tap with your right hand by raising the hand and fingers of your right hand, without letting the arm be lifted from the leg. Do not count in between rotations.",
         "Keep both hands resting on your legs. First tap with your left hand (if ECoG is implanted in the right hemisphere; if ECoG is implanted in left hemisphere, start with right hand) by raising the left hand and fingers while the wrist is mounted on the leg. Make one tap every +/- ten seconds. Do not count in between taps. After 30 taps, the recording investigator will instruct you to tap on with your right (i.e. left) hand. After 30 taps the recording investigator will instruct you to stop tapping.",
@@ -653,8 +659,12 @@ def plot_channels(*args):
             preset = 'ACC_L_Z_D2_TM'
         elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'SelfpacedRotationL' or task_options[bids_task[-1].value][0] == 'BlockRotationL' or task_options[bids_task[-1].value][0] == 'ReadRelaxMoveL'):
             preset = 'ANALOG_L_ROTA_CH'
-        elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'SelfpacedRotationR' or task_options[bids_task[-1].value][0] == 'BlockRotationR' or task_options[bids_task[-1].value][0] == 'ReadRelaxMoveR'):
-            preset = 'ANALOG_R_ROTA_CH'
+        elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'MoveVigorStimL' ):
+            preset = 'RAIL_L'
+        elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'MoveVigorStimR' ):
+            preset = 'RAIL_R'
+        elif ch.startswith('TRIGGERS'):
+            preset = 'TRIGGERS'
         elif ch in dictchannelnames:
             preset = dictchannelnames[ch]
             if preset.startswith('EMG_L') and bids_ECOG_hemisphere.value == 'left':
@@ -1020,7 +1030,7 @@ def save_all_information(*args):
             bids_date_of_implantation_str = bids_date_of_implantation.value
             metadict['participants']['date_of_implantation'] = bids_date_of_implantation_str.strftime("%Y-%m-%dT00:00:00")
         except:
-            metadict['participants']['date_of_implantation'] = "na-na-2024T00:00:00"
+            metadict['participants']['date_of_implantation'] = "2024-na-naT00:00:00"
         finally:
             pass
         metadict['participants']['UPDRS_III_preop_OFF'] = str()
