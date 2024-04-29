@@ -1094,19 +1094,19 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     %L = 'OFF';
                     L.StimulationStatus           = "OFF";
                 else
-                    if isfield(intern_cfg.stim.L, 'CathodalContact')
-                        if ~isempty(intern_cfg.stim.L.CathodalContact)
-                             L.CathodalContact               = intern_cfg.stim.L.CathodalContact;
+                    if isfield(intern_cfg.stim.L, 'AnodalContact')
+                        if ~isempty(intern_cfg.stim.L.AnodalContact)
+                             L.AnodalContact               = intern_cfg.stim.L.AnodalContact;
                         else
-                            L.CathodalContact               = "Ground";
+                            L.AnodalContact               = "Ground";
                         end
                     else
-                        L.CathodalContact               = "Ground";
+                        L.AnodalContact               = "Ground";
                     end
-                    L.AnodalContact             = intern_cfg.stim.L.AnodalContact;
-                    L.AnodalContactDirection      = "none";
-                    L.CathodalContactDirection    = "omni";
-                    L.CathodalContactImpedance    = "n/a";
+                    L.CathodalContact             = intern_cfg.stim.L.CathodalContact;
+                    L.CathodalContactDirection      = "none";
+                    L.AnodalContactDirection    = "omni"; %need to double check
+                    L.AnodalContactImpedance    = "n/a";
                     L.StimulationAmplitude        = intern_cfg.stim.L.StimulationAmplitude;
                     L.StimulationPulseWidth       = 60;
                     L.StimulationFrequency        = intern_cfg.stim.L.StimulationFrequency;
@@ -1143,19 +1143,19 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     %R = 'OFF';
                     R.StimulationStatus           = "OFF";
                 else
-                if isfield(intern_cfg.stim.R, 'CathodalContact')
-                    if ~isempty(intern_cfg.stim.R.CathodalContact)
-                        R.CathodalContact               = intern_cfg.stim.R.CathodalContact;
+                if isfield(intern_cfg.stim.R, 'AnodalContact')
+                    if ~isempty(intern_cfg.stim.R.AnodalContact)
+                        R.AnodalContact               = intern_cfg.stim.R.AnodalContact;
                     else
-                        R.CathodalContact               = "Ground";
+                        R.AnodalContact               = "Ground";
                     end
                 else
-                    R.CathodalContact               = "Ground";
+                    R.AnodalContact               = "Ground";
                 end
-                R.AnodalContact             = intern_cfg.stim.R.AnodalContact;
-                R.AnodalContactDirection      = "none";
-                R.CathodalContactDirection    = "omni";
-                R.CathodalContactImpedance    = "n/a";
+                R.CathodalContact             = intern_cfg.stim.R.CathodalContact;
+                R.CathodalContactDirection      = "none";
+                R.AnodalContactDirection    = "omni";
+                R.AnodalContactImpedance    = "n/a";
                 R.StimulationAmplitude        = intern_cfg.stim.R.StimulationAmplitude;
                 R.StimulationPulseWidth       = 60;
                 R.StimulationFrequency        = intern_cfg.stim.R.StimulationFrequency;
@@ -1227,11 +1227,11 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
    % under if cfg.ieeg.ElectricalStimulation   
     cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "monopolar";
     if strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'ON')
-        if contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.CathodalContact, {'ECOG','LFP'}) 
+        if contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.AnodalContact, {'ECOG','LFP'}) 
             cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "bipolar";
         end
     elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'ON')
-        if contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.CathodalContact, {'ECOG','LFP'})
+        if contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.AnodalContact, {'ECOG','LFP'})
             cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "bipolar";
         end
     end
