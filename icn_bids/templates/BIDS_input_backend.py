@@ -551,6 +551,10 @@ def plot_channels(*args):
         stracq = 'StimOnB'
     elif 'StimOn' in stracq:
         stracq = 'StimOn_SPECIFY_WHICH_SIDE'
+    elif 'StimL' in stracq: #could be hand side instead of stim side
+        stracq = 'StimOn_SPECIFY_WHICH_SIDE'
+    elif 'StimR' in stracq:
+        stracq = 'StimOn_SPECIFY_WHICH_SIDE'
     elif ('pre' or 'Pre') in stracq:
         stracq = 'StimOffDopaPre'
     elif 'Dopa' not in stracq:
@@ -766,8 +770,16 @@ def define_reference_and_stims(*args):
             value="",
             )
         )
+
+    if 'EStim' in bids_acquisition[-1].value:
+        preset_freq = 1
+    elif 'Evoked' in bids_task[-1].value:
+        preset_freq = 1
+    else:
+        preset_freq = 130
+
     bids_stimulation_frequency_left=widgets.BoundedIntText(
-            value=130,
+            value=preset_freq,
             min=1,
             max=1000,
             step=1,
@@ -777,7 +789,7 @@ def define_reference_and_stims(*args):
         )
 
     bids_stimulation_frequency_right=widgets.BoundedIntText(
-            value=130,
+            value=preset_freq,
             min=1,
             max=1000,
             step=1,
@@ -786,10 +798,27 @@ def define_reference_and_stims(*args):
             layout=layout
         )
 
+    if 'EvokedRamp' in bids_task[-1].value:
+        if 'StimL' in bids_acquisition[-1].value:
+            preset_stimL = 5
+            preset_stimR = 0
+        elif 'StimR' in bids_acquisition[-1].value:
+            preset_stimL = 0
+            preset_stimR = 5
+        elif 'StimB' in bids_acquisition[-1].value:
+            preset_stimL = 5
+            preset_stimR = 5
+        else:
+            with output2:
+                print("ERROR EvokedRamp has no side")
+    else:
+        preset_stimL = 0
+        preset_stimR = 0
+
     bids_stimulation_amplitude_left=widgets.BoundedFloatText(
-            value=0,
+            value=preset_stimL,
             min=0,
-            max=5,
+            max=8,
             step=0.1,
             description='Stimulation Amplitude left:',
             style=style,
@@ -797,9 +826,9 @@ def define_reference_and_stims(*args):
         )
 
     bids_stimulation_amplitude_right=widgets.BoundedFloatText(
-            value=0,
+            value=preset_stimR,
             min=0,
-            max=5,
+            max=8,
             step=0.1,
             description='Stimulation Amplitude right:',
             style=style,

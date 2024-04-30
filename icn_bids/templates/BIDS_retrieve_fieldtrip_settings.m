@@ -1009,11 +1009,13 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             if isfield(intern_cfg.stim, 'L')
                 for i=1:length(intern_cfg.stim.L.CathodalContact)
                     assert(startsWith(intern_cfg.stim.L.CathodalContact{i},'ECOG'))
+                    assert(extract_contact_number(intern_cfg.stim.L.CathodalContact{i})<extract_contact_number(intern_cfg.stim.L.AnodalContact{1}))
                 end
 
             else
                 for i=1:length(intern_cfg.stim.R.CathodalContact)
                     assert(startsWith(intern_cfg.stim.R.CathodalContact{i},'ECOG'))
+                    assert(extract_contact_number(intern_cfg.stim.R.CathodalContact{i})<extract_contact_number(intern_cfg.stim.R.AnodalContact{1}))
                 end
             end
             
@@ -1094,6 +1096,9 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     %L = 'OFF';
                     L.StimulationStatus           = "OFF";
                 else
+                    L.CathodalContact             = intern_cfg.stim.L.CathodalContact;
+                    L.CathodalContactDirection      = "none";
+                    
                     if isfield(intern_cfg.stim.L, 'AnodalContact')
                         if ~isempty(intern_cfg.stim.L.AnodalContact)
                              L.AnodalContact               = intern_cfg.stim.L.AnodalContact;
@@ -1103,8 +1108,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     else
                         L.AnodalContact               = "Ground";
                     end
-                    L.CathodalContact             = intern_cfg.stim.L.CathodalContact;
-                    L.CathodalContactDirection      = "none";
+                    
                     L.AnodalContactDirection    = "omni"; %need to double check
                     L.AnodalContactImpedance    = "n/a";
                     L.StimulationAmplitude        = intern_cfg.stim.L.StimulationAmplitude;
@@ -1143,44 +1147,44 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     %R = 'OFF';
                     R.StimulationStatus           = "OFF";
                 else
-                if isfield(intern_cfg.stim.R, 'AnodalContact')
-                    if ~isempty(intern_cfg.stim.R.AnodalContact)
-                        R.AnodalContact               = intern_cfg.stim.R.AnodalContact;
+                    R.CathodalContact             = intern_cfg.stim.R.CathodalContact;
+                    R.CathodalContactDirection      = "none";
+                    
+                    if isfield(intern_cfg.stim.R, 'AnodalContact')
+                        if ~isempty(intern_cfg.stim.R.AnodalContact)
+                            R.AnodalContact               = intern_cfg.stim.R.AnodalContact;
+                        else
+                            R.AnodalContact               = "Ground";
+                        end
                     else
                         R.AnodalContact               = "Ground";
                     end
-                else
-                    R.AnodalContact               = "Ground";
-                end
-                R.CathodalContact             = intern_cfg.stim.R.CathodalContact;
-                R.CathodalContactDirection      = "none";
-                R.AnodalContactDirection    = "omni";
-                R.AnodalContactImpedance    = "n/a";
-                R.StimulationAmplitude        = intern_cfg.stim.R.StimulationAmplitude;
-                R.StimulationPulseWidth       = 60;
-                R.StimulationFrequency        = intern_cfg.stim.R.StimulationFrequency;
-                R.StimulationStatus           = "ON";
-                R.InitialPulseShape           = "rectangular";
-                R.InitialPulseWidth           = 60;
-                R.InitialPulseAmplitude       = -1.0*R.StimulationAmplitude;
-                R.InterPulseDelay             = 0;
-                R.SecondPulseShape            = "rectangular";
-                R.SecondPulseWidth            = 60;
-                R.SecondPulseAmplitude        = R.StimulationAmplitude;
-                R.PostPulseInterval           = "n/a";
-
-                if strcmp(cfg.task,'EvokedRamp')
-                    R.StimulationAmplitude = "time-varying";
-                    R.InitialPulseAmplitude = "time-varying";
-                    R.SecondPulseAmplitude = "time-varying";
-                end
-                if contains(cfg.task,'Evoked')
-                        R.StimulationPulseWidth  = 90;
-                        R.InitialPulseWidth = 90;
-                        R.SecondPulseWidth = 90;
-                        R.InterPulseDelay = 53;
-                end
-
+                    R.AnodalContactDirection    = "omni";
+                    R.AnodalContactImpedance    = "n/a";
+                    R.StimulationAmplitude        = intern_cfg.stim.R.StimulationAmplitude;
+                    R.StimulationPulseWidth       = 60;
+                    R.StimulationFrequency        = intern_cfg.stim.R.StimulationFrequency;
+                    R.StimulationStatus           = "ON";
+                    R.InitialPulseShape           = "rectangular";
+                    R.InitialPulseWidth           = 60;
+                    R.InitialPulseAmplitude       = -1.0*R.StimulationAmplitude;
+                    R.InterPulseDelay             = 0;
+                    R.SecondPulseShape            = "rectangular";
+                    R.SecondPulseWidth            = 60;
+                    R.SecondPulseAmplitude        = R.StimulationAmplitude;
+                    R.PostPulseInterval           = "n/a";
+    
+                    if strcmp(cfg.task,'EvokedRamp')
+                        R.StimulationAmplitude = "time-varying";
+                        R.InitialPulseAmplitude = "time-varying";
+                        R.SecondPulseAmplitude = "time-varying";
+                    end
+                    if contains(cfg.task,'Evoked')
+                            R.StimulationPulseWidth  = 90;
+                            R.InitialPulseWidth = 90;
+                            R.SecondPulseWidth = 90;
+                            R.InterPulseDelay = 53;
+                    end
                 end
             end
             exp.Right                     = R;
@@ -1235,7 +1239,9 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "bipolar";
         end
     end
+    end
+end
 
-    
-
+function contact_number = extract_contact_number(channel_name)
+    contact_number = str2num(channel_name(isstrprop(channel_name, 'digit')));
 end
