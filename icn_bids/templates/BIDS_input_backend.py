@@ -310,8 +310,8 @@ task_options = [
     ("ReadRelaxMoveL", 11),
     ("VigorStimR", 12),
     ("VigorStimL", 13),
-    ("MoveVigorStimR", 14),
-    ("MoveVigorStimL", 15),
+    ("VigorRailR", 14),
+    ("VigorRailL", 15),
     ("SelfpacedHandTapL", 16),
     ("SelfpacedHandTapR", 17),
     ("SelfpacedHandTapB", 18),
@@ -385,8 +385,8 @@ def go_to_subsession(*args):
         " by Aesop). Multiple sets.",
         "Performance of diagonal forearm movements with a cursor on a screen using a digitizing tablet. Start and stop events are visually cued on screen with a rest duration of 350 ms. 14 blocks with 32 movements each. In blocks 3-5/9-11 bilateral stimulation is applied for 300 ms if a movement is slower/faster than the previous two movements. The order of slow/fast blocks is alternated between participants.  Performed with the right hand.",
         "Performance of diagonal forearm movements with a cursor on a screen using a digitizing tablet. Start and stop events are visually cued on screen with a rest duration of 350 ms. 14 blocks with 32 movements each. In blocks 3-5/9-11 bilateral stimulation is applied for 300 ms if a movement is slower/faster than the previous two movements. The order of slow/fast blocks is alternated between participants.  Performed with the left hand.",
-        "Performance of arm movements using the handle of a custom-made rail. The paradigm is structured into 4 blocks (A,B,C,D) in pseudorandomized order. During each block the patient performs 12 movement episodes lasting 4 seconds. Each movement is followed by a break episode of the same length. During the movement episodes the patient is asked to move the handle from one side of the rail to the other as fast as possible. Movement and break episodes are cued on screen. 2 minutes break are forced between blocks. Stimulation during each block: A=Stimulation during movement segments (3-10), B=Stimulation during break segments (3-10), C=Stimulation during movement and break (3-10), D=No stimulation. Performed with right hand",
-        "Performance of arm movements using the handle of a custom-made rail. The paradigm is structured into 4 blocks (A,B,C,D) in pseudorandomized order. During each block the patient performs 12 movement episodes lasting 4 seconds. Each movement is followed by a break episode of the same length. During the movement episodes the patient is asked to move the handle from one side of the rail to the other as fast as possible. Movement and break episodes are cued on screen. 2 minutes break are forced between blocks. Stimulation during each block: A=Stimulation during movement segments (3-10), B=Stimulation during break segments (3-10), C=Stimulation during movement and break (3-10), D=No stimulation. Performed with left hand",
+        "Performance of arm movements using the handle of a custom-made rail. The paradigm is structured into 4 blocks (Mov, Res, Con, Non) in pseudorandomized order. During each block the patient performs 12 movement episodes lasting 4 seconds. Each movement is followed by a break episode of the same length. During the movement episodes the patient is asked to move the handle from one side of the rail to the other as fast as possible. Movement and break episodes are cued on screen. 2 minutes break are forced between blocks. Stimulation during each block: Mov=Stimulation during movement segments (3-10), Res=Stimulation during break segments (3-10), Con=Stimulation during movement and break (3-10), Non=No stimulation.",
+        "Performance of arm movements using the handle of a custom-made rail. The paradigm is structured into 4 blocks (Mov, Res, Con, Non) in pseudorandomized order. During each block the patient performs 12 movement episodes lasting 4 seconds. Each movement is followed by a break episode of the same length. During the movement episodes the patient is asked to move the handle from one side of the rail to the other as fast as possible. Movement and break episodes are cued on screen. 2 minutes break are forced between blocks. Stimulation during each block: Mov=Stimulation during movement segments (3-10), Res=Stimulation during break segments (3-10), Con=Stimulation during movement and break (3-10), Non=No stimulation.",
         "Selfpaced left hand tapping, circa every 10 seconds, without counting, in resting seated position.",
         "Selfpaced right hand tapping, circa every 10 seconds, without counting, in resting seated position.",
         "Bilateral selfpaced hand tapping in rested seated position, one tap every 10 seconds, the patient should not count the seconds. The hand should be raised while the wrist stays mounted on the leg. Correct the pacing of the taps when the tap-intervals are below 8 seconds, or above 12 seconds. Start with contralateral side compared to ECoG implantation-hemisfere. The investigator counts the number of taps and instructs the patients to switch tapping-side after 30 taps, for another 30 taps in the second side.",
@@ -539,7 +539,15 @@ def plot_channels(*args):
     )
 
     stracq = bids_filechooser[-1].selected_filename
-    if 'EStimOnL' in stracq:
+    if 'StimOnBConMovNonRes' in stracq:
+        stracq = 'StimOnBConMovNonRes'
+    elif 'StimonBNonResMovCon' in stracq:
+        stracq = 'StimonBNonResMovCon'
+    elif 'StimOnBMovResConNon' in stracq:
+        stracq = 'StimOnBMovResConNon'
+    elif 'StimOnBResNonConMov' in stracq:
+        stracq = 'StimOnBResNonConMov'
+    elif 'EStimOnL' in stracq:
         stracq = 'EStimOnL'
     elif 'EStimOnR' in stracq:
         stracq = 'EStimOnR'
@@ -663,9 +671,9 @@ def plot_channels(*args):
             preset = 'ACC_L_Z_D2_TM'
         elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'SelfpacedRotationL' or task_options[bids_task[-1].value][0] == 'BlockRotationL' or task_options[bids_task[-1].value][0] == 'ReadRelaxMoveL'):
             preset = 'ANALOG_L_ROTA_CH'
-        elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'MoveVigorStimL' ):
+        elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'VigorRailL' ):
             preset = 'RAIL_L'
-        elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'MoveVigorStimR' ):
+        elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'VigorRailR' ):
             preset = 'RAIL_R'
         elif ch.startswith('TRIGGERS'):
             preset = 'TRIGGERS'
@@ -799,13 +807,13 @@ def define_reference_and_stims(*args):
         )
 
     if 'EvokedRamp' in bids_task[-1].value:
-        if 'StimL' in bids_acquisition[-1].value:
+        if 'StimOnL' in bids_acquisition[-1].value:
             preset_stimL = 5
             preset_stimR = 0
-        elif 'StimR' in bids_acquisition[-1].value:
+        elif 'StimOnR' in bids_acquisition[-1].value:
             preset_stimL = 0
             preset_stimR = 5
-        elif 'StimB' in bids_acquisition[-1].value:
+        elif 'StimOnB' in bids_acquisition[-1].value:
             preset_stimL = 5
             preset_stimR = 5
         else:
