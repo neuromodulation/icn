@@ -543,8 +543,8 @@ def plot_channels(*args):
         stracq = 'StimOnBConMovNonRes'
     elif 'StimonBNonResMovCon' in stracq:
         stracq = 'StimonBNonResMovCon'
-    elif 'StimOnBMovResConNon' in stracq:
-        stracq = 'StimOnBMovResConNon'
+    elif 'StimOnBMovConResNon' in stracq:
+        stracq = 'StimOnBMovConResNon'
     elif 'StimOnBResNonConMov' in stracq:
         stracq = 'StimOnBResNonConMov'
     elif 'EStimOnL' in stracq:
