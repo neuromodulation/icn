@@ -293,6 +293,9 @@ bids_stimulation_amplitude_left = 0
 bids_stimulation_frequency_left = 0
 bids_stimulation_amplitude_right = 0
 bids_stimulation_frequency_right = 0
+bids_stimulation_amplitude_min = 0
+bids_stimulation_amplitude_max = 0
+bids_stimulation_amplitude_stepsize = 0
 bids_anodal_contact = []
 
 task_options = [
@@ -731,6 +734,9 @@ def define_reference_and_stims(*args):
     global bids_stimulation_amplitude_right
     global bids_stimulation_frequency_right
     global bids_anodal_contact
+    global bids_stimulation_amplitude_min
+    global bids_stimulation_amplitude_max
+    global bids_stimulation_amplitude_stepsize
 
     bids_channel_names_list = []
     bids_reference = []
@@ -740,6 +746,9 @@ def define_reference_and_stims(*args):
     bids_stimulation_frequency_left = 0
     bids_stimulation_amplitude_right = 0
     bids_stimulation_frequency_right = 0
+    bids_stimulation_amplitude_min = 0
+    bids_stimulation_amplitude_max = 0
+    bids_stimulation_amplitude_stepsize = 0
 
     for widget in bids_channel_names_widgets:
         if widget.value != '':
@@ -819,6 +828,38 @@ def define_reference_and_stims(*args):
         else:
             with output2:
                 print("ERROR EvokedRamp has no side")
+        bids_stimulation_amplitude_min = widgets.BoundedFloatText(
+            value=0,
+            min=0,
+            max=10,
+            step=0.1,
+            description='Stimulation Amplitude minimum:',
+            style=style,
+            layout=layout
+        )
+        bids_stimulation_amplitude_max = widgets.BoundedFloatText(
+            value=10,
+            min=0,
+            max=10,
+            step=0.1,
+            description='Stimulation Amplitude maximum:',
+            style=style,
+            layout=layout
+        )
+        bids_stimulation_amplitude_stepsize = widgets.BoundedFloatText(
+            value=0,
+            min=0,
+            max=10,
+            step=0.1,
+            description='Stimulation Amplitude stepsize:',
+            style=style,
+            layout=layout
+        )
+
+        with output2:
+            display(bids_stimulation_amplitude_min)
+            display(bids_stimulation_amplitude_max)
+            display(bids_stimulation_amplitude_stepsize)
     else:
         preset_stimL = 0
         preset_stimR = 0
@@ -826,7 +867,7 @@ def define_reference_and_stims(*args):
     bids_stimulation_amplitude_left=widgets.BoundedFloatText(
             value=preset_stimL,
             min=0,
-            max=8,
+            max=10,
             step=0.1,
             description='Stimulation Amplitude left:',
             style=style,
@@ -836,7 +877,7 @@ def define_reference_and_stims(*args):
     bids_stimulation_amplitude_right=widgets.BoundedFloatText(
             value=preset_stimR,
             min=0,
-            max=8,
+            max=10,
             step=0.1,
             description='Stimulation Amplitude right:',
             style=style,
@@ -1153,12 +1194,20 @@ def save_all_information(*args):
                                 metadict['stim']['L']['AnodalContact'] = []
                                 metadict['stim']['L']['StimulationAmplitude'] = bids_stimulation_amplitude_left.value
                                 metadict['stim']['L']['StimulationFrequency'] = bids_stimulation_frequency_left.value
+                                if 'EvokedRamp' in bids_task[-1].value:
+                                    metadict['stim']['L']['StimulationAmplitudeMin'] = bids_stimulation_amplitude_min.value
+                                    metadict['stim']['L']['StimulationAmplitudeMax'] = bids_stimulation_amplitude_max.value
+                                    metadict['stim']['L']['StimulationAmplitudeStepsize'] = bids_stimulation_amplitude_stepsize.value
                             if bids_stimulation_amplitude_right.value > 0:
                                 metadict['stim']['R'] = {}
                                 metadict['stim']['R']['CathodalContact'] = []
                                 metadict['stim']['R']['AnodalContact'] = []
                                 metadict['stim']['R']['StimulationAmplitude'] = bids_stimulation_amplitude_right.value
                                 metadict['stim']['R']['StimulationFrequency'] = bids_stimulation_frequency_right.value
+                                if 'EvokedRamp' in bids_task[-1].value:
+                                    metadict['stim']['R']['StimulationAmplitudeMin'] = bids_stimulation_amplitude_min.value
+                                    metadict['stim']['R']['StimulationAmplitudeMax'] = bids_stimulation_amplitude_max.value
+                                    metadict['stim']['R']['StimulationAmplitudeStepsize'] = bids_stimulation_amplitude_stepsize.value
                         except:
                             with output2:
                                 display(bids_stimulation_amplitude_left)
