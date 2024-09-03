@@ -233,6 +233,22 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                 % intern_cfg.data.label is the final channel lists, but contains here the channels
                 % that need to be removed as well
                 intern_cfg.data.label{i} = intern_cfg.poly5.new{index};
+                
+                % assert a good channel renaming
+                %
+                % extra room for assertions
+                % extra room for assertions
+                % extra room for assertions
+                if startsWith(intern_cfg.data.label{i},'LFP')
+                    assert(endsWith(intern_cfg.data.label{i}, DBS_manufacturer_short))
+                elseif startsWith(intern_cfg.data.label{i},'ECOG')
+                    assert(endsWith(intern_cfg.data.label{i}, ECOG_manufacturer_short))
+                    if length(ECOG_hemispheres) == 1
+                        assert(startsWith(intern_cfg.data.label{i},['ECOG_', ECOG_hemispheres{1}]))
+                    end
+                end
+
+
                 if isempty(intern_cfg.data.label{i})
                     remove(end+1) = i;
                 end

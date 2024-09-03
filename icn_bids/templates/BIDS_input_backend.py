@@ -598,8 +598,10 @@ def plot_channels(*args):
         if ('STN' in ch) or ('LFP' in ch) :
             preset = 'LFP_' + ch[3] + '_' + ''.join(filter(lambda i: i.isdigit(), ch)).rjust(2,"0") + '_'
             if 'STN' in ch: preset += 'STN_'
-            if ch.endswith('B'):
+            if ch.endswith('BS') or 'Boston' in bids_DBS_description.value:
                 preset += 'BS'
+            elif ch.endswith('AB') or 'Abbott' in bids_DBS_description.value:
+                preset += 'AB'
             elif ch.endswith('M'):
                 preset += 'MT'
             elif ch.endswith('MT'):
@@ -635,7 +637,12 @@ def plot_channels(*args):
                 elif (ch[3] == 'L') and (bids_ECOG_hemisphere.value == 'left'):
                     ecog_side = 'L'
                 else:
-                    ecog_side = 'HEMISPHERE_AMBIGUITY_OR_CONFLICT_WITH_INPUT_ABOVE'
+                    with output2:
+                        display('ECOG HEMISPHERE_AMBIGUITY_OR_CONFLICT_WITH_INPUT_ABOVE')
+                    if bids_ECOG_hemisphere.value == 'left':
+                        ecog_side = 'L'
+                    else:
+                        ecog_side = 'R'
                 preset = 'ECOG_' + ecog_side + '_' + ''.join(filter(lambda i: i.isdigit(), ch)).rjust(2,"0") + '_'
                 if 'SM' in ch: preset += 'SMC_'
                 if ch.endswith('B'):
@@ -834,7 +841,7 @@ def define_reference_and_stims(*args):
                 print("ERROR EvokedRamp has no side")
 
         bids_stimulation_amplitude_min = widgets.BoundedFloatText(
-            value=0,
+            value=0.5,
             min=0,
             max=10,
             step=0.1,
