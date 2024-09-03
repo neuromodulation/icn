@@ -149,8 +149,6 @@ ECOG_present = widgets.Button(
     style=style,
     layout=layout,
 )
-
-
 def define_ECOG(click):
     with output1:
         ECOG_present.disabled = 1
@@ -280,6 +278,7 @@ bids_filechooser = []
 bids_task = []
 bids_task_description = []
 bids_task_instructions = []
+bids_task_number = []
 bids_time_of_acquisition = []
 bids_run = []
 bids_acquisition = []
@@ -355,7 +354,7 @@ def go_to_subsession(*args):
     bids_filechooser.append(FileChooser(os.getcwd()))
     bids_filechooser[-1].title = "selected POLY5 file to convert"
 
-    bids_task.append(
+    bids_task_number.append(
         widgets.Dropdown(
             options=task_options,
             value=0,
@@ -364,7 +363,7 @@ def go_to_subsession(*args):
             layout=layout,
         )
     )
-    bids_task[-1].observe(update_task, names="value")
+    bids_task_number[-1].observe(update_task, names="value")
 
     descriptions = [
         "n/a",
@@ -453,7 +452,7 @@ def go_to_subsession(*args):
         widgets.BoundedIntText(
             value=1,
             min=0,
-            max=10,
+            max=100,
             step=1,
             description="Run number:",
             style=style,
@@ -472,7 +471,7 @@ def go_to_subsession(*args):
 
         display(
             bids_filechooser[-1],
-            bids_task[-1],
+            bids_task_number[-1],
             bids_task_description[-1],
             bids_task_instructions[-1],
             #bids_time_of_acquisition[-1],
@@ -507,6 +506,7 @@ def plot_channels(*args):
     global bids_stimulation_frequency_right
     global bids_time_of_acquisition
     global bids_anodal_contact
+    global bids_task
     bids_channel_names_widgets = []
     bids_channel_names_list = []
     bids_reference = []
@@ -518,7 +518,9 @@ def plot_channels(*args):
     bids_stimulation_frequency_right =0
     bids_time_of_acquisition = []
     bids_anodal_contact = []
-
+    bids_task = task_options[bids_task_number[-1].value][0]
+    with output2:
+        display('Task is defined and stored')
     strdatetime = bids_filechooser[-1].selected_filename
     m = re.search(r'(20[0-9]{6}T[0-9]{6})', strdatetime)
     if m is not None:
@@ -672,11 +674,11 @@ def plot_channels(*args):
             preset = 'ACC_L_Y_D2_TM'
         elif ch.startswith('Z-1'):
             preset = 'ACC_L_Z_D2_TM'
-        elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'SelfpacedRotationL' or task_options[bids_task[-1].value][0] == 'BlockRotationL' or task_options[bids_task[-1].value][0] == 'ReadRelaxMoveL'):
+        elif ch.startswith('ISO aux') and (bids_task == 'SelfpacedRotationL' or bids_task == 'BlockRotationL' or bids_task == 'ReadRelaxMoveL'):
             preset = 'ANALOG_L_ROTA_CH'
-        elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'VigorRailL' ):
+        elif ch.startswith('ISO aux') and (bids_task == 'VigorRailL'):
             preset = 'RAIL_L'
-        elif ch.startswith('ISO aux') and (task_options[bids_task[-1].value][0] == 'VigorRailR' ):
+        elif ch.startswith('ISO aux') and (bids_task == 'VigorRailR'):
             preset = 'RAIL_R'
         elif ch.startswith('TRIGGERS'):
             preset = 'TRIGGERS'
@@ -750,6 +752,7 @@ def define_reference_and_stims(*args):
     bids_stimulation_amplitude_max = 0
     bids_stimulation_amplitude_stepsize = 0
 
+
     for widget in bids_channel_names_widgets:
         if widget.value != '':
             bids_channel_names_list.append(widget.value)
@@ -767,6 +770,7 @@ def define_reference_and_stims(*args):
         layout=layout
         )
     )
+
     for stimcon in range(0,8):
         bids_stimulation_contact.append(
             widgets.Combobox(
@@ -790,7 +794,7 @@ def define_reference_and_stims(*args):
 
     if 'EStim' in bids_acquisition[-1].value:
         preset_freq = 1
-    elif 'Evoked' in bids_task[-1].value:
+    elif 'Evoked' in bids_task:
         preset_freq = 1
     else:
         preset_freq = 130
@@ -815,7 +819,7 @@ def define_reference_and_stims(*args):
             layout=layout
         )
 
-    if 'EvokedRamp' in bids_task[-1].value:
+    if 'EvokedRamp' in bids_task:
         if 'StimOnL' in bids_acquisition[-1].value:
             preset_stimL = 5
             preset_stimR = 0
@@ -828,6 +832,7 @@ def define_reference_and_stims(*args):
         else:
             with output2:
                 print("ERROR EvokedRamp has no side")
+
         bids_stimulation_amplitude_min = widgets.BoundedFloatText(
             value=0,
             min=0,
@@ -847,7 +852,7 @@ def define_reference_and_stims(*args):
             layout=layout
         )
         bids_stimulation_amplitude_stepsize = widgets.BoundedFloatText(
-            value=0,
+            value=0.5,
             min=0,
             max=10,
             step=0.1,
@@ -855,11 +860,6 @@ def define_reference_and_stims(*args):
             style=style,
             layout=layout
         )
-
-        with output2:
-            display(bids_stimulation_amplitude_min)
-            display(bids_stimulation_amplitude_max)
-            display(bids_stimulation_amplitude_stepsize)
     else:
         preset_stimL = 0
         preset_stimR = 0
@@ -889,18 +889,22 @@ def define_reference_and_stims(*args):
         if 'StimOn' in bids_acquisition[-1].value:
             for stimcon in range(0,8):
                 display(bids_stimulation_contact[stimcon])
-
-            display(bids_stimulation_amplitude_left)
             display(bids_stimulation_amplitude_right)
-            display(bids_stimulation_frequency_left)
+            display(bids_stimulation_amplitude_left)
             display(bids_stimulation_frequency_right)
+            display(bids_stimulation_frequency_left)
+
             for anocon in range(0, 8):
                 display(bids_anodal_contact[anocon])
+
+        if 'EvokedRamp' in bids_task:
+            display(bids_stimulation_amplitude_min)
+            display(bids_stimulation_amplitude_max)
+            display(bids_stimulation_amplitude_stepsize)
 
         display(go_to_status_description)
 
 go_to_reference.on_click(define_reference_and_stims)
-
 go_to_status_description = widgets.Button(
     description="define the channel status descriptions",
     style=style,
@@ -1095,7 +1099,7 @@ def save_all_information(*args):
         metadict['entities'] = {}
         metadict['entities']['subject'] = str(bids_subject_prefix.value) + str(bids_subject.value).zfill(3)
         metadict['entities']['session'] = bids_session[-1].value
-        metadict['entities']['task'] = task_options[bids_task[-1].value][0]
+        metadict['entities']['task'] = task_options[bids_task_number[-1].value][0]
         metadict['entities']['acquisition'] = bids_acquisition[-1].value
         metadict['entities']['run'] = bids_run[-1].value
         metadict['entities']['space'] = bids_space[-1].value
@@ -1194,7 +1198,7 @@ def save_all_information(*args):
                                 metadict['stim']['L']['AnodalContact'] = []
                                 metadict['stim']['L']['StimulationAmplitude'] = bids_stimulation_amplitude_left.value
                                 metadict['stim']['L']['StimulationFrequency'] = bids_stimulation_frequency_left.value
-                                if 'EvokedRamp' in bids_task[-1].value:
+                                if 'EvokedRamp' in bids_task:
                                     metadict['stim']['L']['StimulationAmplitudeMin'] = bids_stimulation_amplitude_min.value
                                     metadict['stim']['L']['StimulationAmplitudeMax'] = bids_stimulation_amplitude_max.value
                                     metadict['stim']['L']['StimulationAmplitudeStepsize'] = bids_stimulation_amplitude_stepsize.value
@@ -1204,7 +1208,7 @@ def save_all_information(*args):
                                 metadict['stim']['R']['AnodalContact'] = []
                                 metadict['stim']['R']['StimulationAmplitude'] = bids_stimulation_amplitude_right.value
                                 metadict['stim']['R']['StimulationFrequency'] = bids_stimulation_frequency_right.value
-                                if 'EvokedRamp' in bids_task[-1].value:
+                                if 'EvokedRamp' in bids_task:
                                     metadict['stim']['R']['StimulationAmplitudeMin'] = bids_stimulation_amplitude_min.value
                                     metadict['stim']['R']['StimulationAmplitudeMax'] = bids_stimulation_amplitude_max.value
                                     metadict['stim']['R']['StimulationAmplitudeStepsize'] = bids_stimulation_amplitude_stepsize.value
