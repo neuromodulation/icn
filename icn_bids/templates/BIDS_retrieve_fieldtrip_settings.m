@@ -1009,13 +1009,20 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
             if isfield(intern_cfg.stim, 'L')
                 for i=1:length(intern_cfg.stim.L.CathodalContact)
                     assert(startsWith(intern_cfg.stim.L.CathodalContact{i},'ECOG'))
-                    assert(extract_contact_number(intern_cfg.stim.L.CathodalContact{i})<extract_contact_number(intern_cfg.stim.L.AnodalContact{1}))
+                    if isempty(intern_cfg.stim.L.AnodalContact)
+                        exp.SimulationMontage         = "monopolar";
+                    else
+                        assert(extract_contact_number(intern_cfg.stim.L.CathodalContact{i})<extract_contact_number(intern_cfg.stim.L.AnodalContact{1}))
+                    end
                 end
-
             else
                 for i=1:length(intern_cfg.stim.R.CathodalContact)
                     assert(startsWith(intern_cfg.stim.R.CathodalContact{i},'ECOG'))
-                    assert(extract_contact_number(intern_cfg.stim.R.CathodalContact{i})<extract_contact_number(intern_cfg.stim.R.AnodalContact{1}))
+                    if isempty(intern_cfg.stim.R.AnodalContact)
+                        exp.SimulationMontage         = "monopolar";
+                    else
+                        assert(extract_contact_number(intern_cfg.stim.R.CathodalContact{i})<extract_contact_number(intern_cfg.stim.R.AnodalContact{1}))
+                    end
                 end
             end
             
@@ -1101,7 +1108,7 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                     
                     if isfield(intern_cfg.stim.L, 'AnodalContact')
                         if ~isempty(intern_cfg.stim.L.AnodalContact)
-                             L.AnodalContact               = intern_cfg.stim.L.AnodalContact;
+                            L.AnodalContact               = intern_cfg.stim.L.AnodalContact;
                         else
                             L.AnodalContact               = "Ground";
                         end
@@ -1128,6 +1135,9 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                         L.StimulationAmplitude = "time-varying";
                         L.InitialPulseAmplitude = "time-varying";
                         L.SecondPulseAmplitude = "time-varying";
+                        L.StimulationAmplitudeMin = intern_cfg.stim.L.StimulationAmplitudeMin;
+                        L.StimulationAmplitudeMax = intern_cfg.stim.L.StimulationAmplitudeMax;
+                        L.StimulationAmplitudeStepsize = intern_cfg.stim.L.StimulationAmplitudeStepsize;
                     end
                     if contains(cfg.task,'Evoked')
                         L.StimulationPulseWidth  = 90;
@@ -1178,6 +1188,10 @@ function [cfg,intern_cfg] = BIDS_retrieve_fieldtrip_settings(cfg,intern_cfg, met
                         R.StimulationAmplitude = "time-varying";
                         R.InitialPulseAmplitude = "time-varying";
                         R.SecondPulseAmplitude = "time-varying";
+                        R.StimulationAmplitudeMin = intern_cfg.stim.R.StimulationAmplitudeMin;
+                        R.StimulationAmplitudeMax = intern_cfg.stim.R.StimulationAmplitudeMax;
+                        R.StimulationAmplitudeStepsize = intern_cfg.stim.R.StimulationAmplitudeStepsize;
+                   
                     end
                     if contains(cfg.task,'Evoked')
                             R.StimulationPulseWidth  = 90;
