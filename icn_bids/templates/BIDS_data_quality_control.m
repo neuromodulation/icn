@@ -16,7 +16,7 @@ fg = figure(1);
 addpath(fullfile('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\'));
 cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\')
 % This is the output root folder for our BIDS-dataset
-rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update18\';
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update19\';
  % This is the input root folder for our BIDS-dataset
 % sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
 sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\';

@@ -1114,7 +1114,7 @@ if cfg.ieeg.ElectricalStimulation
                     if ~isempty(intern_cfg.stim.L.AnodalContact)
                         L.AnodalContact               = intern_cfg.stim.L.AnodalContact;
                     else
-                        error('no anodal contact')
+                        %error('no anodal contact')
                         L.AnodalContact               = "Ground";
                     end
                 else
@@ -1173,7 +1173,7 @@ if cfg.ieeg.ElectricalStimulation
                     if ~isempty(intern_cfg.stim.R.AnodalContact)
                         R.AnodalContact               = intern_cfg.stim.R.AnodalContact;
                     else
-                        error('no anodal contact')
+                        %error('no anodal contact')
                         R.AnodalContact               = "Ground";
                     end
                 else
@@ -1211,7 +1211,6 @@ if cfg.ieeg.ElectricalStimulation
                     assert(~isempty(R.CathodalContact))
                     assert(~isempty(R.AnodalContact))
                     cfg.acq = [cfg.acq abbrev(R.CathodalContact{1},R.AnodalContact{1})];
-
                 end
             end
         end
@@ -1259,11 +1258,13 @@ if cfg.ieeg.ElectricalStimulation
     % under if cfg.ieeg.ElectricalStimulation
     cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "monopolar";
     if strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.StimulationStatus,'ON')
-        if contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.AnodalContact, {'ECOG','LFP'})
+        if and(contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.AnodalContact, {'ECOG','LFP'}),...
+            contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Right.CathodalContact, {'ECOG','LFP'}))
             cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "bipolar";
         end
     elseif strcmp(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.StimulationStatus,'ON')
-        if contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.AnodalContact, {'ECOG','LFP'})
+        if and(contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.AnodalContact, {'ECOG','LFP'}),...
+            contains(cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.Left.CathodalContact, {'ECOG','LFP'}))
             cfg.ieeg.ElectricalStimulationParameters.CurrentExperimentalSetting.SimulationMontage         = "bipolar";
         end
     end

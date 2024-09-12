@@ -1216,6 +1216,14 @@ def save_all_information(*args):
         metadict['coord_json']['iEEGCoordinateProcessingDescription'] = str()
         metadict['coord_json']['iEEGCoordinateProcessingReference'] = str()
         metadict['stim'] = {}
+        if bids_stimulation_amplitude_left.value == 0 and ('StimOnL' in metadict['entities']['acquisition'] or 'StimOnB' in metadict['entities']['acquisition']):
+            with output2:
+                display('Error: stim amplitude left is 0')
+                display(bids_stimulation_amplitude_left)
+        if bids_stimulation_amplitude_right.value == 0 and ('StimOnR' in metadict['entities']['acquisition'] or 'StimOnB' in metadict['entities']['acquisition']):
+            with output2:
+                display('Error: stim amplitude right is 0')
+                display(bids_stimulation_amplitude_right)
         if bids_stimulation_amplitude_left.value > 0:
             metadict['stim']['DateOfSetting'] = metadict['sessions_tsv']['acq_date']
             metadict['stim']['L'] = {}
@@ -1223,9 +1231,10 @@ def save_all_information(*args):
             metadict['stim']['L']['AnodalContact'] = []
             metadict['stim']['L']['StimulationAmplitude'] = bids_stimulation_amplitude_left.value
             metadict['stim']['L']['StimulationFrequency'] = bids_stimulation_frequency_left.value
-            if bids_stimulation_frequency_left.value == 0:
+            if bids_stimulation_frequency_left.value == 0 :
                 with output2:
                     display('Error: stim frequency left is 0')
+                    display(bids_stimulation_frequency_left)
             if 'EvokRamp' in bids_task:
                 metadict['stim']['L']['StimulationAmplitudeMin'] = bids_stimulation_amplitude_min.value
                 metadict['stim']['L']['StimulationAmplitudeMax'] = bids_stimulation_amplitude_max.value
@@ -1240,19 +1249,20 @@ def save_all_information(*args):
             if bids_stimulation_frequency_left.value == 0:
                 with output2:
                     display('Error: stim frequency right is 0')
+                    display(bids_stimulation_frequency_right)
             if 'EvokRamp' in bids_task:
                 metadict['stim']['R']['StimulationAmplitudeMin'] = bids_stimulation_amplitude_min.value
                 metadict['stim']['R']['StimulationAmplitudeMax'] = bids_stimulation_amplitude_max.value
                 metadict['stim']['R']['StimulationAmplitudeStepsize'] = bids_stimulation_amplitude_stepsize.value
         try:
             for stimcon in range(0, 8):
-                with output2:
-                    display('the cathodal contact nr')
-                    display(stimcon)
-                    display(bids_cathodal_contact[stimcon].value)
-                    display('the anodal contact nr')
-                    display(stimcon)
-                    display(bids_anodal_contact[stimcon].value)
+                #with output2:
+                #    display('the cathodal contact nr')
+                #    display(stimcon)
+                #    display(bids_cathodal_contact[stimcon].value)
+                #    display('the anodal contact nr')
+                #    display(stimcon)
+                #    display(bids_anodal_contact[stimcon].value)
                 if '_L_' in bids_cathodal_contact[stimcon].value in bids_cathodal_contact[stimcon].value:
                     metadict['stim']['L']['CathodalContact'].append(bids_cathodal_contact[stimcon].value)
                 elif '_R_' in bids_cathodal_contact[stimcon].value in bids_cathodal_contact[stimcon].value:
@@ -1406,7 +1416,7 @@ def save_all_information(*args):
 
         with output2:
             print("saving to: %.json", bids_filechooser[-1].selected_filename)
-            print("ERROR information not sucessfully saved")
+            print("ERROR information not sucessfully saved, only partially saved")
     finally:
         with output2:
             print('ERROR: printing metadict')
