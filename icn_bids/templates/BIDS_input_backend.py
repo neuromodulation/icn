@@ -287,7 +287,7 @@ bids_channel_names_list = []
 bids_reference = []
 bids_status_description_widgets = []
 bids_status_description_list = []
-bids_stimulation_contact = []
+bids_cathodal_contact = []
 bids_stimulation_amplitude_left = 0
 bids_stimulation_frequency_left = 0
 bids_stimulation_amplitude_right = 0
@@ -305,8 +305,8 @@ task_options = [
     ("SelfpacedRotationR", 4),
     ("BlockRotationL", 5),
     ("BlockRotationR", 6),
-    ("Evoked", 7),
-    ("EvokedRamp", 8),
+    ("Evok", 7),
+    ("EvokRamp", 8),
     ("SelfpacedSpeech", 9),
     ("ReadRelaxMoveR", 10),
     ("ReadRelaxMoveL", 11),
@@ -329,7 +329,7 @@ def go_to_subsession(*args):
     global bids_reference
     global bids_status_description_widgets
     global bids_status_description_list
-    global bids_stimulation_contact
+    global bids_cathodal_contact
     global bids_stimulation_amplitude_left
     global bids_stimulation_frequency_left
     global bids_stimulation_amplitude_right
@@ -339,7 +339,7 @@ def go_to_subsession(*args):
     bids_channel_names_list = []
     bids_reference = []
     bids_status_description_widgets = []
-    bids_stimulation_contact= []
+    bids_cathodal_contact= []
     bids_status_description_list=[]
     bids_stimulation_amplitude_left= 0
     bids_stimulation_frequency_left= 0
@@ -499,7 +499,7 @@ def plot_channels(*args):
     global bids_reference
     global bids_status_description_widgets
     global bids_status_description_list
-    global bids_stimulation_contact
+    global bids_cathodal_contact
     global bids_stimulation_amplitude_left
     global bids_stimulation_frequency_left
     global bids_stimulation_amplitude_right
@@ -511,7 +511,7 @@ def plot_channels(*args):
     bids_channel_names_list = []
     bids_reference = []
     bids_status_description_widgets = []
-    bids_stimulation_contact = []
+    bids_cathodal_contact = []
     bids_stimulation_amplitude_left =0
     bids_stimulation_frequency_left =0
     bids_stimulation_amplitude_right =0
@@ -737,7 +737,7 @@ def define_reference_and_stims(*args):
     global bids_reference
     global bids_status_description_widgets
     global bids_status_description_list
-    global bids_stimulation_contact
+    global bids_cathodal_contact
     global bids_stimulation_amplitude_left
     global bids_stimulation_frequency_left
     global bids_stimulation_amplitude_right
@@ -750,7 +750,7 @@ def define_reference_and_stims(*args):
     bids_channel_names_list = []
     bids_reference = []
     bids_status_description_widgets = []
-    bids_stimulation_contact = []
+    bids_cathodal_contact = []
     bids_stimulation_amplitude_left = 0
     bids_stimulation_frequency_left = 0
     bids_stimulation_amplitude_right = 0
@@ -759,10 +759,13 @@ def define_reference_and_stims(*args):
     bids_stimulation_amplitude_max = 0
     bids_stimulation_amplitude_stepsize = 0
 
-
     for widget in bids_channel_names_widgets:
         if widget.value != '':
             bids_channel_names_list.append(widget.value)
+    dropdown_ref_stim_contact = ['Ground']
+    for ch in bids_channel_names_list:
+        if 'ECOG' in ch or 'LFP' in ch:
+            dropdown_ref_stim_contact.append(ch)
 
     if len(bids_reference)<1:
         previous_reference = ''
@@ -771,27 +774,46 @@ def define_reference_and_stims(*args):
     bids_reference.append(
         widgets.Combobox(
         value=previous_reference,
-        options=bids_channel_names_list,
+        options=dropdown_ref_stim_contact,
         description='iEEG Reference: ',
         style=style,
         layout=layout
         )
     )
 
-    for stimcon in range(0,8):
-        bids_stimulation_contact.append(
+    bids_cathodal_contact.append(
+        widgets.Combobox(
+            options=dropdown_ref_stim_contact,
+            description='Cathodal Contact: ',
+            style=style,
+            layout=layout,
+            value='Ground',
+        )
+    )
+    for stimcon in range(1,8):
+        bids_cathodal_contact.append(
             widgets.Combobox(
-            options=bids_channel_names_list,
+            options=dropdown_ref_stim_contact,
             description='Cathodal Contact: ',
             style=style,
             layout=layout,
             value="",
             )
         )
-    for anocon in range(0, 8):
+
+    bids_anodal_contact.append(
+        widgets.Combobox(
+            options=dropdown_ref_stim_contact,
+            description='Anodal Contact: ',
+            style=style,
+            layout=layout,
+            value='Ground',
+        )
+    )
+    for anocon in range(1, 8):
         bids_anodal_contact.append(
             widgets.Combobox(
-            options=bids_channel_names_list,
+            options=dropdown_ref_stim_contact,
             description='Anodal Contact: ',
             style=style,
             layout=layout,
@@ -800,9 +822,9 @@ def define_reference_and_stims(*args):
         )
 
     if 'EStim' in bids_acquisition[-1].value:
-        preset_freq = 1
-    elif 'Evoked' in bids_task:
-        preset_freq = 1
+        preset_freq = 5
+    elif 'Evok' in bids_task:
+        preset_freq = 5
     else:
         preset_freq = 130
 
@@ -826,7 +848,7 @@ def define_reference_and_stims(*args):
             layout=layout
         )
 
-    if 'EvokedRamp' in bids_task:
+    if 'EvokRamp' in bids_task:
         if 'StimOnL' in bids_acquisition[-1].value:
             preset_stimL = 5
             preset_stimR = 0
@@ -838,7 +860,7 @@ def define_reference_and_stims(*args):
             preset_stimR = 5
         else:
             with output2:
-                print("ERROR EvokedRamp has no side")
+                print("ERROR EvokRamp has no side")
 
         bids_stimulation_amplitude_min = widgets.BoundedFloatText(
             value=0.5,
@@ -894,17 +916,19 @@ def define_reference_and_stims(*args):
     with output2:
         display(bids_reference[-1])
         if 'StimOn' in bids_acquisition[-1].value:
-            for stimcon in range(0,8):
-                display(bids_stimulation_contact[stimcon])
-            display(bids_stimulation_amplitude_right)
-            display(bids_stimulation_amplitude_left)
-            display(bids_stimulation_frequency_right)
-            display(bids_stimulation_frequency_left)
+            for cathocon in range(0,8):
+                display(bids_cathodal_contact[cathocon])
+            if 'StimOnB' in bids_acquisition[-1].value or 'StimOnR' in bids_acquisition[-1].value:
+                display(bids_stimulation_amplitude_right)
+                display(bids_stimulation_frequency_right)
+            if 'StimOnB' in bids_acquisition[-1].value or 'StimOnL' in bids_acquisition[-1].value:
+                display(bids_stimulation_amplitude_left)
+                display(bids_stimulation_frequency_left)
 
             for anocon in range(0, 8):
                 display(bids_anodal_contact[anocon])
 
-        if 'EvokedRamp' in bids_task:
+        if 'EvokRamp' in bids_task:
             display(bids_stimulation_amplitude_min)
             display(bids_stimulation_amplitude_max)
             display(bids_stimulation_amplitude_stepsize)
@@ -924,22 +948,22 @@ def define_status_description(*args):
     global bids_reference
     global bids_status_description_widgets
     global bids_status_description_list
-    global bids_stimulation_contact
+    global bids_cathodal_contact
     global bids_stimulation_amplitude_left
     global bids_stimulation_frequency_left
     global bids_stimulation_amplitude_right
     global bids_stimulation_frequency_right
     global bids_anodal_contact
     bids_status_description_widgets = []
-    stimcontacts = []
+    cathocontacts = []
     for stimcon in range(0,8):
-        stimcontacts.append(bids_stimulation_contact[stimcon].value)
+        cathocontacts.append(bids_cathodal_contact[stimcon].value)
     anocontacts = []
     for anocon in range(0, 8):
         anocontacts.append(bids_anodal_contact[anocon].value)
     for ch in bids_channel_names_list:
-        if ch in stimcontacts:
-            defaultvalue = 'Stimulation contact'
+        if ch in cathocontacts:
+            defaultvalue = 'Stimulation contact (cathode)'
         elif ch in anocontacts:
             defaultvalue = 'Stimulation contact (anode)'
         elif ch in bids_reference[-1].value:
@@ -950,7 +974,7 @@ def define_status_description(*args):
         bids_status_description_widgets.append(
             widgets.Combobox(
             value=defaultvalue,
-            options=['Reference electrode','Stimulation contact', 'Stimulation contact (anode)', 'Empty', 'Cable artefact'],
+            options=['Reference electrode','Stimulation contact (cathode)', 'Stimulation contact (anode)', 'Empty', 'Cable artefact'],
             description=ch,
             style=style,
             layout=layout
@@ -982,7 +1006,7 @@ def save_all_information(*args):
     global bids_reference
     global bids_status_description_widgets
     global bids_status_description_list
-    global bids_stimulation_contact
+    global bids_cathodal_contact
     global bids_stimulation_amplitude_left
     global bids_stimulation_frequency_left
     global bids_stimulation_amplitude_right
@@ -1191,21 +1215,91 @@ def save_all_information(*args):
         metadict['coord_json']['iEEGCoordinateSystemDescription'] = str()
         metadict['coord_json']['iEEGCoordinateProcessingDescription'] = str()
         metadict['coord_json']['iEEGCoordinateProcessingReference'] = str()
+        metadict['stim'] = {}
+        if bids_stimulation_amplitude_left.value > 0:
+            metadict['stim']['DateOfSetting'] = metadict['sessions_tsv']['acq_date']
+            metadict['stim']['L'] = {}
+            metadict['stim']['L']['CathodalContact'] = []
+            metadict['stim']['L']['AnodalContact'] = []
+            metadict['stim']['L']['StimulationAmplitude'] = bids_stimulation_amplitude_left.value
+            metadict['stim']['L']['StimulationFrequency'] = bids_stimulation_frequency_left.value
+            if bids_stimulation_frequency_left.value == 0:
+                with output2:
+                    display('Error: stim frequency left is 0')
+            if 'EvokRamp' in bids_task:
+                metadict['stim']['L']['StimulationAmplitudeMin'] = bids_stimulation_amplitude_min.value
+                metadict['stim']['L']['StimulationAmplitudeMax'] = bids_stimulation_amplitude_max.value
+                metadict['stim']['L']['StimulationAmplitudeStepsize'] = bids_stimulation_amplitude_stepsize.value
+        if bids_stimulation_amplitude_right.value > 0:
+            metadict['stim']['DateOfSetting'] = metadict['sessions_tsv']['acq_date']
+            metadict['stim']['R'] = {}
+            metadict['stim']['R']['CathodalContact'] = []
+            metadict['stim']['R']['AnodalContact'] = []
+            metadict['stim']['R']['StimulationAmplitude'] = bids_stimulation_amplitude_right.value
+            metadict['stim']['R']['StimulationFrequency'] = bids_stimulation_frequency_right.value
+            if bids_stimulation_frequency_left.value == 0:
+                with output2:
+                    display('Error: stim frequency right is 0')
+            if 'EvokRamp' in bids_task:
+                metadict['stim']['R']['StimulationAmplitudeMin'] = bids_stimulation_amplitude_min.value
+                metadict['stim']['R']['StimulationAmplitudeMax'] = bids_stimulation_amplitude_max.value
+                metadict['stim']['R']['StimulationAmplitudeStepsize'] = bids_stimulation_amplitude_stepsize.value
+        try:
+            for stimcon in range(0, 8):
+                with output2:
+                    display('the cathodal contact nr')
+                    display(stimcon)
+                    display(bids_cathodal_contact[stimcon].value)
+                    display('the anodal contact nr')
+                    display(stimcon)
+                    display(bids_anodal_contact[stimcon].value)
+                if '_L_' in bids_cathodal_contact[stimcon].value in bids_cathodal_contact[stimcon].value:
+                    metadict['stim']['L']['CathodalContact'].append(bids_cathodal_contact[stimcon].value)
+                elif '_R_' in bids_cathodal_contact[stimcon].value in bids_cathodal_contact[stimcon].value:
+                    metadict['stim']['R']['CathodalContact'].append(bids_cathodal_contact[stimcon].value)
+                if '_L_' in bids_anodal_contact[stimcon].value in bids_anodal_contact[stimcon].value:
+                    metadict['stim']['L']['AnodalContact'].append(bids_anodal_contact[stimcon].value)
+                elif '_R_' in bids_anodal_contact[stimcon].value in bids_anodal_contact[stimcon].value:
+                    metadict['stim']['R']['AnodalContact'].append(bids_anodal_contact[stimcon].value)
+                if bids_stimulation_amplitude_left.value > 0 and 'Ground' in bids_cathodal_contact[stimcon].value:
+                    metadict['stim']['L']['CathodalContact'].append(bids_cathodal_contact[stimcon].value)
+                if bids_stimulation_amplitude_right.value > 0 and 'Ground' in bids_cathodal_contact[stimcon].value:
+                    metadict['stim']['R']['CathodalContact'].append(bids_cathodal_contact[stimcon].value)
+                if bids_stimulation_amplitude_left.value > 0 and 'Ground' in bids_anodal_contact[stimcon].value:
+                    metadict['stim']['L']['AnodalContact'].append(bids_anodal_contact[stimcon].value)
+                if bids_stimulation_amplitude_right.value > 0 and 'Ground' in bids_anodal_contact[stimcon].value:
+                    metadict['stim']['R']['AnodalContact'].append(bids_anodal_contact[stimcon].value)
+        except:
+            with output2:
+                display('ERROR: bids cathodal or anodal contacts could not be assigned')
+                display(bids_cathodal_contact[0:7].value)
+                display(bids_anodal_contact[0:7].value)
+        # some assertions
+
+        if metadict['entities']['acquisition'] == 'StimOff':
+            if bids_stimulation_amplitude_right.value > 0 or bids_stimulation_amplitude_left.value > 0:
+                with output2:
+                    display('Error: StimOff should have not stim amplitude')
+        if 'StimOn' in metadict['entities']['acquisition']:
+            if bids_stimulation_amplitude_right.value == 0 and bids_stimulation_amplitude_left.value == 0:
+                with output2:
+                    display('Error: StimOn should have a least one stim amplitude')
+
+        '''
         for stimcon in range(0,8):
-            if len(bids_stimulation_contact)==8:
-                if (bids_stimulation_contact[stimcon].value != "") and (metadict['entities']['acquisition'] != 'StimOff'):
+            if len(bids_cathodal_contact)==8 or len(bids_anodal_contact)==8:
+                if (bids_cathodal_contact[stimcon].value != "") and (metadict['entities']['acquisition'] != 'StimOff') or (bids_anodal_contact[stimcon].value != "") and (metadict['entities']['acquisition'] != 'StimOff'):
                     if not 'stim' in metadict:
                         metadict['stim'] ={}
                         metadict['stim']['DateOfSetting'] = metadict['sessions_tsv']['acq_date']
                         try:
                             if bids_stimulation_amplitude_left.value > 0:
-
                                 metadict['stim']['L'] = {}
                                 metadict['stim']['L']['CathodalContact'] = []
                                 metadict['stim']['L']['AnodalContact'] = []
                                 metadict['stim']['L']['StimulationAmplitude'] = bids_stimulation_amplitude_left.value
                                 metadict['stim']['L']['StimulationFrequency'] = bids_stimulation_frequency_left.value
-                                if 'EvokedRamp' in bids_task:
+                                if 'EvokRamp' in bids_task:
                                     metadict['stim']['L']['StimulationAmplitudeMin'] = bids_stimulation_amplitude_min.value
                                     metadict['stim']['L']['StimulationAmplitudeMax'] = bids_stimulation_amplitude_max.value
                                     metadict['stim']['L']['StimulationAmplitudeStepsize'] = bids_stimulation_amplitude_stepsize.value
@@ -1215,7 +1309,7 @@ def save_all_information(*args):
                                 metadict['stim']['R']['AnodalContact'] = []
                                 metadict['stim']['R']['StimulationAmplitude'] = bids_stimulation_amplitude_right.value
                                 metadict['stim']['R']['StimulationFrequency'] = bids_stimulation_frequency_right.value
-                                if 'EvokedRamp' in bids_task:
+                                if 'EvokRamp' in bids_task:
                                     metadict['stim']['R']['StimulationAmplitudeMin'] = bids_stimulation_amplitude_min.value
                                     metadict['stim']['R']['StimulationAmplitudeMax'] = bids_stimulation_amplitude_max.value
                                     metadict['stim']['R']['StimulationAmplitudeStepsize'] = bids_stimulation_amplitude_stepsize.value
@@ -1225,15 +1319,15 @@ def save_all_information(*args):
                                 display(bids_stimulation_amplitude_right)
                                 display(bids_stimulation_amplitude_left.value)
                                 display(bids_stimulation_amplitude_right.value)
-                                display(bids_stimulation_contact)
+                                display(bids_cathodal_contact)
                     try:
-                        if '_L_' in bids_stimulation_contact[stimcon].value:
-                            metadict['stim']['L']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
-                        if '_R_' in bids_stimulation_contact[stimcon].value:
-                            metadict['stim']['R']['CathodalContact'].append(bids_stimulation_contact[stimcon].value)
-                        if '_L_' in bids_anodal_contact[stimcon].value:
+                        if '_L_' or 'Ground' in bids_cathodal_contact[stimcon].value:
+                            metadict['stim']['L']['CathodalContact'].append(bids_cathodal_contact[stimcon].value)
+                        if '_R_' or 'Ground' in bids_cathodal_contact[stimcon].value:
+                            metadict['stim']['R']['CathodalContact'].append(bids_cathodal_contact[stimcon].value)
+                        if '_L_' or 'Ground' in bids_anodal_contact[stimcon].value:
                             metadict['stim']['L']['AnodalContact'].append(bids_anodal_contact[stimcon].value)
-                        if '_R_' in bids_anodal_contact[stimcon].value:
+                        if '_R_' or 'Ground' in bids_anodal_contact[stimcon].value:
                             metadict['stim']['R']['AnodalContact'].append(bids_anodal_contact[stimcon].value)
                     except:
                         with output2:
@@ -1241,16 +1335,19 @@ def save_all_information(*args):
                             display(bids_stimulation_amplitude_right)
                             display(bids_stimulation_amplitude_left.value)
                             display(bids_stimulation_amplitude_right.value)
-                            display(bids_stimulation_contact)
+                            display(bids_cathodal_contact)
             else:
                 with output2:
-                    print("ERROR bids_stimulation_contact shorter as 8")
-                    print(bids_stimulation_contact)
-        bids_stimulation_contact=[]
+                    print("bids_cathodal_contact")
+                    print(bids_cathodal_contact)
+                    print("ERROR bids_cathodal_contact shorter as 8")
+                    
+        bids_cathodal_contact=[]
         bids_stimulation_amplitude_left=0
         bids_stimulation_amplitude_right=0
         if 'StimOff' in metadict['entities']['acquisition']:
             metadict['stim'] = {}
+        '''
         metadict['ieeg'] = {}
         metadict['ieeg']['DeviceSerialNumber'] = str()
         metadict['ieeg']['ECGChannelCount'] = int()
@@ -1312,8 +1409,9 @@ def save_all_information(*args):
             print("ERROR information not sucessfully saved")
     finally:
         with output2:
+            print('ERROR: printing metadict')
             print(metadict)
-            print(bids_stimulation_contact)
+            print(bids_cathodal_contact)
 
 save_to_json.on_click(multiplefunctions_2)
 
