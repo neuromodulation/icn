@@ -1419,9 +1419,7 @@ def save_all_information(*args):
             print("ERROR information not sucessfully saved, only partially saved")
     finally:
         with output2:
-            print('ERROR: printing metadict')
             print(metadict)
-            print(bids_cathodal_contact)
 
 save_to_json.on_click(multiplefunctions_2)
 
