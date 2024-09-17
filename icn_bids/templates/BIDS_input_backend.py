@@ -149,6 +149,15 @@ ECOG_present = widgets.Button(
     style=style,
     layout=layout,
 )
+
+prefill_reference = widgets.Combobox(
+        value='',
+        options=['LFP_R_01_STN_MT','LFP_R_08_STN_MT','LFP_L_01_STN_MT','LFP_L_08_STN_MT'],
+        description='iEEG pre-fill Reference: ',
+        style=style,
+        layout=layout
+)
+
 def define_ECOG(click):
     with output1:
         ECOG_present.disabled = 1
@@ -767,13 +776,9 @@ def define_reference_and_stims(*args):
         if 'ECOG' in ch or 'LFP' in ch:
             dropdown_ref_stim_contact.append(ch)
 
-    if len(bids_reference)<1:
-        previous_reference = ''
-    else:
-        previous_reference = bids_reference[-1].value
     bids_reference.append(
         widgets.Combobox(
-        value=previous_reference,
+        value=prefill_reference.value,
         options=dropdown_ref_stim_contact,
         description='iEEG Reference: ',
         style=style,
