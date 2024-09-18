@@ -552,7 +552,7 @@ def plot_channels(*args):
         )
     )
 
-    stracq = bids_filechooser[-1].selected_filename
+    stracq = bids_filechooser[-1].selected
     if 'StimOnBConMovNonRes' in stracq:
         stracq = 'StimOnBConMovNonRes'
     elif 'StimonBNonResMovCon' in stracq:
@@ -585,6 +585,15 @@ def plot_channels(*args):
         m = re.search(r'(Dopa[0-9]{2,3})', stracq)
         if m is not None:
             stracq = 'StimOff' + m.group(0)
+    if ('StimOff' in stracq) and ('Evok' in bids_task.value):
+        with output2:
+            display('Inconsistent acquisition!')
+    if ('MedOn' in bids_session[-1].value) and ('MedOff' in bids_filechooser[-1].selected):
+        with output2:
+            display('Inconsistent session MedOff MedOn!')
+    if ('MedOff' in bids_session[-1].value) and ('MedOn' in bids_filechooser[-1].selected):
+        with output2:
+            display('Inconsistent session MedOff MedOn!')
 
     bids_acquisition.append(
         widgets.Text(
@@ -601,7 +610,8 @@ def plot_channels(*args):
 
     raw = mne.io.RawArray(data.samples, info)
 
-
+    warning_EMG = False
+    warning_SIDE = False
     for ch in raw.ch_names:
 
         if ('STN' in ch) or ('LFP' in ch) :
@@ -646,8 +656,8 @@ def plot_channels(*args):
                 elif (ch[3] == 'L') and (bids_ECOG_hemisphere.value == 'left'):
                     ecog_side = 'L'
                 else:
-                    with output2:
-                        display('ECOG HEMISPHERE_AMBIGUITY_OR_CONFLICT_WITH_INPUT_ABOVE')
+                    warning_SIDE = True
+
                     if bids_ECOG_hemisphere.value == 'left':
                         ecog_side = 'L'
                     else:
@@ -701,8 +711,7 @@ def plot_channels(*args):
         elif ch in dictchannelnames:
             preset = dictchannelnames[ch]
             if preset.startswith('EMG_L') and bids_ECOG_hemisphere.value == 'left':
-                with output2:
-                    print('warning, EMG is assumed to be contralateral to ecog side')
+                warning_EMG = True
                 if ecog_side =='L':
                     preset = preset.replace('EMG_L','EMG_R')
         else:
@@ -716,6 +725,12 @@ def plot_channels(*args):
             layout=layout
         )
         bids_channel_names_widgets.append(channel_widget)
+    if warning_SIDE:
+        with output2:
+            display('ECOG HEMISPHERE_AMBIGUITY_OR_CONFLICT_WITH_INPUT_ABOVE')
+    if warning_EMG:
+        with output2:
+            print('warning, EMG is assumed to be contralateral to ecog side')
 
 
 
