@@ -585,7 +585,7 @@ def plot_channels(*args):
         m = re.search(r'(Dopa[0-9]{2,3})', stracq)
         if m is not None:
             stracq = 'StimOff' + m.group(0)
-    if ('StimOff' in stracq) and ('Evok' in bids_task.value):
+    if ('StimOff' in stracq) and ('Evok' in bids_task):
         with output2:
             display('Inconsistent acquisition!')
     if ('MedOn' in bids_session[-1].value) and ('MedOff' in bids_filechooser[-1].selected):
@@ -609,6 +609,7 @@ def plot_channels(*args):
     info = mne.create_info(ch_names=[ch._Channel__name for ch in data.channels], sfreq=data.sample_rate, ch_types=data.num_channels * ['misc'])
 
     raw = mne.io.RawArray(data.samples, info)
+
 
     warning_EMG = False
     warning_SIDE = False
@@ -801,10 +802,20 @@ def define_reference_and_stims(*args):
         )
     )
 
+    for anocon in range(0, 8):
+        bids_anodal_contact.append(
+            widgets.Combobox(
+                options=dropdown_ref_stim_contact,
+                description='Anodal Contact (+): ',
+                style=style,
+                layout=layout,
+                value="",
+            )
+        )
     bids_cathodal_contact.append(
         widgets.Combobox(
             options=dropdown_ref_stim_contact,
-            description='Cathodal Contact: ',
+            description='Cathodal Contact (-): ',
             style=style,
             layout=layout,
             value='Ground',
@@ -814,32 +825,14 @@ def define_reference_and_stims(*args):
         bids_cathodal_contact.append(
             widgets.Combobox(
             options=dropdown_ref_stim_contact,
-            description='Cathodal Contact: ',
+            description='Cathodal Contact (-): ',
             style=style,
             layout=layout,
             value="",
             )
         )
 
-    bids_anodal_contact.append(
-        widgets.Combobox(
-            options=dropdown_ref_stim_contact,
-            description='Anodal Contact: ',
-            style=style,
-            layout=layout,
-            value='Ground',
-        )
-    )
-    for anocon in range(1, 8):
-        bids_anodal_contact.append(
-            widgets.Combobox(
-            options=dropdown_ref_stim_contact,
-            description='Anodal Contact: ',
-            style=style,
-            layout=layout,
-            value="",
-            )
-        )
+
 
     if 'EStim' in bids_acquisition[-1].value:
         preset_freq = 5
@@ -936,17 +929,17 @@ def define_reference_and_stims(*args):
     with output2:
         display(bids_reference[-1])
         if 'StimOn' in bids_acquisition[-1].value:
-            for cathocon in range(0,8):
-                display(bids_cathodal_contact[cathocon])
+            for anocon in range(0, 8):
+                display(bids_anodal_contact[anocon])
             if 'StimOnB' in bids_acquisition[-1].value or 'StimOnR' in bids_acquisition[-1].value:
                 display(bids_stimulation_amplitude_right)
                 display(bids_stimulation_frequency_right)
             if 'StimOnB' in bids_acquisition[-1].value or 'StimOnL' in bids_acquisition[-1].value:
                 display(bids_stimulation_amplitude_left)
                 display(bids_stimulation_frequency_left)
+            for cathocon in range(0,8):
+                display(bids_cathodal_contact[cathocon])
 
-            for anocon in range(0, 8):
-                display(bids_anodal_contact[anocon])
 
         if 'EvokRamp' in bids_task:
             display(bids_stimulation_amplitude_min)
