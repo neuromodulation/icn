@@ -305,6 +305,7 @@ bids_stimulation_amplitude_min = 0
 bids_stimulation_amplitude_max = 0
 bids_stimulation_amplitude_stepsize = 0
 bids_anodal_contact = []
+hd_emg_muscle =[]
 
 task_options = [
     ("n/a", 0),
@@ -344,6 +345,7 @@ def go_to_subsession(*args):
     global bids_stimulation_amplitude_right
     global bids_stimulation_frequency_right
     global bids_anodal_contact
+    global hd_emg_muscle
     bids_channel_names_widgets = []
     bids_channel_names_list = []
     bids_reference = []
@@ -468,6 +470,15 @@ def go_to_subsession(*args):
             layout=layout,
         )
     )
+    hd_emg_muscle.append(
+        widgets.Dropdown(
+            options=["BR","BB"],
+            value="BR",
+            description="hd-EMG muscle:",
+            style=style,
+            layout=layout,
+        )
+    )
     #bids_acquisition.append(
     #    widgets.Text(
     #        value=acq,
@@ -486,6 +497,7 @@ def go_to_subsession(*args):
             #bids_time_of_acquisition[-1],
             #bids_acquisition[-1],
             bids_run[-1],
+            hd_emg_muscle,
             draw_channels,
         )
 
@@ -539,8 +551,7 @@ def plot_channels(*args):
         m = re.search(r'(202[0-9]{5}_[0-9]{6})', strdatetime)
         if m is not None:
             strdatetime = m.group(0)
-            strdatetime = strdatetime[0:4] + '-' + strdatetime[4:6] + '-' + strdatetime[6:8] + strdatetime[
-                8] + strdatetime[9:11] + ':' + strdatetime[11:13] + ':' + strdatetime[13:15]
+            strdatetime = strdatetime[0:4] + '-' + strdatetime[4:6] + '-' + strdatetime[6:8] + 'T' + strdatetime[9:11] + ':' + strdatetime[11:13] + ':' + strdatetime[13:15]
 
     bids_time_of_acquisition.append(
         widgets.Text(
@@ -613,6 +624,7 @@ def plot_channels(*args):
 
     warning_EMG = False
     warning_SIDE = False
+
     for ch in raw.ch_names:
 
         if ('STN' in ch) or ('LFP' in ch) :
@@ -682,7 +694,7 @@ def plot_channels(*args):
             #if ch.upper().find('T')>0:
             #    preset += 'TM'
         elif re.search("R[0-9]C[0-9]",ch):
-            preset = "EMG_L_" + re.search("R[0-9]C[0-9]",ch).group() + "_BR_TM"
+            preset = "EMG_L_" + re.search("R[0-9]C[0-9]",ch).group() + "_" + hd_emg_muscle[-1].value + "_TM"
         elif ch.startswith('BIP 01') or ch.startswith('EMGR'):
             preset = 'EMG_R_BR_TM'
         elif ch.startswith('BIP 02') or ch.startswith('EMGL'):
