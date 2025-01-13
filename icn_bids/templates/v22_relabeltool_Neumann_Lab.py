@@ -9,8 +9,8 @@ doyouwanttkinter=True
 #get target folder
 #path_target_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Tiantan\conversion_room\rawdata"
 #path_target_folder=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_Tuebingen"
-path_target_folder=r"C:\Users\Jonathan\Documents\CODE\icn\icn_bids"
-#path_target_folder=r"C:\Users\Jonathan\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - Data\BIDS_01_Berlin_Neurophys\rawdata17"
+#path_target_folder=r"C:\Users\Jonathan\Documents\CODE\icn\icn_bids"
+path_target_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\rawdata_update22"
 #path_target_folder=r"E:\Charité - Universitätsmedizin Berlin\Interventional Cognitive Neuromodulation - PROJECT MEG Connectomics\3_TUTTI"
 back_up_folder=r"C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\backup"
 #back_up_folder=r"E:\"

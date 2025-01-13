@@ -49,13 +49,15 @@ elseif strcmp(DBS_hemisphere, 'bilateral')
     DBS_hemispheres = {'R', 'L'};
 end
 DBS_model=intern_cfg.participants.DBS_model;
+updateDBSdevice = 0;
 %DBS_model = 'SenSight Short'; %Medtronic
 %DBS_model = 'SenSight Long'; %Medtronic
 %DBS_model = 'Vercise Cartesia X'; %Boston Scientific
-%DBS_model = 'Vercise Cartesia'; %Boston Scientific
+%DBS_model = 'Vercise Cartesia' %Boston Scientific
 %DBS_model = 'Vercise Standard'; %Boston Scientific
 %DBS_model = 'Abbott Directed Long'; %Abbott
 %DBS_model = 'Abbott Directed Short'; %Abbott
+%updateDBSdevice =1
 
 ECOG_target_long = intern_cfg.participants.ECOG_target;
 %ECOG_target = 'SMC'; % Sensorimotor Cortex
@@ -207,6 +209,15 @@ end
 if strcmp(method , 'update_channels')
     if isfield(intern_cfg,'poly5')
         remove = [];
+        %%% add new empty channels
+        if length(intern_cfg.data.label)<length(intern_cfg.poly5.old)
+            warning('adding empty channels, new old poly5 added')
+            n_channels_to_add=length(intern_cfg.poly5.old)-length(intern_cfg.data.label);
+            intern_cfg.data.label(end+1:end+n_channels_to_add) = intern_cfg.poly5.old(end+1-n_channels_to_add:end);
+            intern_cfg.data.trial{1}(end+1:end+n_channels_to_add,:) = 0;
+            intern_cfg.data.hdr.chanunit(end+1:end+n_channels_to_add) = {'uV'};
+            intern_cfg.data.hdr.chantype(end+1:end+n_channels_to_add) = {'eeg'};
+        end
         for i= 1:length(intern_cfg.data.label)
             % this maps the old channel name in the poly5 dictionary to the new channel name
             % note, as matlab does not allow spaces and hyphens in a
@@ -239,6 +250,13 @@ if strcmp(method , 'update_channels')
             % extra room for assertions
             % extra room for assertions
             % extra room for assertions
+            
+            if updateDBSdevice %temp hack
+                if startsWith(intern_cfg.data.label{i},'LFP')
+                    intern_cfg.data.label{i}(end-1:end) =  char(DBS_manufacturer_short);
+                end
+            end
+
             if startsWith(intern_cfg.data.label{i},'LFP')
                 assert(endsWith(intern_cfg.data.label{i}, DBS_manufacturer_short))
             elseif startsWith(intern_cfg.data.label{i},'ECOG')
@@ -1026,7 +1044,8 @@ if cfg.ieeg.ElectricalStimulation
                 if any([isempty(intern_cfg.stim.R.AnodalContact),contains(intern_cfg.stim.R.AnodalContact,"Ground"),contains(intern_cfg.stim.R.CathodalContact,"Ground")])
                     exp.SimulationMontage         = "monopolar";
                 else
-                    assert(extract_contact_number(intern_cfg.stim.R.CathodalContact{i})<extract_contact_number(intern_cfg.stim.R.AnodalContact{1}))
+                    exp.SimulationMontage         = "bipolar";
+                    assert(extract_contact_number(intern_cfg.stim.R.CathodalContact{i}) ~= extract_contact_number(intern_cfg.stim.R.AnodalContact{1}))
                 end
             end
         end

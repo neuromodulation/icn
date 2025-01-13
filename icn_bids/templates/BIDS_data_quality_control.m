@@ -16,7 +16,7 @@ fg = figure(1);
 addpath(fullfile('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\'));
 cd('C:\Users\Jonathan\Documents\DATA\PROJECT_Berlin_dev\')
 % This is the output root folder for our BIDS-dataset
-rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update21\';
+rawdata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata_update24\';
  % This is the input root folder for our BIDS-dataset
 % sourcedata_root = 'C:\Users\Jonathan\Documents\DATA\PROJECT_BERLIN_dev\rawdata10c\';
 sourcedata_root = 'C:\Users\Jonathan\Documents\CODE\icn\icn_bids\';
@@ -126,7 +126,7 @@ for i =1:length(jsonfiles)
         %% Quick fix for the scans.json file
         scans_json_fname = sprintf('sub-%s_ses-%s_scans.json',cfg.sub,cfg.ses);
 
-        scans_json.acq_time.Description         = 'date and time of acquistion in the format YYYY-MM-DDThh:mm:ss. In case of missing timepoint format is YYYY-MM-DDT00:00:00';
+        scans_json.acq_time.Description         = 'date and time of acquisition in the format YYYY-MM-DDThh:mm:ss, in Central European Time (CET). In case of missing timepoint format is YYYY-MM-DDT00:00:00';
         scans_json.acq_time.Units               = 'datetime';
     %    scans_json.acq_time.TermURL             = char("https:\\tools.ietf.org\html\rfc3339#section-5.6");
     %    scans_json.medication_sate.Description  = 'state of medication during recording';
@@ -142,7 +142,7 @@ for i =1:length(jsonfiles)
     %% Quick fix for the sessions.json file
         sessions_json_fname = sprintf('sub-%s_sessions.json',cfg.sub);
 
-        sessions_json.acq_date_no_time.Description         = 'date of acquistion in the format YYYY-MM-DDT00:00:00, not indicating time';
+        sessions_json.acq_date_no_time.Description         = 'date of acquisition in the format YYYY-MM-DDT00:00:00, not indicating time';
         sessions_json.acq_date_no_time.Units               = 'date';
         sessions_json.acq_date_no_time.TermURL             = char("https:\\tools.ietf.org\html\rfc3339#section-5.6");
         sessions_json.medication_sate.Description  = 'state of medication during recording';
