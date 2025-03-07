@@ -330,6 +330,8 @@ task_options = [
     ("Free", 19),
     ("DyskinesiaProtocol",20),
     ("NaturalBehavior", 21),
+    ("MotStopRailL", 22),
+    ("MotStopRailR", 23),
 ]
 
 
@@ -362,6 +364,7 @@ def go_to_subsession(*args):
             bids_task_description[-1].value = descriptions[change["new"]]
             bids_task_instructions[-1].value = instructions[change["new"]]
 
+    FileChooser(os.getcwd())
     bids_filechooser.append(FileChooser(os.getcwd()))
     bids_filechooser[-1].title = "selected POLY5 file to convert"
 
@@ -406,6 +409,8 @@ def go_to_subsession(*args):
         "Free period, no instructions, during Dyskinesia-Protocol still recorded to monitor the increasing Dopamine-Level",
         "Total concatenated recording of the dyskinesia protocol, as defined in the lab book",
         "Natural behavior observed when walking, chatting, drinking or eating at the hospital venue, outside of the experimental lab",
+        "Performance of arm movements using the handle of a custom-made rail with the right hand. Stop instructions given by visual cue.",
+        "Performance of arm movements using the handle of a custom-made rail with the left hand.",
     ]
     instructions = [
         "n/a",
@@ -429,6 +434,8 @@ def go_to_subsession(*args):
         "Keep both hands resting on your legs. First tap with your left hand (if ECoG is implanted in the right hemisphere; if ECoG is implanted in left hemisphere, start with right hand) by raising the left hand and fingers while the wrist is mounted on the leg. Make one tap every +/- ten seconds. Do not count in between taps. After 30 taps, the recording investigator will instruct you to tap on with your right (i.e. left) hand. After 30 taps the recording investigator will instruct you to stop tapping.",
         "Free period, without instructions or restrictions, of rest between Rest-measurement and Task-measurements",
         "Free period to be spend at the hospital venue (corridor, canteen, ...), without further instructions",
+        "Instructions given by visual cue.",
+        "Instructions given by visual cue.",
     ]
 
     bids_task_description.append(
@@ -497,7 +504,7 @@ def go_to_subsession(*args):
             #bids_time_of_acquisition[-1],
             #bids_acquisition[-1],
             bids_run[-1],
-            hd_emg_muscle,
+            #hd_emg_muscle,
             draw_channels,
         )
 

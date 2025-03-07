@@ -885,7 +885,6 @@ if add_ECOG_size
     else
         error('no ECOG size specified')
     end
-
 end
 
 
