@@ -409,8 +409,8 @@ def go_to_subsession(*args):
         "Free period, no instructions, during Dyskinesia-Protocol still recorded to monitor the increasing Dopamine-Level",
         "Total concatenated recording of the dyskinesia protocol, as defined in the lab book",
         "Natural behavior observed when walking, chatting, drinking or eating at the hospital venue, outside of the experimental lab",
-        "Performance of arm movements using the handle of a custom-made rail with the right hand. Stop instructions given by visual cue.",
-        "Performance of arm movements using the handle of a custom-made rail with the left hand.",
+        "Performance of self-paced arm movements using the handle of a custom-made rail with the right hand. Stop instructions presented visually after decoding of movement intention.",
+        "Performance of self-paced arm movements using the handle of a custom-made rail with the left hand. Stop instructions presented visually after decoding of movement intention.",
     ]
     instructions = [
         "n/a",
@@ -434,8 +434,8 @@ def go_to_subsession(*args):
         "Keep both hands resting on your legs. First tap with your left hand (if ECoG is implanted in the right hemisphere; if ECoG is implanted in left hemisphere, start with right hand) by raising the left hand and fingers while the wrist is mounted on the leg. Make one tap every +/- ten seconds. Do not count in between taps. After 30 taps, the recording investigator will instruct you to tap on with your right (i.e. left) hand. After 30 taps the recording investigator will instruct you to stop tapping.",
         "Free period, without instructions or restrictions, of rest between Rest-measurement and Task-measurements",
         "Free period to be spend at the hospital venue (corridor, canteen, ...), without further instructions",
-        "Instructions given by visual cue.",
-        "Instructions given by visual cue.",
+        "In this examination, you will perform movements with the handle in front of you. The handle is in the starting position when it is all the way to the left or all the way to the right. In the first phase, you will perform around 40 movements. Perform a single movement in each round. At the beginning of each round, return the handle to the starting position. When you have returned the handle to the starting position, a black cross will appear. Then stand ready for a movement. As soon as the cross appears, you must wait at least 1 second to perform the movement. However, you have up to 10 seconds. You decide when to make the move between 1 and 10 seconds after the cross appears. However, try NOT to count in your head. NOTE: DO NOT move the handle immediately after the cross appears. Wait at least 1 second and then decide for yourself when you want to move. From time to time, the word STOP will randomly appear in red as you move. Then you must react as quickly as possible and try to stop the movement. If you do not manage to stop the movement, it doesnot matter. Simply return the handle to the starting position for the next round.",
+        "In this examination, you will perform movements with the handle in front of you. The handle is in the starting position when it is all the way to the left or all the way to the right. In the first phase, you will perform around 40 movements. Perform a single movement in each round. At the beginning of each round, return the handle to the starting position. When you have returned the handle to the starting position, a black cross will appear. Then stand ready for a movement. As soon as the cross appears, you must wait at least 1 second to perform the movement. However, you have up to 10 seconds. You decide when to make the move between 1 and 10 seconds after the cross appears. However, try NOT to count in your head. NOTE: DO NOT move the handle immediately after the cross appears. Wait at least 1 second and then decide for yourself when you want to move. From time to time, the word STOP will randomly appear in red as you move. Then you must react as quickly as possible and try to stop the movement. If you do not manage to stop the movement, it doesnot matter. Simply return the handle to the starting position for the next round.",
     ]
 
     bids_task_description.append(
@@ -573,7 +573,7 @@ def plot_channels(*args):
     stracq = bids_filechooser[-1].selected
     if 'StimOnBConMovNonRes' in stracq:
         stracq = 'StimOnBConMovNonRes'
-    elif 'StimonBNonResMovCon' in stracq:
+    elif 'StimOnBNonResMovCon' in stracq:
         stracq = 'StimonBNonResMovCon'
     elif 'StimOnBMovConResNon' in stracq:
         stracq = 'StimOnBMovConResNon'
