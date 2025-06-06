@@ -574,7 +574,7 @@ def plot_channels(*args):
     if 'StimOnBConMovNonRes' in stracq:
         stracq = 'StimOnBConMovNonRes'
     elif 'StimOnBNonResMovCon' in stracq:
-        stracq = 'StimonBNonResMovCon'
+        stracq = 'StimOnBNonResMovCon'
     elif 'StimOnBMovConResNon' in stracq:
         stracq = 'StimOnBMovConResNon'
     elif 'StimOnBResNonConMov' in stracq:
@@ -1175,7 +1175,7 @@ def save_all_information(*args):
             bids_date_of_implantation_str = bids_date_of_implantation.value
             metadict['participants']['date_of_implantation'] = bids_date_of_implantation_str.strftime("%Y-%m-%dT00:00:00")
         except:
-            metadict['participants']['date_of_implantation'] = "2024-na-naT00:00:00"
+            metadict['participants']['date_of_implantation'] = "2025-na-naT00:00:00"
         finally:
             pass
         metadict['participants']['UPDRS_III_preop_OFF'] = str()
